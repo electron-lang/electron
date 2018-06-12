@@ -1,0 +1,126 @@
+{
+  "modules": {
+    "top": {
+      "cells": {
+        "fpga": {
+          "type": "$fpga",
+          "attributes": {
+            "man": "lattice",
+            "mpn": "ice40-hx1k-tf144"
+          },
+          "parameters": {
+            "MODULE": "dtop",
+            "ARCH": "ice40",
+            "DEVICE": "hx1k",
+            "PKG": "tf144",
+            "SET_IO": {
+              "clk": 110
+            }
+          },
+          "connections": {
+            "vccio": [5],
+            "gnd": [6],
+            "clk": [2],
+            "data": [3],
+            "dout": [4]
+          }
+        },
+        "atop": {
+          "type": "atop",
+          "connections": {
+            "ain": [4],
+            "gnd": [6]
+          }
+        },
+        "xtal": {
+          "type": "$xtal",
+          "parameters": {
+            "FREQ": "12MHz"
+          },
+          "connections": {
+            "Y": [2]
+          }
+        },
+        "connector": {
+          "type": "$conn",
+          "parameters": {
+            "WIDTH": 3
+          },
+          "connections": {
+            "Y": [3, 4, 5, 6]
+          }
+        }
+      }
+    },
+    "dtop": {
+      "ports": {
+        "clk": {
+          "direction": "input",
+          "bits": [2]
+        },
+        "data": {
+          "direction": "input",
+          "bits": [3]
+        },
+        "dout": {
+          "direction": "output",
+          "bits": [5]
+        }
+      },
+      "cells": {
+        "DFF1": {
+          "type": "$dff",
+          "connections": {
+            "CLK": [2],
+            "D": [3],
+            "Q": [4]
+          }
+        },
+        "DFF2": {
+          "type": "$dff",
+          "connections": {
+            "CLK": [2],
+            "D": [4],
+            "Q": [5]
+          }
+        }
+      }
+    },
+    "atop": {
+      "ports": {
+        "ain": {
+          "direction": "input",
+          "bits": [2]
+        },
+        "gnd": {
+          "direction": "ground",
+          "bits": [4]
+        }
+      },
+      "cells": {
+        "R1": {
+          "type": "$R",
+          "attributes": {
+            "man": "Yaego",
+            "mpn": "xyz-123"
+          },
+          "parameters": {
+            "resistance": "10kOhm",
+            "package": "0805"
+          },
+          "connections": {
+            "A": [2],
+            "B": [3]
+          }
+        },
+        "C1": {
+          "type": "$C",
+          "connections": {
+            "A": [3],
+            "B": [4]
+          }
+        }
+      }
+    }
+  }
+}

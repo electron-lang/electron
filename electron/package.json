@@ -1,0 +1,20 @@
+{
+  "name": "@electron-lang/electron",
+  "version": "1.0.0",
+  "description": "Electron compiler",
+  "main": "index.js",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "dependencies": {
+    "@electron-lang/netlist": "^1.0.0",
+    "@electron-lang/celllib": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.9.1"
+  },
+  "scripts": {
+    "prepare": "yarn run build",
+    "build": "tsc"
+  }
+}

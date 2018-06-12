@@ -1,0 +1,23 @@
+{
+  "name": "parent",
+  "version": "1.0.0",
+  "description": "Electron workspace",
+  "main": "index.js",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "private": true,
+  "workspaces": [
+    "electron",
+    "netlist",
+    "celllib"
+  ],
+  "scripts": {
+    "install": "lerna link",
+    "prepare": "lerna run prepare",
+    "test": "lerna run test"
+  },
+  "devDependencies": {
+    "lerna": "^2.11.0"
+  }
+}
