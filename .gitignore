@@ -1,3 +1,7 @@
 node_modules/
 lib/
 *.log
+browser-app/*
+!browser-app/package.json
+electron-app/*
+!electron-app/package.json

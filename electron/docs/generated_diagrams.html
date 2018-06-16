@@ -1,0 +1,954 @@
+
+<!-- This is a generated file -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    background-color: hsl(30, 20%, 95%)
+  }
+</style>
+
+
+<link rel='stylesheet' href='https://unpkg.com/chevrotain@3.5.0/diagrams/diagrams.css'>
+
+<script src='https://unpkg.com/chevrotain@3.5.0/diagrams/vendor/railroad-diagrams.js'></script>
+<script src='https://unpkg.com/chevrotain@3.5.0/diagrams/src/diagrams_builder.js'></script>
+<script src='https://unpkg.com/chevrotain@3.5.0/diagrams/src/diagrams_behavior.js'></script>
+<script src='https://unpkg.com/chevrotain@3.5.0/diagrams/src/main.js'></script>
+
+<div id="diagrams" align="center"></div>    
+
+<script>
+    window.serializedGrammar = [
+  {
+    "type": "Rule",
+    "name": "design",
+    "definition": [
+      {
+        "type": "Repetition",
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "importStatement",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Repetition",
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "moduleStatement",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "importStatement",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Import",
+        "label": "Import",
+        "idx": 0,
+        "pattern": "import"
+      },
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "OpenCurly",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Identifier",
+            "label": "Identifier",
+            "idx": 0,
+            "pattern": "[a-zA-Z]\\w*"
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "CloseCurly",
+        "idx": 0,
+        "pattern": "}"
+      },
+      {
+        "type": "Terminal",
+        "name": "From",
+        "label": "From",
+        "idx": 0,
+        "pattern": "from"
+      },
+      {
+        "type": "Terminal",
+        "name": "String",
+        "label": "String",
+        "idx": 0,
+        "pattern": "\"[^\"]*\""
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "moduleStatement",
+    "definition": [
+      {
+        "type": "Repetition",
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "attribute",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Export",
+            "label": "Export",
+            "idx": 0,
+            "pattern": "export"
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Declare",
+            "label": "Declare",
+            "idx": 0,
+            "pattern": "declare"
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "Module",
+        "label": "Module",
+        "idx": 0,
+        "pattern": "module"
+      },
+      {
+        "type": "Terminal",
+        "name": "Identifier",
+        "label": "Identifier",
+        "idx": 0,
+        "pattern": "[a-zA-Z]\\w*"
+      },
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "OpenCurly",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "Repetition",
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "statement",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "CloseCurly",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameterLiteral",
+    "definition": [
+      {
+        "type": "Alternation",
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Integer",
+                "label": "Integer",
+                "idx": 0,
+                "pattern": "0|[1-9]\\d*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Constant",
+                "label": "Constant",
+                "idx": 0,
+                "pattern": "[1-9]\\d*'[01xz]+"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Symbol",
+                "label": "Symbol",
+                "idx": 0,
+                "pattern": "'[^\\(\\)\\[\\]{},:\\s]+"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"[^\"]*\""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "signalLiteral",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Constant",
+        "label": "Constant",
+        "idx": 0,
+        "pattern": "[1-9]\\d*'[01xz]+"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "identifier",
+    "definition": [
+      {
+        "type": "Alternation",
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Identifier",
+                "label": "Identifier",
+                "idx": 0,
+                "pattern": "[a-zA-Z]\\w*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Symbol",
+                "label": "Symbol",
+                "idx": 0,
+                "pattern": "'[^\\(\\)\\[\\]{},:\\s]+"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "typeExpression",
+    "definition": [
+      {
+        "type": "Alternation",
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Net",
+                "label": "Net",
+                "idx": 0,
+                "pattern": "net"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Input",
+                "label": "Input",
+                "idx": 0,
+                "pattern": "input"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Output",
+                "label": "Output",
+                "idx": 0,
+                "pattern": "output"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Inout",
+                "label": "Inout",
+                "idx": 0,
+                "pattern": "inout"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Analog",
+                "label": "Analog",
+                "idx": 0,
+                "pattern": "analog"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Cell",
+                "label": "Cell",
+                "idx": 0,
+                "pattern": "cell"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "width",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "width",
+    "definition": [
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "OpenSquare",
+            "label": "OpenSquare",
+            "idx": 0,
+            "pattern": "\\["
+          },
+          {
+            "type": "Terminal",
+            "name": "Integer",
+            "label": "Integer",
+            "idx": 0,
+            "pattern": "0|[1-9]\\d*"
+          },
+          {
+            "type": "Terminal",
+            "name": "CloseSquare",
+            "label": "CloseSquare",
+            "idx": 0,
+            "pattern": "]"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "attribute",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Attribute",
+        "label": "Attribute",
+        "idx": 0,
+        "pattern": "@\\w*"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "parameterList",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "declaration",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "typeExpression",
+        "idx": 0
+      },
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "identifier",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "Assign",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "rhs",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "fullyQualifiedName",
+    "definition": [
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Dot",
+          "label": "Dot",
+          "idx": 1,
+          "pattern": "\\."
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "identifier",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "statement",
+    "definition": [
+      {
+        "type": "Alternation",
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "RepetitionMandatory",
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "attribute",
+                    "idx": 0
+                  }
+                ]
+              },
+              {
+                "type": "Alternation",
+                "definition": [
+                  {
+                    "type": "Flat",
+                    "definition": [
+                      {
+                        "type": "NonTerminal",
+                        "name": "fullyQualifiedName",
+                        "idx": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Flat",
+                    "definition": [
+                      {
+                        "type": "NonTerminal",
+                        "name": "declaration",
+                        "idx": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Alternation",
+                "definition": [
+                  {
+                    "type": "Flat",
+                    "definition": [
+                      {
+                        "type": "NonTerminal",
+                        "name": "declaration",
+                        "idx": 1
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Flat",
+                    "definition": [
+                      {
+                        "type": "NonTerminal",
+                        "name": "assignment",
+                        "idx": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "assignment",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "lhs",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "Assign",
+        "label": "Assign",
+        "idx": 0,
+        "pattern": "="
+      },
+      {
+        "type": "NonTerminal",
+        "name": "rhs",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "lhs",
+    "definition": [
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "rhs",
+    "definition": [
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "expression",
+    "definition": [
+      {
+        "type": "Alternation",
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "signalLiteral",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceExpression",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "concatExpression",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "cellExpression",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "concatExpression",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenRound",
+        "label": "OpenRound",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "RepetitionWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseRound",
+        "label": "CloseRound",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceExpression",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "OpenSquare",
+            "label": "OpenSquare",
+            "idx": 0,
+            "pattern": "\\["
+          },
+          {
+            "type": "Terminal",
+            "name": "Integer",
+            "label": "Integer",
+            "idx": 0,
+            "pattern": "0|[1-9]\\d*"
+          },
+          {
+            "type": "Option",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Colon",
+                "label": "Colon",
+                "idx": 0,
+                "pattern": ":"
+              },
+              {
+                "type": "Terminal",
+                "name": "Integer",
+                "label": "Integer",
+                "idx": 1,
+                "pattern": "0|[1-9]\\d*"
+              }
+            ]
+          },
+          {
+            "type": "Terminal",
+            "name": "CloseSquare",
+            "label": "CloseSquare",
+            "idx": 0,
+            "pattern": "]"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "cellExpression",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "CellType",
+        "label": "CellType",
+        "idx": 0,
+        "pattern": "\\$\\w*"
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "parameterList",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "width",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "OpenCurly",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "RepetitionWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "connection",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "CloseCurly",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameterList",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenRound",
+        "label": "OpenRound",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "RepetitionWithSeparator",
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": "Comma",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "parameter",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseRound",
+        "label": "CloseRound",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameter",
+    "definition": [
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Identifier",
+            "label": "Identifier",
+            "idx": 0,
+            "pattern": "[a-zA-Z]\\w*"
+          },
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "Assign",
+            "idx": 0,
+            "pattern": "="
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "parameterLiteral",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "connection",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "Assign",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  }
+];
+</script>
+
+<script>
+    var diagramsDiv = document.getElementById("diagrams");
+    main.drawDiagramsFromSerializedGrammar(serializedGrammar, diagramsDiv);
+</script>

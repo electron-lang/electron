@@ -1,0 +1,30 @@
+{
+  "name": "@electron-lang/theia-electron",
+  "version": "1.0.0",
+  "description": "Theia Electron Extension",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "scripts": {
+    "prepare": "yarn run build",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@electron-lang/electron": "file:../electron",
+    "@electron-lang/language-server": "file:../language-server",
+    "@theia/core": "latest",
+    "@theia/editor": "latest",
+    "@theia/languages": "latest",
+    "@theia/monaco": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/electron-frontend-module",
+      "backend": "lib/node/electron-backend-module"
+    }
+  ]
+}

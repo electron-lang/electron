@@ -2,10 +2,19 @@
   "name": "@electron-lang/netlist",
   "version": "1.0.0",
   "description": "Extended yosys netlist format utility",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "repository": "https://github.com/electron-lang/netlistjs",
   "author": "David Craven <david@craven.ch>",
   "license": "ISC",
+  "scripts": {
+    "prepare": "yarn run build && yarn run schema",
+    "build": "tsc",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "schema": "typescript-json-schema ../celllib/src/index.ts INetlist > lib/netlist.schema"
+  },
+  "bin": {
+    "netlist": "./lib/cli.js"
+  },
   "devDependencies": {
     "@types/json5": "^0.0.29",
     "@types/node": "^10.3.2",
@@ -20,14 +29,6 @@
     "json5": "^1.0.1",
     "jsonschema": "^1.2.4",
     "readline-sync": "^1.4.9",
-    "@electron-lang/celllib": "^1.0.0"
-  },
-  "scripts": {
-    "prepare": "yarn run build && yarn run schema",
-    "build": "tsc",
-    "schema": "typescript-json-schema ../celllib/src/index.ts INetlist > lib/netlist.schema"
-  },
-  "bin": {
-    "netlistjs": "./index.js"
+    "@electron-lang/celllib": "file:../celllib"
   }
 }

@@ -1,0 +1,19 @@
+import a, b, c from "package"
+
+@bom('Yago, 'XYZ)
+export module AnalogModule {
+    analog a, b
+    cell r1 = $R('10k) {A=a, B=b}
+}
+
+export module DigitalModule {
+    input a, b
+    cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, C=c}
+    output c
+}
+
+declare module BlackBox {
+    input[2] a
+    net b, c = a[0], a[1]
+    output d = (b, c)
+}

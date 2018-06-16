@@ -1,0 +1,31 @@
+{
+  "name": "@electron-lang/language-server",
+  "version": "1.0.0",
+  "description": "Electron Language Server",
+  "main": "index.js",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "scripts": {
+    "prepare": "yarn build",
+    "build": "tsc"
+  },
+  "bin": {
+    "electron-language-server": "./lib/cli.js"
+  },
+  "dependencies": {
+    "commander": "^2.15.1",
+    "vscode-languageserver": "^4.2.1",
+    "vscode-uri": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/commander": "^2.12.2",
+    "@types/mocha": "^5.2.2",
+    "@types/node": "^10.3.3",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "ts-node": "^6.1.1",
+    "typescript": "^2.9.2"
+  }
+}

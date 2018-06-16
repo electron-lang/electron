@@ -4,7 +4,6 @@
     "lib": ["es2015"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "rootDir": "src",
     "outDir": "lib",
     "strict": true,
     "declaration": true,
@@ -12,9 +11,7 @@
     "strictNullChecks": true,
     "sourceMap": true
   },
-  "exclude": [
-    "node_modules",
-    "lib",
-    "**/*.spec.ts"
+  "include": [
+    "src",
   ]
 }

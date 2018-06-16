@@ -4,12 +4,14 @@
     "lib": ["es2015"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "rootDir": "src",
     "outDir": "lib",
     "strict": true,
     "declaration": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "sourceMap": true
-  }
+  },
+  "include": [
+    "src"
+  ]
 }
