@@ -62,7 +62,11 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         return ctx.identifier.map((identifier: any) => {
             return {
                 'import': this.visit(identifier),
-                'from': from_
+                'from': {
+                    value: from_,
+                    literalType: AstLiteralType.String,
+                    src: tokenToSrcLoc(ctx.String[0])
+                }
             }
         })
     }
@@ -96,7 +100,10 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     // Attributes
     attribute(ctx: any): IAstAttribute {
         return {
-            name: parseAttribute(ctx.Attribute[0].image),
+            name: {
+                id: parseAttribute(ctx.Attribute[0].image),
+                src: tokenToSrcLoc(ctx.Attribute[0]),
+            },
             parameters: this.visit(ctx.parameterList),
         }
     }
@@ -125,21 +132,25 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             expr = {
                 value: ctx.Constant[0].image,
                 literalType: AstLiteralType.Constant,
+                src: tokenToSrcLoc(ctx.Constant[0]),
             }
         } else if (ctx.Integer) {
             expr = {
                 value: parseInteger(ctx.Integer[0].image),
                 literalType: AstLiteralType.Integer,
+                src: tokenToSrcLoc(ctx.Integer[0]),
             }
         } else if (ctx.Unit) {
             expr = {
                 value: ctx.Unit[0].image,
                 literalType: AstLiteralType.Unit,
+                src: tokenToSrcLoc(ctx.Unit[0]),
             }
         } else if (ctx.String) {
             expr = {
                 value: parseString(ctx.String[0].image),
                 literalType: AstLiteralType.String,
+                src: tokenToSrcLoc(ctx.String[0]),
             }
         } else if (ctx.identifier) {
             expr = this.visit(ctx.identifier)

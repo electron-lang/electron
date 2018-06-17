@@ -11,7 +11,7 @@ describe('Pretty Printer', () => {
     it('should emit attributes', () => {
         const attributes = [
             {
-                name: 'bom',
+                name: { id: 'bom' },
                 parameters: [
                     {
                         name: null,
@@ -31,7 +31,7 @@ describe('Pretty Printer', () => {
             }
         ]
 
-        expectPretty(emitAttribute({ name: 'model', parameters: [
+        expectPretty(emitAttribute({ name: { id: 'model' }, parameters: [
             { name: null, value: { id: 'A' }}
         ]}), '@model(A)\n')
 
@@ -206,7 +206,7 @@ describe('Pretty Printer', () => {
     it('should emit imports', () => {
         expectPretty(emitImport({
             'import': {id: 'a'},
-            'from': 'package'
+            'from': { value: 'package', literalType: AstLiteralType.String },
         }), 'import a from "package"\n')
     })
 
@@ -252,8 +252,8 @@ describe('Pretty Printer', () => {
         expectPretty(emitDesign({
             imports: [
                 {
-                    'import': {id: 'a'},
-                    'from': 'b',
+                    'import': { id: 'a' },
+                    'from': { value: 'b', literalType: AstLiteralType.String },
                 }
             ],
             modules: [

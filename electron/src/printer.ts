@@ -21,10 +21,11 @@ export function emitDesign(design: IAstDesign): IDoc {
 
 export function emitImport(imp: IAstImport): IDoc {
     return [
-        'import', ' ',
+        'import ',
         emitIdentifier(imp['import']),
-        ' ', 'from', ' ',
-        enclose(dquotes, imp['from']), line
+        ' from ',
+        emitLiteral(imp['from']),
+        line
     ]
 }
 
@@ -83,7 +84,8 @@ export function emitAttributes(attrs: IAstAttribute[]): IDoc {
 }
 
 export function emitAttribute(attr: IAstAttribute): IDoc {
-    return ['@', attr.name, emitParameters(attr.parameters), line]
+    return ['@', emitIdentifier(attr.name),
+            emitParameters(attr.parameters), line]
 }
 
 export function emitParameters(params: IAstParameter[]): IDoc {

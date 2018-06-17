@@ -52,14 +52,22 @@ describe('Elaborator', () => {
                         id: 'a',
                         src: getLoc('a', 8)
                     },
-                    'from': 'package',
+                    'from': {
+                        value: 'package',
+                        literalType: AstLiteralType.String,
+                        src: getLoc('"package"', 18),
+                    }
                 },
                 {
                     'import': {
                         id: 'b',
                         src: getLoc('b', 11)
                     },
-                    'from': 'package',
+                    'from': {
+                        value: 'package',
+                        literalType: AstLiteralType.String,
+                        src: getLoc('"package"', 18),
+                    }
                 }
             ],
             modules: [],
@@ -72,7 +80,11 @@ describe('Elaborator', () => {
                         id: 'a',
                         src: getLoc('a', 8)
                     },
-                    'from': './file'
+                    'from': {
+                        value: './file',
+                        literalType: AstLiteralType.String,
+                        src: getLoc('"./file"', 15),
+                    }
                 }
             ],
             modules: [],
@@ -134,13 +146,14 @@ describe('Elaborator', () => {
                 {
                     attributes: [
                         {
-                            name: 'bom',
+                            name: { id: 'bom', src: getLoc('@bom', 1) },
                             parameters: [
                                 {
                                     name: null,
                                     value: {
                                         literalType: AstLiteralType.String,
                                         value: 'Yago',
+                                        src: getLoc('"Yago"', 6),
                                     }
                                 },
                                 {
@@ -148,6 +161,7 @@ describe('Elaborator', () => {
                                     value: {
                                         literalType: AstLiteralType.String,
                                         value: 'XYZ',
+                                        src: getLoc('"XYZ"', 14),
                                     }
                                 }
                             ]
@@ -227,13 +241,14 @@ describe('Elaborator', () => {
             {
                 attributes: [
                     {
-                        name: 'width',
+                        name: {id: 'width', src: getLoc('@width', 1 + 10) },
                         parameters: [
                             {
                                 name: null,
                                 value: {
                                     literalType: AstLiteralType.Integer,
                                     value: 10,
+                                    src: getLoc('10', 8 + 10),
                                 }
                             }
                         ],
@@ -252,13 +267,14 @@ describe('Elaborator', () => {
             {
                 attributes: [
                     {
-                        name: 'width',
+                        name: {id: 'width', src: getLoc('@width', 1 + 10) },
                         parameters: [
                             {
                                 name: null,
                                 value: {
                                     literalType: AstLiteralType.Integer,
                                     value: 10,
+                                    src: getLoc('10', 8 + 10),
                                 }
                             }
                         ],
@@ -351,13 +367,14 @@ describe('Elaborator', () => {
             {
                 attributes: [
                     {
-                        name: 'width',
+                        name: {id: 'width', src: getLoc('@width', 1 + 10) },
                         parameters: [
                             {
                                 name: null,
                                 value: {
                                     value: 10,
-                                    literalType: AstLiteralType.Integer
+                                    literalType: AstLiteralType.Integer,
+                                    src: getLoc('10', 8 + 10),
                                 },
                             }
                         ]
@@ -422,6 +439,7 @@ describe('Elaborator', () => {
                     value: {
                         value: '10k',
                         literalType: AstLiteralType.Unit,
+                        src: getLoc('10k', 4 + 14),
                     }
                 }
             ],

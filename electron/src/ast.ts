@@ -5,12 +5,12 @@ export interface IAst {
 }
 
 export interface IAstAttribute extends IAst {
-    name: string
+    name: IAstIdentifier
     parameters: IAstParameter[]
 }
 
 export interface IAstParameter extends IAst {
-    name: string | null
+    name: IAstIdentifier | null
     value: IAstLiteral | IAstIdentifier
 }
 
@@ -21,7 +21,7 @@ export interface IAstDesign extends IAst {
 
 export interface IAstImport extends IAst {
     'import': IAstIdentifier
-    'from': string
+    'from': IAstLiteral
 }
 
 export interface IAstModule extends IAst {
