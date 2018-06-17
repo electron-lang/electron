@@ -20,7 +20,7 @@ describe('Parser', () => {
         parseModule('module MOD {}')
         parseModule('export module MOD {}')
         parseModule('declare module MOD {}')
-        parseModule("@model('A) module MOD {}")
+        parseModule("@model(A) module MOD {}")
     })
 
     it('should parse attributes', () => {
@@ -28,7 +28,8 @@ describe('Parser', () => {
             parseRule(text, () => { parser.attribute() })
         }
         parseAttribute('@src("file:8")')
-        parseAttribute("@bom('Yago, 'XYZ)")
+        parseAttribute('@bom("Yago", "XYZ")')
+        parseAttribute('@model(A)')
     })
 
     it('should parse types', () => {
@@ -61,11 +62,11 @@ describe('Parser', () => {
         parseExpression('(a, (b, c))')
         // Cell
         parseExpression('$R {}')
-        parseExpression("$R('10k) {}")
-        parseExpression("$R(power_rating='125mW) {}")
-        parseExpression("$R('10k, power_rating='125mW) {}")
+        parseExpression("$R(10k) {}")
+        parseExpression("$R(power_rating=125mW) {}")
+        parseExpression("$R(10k, power_rating=125mW) {}")
         parseExpression('$R()[2] {}')
-        parseExpression("$R('10k)[2] {}")
+        parseExpression("$R(10k)[2] {}")
         parseExpression('$R {A}')
         parseExpression('$R {A=a}')
         parseExpression('$R {A=(a, b)}')
@@ -81,7 +82,7 @@ describe('Parser', () => {
         parseStatement('a = b')
         parseStatement("a, b[1] = 1'1, 1'1")
         parseStatement("net a, b = 1'1, 1'1")
-        parseStatement("@width(10) net a")
-        parseStatement("@bom('Yago, 'XYZ) a.b.c")
+        parseStatement('@width(10) net a')
+        parseStatement('@bom("Yago", "XYZ") a.b.c')
     })
 })

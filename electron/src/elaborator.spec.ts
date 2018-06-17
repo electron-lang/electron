@@ -31,8 +31,8 @@ function expectAstExpr(text: string, e: AstExpr) {
     ])
 }
 
-describe('To AST', () => {
-    it('should parse to IAstImport', () => {
+describe('Elaborator', () => {
+    it('should elaborate to IAstImport', () => {
         expectAst('import a, b from "package"', {
             imports: [
                 {
@@ -58,7 +58,7 @@ describe('To AST', () => {
         })
     })
 
-    it('should parse to IAstModule', () => {
+    it('should elaborate to IAstModule', () => {
         expectAst('module A {}', {
             imports: [],
             modules: [
@@ -98,7 +98,7 @@ describe('To AST', () => {
             ],
         })
 
-        expectAst("@bom('Yago, 'XYZ) module A {}", {
+        expectAst('@bom("Yago", "XYZ") module A {}', {
             imports: [],
             modules: [
                 {
@@ -109,14 +109,14 @@ describe('To AST', () => {
                                 {
                                     name: null,
                                     value: {
-                                        literalType: AstLiteralType.Symbol,
+                                        literalType: AstLiteralType.String,
                                         value: 'Yago',
                                     }
                                 },
                                 {
                                     name: null,
                                     value: {
-                                        literalType: AstLiteralType.Symbol,
+                                        literalType: AstLiteralType.String,
                                         value: 'XYZ',
                                     }
                                 }
@@ -132,7 +132,7 @@ describe('To AST', () => {
         })
     })
 
-    it('should parse to AstStatement', () => {
+    it('should elaborate to AstStatement', () => {
         expectAstModule('net a', [
             {
                 attributes: [],
@@ -321,7 +321,7 @@ describe('To AST', () => {
         ])
     })
 
-    it('should parse to IAstExpr', () => {
+    it('should elaborate to IAstExpr', () => {
         expectAstExpr('(a, b, c)', {
             expressions: [
                 { id: 'a' },
@@ -366,7 +366,7 @@ describe('To AST', () => {
             assignments: [],
         })
 
-        expectAstExpr("$R('10k) {}", {
+        expectAstExpr("$R(10k) {}", {
             cellType: '$R',
             width: 1,
             parameters: [
@@ -374,7 +374,7 @@ describe('To AST', () => {
                     name: null,
                     value: {
                         value: '10k',
-                        literalType: AstLiteralType.Symbol,
+                        literalType: AstLiteralType.Unit,
                     }
                 }
             ],

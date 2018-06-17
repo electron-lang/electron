@@ -72,8 +72,6 @@ export function emitType(ty: IAstType): IDoc {
 export function emitLiteral(lit: IAstLiteral): IDoc {
     if (lit.literalType === AstLiteralType.Integer) {
         return lit.value.toString()
-    } else if (lit.literalType === AstLiteralType.Symbol) {
-        return ["'", lit.value]
     } else if (lit.literalType === AstLiteralType.String) {
         return enclose(dquotes, lit.value)
     }
@@ -93,7 +91,12 @@ export function emitParameters(params: IAstParameter[]): IDoc {
 }
 
 export function emitParameter(param: IAstParameter): IDoc {
-    const value = emitLiteral(param.value)
+    let value = null
+    if ((param.value as IAstIdentifier).id) {
+        value = emitIdentifier(param.value as IAstIdentifier)
+    } else {
+        value = emitLiteral(param.value as IAstLiteral)
+    }
 
     if (param.name === null) {
         return value

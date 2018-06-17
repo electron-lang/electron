@@ -1,8 +1,8 @@
 import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
-import { Analog, Assign, Attribute, Cell, CellType, CloseCurly, CloseRound,
-         CloseSquare, Colon, Comma, Comment, Constant, Declare, DocComment, Dot,
-         Export, From, Identifier, Import, Inout, Input, Integer, Module, Net,
-         OpenCurly, OpenRound, OpenSquare, Output, String, Symbol,
+import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound, CloseSquare,
+         Colon, Comma, Comment, Constant, Declare, DocComment, Dot, Export,
+         From, Identifier, Import, Inout, Input, Integer, Module, Net,
+         OpenCurly, OpenRound, OpenSquare, Output, String, Unit,
          Whitespace } from './tokens'
 
 export const allTokens = [
@@ -21,16 +21,15 @@ export const allTokens = [
     Export,
     Declare,
     // Identifiers
-    Identifier, // starts with [a-zA-Z]
-    CellType, // starts with $
-    Attribute, // starts with @
-    Symbol, // starts with '
+    Identifier,
+    Attribute,
     // Operators
     Assign,
     // Literals
-    Constant, // starts with [1-9]+'
-    Integer, // starts with [0-9]
-    String, // starts with "
+    Constant,
+    Integer,
+    Unit,
+    String,
     // Brackets
     OpenRound,
     CloseRound,
@@ -55,7 +54,6 @@ setScope(Analog, 'keyword')
 setScope(Assign, 'operator')
 setScope(Attribute, 'string')
 setScope(Cell, 'keyword')
-setScope(CellType, 'identifier')
 setScope(CloseCurly, 'delimiter')
 setScope(CloseRound, 'delimiter')
 setScope(CloseSquare, 'delimiter')
@@ -80,7 +78,7 @@ setScope(OpenRound, 'delimiter')
 setScope(OpenSquare, 'delimiter')
 setScope(Output, 'keyword')
 setScope(String, 'string')
-setScope(Symbol, 'symbol')
+setScope(Unit, 'number')
 setScope(Whitespace, 'whitespace')
 
 export const lexerInstance = new Lexer(allTokens)
@@ -135,9 +133,10 @@ class ElectronParser extends Parser {
 
     public parameterLiteral = this.RULE('parameterLiteral', () => {
         this.OR([
+            { ALT: () => this.CONSUME(Identifier) },
             { ALT: () => this.CONSUME(Integer) },
             { ALT: () => this.CONSUME(Constant) },
-            { ALT: () => this.CONSUME(Symbol) },
+            { ALT: () => this.CONSUME(Unit) },
             { ALT: () => this.CONSUME(String) },
         ])
     })
@@ -149,8 +148,6 @@ class ElectronParser extends Parser {
     public identifier = this.RULE('identifier', () => {
         this.OR([
             { ALT: () => this.CONSUME(Identifier) },
-            { ALT: () => this.CONSUME(Symbol) },
-            { ALT: () => this.CONSUME(CellType) },
         ])
     })
 

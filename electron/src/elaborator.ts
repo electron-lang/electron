@@ -15,10 +15,6 @@ function parseAttribute(name: string): string {
     return name.substring(1)
 }
 
-function parseSymbol(symbol: string): string {
-    return symbol.substring(1)
-}
-
 function parseInteger(int: string): number {
     return parseInt(int)
 }
@@ -89,28 +85,36 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
     }
 
-    parameterLiteral(ctx: any): IAstLiteral {
+    parameterLiteral(ctx: any): any {
+        let expr = null
         if (ctx.Constant) {
-            return {
+            expr = {
                 value: ctx.Constant[0].image,
                 literalType: AstLiteralType.Constant,
             }
         } else if (ctx.Integer) {
-            return {
+            expr = {
                 value: parseInteger(ctx.Integer[0].image),
                 literalType: AstLiteralType.Integer,
             }
-        } else if (ctx.Symbol) {
-            return {
-                value: parseSymbol(ctx.Symbol[0].image),
-                literalType: AstLiteralType.Symbol,
+        } else if (ctx.Unit) {
+            expr = {
+                value: ctx.Unit[0].image,
+                literalType: AstLiteralType.Unit,
             }
-        } else {
-            return {
+        } else if (ctx.String) {
+            expr = {
                 value: parseString(ctx.String[0].image),
                 literalType: AstLiteralType.String,
             }
+        } else if (ctx.Identifier) {
+            expr = {
+                id: ctx.Identifier[0].image
+            }
+        } else {
+            throwBug('parameterLiteral')
         }
+        return expr
     }
 
     signalLiteral(ctx: any): IAstLiteral {
@@ -121,17 +125,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     identifier(ctx: any): IAstIdentifier {
-        let id = null
-        if (ctx.Identifier) {
-            id = ctx.Identifier[0].image
-        } else if (ctx.Symbol) {
-            id = parseSymbol(ctx.Symbol[0].image)
-        } else if (ctx.CellType) {
-            id = ctx.CellType[0].image
-        } else {
-            throwBug('identifier')
-        }
-        return { id }
+        return { id: ctx.Identifier[0].image }
     }
 
     typeExpression(ctx: any): IAstType {

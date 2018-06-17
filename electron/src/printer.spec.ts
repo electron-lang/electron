@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import { IAstImport, IAstDeclaration, AstType, AstLiteralType} from './ast'
 import {render, IDoc, emitDesign, emitImport, emitModule,
-        emitStatement, emitExpression} from './printer'
+        emitStatement, emitExpression, emitAttribute} from './printer'
 
 function expectPretty(doc: IDoc, text: string) {
     expect(render(80, doc)).to.deep.equal(text);
@@ -17,19 +17,23 @@ describe('Pretty Printer', () => {
                         name: null,
                         value: {
                             value: 'Yago',
-                            literalType: AstLiteralType.Symbol,
+                            literalType: AstLiteralType.String,
                         }
                     },
                     {
                         name: null,
                         value: {
                             value: 'XYZ',
-                            literalType: AstLiteralType.Symbol,
+                            literalType: AstLiteralType.String,
                         }
                     }
                 ]
             }
         ]
+
+        expectPretty(emitAttribute({ name: 'model', parameters: [
+            { name: null, value: { id: 'A' }}
+        ]}), '@model(A)\n')
 
         expectPretty(emitModule({
             attributes,
@@ -37,18 +41,18 @@ describe('Pretty Printer', () => {
             declaration: false,
             name: 'mod',
             statements: [],
-        }), "@bom('Yago, 'XYZ)\nmodule mod {}\n")
+        }), '@bom("Yago", "XYZ")\nmodule mod {}\n')
 
         expectPretty(emitStatement({
             attributes,
             identifier: {id: 'a'},
             'type': {ty: AstType.Cell, width: 1, signed: false},
-        }), "@bom('Yago, 'XYZ)\ncell a")
+        }), '@bom("Yago", "XYZ")\ncell a')
 
         expectPretty(emitStatement({
             attributes,
             fqn: ['a', 'b', 'c'],
-        }), "@bom('Yago, 'XYZ)\na.b.c")
+        }), '@bom("Yago", "XYZ")\na.b.c')
     })
 
     describe('should emit expressions', () => {
@@ -84,7 +88,7 @@ describe('Pretty Printer', () => {
                     name: null,
                     value: {
                         value: '10k',
-                        literalType: AstLiteralType.Symbol,
+                        literalType: AstLiteralType.Unit,
                     }
                 }],
                 assignments: [
@@ -93,7 +97,7 @@ describe('Pretty Printer', () => {
                         rhs: { id: 'a' },
                     }
                 ]
-            }), "$R('10k)[2] {\n  A = a\n}")
+            }), "$R(10k)[2] {\n  A = a\n}")
 
             expectPretty(emitExpression({
                 cellType: '$R',
@@ -102,7 +106,7 @@ describe('Pretty Printer', () => {
                     name: null,
                     value: {
                         value: '10k',
-                        literalType: AstLiteralType.Symbol,
+                        literalType: AstLiteralType.Unit,
                     }
                 }],
                 assignments: [
@@ -115,7 +119,7 @@ describe('Pretty Printer', () => {
                         rhs: { id: 'b' },
                     }
                 ]
-            }), "$R('10k)[2] {\n  A = a,\n  B = b\n}")
+            }), "$R(10k)[2] {\n  A = a,\n  B = b\n}")
         })
     })
 

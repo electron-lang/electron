@@ -15,7 +15,7 @@ export interface IAstAttribute extends IAst {
 
 export interface IAstParameter extends IAst {
     name: string | null
-    value: IAstLiteral
+    value: IAstLiteral | IAstIdentifier
 }
 
 export interface IAstDesign extends IAst {
@@ -83,7 +83,7 @@ export interface IAstLiteral extends IAst {
 export enum AstLiteralType {
     Constant,
     Integer,
-    Symbol,
+    Unit,
     String,
 }
 

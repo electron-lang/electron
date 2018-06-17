@@ -1,9 +1,8 @@
 import {createToken, Lexer} from 'chevrotain';
 
 // Identifiers
-export const Identifier = createToken({ name: 'Identifier', pattern: /[a-zA-Z]\w*/ })
+export const Identifier = createToken({ name: 'Identifier', pattern: /[a-zA-Z$]\w*|'[^\(\)\[\]{},:\s]+/ })
 export const Attribute = createToken({ name: 'Attribute', pattern: /@\w*/ })
-export const CellType = createToken({ name: 'CellType', pattern: /\$\w*/ })
 
 // Keywords
 export const Import = createToken({
@@ -95,14 +94,15 @@ export const Constant = createToken({
     pattern: /[1-9]\d*'[01xz]+/,
 })
 
+export const Unit = createToken({
+    name: 'Unit',
+    pattern: /(0|[1-9]\d*)[a-zA-Z]*/,
+})
+
 export const Integer = createToken({
     name: 'Integer',
     pattern: /0|[1-9]\d*/,
-})
-
-export const Symbol = createToken({
-    name: 'Symbol',
-    pattern: /'[^\(\)\[\]{},:\s]+/,
+    longer_alt: Unit,
 })
 
 export const String = createToken({

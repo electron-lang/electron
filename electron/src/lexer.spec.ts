@@ -25,7 +25,7 @@ describe('Lexer', () => {
     it('should lex identifiers', () => {
         expectLabel('clk', 'Identifier')
         expectLabel('net1', 'Identifier')
-        expectLabel('$and', 'CellType')
+        expectLabel('$and', 'Identifier')
         expectLabel('@src', 'Attribute')
     })
 
@@ -37,7 +37,9 @@ describe('Lexer', () => {
         expectLabel("4'01xz", 'Constant')
         expectLabel('12', 'Integer')
         expectLabel('0', 'Integer')
-        expectLabel("'symbol", 'Symbol')
+        expectLabel('10k', 'Unit')
+        expectLabel('1nF', 'Unit')
+        expectLabel("'symbol", 'Identifier')
         expectLabel('"a string"', 'String')
     })
 
