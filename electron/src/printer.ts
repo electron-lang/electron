@@ -22,7 +22,7 @@ export function emitDesign(design: IAstDesign): IDoc {
 export function emitImport(imp: IAstImport): IDoc {
     return [
         'import', ' ',
-        imp['import'],
+        emitIdentifier(imp['import']),
         ' ', 'from', ' ',
         enclose(dquotes, imp['from']), line
     ]
@@ -33,7 +33,7 @@ export function emitModule(mod: IAstModule): IDoc {
         emitAttributes(mod.attributes),
         mod.exported ? 'export ' : '',
         mod.declaration ? 'declare ' : '',
-        'module ', mod.name, ' ',
+        'module ', emitIdentifier(mod.name), ' ',
         emitBody(mod.statements.map(emitStatement)),
         line
     ]
@@ -128,7 +128,7 @@ export function emitAssignment(assign: IAstAssignment): IDoc {
 }
 
 export function emitFullyQualifiedName(fqn: IAstFullyQualifiedName): IDoc {
-    return [emitAttributes(fqn.attributes), fqn.fqn.join('.')]
+    return [emitAttributes(fqn.attributes), fqn.fqn.map(emitIdentifier).join('.')]
 }
 
 // Expressions
@@ -165,7 +165,7 @@ export function emitCell(cell: IAstCell): IDoc {
         assigns.push([last[0]])
     }
     return [
-        cell.cellType,
+        emitIdentifier(cell.cellType),
         emitParameters(cell.parameters),
         emitWidth(cell.width), ' ',
         emitBody(assigns)

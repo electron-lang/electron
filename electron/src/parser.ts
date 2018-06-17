@@ -113,7 +113,7 @@ class ElectronParser extends Parser {
         this.AT_LEAST_ONE_SEP({
             SEP: Comma,
             DEF: () => {
-                this.CONSUME(Identifier)
+                this.SUBRULE(this.identifier)
             }
         })
         this.CONSUME(From)
@@ -131,9 +131,36 @@ class ElectronParser extends Parser {
         this.CONSUME(CloseCurly)
     })
 
+    public identifier = this.RULE('identifier', () => {
+        this.CONSUME(Identifier)
+    })
+
+    // Attributes
+    public attribute = this.RULE('attribute', () => {
+        this.CONSUME(Attribute)
+        this.SUBRULE(this.parameterList)
+    })
+
+    public parameterList = this.RULE('parameterList', () => {
+        this.CONSUME(OpenRound)
+        this.MANY_SEP({
+            SEP: Comma,
+            DEF: () => this.SUBRULE(this.parameter),
+        })
+        this.CONSUME(CloseRound)
+    })
+
+    public parameter = this.RULE('parameter', () => {
+        this.OPTION(() => {
+            this.SUBRULE(this.identifier)
+            this.CONSUME(Assign)
+        })
+        this.SUBRULE(this.parameterLiteral)
+    })
+
     public parameterLiteral = this.RULE('parameterLiteral', () => {
         this.OR([
-            { ALT: () => this.CONSUME(Identifier) },
+            { ALT: () => this.SUBRULE(this.identifier) },
             { ALT: () => this.CONSUME(Integer) },
             { ALT: () => this.CONSUME(Constant) },
             { ALT: () => this.CONSUME(Unit) },
@@ -141,60 +168,7 @@ class ElectronParser extends Parser {
         ])
     })
 
-    public signalLiteral = this.RULE('signalLiteral', () => {
-        this.CONSUME(Constant)
-    })
-
-    public identifier = this.RULE('identifier', () => {
-        this.OR([
-            { ALT: () => this.CONSUME(Identifier) },
-        ])
-    })
-
-    public typeExpression = this.RULE('typeExpression', () => {
-        this.OR([
-            { ALT: () => this.CONSUME(Net) },
-            { ALT: () => this.CONSUME(Input) },
-            { ALT: () => this.CONSUME(Output) },
-            { ALT: () => this.CONSUME(Inout) },
-            { ALT: () => this.CONSUME(Analog) },
-            { ALT: () => this.CONSUME(Cell) },
-        ])
-        this.SUBRULE(this.width)
-    })
-
-    public width = this.RULE('width', () => {
-        this.OPTION(() => {
-            this.CONSUME(OpenSquare)
-            this.CONSUME(Integer)
-            this.CONSUME(CloseSquare)
-        })
-    })
-
-    public attribute = this.RULE('attribute', () => {
-        this.CONSUME(Attribute)
-        this.SUBRULE(this.parameterList)
-    })
-
-    public declaration = this.RULE('declaration', () => {
-        this.SUBRULE(this.typeExpression)
-        this.AT_LEAST_ONE_SEP({
-            SEP: Comma,
-            DEF: () => this.SUBRULE(this.identifier)
-        })
-        this.OPTION(() => {
-            this.CONSUME(Assign)
-            this.SUBRULE(this.rhs)
-        })
-    })
-
-    public fullyQualifiedName = this.RULE('fullyQualifiedName', () => {
-        this.AT_LEAST_ONE_SEP({
-            SEP: Dot,
-            DEF: () => this.SUBRULE(this.identifier),
-        })
-    })
-
+    // Statements
     public statement = this.RULE('statement', () => {
         this.OR([
             { ALT: () => {
@@ -211,6 +185,13 @@ class ElectronParser extends Parser {
                 ])
             }},
         ])
+    })
+
+    public fullyQualifiedName = this.RULE('fullyQualifiedName', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: Dot,
+            DEF: () => this.SUBRULE(this.identifier),
+        })
     })
 
     public assignment = this.RULE('assignment', () => {
@@ -233,6 +214,39 @@ class ElectronParser extends Parser {
         })
     })
 
+    public declaration = this.RULE('declaration', () => {
+        this.SUBRULE(this.typeExpression)
+        this.AT_LEAST_ONE_SEP({
+            SEP: Comma,
+            DEF: () => this.SUBRULE(this.identifier)
+        })
+        this.OPTION(() => {
+            this.CONSUME(Assign)
+            this.SUBRULE(this.rhs)
+        })
+    })
+
+    public typeExpression = this.RULE('typeExpression', () => {
+        this.OR([
+            { ALT: () => this.CONSUME(Net) },
+            { ALT: () => this.CONSUME(Input) },
+            { ALT: () => this.CONSUME(Output) },
+            { ALT: () => this.CONSUME(Inout) },
+            { ALT: () => this.CONSUME(Analog) },
+            { ALT: () => this.CONSUME(Cell) },
+        ])
+        this.SUBRULE(this.width)
+    })
+
+    public width = this.RULE('width', () => {
+        this.OPTION(() => {
+            this.CONSUME(OpenSquare)
+            this.CONSUME(Integer)
+            this.CONSUME(CloseSquare)
+        })
+    })
+
+    // Expressions
     public expression = this.RULE('expression', () => {
         this.OR([
             { ALT: () => this.SUBRULE(this.signalLiteral) },
@@ -247,6 +261,10 @@ class ElectronParser extends Parser {
                 })
             }}
         ])
+    })
+
+    public signalLiteral = this.RULE('signalLiteral', () => {
+        this.CONSUME(Constant)
     })
 
     public concatExpression = this.RULE('concatExpression', () => {
@@ -286,23 +304,6 @@ class ElectronParser extends Parser {
             DEF: () => this.SUBRULE(this.connection),
         })
         this.CONSUME(CloseCurly)
-    })
-
-    public parameterList = this.RULE('parameterList', () => {
-        this.CONSUME(OpenRound)
-        this.MANY_SEP({
-            SEP: Comma,
-            DEF: () => this.SUBRULE(this.parameter),
-        })
-        this.CONSUME(CloseRound)
-    })
-
-    public parameter = this.RULE('parameter', () => {
-        this.OPTION1(() => {
-            this.CONSUME(Identifier)
-            this.CONSUME(Assign)
-        })
-        this.SUBRULE(this.parameterLiteral)
     })
 
     public connection = this.RULE('connection', () => {

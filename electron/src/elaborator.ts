@@ -3,7 +3,8 @@ import { IAstAssignment, IAstAttribute, IAstCell, IAstConcat, IAstDeclaration,
          IAstDesign, IAstFullyQualifiedName, IAstIdentifier, IAstImport,
          IAstLiteral, IAstModule, IAstParameter, IAstReference, IAstType,
          AstType, AstLiteralType, AstExpr, AstStatement } from './ast'
-import { IDiagnostic, DiagnosticType, DiagnosticSeverity } from './diagnostic';
+import { IDiagnostic, DiagnosticType, DiagnosticSeverity,
+         ISrcLoc, tokenToSrcLoc } from './diagnostic';
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -58,9 +59,9 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     importStatement(ctx: any): IAstImport[] {
         const from_ = parseString(ctx.String[0].image)
-        return ctx.Identifier.map((id: any) => {
+        return ctx.identifier.map((identifier: any) => {
             return {
-                'import': id.image,
+                'import': this.visit(identifier),
                 'from': from_
             }
         })
@@ -80,8 +81,41 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             attributes,
             exported: !!ctx.Export,
             declaration: !!ctx.Declare,
-            name: this.visit(ctx.identifier).id,
+            name: this.visit(ctx.identifier),
             statements
+        }
+    }
+
+    identifier(ctx: any): IAstIdentifier {
+        return {
+            src: tokenToSrcLoc(ctx.Identifier[0]),
+            id: ctx.Identifier[0].image,
+        }
+    }
+
+    // Attributes
+    attribute(ctx: any): IAstAttribute {
+        return {
+            name: parseAttribute(ctx.Attribute[0].image),
+            parameters: this.visit(ctx.parameterList),
+        }
+    }
+
+    parameterList(ctx: any): IAstParameter[] {
+        if (ctx.parameter) {
+            return ctx.parameter.map((ctx: any) => this.visit(ctx))
+        }
+        return []
+    }
+
+    parameter(ctx: any): IAstParameter {
+        let name = null
+        if (ctx.identifier) {
+            name = this.visit(ctx.identifier)
+        }
+        return {
+            name,
+            value: this.visit(ctx.parameterLiteral),
         }
     }
 
@@ -107,98 +141,15 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 value: parseString(ctx.String[0].image),
                 literalType: AstLiteralType.String,
             }
-        } else if (ctx.Identifier) {
-            expr = {
-                id: ctx.Identifier[0].image
-            }
+        } else if (ctx.identifier) {
+            expr = this.visit(ctx.identifier)
         } else {
             throwBug('parameterLiteral')
         }
         return expr
     }
 
-    signalLiteral(ctx: any): IAstLiteral {
-        return {
-            value: ctx.Constant[0].image,
-            literalType: AstLiteralType.Constant,
-        }
-    }
-
-    identifier(ctx: any): IAstIdentifier {
-        return { id: ctx.Identifier[0].image }
-    }
-
-    typeExpression(ctx: any): IAstType {
-        let width = 1
-        let ty = AstType.Net
-        if (ctx.Net) {
-            ty = AstType.Net
-        } else if (ctx.Input) {
-            ty = AstType.Input
-        } else if (ctx.Output) {
-            ty = AstType.Output
-        } else if (ctx.Inout) {
-            ty = AstType.Inout
-        } else if (ctx.Analog) {
-            ty = AstType.Analog
-        } else if (ctx.Cell) {
-            ty = AstType.Cell
-        } else {
-            throwBug('typeExpression')
-        }
-
-        return {
-            width: this.visit(ctx.width),
-            signed: false, // TODO
-            ty,
-        }
-    }
-
-    attribute(ctx: any): IAstAttribute {
-        return {
-            name: parseAttribute(ctx.Attribute[0].image),
-            parameters: this.visit(ctx.parameterList),
-        }
-    }
-
-    declaration(ctx: any): AstStatement[] {
-        const ty = this.visit(ctx.typeExpression[0])
-        const lhs = ctx.identifier.map((ctx: any) => this.visit(ctx))
-        const declarations = lhs.map((identifier: IAstIdentifier) => {
-            return {
-                attributes: [],
-                identifier,
-                'type': ty,
-            }
-        })
-
-        let assignments = new Array()
-        if (ctx.rhs) {
-            const rhs = this.visit(ctx.rhs[0])
-
-            if (lhs.length != rhs.length) {
-                this.errors.push({
-                    message: 'Unbalanced assignment',
-                    startLine: 0,
-                    startColumn: 0,
-                    endLine: 0,
-                    endColumn: 0,
-                    severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.SyntaxError,
-                })
-            }
-
-            for (let i = 0; i < rhs.length; i++) {
-                assignments.push({
-                    lhs: lhs[i],
-                    rhs: rhs[i],
-                })
-            }
-        }
-
-        return declarations.concat(assignments)
-    }
-
+    // Statements
     statement(ctx: any): AstStatement[] {
         let attributes = new Array()
         if (ctx.attribute) {
@@ -232,7 +183,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     fullyQualifiedName(ctx: any): AstStatement {
-        const fqn = ctx.identifier.map((ctx: any) => this.visit(ctx).id)
+        const fqn = ctx.identifier.map((ctx: any) => this.visit(ctx))
         return {
             attributes: [],
             fqn
@@ -246,10 +197,12 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         if(rhs.length != lhs.length) {
             this.errors.push({
                 message: 'Unbalanced assignment',
-                startLine: 0,
-                startColumn: 0,
-                endLine: 0,
-                endColumn: 0,
+                src: {
+                    startLine: 0,
+                    startColumn: 0,
+                    endLine: 0,
+                    endColumn: 0,
+                },
                 severity: DiagnosticSeverity.Error,
                 errorType: DiagnosticType.SyntaxError,
             })
@@ -277,6 +230,80 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         })
     }
 
+    declaration(ctx: any): AstStatement[] {
+        const ty = this.visit(ctx.typeExpression[0])
+        const lhs = ctx.identifier.map((ctx: any) => this.visit(ctx))
+        const declarations = lhs.map((identifier: IAstIdentifier) => {
+            return {
+                attributes: [],
+                identifier,
+                'type': ty,
+            }
+        })
+
+        let assignments = new Array()
+        if (ctx.rhs) {
+            const rhs = this.visit(ctx.rhs[0])
+
+            if (lhs.length != rhs.length) {
+                this.errors.push({
+                    message: 'Unbalanced assignment',
+                    src: {
+                        startLine: 0,
+                        startColumn: 0,
+                        endLine: 0,
+                        endColumn: 0,
+                    },
+                    severity: DiagnosticSeverity.Error,
+                    errorType: DiagnosticType.SyntaxError,
+                })
+            }
+
+            for (let i = 0; i < rhs.length; i++) {
+                assignments.push({
+                    lhs: lhs[i],
+                    rhs: rhs[i],
+                })
+            }
+        }
+
+        return declarations.concat(assignments)
+    }
+
+    typeExpression(ctx: any): IAstType {
+        let width = 1
+        let ty = AstType.Net
+        if (ctx.Net) {
+            ty = AstType.Net
+        } else if (ctx.Input) {
+            ty = AstType.Input
+        } else if (ctx.Output) {
+            ty = AstType.Output
+        } else if (ctx.Inout) {
+            ty = AstType.Inout
+        } else if (ctx.Analog) {
+            ty = AstType.Analog
+        } else if (ctx.Cell) {
+            ty = AstType.Cell
+        } else {
+            throwBug('typeExpression')
+        }
+
+        return {
+            width: this.visit(ctx.width),
+            signed: false, // TODO
+            ty,
+        }
+    }
+
+    width(ctx: any): number {
+        if (ctx.Integer) {
+            return parseInteger(ctx.Integer[0].image)
+        }
+        return 1
+    }
+
+    // Expressions
     expression(ctx: any): AstExpr {
         let expr = null
         if (ctx.signalLiteral) {
@@ -291,7 +318,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 expr = ref
             } else if (ctx.cellExpression) {
                 let cell = this.visit(ctx.cellExpression)
-                cell.cellType = identifier.id
+                cell.cellType = identifier
                 expr = cell
             } else {
                 expr = identifier
@@ -300,6 +327,13 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             throwBug('expression')
         }
         return expr
+    }
+
+    signalLiteral(ctx: any): IAstLiteral {
+        return {
+            value: ctx.Constant[0].image,
+            literalType: AstLiteralType.Constant,
+        }
     }
 
     concatExpression(ctx: any): IAstConcat {
@@ -321,13 +355,6 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
     }
 
-    width(ctx: any): number {
-        if (ctx.Integer) {
-            return parseInteger(ctx.Integer[0].image)
-        }
-        return 1
-    }
-
     cellExpression(ctx: any): IAstCell {
         let cell = this.visit(ctx.cellBody)
 
@@ -347,28 +374,10 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             assignments = ctx.connection.map((ctx: any) => this.visit(ctx))
         }
         return {
-            cellType: '',
+            cellType: { id: '' },
             width: 1,
             parameters: [],
             assignments,
-        }
-    }
-
-    parameterList(ctx: any): IAstParameter[] {
-        if (ctx.parameter) {
-            return ctx.parameter.map((ctx: any) => this.visit(ctx))
-        }
-        return []
-    }
-
-    parameter(ctx: any): IAstParameter {
-        let name = null
-        if (ctx.Identifier) {
-            name = ctx.Identifier[0].image
-        }
-        return {
-            name,
-            value: this.visit(ctx.parameterLiteral),
         }
     }
 

@@ -3,6 +3,15 @@ import { elaborate } from './elaborator'
 import { AstType, AstLiteralType, AstStatement, AstExpr,
          IAstDesign } from './ast'
 
+function getLoc(text: string, offset: number) {
+    return {
+        startLine: 1,
+        startColumn: offset,
+        endLine: 1,
+        endColumn: offset + text.length - 1,
+    }
+}
+
 function expectAst(text: string, ast: IAstDesign) {
     expect(elaborate(text)).to.deep.equal(ast)
 }
@@ -15,7 +24,10 @@ function expectAstModule(text: string, smts: AstStatement[]) {
                 attributes: [],
                 declaration: false,
                 exported: false,
-                name: 'A',
+                name: {
+                    id: 'A',
+                    src: getLoc('A', 8),
+                },
                 statements: smts
             }
         ]
@@ -25,7 +37,7 @@ function expectAstModule(text: string, smts: AstStatement[]) {
 function expectAstExpr(text: string, e: AstExpr) {
     expectAstModule('a = ' + text, [
         {
-            lhs: { id: 'a' },
+            lhs: { id: 'a', src: getLoc('a', 1 + 10) },
             rhs: e,
         }
     ])
@@ -36,11 +48,17 @@ describe('Elaborator', () => {
         expectAst('import a, b from "package"', {
             imports: [
                 {
-                    'import': 'a',
+                    'import': {
+                        id: 'a',
+                        src: getLoc('a', 8)
+                    },
                     'from': 'package',
                 },
                 {
-                    'import': 'b',
+                    'import': {
+                        id: 'b',
+                        src: getLoc('b', 11)
+                    },
                     'from': 'package',
                 }
             ],
@@ -50,7 +68,10 @@ describe('Elaborator', () => {
         expectAst('import a from "./file"', {
             imports: [
                 {
-                    'import': 'a',
+                    'import': {
+                        id: 'a',
+                        src: getLoc('a', 8)
+                    },
                     'from': './file'
                 }
             ],
@@ -66,7 +87,10 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    name: 'A',
+                    name: {
+                        id: 'A',
+                        src: getLoc('A', 8),
+                    },
                     statements: [],
                 }
             ],
@@ -79,7 +103,10 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: true,
                     declaration: false,
-                    name: 'A',
+                    name: {
+                        id: 'A',
+                        src: getLoc('A', 15)
+                    },
                     statements: [],
                 }
             ],
@@ -92,7 +119,10 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: false,
                     declaration: true,
-                    name: 'A',
+                    name: {
+                        id: 'A',
+                        src: getLoc('A', 16)
+                    },
                     statements: [],
                 }
             ],
@@ -125,7 +155,10 @@ describe('Elaborator', () => {
                     ],
                     exported: false,
                     declaration: false,
-                    name: 'A',
+                    name: {
+                        id: 'A',
+                        src: getLoc('A', 28)
+                    },
                     statements: [],
                 }
             ],
@@ -138,6 +171,7 @@ describe('Elaborator', () => {
                 attributes: [],
                 identifier: {
                     id: 'a',
+                    src: getLoc('a', 5 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -152,6 +186,7 @@ describe('Elaborator', () => {
                 attributes: [],
                 identifier: {
                     id: 'a',
+                    src: getLoc('a', 8 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -166,6 +201,7 @@ describe('Elaborator', () => {
                 attributes: [],
                 identifier: {
                     id: 'a',
+                    src: getLoc('a', 5 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -177,6 +213,7 @@ describe('Elaborator', () => {
                 attributes: [],
                 identifier: {
                     id: 'b',
+                    src: getLoc('b', 8 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -204,6 +241,7 @@ describe('Elaborator', () => {
                 ],
                 identifier: {
                     id: 'a',
+                    src: getLoc('a', 16 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -228,6 +266,7 @@ describe('Elaborator', () => {
                 ],
                 identifier: {
                     id: 'b',
+                    src: getLoc('b', 19 + 10)
                 },
                 'type': {
                     ty: AstType.Net,
@@ -237,10 +276,11 @@ describe('Elaborator', () => {
             }
         ])
 
-        const a = {
+        const a_decl = {
             attributes: [],
             identifier: {
                 id: 'a',
+                src: getLoc('a', 5 + 10),
             },
             'type': {
                 ty: AstType.Net,
@@ -248,10 +288,11 @@ describe('Elaborator', () => {
                 signed: false,
             }
         }
-        const b = {
+        const b_decl = {
             attributes: [],
             identifier: {
                 id: 'b',
+                src: getLoc('b', 8 + 10),
             },
             'type': {
                 ty: AstType.Net,
@@ -261,39 +302,45 @@ describe('Elaborator', () => {
         }
 
         expectAstModule('net a = c', [
-            a,
+            a_decl,
             {
-                lhs: { id: 'a' },
-                rhs: { id: 'c' },
+                lhs: {
+                    id: 'a',
+                    src: getLoc('a', 5 + 10)
+                },
+                rhs: {
+                    id: 'c',
+                    src: getLoc('c', 9 + 10)
+                },
             }
         ])
 
         expectAstModule('net a, b = c, d', [
-            a, b,
+            a_decl, b_decl,
             {
-                lhs: { id: 'a' },
-                rhs: { id: 'c' },
+                lhs: { id: 'a', src: getLoc('a', 5 + 10) },
+                rhs: { id: 'c', src: getLoc('c', 12 + 10) },
             },
             {
-                lhs: { id: 'b' },
-                rhs: { id: 'd' },
+                lhs: { id: 'b', src: getLoc('b', 8 + 10) },
+                rhs: { id: 'd', src: getLoc('d', 15 + 10) },
             }
         ])
 
         expectAstModule('net a, b = c[0], d[1]', [
-            a, b,
+            a_decl, b_decl,
             {
-                lhs: { id: 'a' },
+                lhs: { id: 'a', src: getLoc('a', 5 + 10) },
                 rhs: {
-                    identifier: {id : 'c' },
+                    identifier: {id: 'c', src: getLoc('c', 12 + 10)},
                     'from': 0,
                     'to': 0,
                 },
             },
             {
-                lhs: { id: 'b' },
+                lhs: { id: 'b', src: getLoc('b', 8 + 10) },
                 rhs: {
-                    identifier: {id : 'd' },
+                    identifier: {id: 'd', src: getLoc('d', 18 + 10) },
                     'from': 1,
                     'to': 1,
                 },
@@ -316,7 +363,11 @@ describe('Elaborator', () => {
                         ]
                     }
                 ],
-                fqn: ['a', 'b', 'c']
+                fqn: [
+                    { id: 'a', src: getLoc('a', 12 + 10) },
+                    { id: 'b', src: getLoc('b', 14 + 10) },
+                    { id: 'c', src: getLoc('c', 16 + 10) },
+                ]
             }
         ])
     })
@@ -324,9 +375,9 @@ describe('Elaborator', () => {
     it('should elaborate to IAstExpr', () => {
         expectAstExpr('(a, b, c)', {
             expressions: [
-                { id: 'a' },
-                { id: 'b' },
-                { id: 'c' },
+                { id: 'a', src: getLoc('a', 2 + 14) },
+                { id: 'b', src: getLoc('b', 5 + 14) },
+                { id: 'c', src: getLoc('c', 8 + 14) },
             ],
         })
 
@@ -337,37 +388,33 @@ describe('Elaborator', () => {
 
 
         expectAstExpr('a[2:3]', {
-            identifier: {
-                id: 'a',
-            },
+            identifier: { id: 'a', src: getLoc('a', 1 + 14) },
             'from': 2,
             'to': 3,
         })
 
         expectAstExpr('a[2]', {
-            identifier: {
-                id: 'a',
-            },
+            identifier: { id: 'a', src: getLoc('a', 1 + 14) },
             'from': 2,
             'to': 2,
         })
 
         expectAstExpr('$R {}', {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 1,
             parameters: [],
             assignments: [],
         })
 
         expectAstExpr('$R()[2] {}', {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 2,
             parameters: [],
             assignments: [],
         })
 
         expectAstExpr("$R(10k) {}", {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 1,
             parameters: [
                 {
@@ -382,41 +429,41 @@ describe('Elaborator', () => {
         })
 
         expectAstExpr("$R {A}", {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 1,
             parameters: [],
             assignments: [
                 {
-                    lhs: { id: 'A' },
-                    rhs: { id: 'A' },
+                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
+                    rhs: { id: 'A', src: getLoc('A', 5 + 14) },
                 }
             ],
         })
 
         expectAstExpr("$R {A=a}", {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 1,
             parameters: [],
             assignments: [
                 {
-                    lhs: { id: 'A' },
-                    rhs: { id: 'a' },
+                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
+                    rhs: { id: 'a', src: getLoc('a', 7 + 14) },
                 }
             ],
         })
 
         expectAstExpr("$R {A, B=b}", {
-            cellType: '$R',
+            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
             width: 1,
             parameters: [],
             assignments: [
                 {
-                    lhs: { id: 'A' },
-                    rhs: { id: 'A' },
+                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
+                    rhs: { id: 'A', src: getLoc('A', 5 + 14) },
                 },
                 {
-                    lhs: { id: 'B' },
-                    rhs: { id: 'b' },
+                    lhs: { id: 'B', src: getLoc('B', 8 + 14) },
+                    rhs: { id: 'b', src: getLoc('b', 10 + 14) },
                 }
             ],
         })

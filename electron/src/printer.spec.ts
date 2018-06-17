@@ -39,7 +39,7 @@ describe('Pretty Printer', () => {
             attributes,
             exported: false,
             declaration: false,
-            name: 'mod',
+            name: { id: 'mod' },
             statements: [],
         }), '@bom("Yago", "XYZ")\nmodule mod {}\n')
 
@@ -51,7 +51,7 @@ describe('Pretty Printer', () => {
 
         expectPretty(emitStatement({
             attributes,
-            fqn: ['a', 'b', 'c'],
+            fqn: [{id: 'a'}, {id: 'b'}, {id: 'c'}],
         }), '@bom("Yago", "XYZ")\na.b.c')
     })
 
@@ -82,7 +82,7 @@ describe('Pretty Printer', () => {
 
         it('should emit cells', () => {
             expectPretty(emitExpression({
-                cellType: '$R',
+                cellType: { id: '$R' },
                 width: 2,
                 parameters: [{
                     name: null,
@@ -100,7 +100,7 @@ describe('Pretty Printer', () => {
             }), "$R(10k)[2] {\n  A = a\n}")
 
             expectPretty(emitExpression({
-                cellType: '$R',
+                cellType: { id: '$R' },
                 width: 2,
                 parameters: [{
                     name: null,
@@ -198,14 +198,14 @@ describe('Pretty Printer', () => {
         it('should emit fully qualified names', () => {
             expectPretty(emitStatement({
                 attributes: [],
-                fqn: ['a', 'b', 'c'],
+                fqn: [{id: 'a'}, {id: 'b'}, {id: 'c'}],
             }), 'a.b.c')
         })
     })
 
     it('should emit imports', () => {
         expectPretty(emitImport({
-            'import': 'a',
+            'import': {id: 'a'},
             'from': 'package'
         }), 'import a from "package"\n')
     })
@@ -215,7 +215,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             declaration: false,
             exported: false,
-            name: 'mod',
+            name: {id: 'mod'},
             statements: [
                 {
                     attributes: [],
@@ -235,7 +235,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             exported: true,
             declaration: false,
-            name: 'mod',
+            name: {id: 'mod'},
             statements: []
         }), 'export module mod {}\n')
 
@@ -243,7 +243,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             exported: true,
             declaration: true,
-            name: 'mod',
+            name: {id: 'mod'},
             statements: []
         }), 'export declare module mod {}\n')
     })
@@ -252,7 +252,7 @@ describe('Pretty Printer', () => {
         expectPretty(emitDesign({
             imports: [
                 {
-                    'import': 'a',
+                    'import': {id: 'a'},
                     'from': 'b',
                 }
             ],
@@ -261,7 +261,7 @@ describe('Pretty Printer', () => {
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    name: 'mod',
+                    name: {id: 'mod'},
                     statements: []
                 }
             ],

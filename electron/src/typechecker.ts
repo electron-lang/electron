@@ -11,10 +11,12 @@ export function typeCheck(text: string): IDiagnostic[] {
     for (let err of lexingResult.errors) {
         errors.push({
             message: err.message,
-            startLine: err.line,
-            startColumn: err.column,
-            endLine: err.line,
-            endColumn: err.column + err.length,
+            src: {
+                startLine: err.line,
+                startColumn: err.column,
+                endLine: err.line,
+                endColumn: err.column + err.length,
+            },
             severity: DiagnosticSeverity.Error,
             errorType: DiagnosticType.TokenError,
         })
@@ -34,10 +36,12 @@ export function typeCheck(text: string): IDiagnostic[] {
         }
         errors.push({
             message: err.message,
-            startLine: err.token.startLine || 0,
-            startColumn: err.token.startColumn || 0,
-            endLine: lastToken.endLine || 0,
-            endColumn: lastToken.endColumn || 0,
+            src: {
+                startLine: err.token.startLine || 0,
+                startColumn: err.token.startColumn || 0,
+                endLine: lastToken.endLine || 0,
+                endColumn: lastToken.endColumn || 0,
+            },
             severity: DiagnosticSeverity.Error,
             errorType: DiagnosticType.ParserError,
         })

@@ -26,12 +26,12 @@ export function convertDiagnostic(d: IDiagnostic): lsp.Diagnostic {
     return {
         range: {
             start: {
-                line: d.startLine - 1,
-                character: d.startColumn - 1,
+                line: d.src.startLine - 1,
+                character: d.src.startColumn - 1,
             },
             end: {
-                line: d.endLine - 1,
-                character: d.endColumn - 1,
+                line: d.src.endLine - 1,
+                character: d.src.endColumn - 1,
             },
         },
         message: d.message,

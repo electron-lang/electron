@@ -1,11 +1,7 @@
+import { ISrcLoc } from './diagnostic'
+
 export interface IAst {
     src?: ISrcLoc
-}
-
-export interface ISrcLoc {
-    file: string | null
-    line: number
-    col: number
 }
 
 export interface IAstAttribute extends IAst {
@@ -24,7 +20,7 @@ export interface IAstDesign extends IAst {
 }
 
 export interface IAstImport extends IAst {
-    'import': string
+    'import': IAstIdentifier
     'from': string
 }
 
@@ -32,7 +28,7 @@ export interface IAstModule extends IAst {
     attributes: IAstAttribute[]
     exported: boolean
     declaration: boolean
-    name: string
+    name: IAstIdentifier
     statements: AstStatement[]
 }
 
@@ -53,7 +49,7 @@ export interface IAstAssignment extends IAst {
 
 export interface IAstFullyQualifiedName extends IAst {
     attributes: IAstAttribute[]
-    fqn: string[]
+    fqn: IAstIdentifier[]
 }
 
 export interface IAstType extends IAst {
@@ -102,7 +98,7 @@ export interface IAstConcat extends IAst {
 }
 
 export interface IAstCell extends IAst {
-    cellType: string
+    cellType: IAstIdentifier
     width: number
     parameters: IAstParameter[]
     assignments: IAstAssignment[]
