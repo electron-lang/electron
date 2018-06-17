@@ -11,8 +11,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@electron-lang/electron": "file:../electron",
-    "@electron-lang/language-server": "file:../language-server",
+    "@electron-lang/electron": "1.0.0",
+    "@electron-lang/language-server": "1.0.0",
     "@theia/core": "latest",
     "@theia/editor": "latest",
     "@theia/languages": "latest",

@@ -12,8 +12,8 @@ program.command('compile <file>')
     .action((file) => {
         const text = fs.readFileSync(path.resolve(file)).toString()
         electron.parse(text)
-        const ast = electron.toAst(text)
-        const res = electron.renderDesign(ast)
+        const ast = electron.elaborate(text)
+        const res = electron.print(ast)
         console.log(res)
     })
 

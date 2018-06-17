@@ -3,6 +3,7 @@ import { IAstAssignment, IAstAttribute, IAstCell, IAstConcat, IAstDeclaration,
          IAstDesign, IAstFullyQualifiedName, IAstIdentifier, IAstImport,
          IAstLiteral, IAstModule, IAstParameter, IAstReference, IAstType,
          AstType, AstLiteralType, AstExpr, AstStatement } from './ast'
+import { IDiagnostic, DiagnosticType, DiagnosticSeverity } from './diagnostic';
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -22,13 +23,24 @@ function parseInteger(int: string): number {
     return parseInt(int)
 }
 
-class ElectronToAstVisitor extends BaseElectronVisitor {
+function throwBug(rule: string): void {
+    throw new Error('Programming Error: Parser/Elaborator missmatch ' +
+                    `at rule '${rule}'.\n` +
+                    'Please report the bug at https://github.com/electron-lang/electron')
+}
+
+class ElectronElaborationVisitor extends BaseElectronVisitor {
+    public errors: IDiagnostic[] = []
+
     constructor() {
         super()
         this.validateVisitor()
     }
 
     design(ctx: any): IAstDesign {
+        // reset errors
+        this.errors = []
+
         let imports = new Array()
         let modules = []
 
@@ -117,7 +129,7 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
         } else if (ctx.CellType) {
             id = ctx.CellType[0].image
         } else {
-            throw new Error('Missing identifier type')
+            throwBug('identifier')
         }
         return { id }
     }
@@ -135,8 +147,10 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
             ty = AstType.Inout
         } else if (ctx.Analog) {
             ty = AstType.Analog
-        } else {
+        } else if (ctx.Cell) {
             ty = AstType.Cell
+        } else {
+            throwBug('typeExpression')
         }
 
         return {
@@ -169,7 +183,15 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
             const rhs = this.visit(ctx.rhs[0])
 
             if (lhs.length != rhs.length) {
-                throw Error('Unbalanced assignment')
+                this.errors.push({
+                    message: 'Unbalanced assignment',
+                    startLine: 0,
+                    startColumn: 0,
+                    endLine: 0,
+                    endColumn: 0,
+                    severity: DiagnosticSeverity.Error,
+                    errorType: DiagnosticType.SyntaxError,
+                })
             }
 
             for (let i = 0; i < rhs.length; i++) {
@@ -228,7 +250,15 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
         const rhs = this.visit(ctx.rhs[0])
 
         if(rhs.length != lhs.length) {
-            throw Error('Unbalanced assignment')
+            this.errors.push({
+                message: 'Unbalanced assignment',
+                startLine: 0,
+                startColumn: 0,
+                endLine: 0,
+                endColumn: 0,
+                severity: DiagnosticSeverity.Error,
+                errorType: DiagnosticType.SyntaxError,
+            })
         }
 
         let assignments = new Array()
@@ -254,26 +284,28 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
     }
 
     expression(ctx: any): AstExpr {
+        let expr = null
         if (ctx.signalLiteral) {
-            return this.visit(ctx.signalLiteral)
+            expr = this.visit(ctx.signalLiteral)
         } else if (ctx.concatExpression) {
-            return this.visit(ctx.concatExpression)
+            expr = this.visit(ctx.concatExpression)
         } else if (ctx.identifier) {
             let identifier = this.visit(ctx.identifier)
             if (ctx.referenceExpression) {
                 let ref = this.visit(ctx.referenceExpression)
                 ref.identifier = identifier
-                return ref
+                expr = ref
             } else if (ctx.cellExpression) {
                 let cell = this.visit(ctx.cellExpression)
                 cell.cellType = identifier.id
-                return cell
+                expr = cell
             } else {
-                return identifier
+                expr = identifier
             }
         } else {
-            throw new Error('Missing expression type')
+            throwBug('expression')
         }
+        return expr
     }
 
     concatExpression(ctx: any): IAstConcat {
@@ -356,9 +388,13 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
     }
 }
 
-export const toAstVisitorInstance = new ElectronToAstVisitor()
+export const elaboratorInstance = new ElectronElaborationVisitor()
 
-export function toAst(text: string): IAstDesign {
+export function elaborate(text: string): IAstDesign {
     const cst = parse(text);
-    return toAstVisitorInstance.visit(cst)
+    const design = elaboratorInstance.visit(cst)
+    if (elaboratorInstance.errors.length > 0) {
+        throw new Error(elaboratorInstance.errors[0].message)
+    }
+    return design
 }

@@ -8,7 +8,7 @@ import { IAstAssignment, IAstAttribute, IAstCell, IAstConcat, IAstDeclaration,
 
 const tabWidth = 2
 
-export function renderDesign(design: IAstDesign): string {
+export function print(design: IAstDesign): string {
     return render(80, emitDesign(design))
 }
 

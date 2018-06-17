@@ -2,35 +2,6 @@
 # yarn lockfile v1
 
 
-"@electron-lang/celllib@file:celllib":
-  version "1.0.0"
-
-"@electron-lang/electron@file:electron":
-  version "1.0.0"
-  dependencies:
-    "@electron-lang/celllib" "file:../../.cache/yarn/v1/npm-@electron-lang/celllib"
-    "@electron-lang/netlist" "file:../../.cache/yarn/v1/npm-@electron-lang/netlist"
-    chevrotain "^3.5.0"
-    prettier-printer "file:../../.cache/yarn/v1/prettier-printer"
-
-"@electron-lang/language-server@file:language-server":
-  version "1.0.0"
-  dependencies:
-    commander "^2.15.1"
-    vscode-languageserver "^4.2.1"
-    vscode-uri "^1.0.5"
-
-"@electron-lang/netlist@file:netlist":
-  version "1.0.0"
-  dependencies:
-    "@electron-lang/celllib" "file:../../.cache/yarn/v1/npm-@electron-lang/celllib"
-    "@types/handlebars" "^4.0.38"
-    commander "^2.15.1"
-    handlebars "^4.0.11"
-    json5 "^1.0.1"
-    jsonschema "^1.2.4"
-    readline-sync "^1.4.9"
-
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -6470,7 +6441,7 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
 "prettier-printer@file:../prettier-printer":
-  version "1.1.2"
+  version "1.1.0"
   dependencies:
     infestines "^0.4.7"
     partial.lenses.validation "^1.0.1"

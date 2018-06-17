@@ -8,7 +8,8 @@
   "license": "ISC",
   "scripts": {
     "prepare": "yarn build",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
   "bin": {
     "electron-language-server": "./lib/cli.js"
@@ -16,7 +17,8 @@
   "dependencies": {
     "commander": "^2.15.1",
     "vscode-languageserver": "^4.2.1",
-    "vscode-uri": "^1.0.5"
+    "vscode-uri": "^1.0.5",
+    "@electron-lang/electron": "1.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

@@ -13,7 +13,7 @@ const program = new Command('electron-language-server')
             '2 = warn, 1 = error). Defaults to `2`.')
     .parse(process.argv);
 
-let logLevel = lsp.MessageType.Warning
+let logLevel = lsp.MessageType.Log // testing
 if (program.logLevel) {
     logLevel = parseInt(program.logLevel, 10);
     if (logLevel && (logLevel < 1 || logLevel > 4)) {

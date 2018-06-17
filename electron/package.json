@@ -17,8 +17,8 @@
     "electron": "./lib/cli.js"
   },
   "dependencies": {
-    "@electron-lang/celllib": "file:../celllib",
-    "@electron-lang/netlist": "file:../netlist",
+    "@electron-lang/celllib": "1.0.0",
+    "@electron-lang/netlist": "1.0.0",
     "chevrotain": "^3.5.0",
     "prettier-printer": "file:../../prettier-printer"
   },

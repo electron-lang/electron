@@ -1,10 +1,10 @@
 import { expect } from 'chai'
-import { toAst } from './index'
+import { elaborate } from './elaborator'
 import { AstType, AstLiteralType, AstStatement, AstExpr,
          IAstDesign } from './ast'
 
 function expectAst(text: string, ast: IAstDesign) {
-    expect(toAst(text)).to.deep.equal(ast)
+    expect(elaborate(text)).to.deep.equal(ast)
 }
 
 function expectAstModule(text: string, smts: AstStatement[]) {

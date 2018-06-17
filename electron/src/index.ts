@@ -1,5 +1,7 @@
 export { IToken } from 'chevrotain'
 export * from './parser'
 export * from './ast'
-export * from './toAst'
+export * from './elaborator'
 export * from './printer'
+export * from './typechecker'
+export * from './diagnostic'
