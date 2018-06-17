@@ -359,7 +359,7 @@ describe('To AST', () => {
             assignments: [],
         })
 
-        expectAstExpr('$R[2] {}', {
+        expectAstExpr('$R()[2] {}', {
             cellType: '$R',
             width: 2,
             parameters: [],

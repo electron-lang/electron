@@ -72,7 +72,7 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
             attributes,
             exported: !!ctx.Export,
             declaration: !!ctx.Declare,
-            name: ctx.Identifier[0].image,
+            name: this.visit(ctx.identifier).id,
             statements
         }
     }
@@ -109,15 +109,17 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
     }
 
     identifier(ctx: any): IAstIdentifier {
-        if (ctx.Symbol) {
-            return {
-                id: parseSymbol(ctx.Symbol[0].image),
-            }
+        let id = null
+        if (ctx.Identifier) {
+            id = ctx.Identifier[0].image
+        } else if (ctx.Symbol) {
+            id = parseSymbol(ctx.Symbol[0].image)
+        } else if (ctx.CellType) {
+            id = ctx.CellType[0].image
         } else {
-            return {
-                id: ctx.Identifier[0].image,
-            }
+            throw new Error('Missing identifier type')
         }
+        return { id }
     }
 
     typeExpression(ctx: any): IAstType {
@@ -254,34 +256,40 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
     expression(ctx: any): AstExpr {
         if (ctx.signalLiteral) {
             return this.visit(ctx.signalLiteral)
-        } else if (ctx.referenceExpression) {
-            return this.visit(ctx.referenceExpression)
         } else if (ctx.concatExpression) {
             return this.visit(ctx.concatExpression)
-        } else if (ctx.cellExpression) {
-            return this.visit(ctx.cellExpression)
+        } else if (ctx.identifier) {
+            let identifier = this.visit(ctx.identifier)
+            if (ctx.referenceExpression) {
+                let ref = this.visit(ctx.referenceExpression)
+                ref.identifier = identifier
+                return ref
+            } else if (ctx.cellExpression) {
+                let cell = this.visit(ctx.cellExpression)
+                cell.cellType = identifier.id
+                return cell
+            } else {
+                return identifier
+            }
         } else {
             throw new Error('Missing expression type')
         }
     }
 
-    concatExpression(ctx: any): AstExpr {
+    concatExpression(ctx: any): IAstConcat {
         return {
             expressions: ctx.expression.map((ctx: any) => this.visit(ctx)),
         }
     }
 
-    referenceExpression(ctx: any): AstExpr {
-        if (!ctx.Integer) {
-            return this.visit(ctx.identifier)
-        }
+    referenceExpression(ctx: any): IAstReference {
         let from_ = parseInteger(ctx.Integer[0].image)
         let to = from_
         if (ctx.Integer[1]) {
             to = parseInteger(ctx.Integer[1].image)
         }
         return {
-            identifier: this.visit(ctx.identifier),
+            identifier: { id: '' },
             'from': from_,
             to,
         }
@@ -294,25 +302,37 @@ class ElectronToAstVisitor extends BaseElectronVisitor {
         return 1
     }
 
-    cellExpression(ctx: any): AstExpr {
-        let parameters = []
-        if (ctx.parameterList) {
-            parameters = this.visit(ctx.parameterList)
+    cellExpression(ctx: any): IAstCell {
+        let cell = this.visit(ctx.cellBody)
+
+        if (ctx.width) {
+            cell.width = this.visit(ctx.width)
         }
+        if (ctx.parameterList) {
+            cell.parameters = this.visit(ctx.parameterList)
+        }
+
+        return cell
+    }
+
+    cellBody(ctx: any): IAstCell {
         let assignments = []
         if (ctx.connection) {
             assignments = ctx.connection.map((ctx: any) => this.visit(ctx))
         }
         return {
-            cellType: ctx.CellType[0].image,
-            width: this.visit(ctx.width),
-            parameters,
+            cellType: '',
+            width: 1,
+            parameters: [],
             assignments,
         }
     }
 
     parameterList(ctx: any): IAstParameter[] {
-        return ctx.parameter.map((ctx: any) => this.visit(ctx))
+        if (ctx.parameter) {
+            return ctx.parameter.map((ctx: any) => this.visit(ctx))
+        }
+        return []
     }
 
     parameter(ctx: any): IAstParameter {

@@ -64,12 +64,13 @@ describe('Parser', () => {
         parseExpression("$R('10k) {}")
         parseExpression("$R(power_rating='125mW) {}")
         parseExpression("$R('10k, power_rating='125mW) {}")
-        parseExpression('$R[2] {}')
+        parseExpression('$R()[2] {}')
         parseExpression("$R('10k)[2] {}")
         parseExpression('$R {A}')
         parseExpression('$R {A=a}')
         parseExpression('$R {A=(a, b)}')
         parseExpression('$R {A, A=a, A=(a, b), B=(a, b)}')
+        parseExpression('DAC {}')
     })
 
     it('should parse statements', () => {

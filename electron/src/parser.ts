@@ -127,7 +127,7 @@ class ElectronParser extends Parser {
         this.OPTION(() => { this.CONSUME(Export) })
         this.OPTION1(() => { this.CONSUME(Declare) })
         this.CONSUME(Module)
-        this.CONSUME(Identifier)
+        this.SUBRULE(this.identifier)
         this.CONSUME(OpenCurly)
         this.MANY1(() => { this.SUBRULE(this.statement) })
         this.CONSUME(CloseCurly)
@@ -150,6 +150,7 @@ class ElectronParser extends Parser {
         this.OR([
             { ALT: () => this.CONSUME(Identifier) },
             { ALT: () => this.CONSUME(Symbol) },
+            { ALT: () => this.CONSUME(CellType) },
         ])
     })
 
@@ -238,9 +239,16 @@ class ElectronParser extends Parser {
     public expression = this.RULE('expression', () => {
         this.OR([
             { ALT: () => this.SUBRULE(this.signalLiteral) },
-            { ALT: () => this.SUBRULE(this.referenceExpression) },
             { ALT: () => this.SUBRULE(this.concatExpression) },
-            { ALT: () => this.SUBRULE(this.cellExpression) },
+            { ALT: () => {
+                this.SUBRULE(this.identifier)
+                this.OPTION(() => {
+                    this.OR1([
+                        { ALT: () => this.SUBRULE(this.referenceExpression) },
+                        { ALT: () => this.SUBRULE(this.cellExpression) },
+                    ])
+                })
+            }}
         ])
     })
 
@@ -254,22 +262,27 @@ class ElectronParser extends Parser {
     })
 
     public referenceExpression = this.RULE('referenceExpression', () => {
-        this.SUBRULE(this.identifier)
-        this.OPTION(() => {
-            this.CONSUME(OpenSquare)
-            this.CONSUME(Integer)
-            this.OPTION1(() => {
-                this.CONSUME(Colon)
-                this.CONSUME1(Integer)
-            })
-            this.CONSUME(CloseSquare)
+        this.CONSUME(OpenSquare)
+        this.CONSUME(Integer)
+        this.OPTION1(() => {
+            this.CONSUME(Colon)
+            this.CONSUME1(Integer)
         })
+        this.CONSUME(CloseSquare)
     })
 
     public cellExpression = this.RULE('cellExpression', () => {
-        this.CONSUME(CellType)
-        this.OPTION(() => this.SUBRULE(this.parameterList))
-        this.SUBRULE(this.width)
+        this.OR([
+            { ALT: () => {
+                this.SUBRULE(this.parameterList)
+                this.SUBRULE(this.width)
+                this.SUBRULE(this.cellBody)
+            }},
+            { ALT: () => this.SUBRULE1(this.cellBody) },
+        ])
+    })
+
+    public cellBody = this.RULE('cellBody', () => {
         this.CONSUME(OpenCurly)
         this.MANY_SEP({
             SEP: Comma,
