@@ -24,7 +24,7 @@ function expectAstModule(text: string, smts: AstStatement[]) {
                 attributes: [],
                 declaration: false,
                 exported: false,
-                name: {
+                identifier: {
                     id: 'A',
                     src: getLoc('A', 8),
                 },
@@ -48,22 +48,22 @@ describe('Elaborator', () => {
         expectAst('import a, b from "package"', {
             imports: [
                 {
-                    'import': {
+                    identifier: {
                         id: 'a',
                         src: getLoc('a', 8)
                     },
-                    'from': {
+                    package: {
                         value: 'package',
                         literalType: AstLiteralType.String,
                         src: getLoc('"package"', 18),
                     }
                 },
                 {
-                    'import': {
+                    identifier: {
                         id: 'b',
                         src: getLoc('b', 11)
                     },
-                    'from': {
+                    package: {
                         value: 'package',
                         literalType: AstLiteralType.String,
                         src: getLoc('"package"', 18),
@@ -76,11 +76,11 @@ describe('Elaborator', () => {
         expectAst('import a from "./file"', {
             imports: [
                 {
-                    'import': {
+                    identifier: {
                         id: 'a',
                         src: getLoc('a', 8)
                     },
-                    'from': {
+                    package: {
                         value: './file',
                         literalType: AstLiteralType.String,
                         src: getLoc('"./file"', 15),
@@ -99,7 +99,7 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    name: {
+                    identifier: {
                         id: 'A',
                         src: getLoc('A', 8),
                     },
@@ -115,7 +115,7 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: true,
                     declaration: false,
-                    name: {
+                    identifier: {
                         id: 'A',
                         src: getLoc('A', 15)
                     },
@@ -131,7 +131,7 @@ describe('Elaborator', () => {
                     attributes: [],
                     exported: false,
                     declaration: true,
-                    name: {
+                    identifier: {
                         id: 'A',
                         src: getLoc('A', 16)
                     },
@@ -169,7 +169,7 @@ describe('Elaborator', () => {
                     ],
                     exported: false,
                     declaration: false,
-                    name: {
+                    identifier: {
                         id: 'A',
                         src: getLoc('A', 28)
                     },
@@ -190,7 +190,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 1,
-                    signed: false,
                 }
             }
         ])
@@ -205,7 +204,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 2,
-                    signed: false,
                 }
             }
         ])
@@ -220,7 +218,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 1,
-                    signed: false,
                 }
             },
             {
@@ -232,7 +229,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 1,
-                    signed: false,
                 }
             }
         ])
@@ -261,7 +257,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 1,
-                    signed: false,
                 }
             },
             {
@@ -287,7 +282,6 @@ describe('Elaborator', () => {
                 'type': {
                     ty: AstType.Net,
                     width: 1,
-                    signed: false,
                 }
             }
         ])
@@ -301,7 +295,6 @@ describe('Elaborator', () => {
             'type': {
                 ty: AstType.Net,
                 width: 1,
-                signed: false,
             }
         }
         const b_decl = {
@@ -313,7 +306,6 @@ describe('Elaborator', () => {
             'type': {
                 ty: AstType.Net,
                 width: 1,
-                signed: false,
             }
         }
 

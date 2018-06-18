@@ -48,7 +48,7 @@ describe('Pretty Printer', () => {
             attributes,
             exported: false,
             declaration: false,
-            name: { id: 'mod' },
+            identifier: { id: 'mod' },
             statements: [],
         }), '@bom("Yago", "XYZ")\nmodule mod {}\n')
 
@@ -214,8 +214,8 @@ describe('Pretty Printer', () => {
 
     it('should emit imports', () => {
         expectPretty(emitImport({
-            'import': {id: 'a'},
-            'from': { value: 'package', literalType: AstLiteralType.String },
+            identifier: {id: 'a'},
+            package: { value: 'package', literalType: AstLiteralType.String },
         }), 'import a from "package"\n')
     })
 
@@ -224,7 +224,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             declaration: false,
             exported: false,
-            name: {id: 'mod'},
+            identifier: {id: 'mod'},
             statements: [
                 {
                     attributes: [],
@@ -244,7 +244,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             exported: true,
             declaration: false,
-            name: {id: 'mod'},
+            identifier: {id: 'mod'},
             statements: []
         }), 'export module mod {}\n')
 
@@ -252,7 +252,7 @@ describe('Pretty Printer', () => {
             attributes: [],
             exported: true,
             declaration: true,
-            name: {id: 'mod'},
+            identifier: {id: 'mod'},
             statements: []
         }), 'export declare module mod {}\n')
     })
@@ -261,8 +261,8 @@ describe('Pretty Printer', () => {
         expectPretty(emitDesign({
             imports: [
                 {
-                    'import': { id: 'a' },
-                    'from': { value: 'b', literalType: AstLiteralType.String },
+                    identifier: { id: 'a' },
+                    package: { value: 'b', literalType: AstLiteralType.String },
                 }
             ],
             modules: [
@@ -270,7 +270,7 @@ describe('Pretty Printer', () => {
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    name: {id: 'mod'},
+                    identifier: {id: 'mod'},
                     statements: []
                 }
             ],

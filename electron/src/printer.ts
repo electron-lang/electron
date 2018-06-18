@@ -22,9 +22,9 @@ export function emitDesign(design: IAstDesign): IDoc {
 export function emitImport(imp: IAstImport): IDoc {
     return [
         'import ',
-        emitIdentifier(imp['import']),
+        emitIdentifier(imp.identifier),
         ' from ',
-        emitLiteral(imp['from']),
+        emitLiteral(imp.package),
         line
     ]
 }
@@ -34,7 +34,7 @@ export function emitModule(mod: IAstModule): IDoc {
         emitAttributes(mod.attributes),
         mod.exported ? 'export ' : '',
         mod.declaration ? 'declare ' : '',
-        'module ', emitIdentifier(mod.name), ' ',
+        'module ', emitIdentifier(mod.identifier), ' ',
         emitBody(mod.statements.map(emitStatement)),
         line
     ]

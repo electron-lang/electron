@@ -4,6 +4,10 @@ export interface IAst {
     src?: ISrcLoc
 }
 
+export interface IAstSymbol {
+    identifier: IAstIdentifier
+}
+
 export interface IAstAttribute extends IAst {
     name: IAstIdentifier
     parameters: IAstParameter[]
@@ -19,16 +23,14 @@ export interface IAstDesign extends IAst {
     modules: IAstModule[]
 }
 
-export interface IAstImport extends IAst {
-    'import': IAstIdentifier
-    'from': IAstLiteral
+export interface IAstImport extends IAstSymbol {
+    package: IAstLiteral
 }
 
-export interface IAstModule extends IAst {
+export interface IAstModule extends IAstSymbol {
     attributes: IAstAttribute[]
     exported: boolean
     declaration: boolean
-    name: IAstIdentifier
     statements: AstStatement[]
 }
 
@@ -36,9 +38,8 @@ export interface IAstModule extends IAst {
 export type AstStatement = IAstDeclaration | IAstAssignment |
     IAstFullyQualifiedName
 
-export interface IAstDeclaration extends IAst {
+export interface IAstDeclaration extends IAstSymbol {
     attributes: IAstAttribute[]
-    identifier: IAstIdentifier
     'type': IAstType
 }
 
@@ -55,7 +56,6 @@ export interface IAstFullyQualifiedName extends IAst {
 export interface IAstType extends IAst {
     ty: AstType
     width: number
-    signed: boolean
 }
 
 export enum AstType {

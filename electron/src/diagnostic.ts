@@ -7,10 +7,11 @@ export enum DiagnosticSeverity {
 }
 
 export enum DiagnosticType {
-    TokenError,
-    ParserError,
-    SyntaxError,
-    TypeError,
+    LexingError = 'lexer',
+    ParsingError = 'parser',
+    ElaborationError = 'elaboration',
+    SymbolTableError = 'symbol-table',
+    TypeCheckingError = 'typechecker',
 }
 
 export interface IDiagnostic {
@@ -34,4 +35,11 @@ export function tokenToSrcLoc(token: IToken): ISrcLoc {
         endLine: token.endLine || 0,
         endColumn: token.endColumn || 0,
     }
+}
+
+export const emptySrcLoc: ISrcLoc = {
+    startLine: 0,
+    startColumn: 0,
+    endLine: 0,
+    endColumn: 0,
 }
