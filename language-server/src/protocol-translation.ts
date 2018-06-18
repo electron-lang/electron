@@ -31,7 +31,7 @@ export function convertDiagnostic(d: IDiagnostic): lsp.Diagnostic {
             },
             end: {
                 line: d.src.endLine - 1,
-                character: d.src.endColumn - 1,
+                character: d.src.endColumn,
             },
         },
         message: d.message,
