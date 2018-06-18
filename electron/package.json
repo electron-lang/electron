@@ -19,6 +19,7 @@
   "dependencies": {
     "@electron-lang/celllib": "1.0.0",
     "@electron-lang/netlist": "1.0.0",
+    "chalk": "^2.4.1",
     "chevrotain": "^3.5.0",
     "prettier-printer": "file:../../prettier-printer"
   },
