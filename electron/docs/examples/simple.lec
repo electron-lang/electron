@@ -1,19 +1,40 @@
 import a, b, c from "package"
 
-@bom('Yago, 'XYZ)
-export module AnalogModule {
+@bom("Yago", "XYZ")
+export module R10K {
     analog a, b
-    cell r1 = $R('10k) {A=a, B=b}
+    @rotate(90)
+    cell r = $R(10k) {A=a, B=b}
 }
 
-export module DigitalModule {
+export module AND {
     input a, b
     cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, C=c}
     output c
 }
 
+@model(BlackBoxModel)
 declare module BlackBox {
+    @set_pad(1, 2)
     input[2] a
     net b, c = a[0], a[1]
     output d = (b, c)
+}
+
+module SubModule {
+    analog a, b
+    cell r1 = R10K {a, b}
+}
+
+module Pcb {
+    net '+12V, gnd
+    cell bb = BlackBox { vcc='+12V, gnd }
+    cell sm = SubModule {}
+
+    @bom("Yago", "XYZ")
+    sm.r1
+
+    @module(AND)
+    @set_io(a="A1", b="F2", c="D3")
+    cell fpga = $fpga {}
 }
