@@ -35,6 +35,15 @@ describe('Pretty Printer', () => {
             { name: null, value: { id: 'A' }}
         ]}), '@model(A)\n')
 
+        expectPretty(emitAttribute({ name: { id: 'parameter' }, parameters: [
+            {
+                name: { id: 'A_WIDTH' }, value: {
+                    value: 1,
+                    literalType: AstLiteralType.Integer
+                }
+            }
+        ]}), '@parameter(A_WIDTH=1)\n')
+
         expectPretty(emitModule({
             attributes,
             exported: false,

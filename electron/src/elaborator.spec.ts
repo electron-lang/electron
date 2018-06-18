@@ -351,6 +351,7 @@ describe('Elaborator', () => {
                     identifier: {id: 'c', src: getLoc('c', 12 + 10)},
                     'from': 0,
                     'to': 0,
+                    src: getLoc('c[0]', 12 + 10),
                 },
             },
             {
@@ -359,6 +360,7 @@ describe('Elaborator', () => {
                     identifier: {id: 'd', src: getLoc('d', 18 + 10) },
                     'from': 1,
                     'to': 1,
+                    src: getLoc('d[1]', 18 + 10),
                 },
             }
         ])
@@ -396,11 +398,13 @@ describe('Elaborator', () => {
                 { id: 'b', src: getLoc('b', 5 + 14) },
                 { id: 'c', src: getLoc('c', 8 + 14) },
             ],
+            src: getLoc('(a, b, c)', 1 + 14),
         })
 
         expectAstExpr("4'01xz", {
             value: "4'01xz",
             literalType: AstLiteralType.Constant,
+            src: getLoc("4'01xz", 1 + 14),
         })
 
 
@@ -408,12 +412,14 @@ describe('Elaborator', () => {
             identifier: { id: 'a', src: getLoc('a', 1 + 14) },
             'from': 2,
             'to': 3,
+            src: getLoc('a[2:3]', 1 + 14),
         })
 
         expectAstExpr('a[2]', {
             identifier: { id: 'a', src: getLoc('a', 1 + 14) },
             'from': 2,
             'to': 2,
+            src: getLoc('a[2]', 1 + 14),
         })
 
         expectAstExpr('$R {}', {
@@ -421,6 +427,7 @@ describe('Elaborator', () => {
             width: 1,
             parameters: [],
             assignments: [],
+            src: getLoc('$R {}', 1 + 14),
         })
 
         expectAstExpr('$R()[2] {}', {
@@ -428,6 +435,7 @@ describe('Elaborator', () => {
             width: 2,
             parameters: [],
             assignments: [],
+            src: getLoc('$R()[2] {}', 1 + 14),
         })
 
         expectAstExpr("$R(10k) {}", {
@@ -444,6 +452,7 @@ describe('Elaborator', () => {
                 }
             ],
             assignments: [],
+            src: getLoc('$R(10k) {}', 1 + 14),
         })
 
         expectAstExpr("$R {A}", {
@@ -456,6 +465,7 @@ describe('Elaborator', () => {
                     rhs: { id: 'A', src: getLoc('A', 5 + 14) },
                 }
             ],
+            src: getLoc('$R {A}', 1 + 14),
         })
 
         expectAstExpr("$R {A=a}", {
@@ -468,6 +478,7 @@ describe('Elaborator', () => {
                     rhs: { id: 'a', src: getLoc('a', 7 + 14) },
                 }
             ],
+            src: getLoc('$R {A=a}', 1 + 14),
         })
 
         expectAstExpr("$R {A, B=b}", {
@@ -484,6 +495,7 @@ describe('Elaborator', () => {
                     rhs: { id: 'b', src: getLoc('b', 10 + 14) },
                 }
             ],
+            src: getLoc('$R {A, B=b}', 1 + 14),
         })
     })
 })

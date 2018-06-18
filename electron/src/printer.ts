@@ -100,10 +100,10 @@ export function emitParameter(param: IAstParameter): IDoc {
         value = emitLiteral(param.value as IAstLiteral)
     }
 
-    if (param.name === null) {
-        return value
+    if (param.name) {
+        return [ emitIdentifier(param.name), '=', value ]
     }
-    return [ param.name, '=', value ]
+    return value
 }
 
 // Statements

@@ -209,10 +209,10 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             this.errors.push({
                 message: 'Unbalanced assignment',
                 src: {
-                    startLine: 0,
-                    startColumn: 0,
-                    endLine: 0,
-                    endColumn: 0,
+                    startLine: lhs[0].src.startLine,
+                    startColumn: lhs[0].src.startColumn,
+                    endLine: rhs[rhs.length - 1].src.endLine,
+                    endColumn: rhs[rhs.length - 1].src.endColumn,
                 },
                 severity: DiagnosticSeverity.Error,
                 errorType: DiagnosticType.SyntaxError,
@@ -260,10 +260,10 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 this.errors.push({
                     message: 'Unbalanced assignment',
                     src: {
-                        startLine: 0,
-                        startColumn: 0,
-                        endLine: 0,
-                        endColumn: 0,
+                        startLine: lhs[0].src.startLine,
+                        startColumn: lhs[0].src.startColumn,
+                        endLine: rhs[rhs.length - 1].src.endLine,
+                        endColumn: rhs[rhs.length - 1].src.endColumn,
                     },
                     severity: DiagnosticSeverity.Error,
                     errorType: DiagnosticType.SyntaxError,
@@ -326,10 +326,14 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             if (ctx.referenceExpression) {
                 let ref = this.visit(ctx.referenceExpression)
                 ref.identifier = identifier
+                ref.src.startLine = identifier.src.startLine
+                ref.src.startColumn = identifier.src.startColumn
                 expr = ref
             } else if (ctx.cellExpression) {
                 let cell = this.visit(ctx.cellExpression)
                 cell.cellType = identifier
+                cell.src.startLine = identifier.src.startLine
+                cell.src.startColumn = identifier.src.startColumn
                 expr = cell
             } else {
                 expr = identifier
@@ -344,12 +348,19 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         return {
             value: ctx.Constant[0].image,
             literalType: AstLiteralType.Constant,
+            src: tokenToSrcLoc(ctx.Constant[0])
         }
     }
 
     concatExpression(ctx: any): IAstConcat {
         return {
             expressions: ctx.expression.map((ctx: any) => this.visit(ctx)),
+            src: {
+                startLine: ctx.OpenRound[0].startLine,
+                startColumn: ctx.OpenRound[0].startColumn,
+                endLine: ctx.CloseRound[0].endLine,
+                endColumn: ctx.CloseRound[0].endColumn,
+            }
         }
     }
 
@@ -363,6 +374,12 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             identifier: { id: '' },
             'from': from_,
             to,
+            src: {
+                startLine: 0,
+                startColumn: 0,
+                endLine: ctx.CloseSquare[0].endLine,
+                endColumn: ctx.CloseSquare[0].endColumn,
+            }
         }
     }
 
@@ -389,6 +406,12 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             width: 1,
             parameters: [],
             assignments,
+            src: {
+                startLine: 0,
+                startColumn: 0,
+                endLine: ctx.CloseCurly[0].endLine,
+                endColumn: ctx.CloseCurly[0].endColumn,
+            }
         }
     }
 
