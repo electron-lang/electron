@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import * as electron from './index';
@@ -11,8 +11,9 @@ const program = new Command('electron')
 
 program.command('compile <file>')
     .action((file) => {
-        const text = fs.readFileSync(path.resolve(file)).toString()
-        const result = electron.compile(text)
+        const path = resolve(file)
+        const text = readFileSync(path).toString()
+        const result = electron.compile(path, text)
         const lines = text.split('\n')
         if (result.errors.length > 0) {
             for (let error of result.errors) {

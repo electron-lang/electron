@@ -17,7 +17,7 @@ export interface IResult {
     errors: IDiagnostic[],
 }
 
-export function compile(text: string): IResult {
+export function compile(path: string, text: string): IResult {
     let errors: IDiagnostic[] = []
 
     // lex
@@ -71,7 +71,7 @@ export function compile(text: string): IResult {
 
     // typecheck
     const typechecker = new TypeChecker()
-    typechecker.typeCheck(ast)
+    typechecker.typeCheck(path, ast)
     errors = errors.concat(typechecker.errors)
 
     if (errors.length > 0) {

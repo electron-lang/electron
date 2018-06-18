@@ -27,17 +27,17 @@ describe('Symbol Table', () => {
     const A = makeModule('A')
 
     it('should return null when resolving undeclared symbol', () => {
-        expect(st.resolveSymbol(A.identifier)).to.equal(null)
+        expect(st.resolveModule(A.identifier)).to.equal(null)
     })
 
     it('should return IAstSymbol when resolving a declared symbol', () => {
         st.declareModule(A)
-        expect(st.resolveSymbol(A.identifier)).to.equal(A)
+        expect(st.resolveModule(A.identifier)).to.equal(A)
     })
 
     it('should keep track of conflicting symbols', () => {
         st.declareModule(A)
-        expect(st.resolveSymbol(A.identifier)).to.equal(A)
+        expect(st.resolveModule(A.identifier)).to.equal(A)
         expect(st.conflictingSymbols[A.identifier.id]).to.deep.equal([
             A.identifier.src, A.identifier.src
         ])
@@ -50,8 +50,8 @@ describe('Symbol Table', () => {
         st.declareModule(B)
         st.enterScope(B.identifier)
         st.declareVariable(a)
-        expect(st.resolveSymbol(a.identifier)).to.equal(a)
+        expect(st.resolveDeclaration(a.identifier)).to.equal(a)
         st.exitScope()
-        expect(st.resolveSymbol(a.identifier)).to.equal(null)
+        expect(st.resolveDeclaration(a.identifier)).to.equal(null)
     })
 })

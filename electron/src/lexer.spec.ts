@@ -34,6 +34,7 @@ describe('Lexer', () => {
     })
 
     it('should lex literals', () => {
+        expectLabel("1'1", 'Constant')
         expectLabel("4'01xz", 'Constant')
         expectLabel('12', 'Integer')
         expectLabel('0', 'Integer')

@@ -50,6 +50,7 @@ describe('Parser', () => {
             parseRule(text, () => { parser.expression() })
         }
         // Constant
+        parseExpression("1'1")
         parseExpression("4'01xz")
         // Reference
         parseExpression('a')
@@ -82,6 +83,7 @@ describe('Parser', () => {
         parseStatement('a = b')
         parseStatement("a, b[1] = 1'1, 1'1")
         parseStatement("net a, b = 1'1, 1'1")
+        parseStatement("output a = 1'1")
         parseStatement('@width(10) net a')
         parseStatement('@bom("Yago", "XYZ") a.b.c')
     })

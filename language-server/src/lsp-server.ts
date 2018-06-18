@@ -40,7 +40,8 @@ export class LspServer {
         let doc = this.openedDocumentUris.get(uri)
         if (doc !== undefined) {
             let diagnostics: lsp.Diagnostic[] =
-                electron.typeCheck(doc.text).map(convertDiagnostic)
+                electron.compile(uriToPath(uri), doc.text)
+                .errors.map(convertDiagnostic)
             this.options.lspClient.publishDiagnostics({
                 uri,
                 diagnostics,

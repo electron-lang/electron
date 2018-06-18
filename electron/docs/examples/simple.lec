@@ -1,4 +1,8 @@
-import a, b, c from "package"
+import A, B from "./file"
+
+declare module $R { analog A, B }
+declare module $and { input A, B output C}
+declare module $fpga {}
 
 @bom("Yago", "XYZ")
 export module R10K {
@@ -9,21 +13,22 @@ export module R10K {
 
 export module AND {
     input a, b
-    cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, C=c}
     output c
+    cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, C=c}
 }
 
 @model(BlackBoxModel)
 declare module BlackBox {
     @set_pad(1, 2)
-    input[2] a
-    net b, c = a[0], a[1]
-    output d = (b, c)
+    analog vcc, gnd
 }
 
 module SubModule {
     analog a, b
     cell r1 = R10K {a, b}
+    output c = 1'1
+    net d
+    analog const = 1'1
 }
 
 module Pcb {
@@ -32,7 +37,7 @@ module Pcb {
     cell sm = SubModule {}
 
     @bom("Yago", "XYZ")
-    sm.r1
+    sm
 
     @module(AND)
     @set_io(a="A1", b="F2", c="D3")

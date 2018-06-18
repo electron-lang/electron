@@ -3,12 +3,10 @@ import { IAstSymbol, IAstIdentifier, IAstModule, IAstImport,
 import { ISrcLoc, emptySrcLoc, DiagnosticType, DiagnosticSeverity,
          IDiagnostic } from './diagnostic'
 
-export enum SymbolType {
+enum SymbolType {
     Module,
     ExternalModule,
-    Port,
-    Net,
-    Cell,
+    Declaration,
 }
 
 export interface ISymbolTable {
@@ -36,12 +34,13 @@ export class SymbolTable {
     }
 
     enterScope(ident: IAstIdentifier) {
-        if (!(ident.id in this.currentScope())) {
-            throw new Error('Programming Error: Unknown scope')
+        let stentry = this.resolveSymbol(ident)
+        if (stentry) {
+            stentry.symbols = stentry.symbols || {}
+            this.scopes.push(stentry.symbols)
+        } else {
+            this.scopes.push({})
         }
-        let entry = this.symbols[ident.id]
-        entry.symbols = entry.symbols || {}
-        this.scopes.push(entry.symbols)
     }
 
     exitScope() {
@@ -99,24 +98,44 @@ export class SymbolTable {
             if (this.isRootScope()) {
                 throw new Error('Programmer Error: Root scope')
             }
-            let ty = SymbolType.Port
-            if (decl.type.ty === AstType.Net) {
-                ty = SymbolType.Net
-            } else if (decl.type.ty === AstType.Cell) {
-                ty = SymbolType.Cell
-            }
-            this.declareSymbol(decl.identifier, { ast: decl, ty })
+            this.declareSymbol(decl.identifier, {
+                ast: decl,
+                ty: SymbolType.Declaration
+            })
         }
     }
 
-    resolveSymbol(ident: IAstIdentifier): IAstSymbol | null {
+    private resolveSymbol(ident: IAstIdentifier): ISymbolTableEntry | null {
         for (let i = 0; i < this.scopes.length; i++) {
             const scopeIdx = this.scopes.length - 1 - i
             if (ident.id in this.scopes[scopeIdx]) {
-                return this.scopes[scopeIdx][ident.id].ast
+                return this.scopes[scopeIdx][ident.id]
             }
         }
         this.unresolvedSymbols.push(ident)
+        return null
+    }
+
+    resolveDeclaration(ident: IAstIdentifier): IAstDeclaration | null {
+        const stentry = this.resolveSymbol(ident)
+        if (stentry) {
+            if (stentry.ty === SymbolType.Declaration) {
+                return stentry.ast as IAstDeclaration
+            }
+        }
+        return null
+    }
+
+    resolveModule(ident: IAstIdentifier): IAstModule | null {
+        const stentry = this.resolveSymbol(ident)
+        if (stentry) {
+            if (stentry.ty === SymbolType.Module) {
+                return stentry.ast as IAstModule
+            } else if (stentry.ty === SymbolType.ExternalModule) {
+                // TODO
+                return null
+            }
+        }
         return null
     }
 
@@ -144,7 +163,6 @@ export class SymbolTable {
                     errorType: DiagnosticType.SymbolTableError,
                 }
             })
-
         return conflictErrors.concat(unresolvedErrors)
     }
 }
