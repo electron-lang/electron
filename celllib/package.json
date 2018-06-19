@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/celllib",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Cell lib for netlist and electron.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
