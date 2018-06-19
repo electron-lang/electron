@@ -1,8 +1,9 @@
 {
   "private": true,
   "name": "electron-app",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "dependencies": {
+    "@electron-lang/theia-electron": "^0.0.1",
     "@theia/callhierarchy": "latest",
     "@theia/core": "latest",
     "@theia/cpp": "latest",
@@ -26,7 +27,6 @@
     "@theia/preferences": "latest",
     "@theia/preview": "latest",
     "@theia/process": "latest",
-    "@electron-lang/theia-electron": "1.0.0",
     "@theia/search-in-workspace": "latest",
     "@theia/task": "latest",
     "@theia/terminal": "latest",
