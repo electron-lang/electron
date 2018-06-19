@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/electron",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Electron compiler",
   "main": "./lib/index.js",
   "repository": "https://github.com/electron-lang/electron",
@@ -17,8 +17,8 @@
     "electron": "./lib/cli.js"
   },
   "dependencies": {
-    "@electron-lang/celllib": "1.0.0",
-    "@electron-lang/netlist": "1.0.0",
+    "@electron-lang/celllib": "^0.0.3",
+    "@electron-lang/netlist": "^0.0.3",
     "chalk": "^2.4.1",
     "chevrotain": "^3.5.0",
     "prettier-printer": "file:../../prettier-printer"

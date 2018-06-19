@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/language-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Electron Language Server",
   "main": "index.js",
   "repository": "https://github.com/electron-lang/electron",
@@ -15,7 +15,7 @@
     "electron-language-server": "./lib/cli.js"
   },
   "dependencies": {
-    "@electron-lang/electron": "^0.0.2",
+    "@electron-lang/electron": "^0.0.3",
     "commander": "^2.15.1",
     "vscode-languageserver": "^4.2.1",
     "vscode-uri": "^1.0.5"

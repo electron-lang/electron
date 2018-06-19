@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "electron-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "dependencies": {
-    "@electron-lang/theia-electron": "^0.0.2",
+    "@electron-lang/theia-electron": "^0.0.3",
     "@theia/callhierarchy": "latest",
     "@theia/core": "latest",
     "@theia/cpp": "latest",

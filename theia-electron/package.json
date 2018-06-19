@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/theia-electron",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Theia Electron Extension",
   "repository": "https://github.com/electron-lang/electron",
   "author": "David Craven <david@craven.ch>",
@@ -11,8 +11,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@electron-lang/electron": "^0.0.2",
-    "@electron-lang/language-server": "^0.0.2",
+    "@electron-lang/electron": "^0.0.3",
+    "@electron-lang/language-server": "^0.0.3",
     "@theia/core": "latest",
     "@theia/editor": "latest",
     "@theia/languages": "latest",
