@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/netlist",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Extended yosys netlist format utility",
   "main": "./lib/index.js",
   "repository": "https://github.com/electron-lang/netlistjs",
@@ -23,12 +23,12 @@
     "typescript-json-schema": "^0.24.1"
   },
   "dependencies": {
+    "@electron-lang/celllib": "1.0.0",
     "@types/handlebars": "^4.0.38",
     "commander": "^2.15.1",
     "handlebars": "^4.0.11",
     "json5": "^1.0.1",
     "jsonschema": "^1.2.4",
-    "readline-sync": "^1.4.9",
-    "@electron-lang/celllib": "1.0.0"
+    "readline-sync": "^1.4.9"
   }
 }
