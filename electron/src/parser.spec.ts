@@ -21,6 +21,7 @@ describe('Parser', () => {
         parseModule('export module MOD {}')
         parseModule('declare module MOD {}')
         parseModule("@model(A) module MOD {}")
+        parseModule('module MOD(R: Ohm, C: Farad) {}')
     })
 
     it('should parse attributes', () => {

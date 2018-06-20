@@ -146,6 +146,7 @@ class ElectronParser extends Parser {
         this.OPTION1(() => { this.CONSUME(Declare) })
         this.CONSUME(Module)
         this.SUBRULE(this.identifier)
+        this.OPTION2(() => this.SUBRULE(this.parameterDeclarationList))
         this.CONSUME(OpenCurly)
         this.MANY1(() => { this.SUBRULE(this.statement) })
         this.CONSUME(CloseCurly)
@@ -159,6 +160,21 @@ class ElectronParser extends Parser {
     public attribute = this.RULE('attribute', () => {
         this.CONSUME(Attribute)
         this.SUBRULE(this.parameterList)
+    })
+
+    public parameterDeclarationList = this.RULE('parameterDeclarationList', () => {
+        this.CONSUME(OpenRound)
+        this.MANY_SEP({
+            SEP: Comma,
+            DEF: () => this.SUBRULE(this.parameterDeclaration)
+        })
+        this.CONSUME(CloseRound)
+    })
+
+    public parameterDeclaration = this.RULE('parameterDeclaration', () => {
+        this.SUBRULE(this.identifier)
+        this.CONSUME(Colon)
+        this.SUBRULE1(this.identifier)
     })
 
     public parameterList = this.RULE('parameterList', () => {

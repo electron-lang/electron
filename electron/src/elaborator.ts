@@ -110,6 +110,14 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
     }
 
+    parameterDeclarationList(ctx: any): null {
+        return null
+    }
+
+    parameterDeclaration(ctx: any): null {
+        return null
+    }
+
     parameterList(ctx: any): IAstParameter[] {
         if (ctx.parameter) {
             return ctx.parameter.map((ctx: any) => this.visit(ctx))
