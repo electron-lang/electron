@@ -23,7 +23,7 @@
     "docs": "lerna run docs",
     "start-browser-app": "cd browser-app && yarn start ../electron/docs/examples --log-level=debug",
     "start-electron-app": "cd electron-app && yarn start ../electron/docs/examples --log-level=debug",
-    "start-electron": "electron-ide/dist/electron-ide-1.0.0-x86_64.AppImage ./electron/docs/examples"
+    "publish": "lerna publish"
   },
   "devDependencies": {
     "lerna": "^2.11.0"

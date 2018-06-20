@@ -577,8 +577,8 @@
     "@types/lodash" "*"
 
 "@types/lodash@*":
-  version "4.14.109"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
+  version "4.14.110"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.110.tgz#fb07498f84152947f30ea09d89207ca07123461e"
 
 "@types/markdown-it-anchor@^4.0.1":
   version "4.0.1"
@@ -603,8 +603,8 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.2.tgz#202d2b8fe1364c5b617b439b26a54f0e75eac0a7"
 
 "@types/node@*", "@types/node@^10.3.2", "@types/node@^10.3.3":
-  version "10.3.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.3.tgz#8798d9e39af2fa604f715ee6a6b19796528e46c3"
+  version "10.3.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.4.tgz#c74e8aec19e555df44609b8057311052a2c84d9e"
 
 "@types/node@^8.0.24", "@types/node@^8.0.26":
   version "8.10.20"
@@ -2106,8 +2106,8 @@ chevrotain@^3.5.0:
     regexp-to-ast "0.3.3"
 
 chokidar@^2.0.2:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.0.3.tgz#dcbd4f6cbb2a55b4799ba8a840ac527e5f4b1176"
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.0.4.tgz#356ff4e2b0e8e43e322d18a372460bbcf3accd26"
   dependencies:
     anymatch "^2.0.0"
     async-each "^1.0.0"
@@ -2116,12 +2116,13 @@ chokidar@^2.0.2:
     inherits "^2.0.1"
     is-binary-path "^1.0.0"
     is-glob "^4.0.0"
+    lodash.debounce "^4.0.8"
     normalize-path "^2.1.1"
     path-is-absolute "^1.0.0"
     readdirp "^2.0.0"
-    upath "^1.0.0"
+    upath "^1.0.5"
   optionalDependencies:
-    fsevents "^1.1.2"
+    fsevents "^1.2.2"
 
 chownr@^1.0.1:
   version "1.0.1"
@@ -3171,8 +3172,8 @@ errno@^0.1.1, errno@^0.1.3, errno@~0.1.7:
     prr "~1.0.1"
 
 error-ex@^1.2.0, error-ex@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/error-ex/-/error-ex-1.3.1.tgz#f855a86ce61adc4e8621c3cda21e7a7612c3a8dc"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/error-ex/-/error-ex-1.3.2.tgz#b4ac40648107fdcdcfae242f428bea8a14d4f1bf"
   dependencies:
     is-arrayish "^0.2.1"
 
@@ -3679,7 +3680,7 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
 
-fsevents@^1.1.2:
+fsevents@^1.2.2:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-1.2.4.tgz#f41dcb1af2582af3692da36fc55cbd8e1041c426"
   dependencies:
@@ -4267,7 +4268,7 @@ indexof@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
 
-infestines@^0.4.7, infestines@^0.4.9:
+infestines@^0.4.9:
   version "0.4.9"
   resolved "https://registry.yarnpkg.com/infestines/-/infestines-0.4.9.tgz#51480ddce36430b102835153bddac61a15c4bbde"
 
@@ -6040,16 +6041,16 @@ parseurl@~1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/parseurl/-/parseurl-1.3.2.tgz#fc289d4ed8993119460c156253262cdc8de65bf3"
 
-partial.lenses.validation@^1.0.1:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/partial.lenses.validation/-/partial.lenses.validation-1.0.3.tgz#ff08aceff4f2422bb3c74bee7feda1a811fadf9e"
+partial.lenses.validation@^1.0.4:
+  version "1.0.4"
+  resolved "http://localhost:4873/partial.lenses.validation/-/partial.lenses.validation-1.0.4.tgz#48769f9633b349ebc45224dbb72bf07d717f369c"
   dependencies:
     infestines "^0.4.9"
     partial.lenses "^13.12.0"
 
 partial.lenses@^13.12.0:
-  version "13.13.1"
-  resolved "https://registry.yarnpkg.com/partial.lenses/-/partial.lenses-13.13.1.tgz#b398f5533dea6793bf3e86a21984c9a8e05a24a1"
+  version "13.13.2"
+  resolved "https://registry.yarnpkg.com/partial.lenses/-/partial.lenses-13.13.2.tgz#c166e40264c8e0c6d908ee5ad7628d104afdb24d"
   dependencies:
     infestines "^0.4.9"
 
@@ -6440,11 +6441,12 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-"prettier-printer@file:../prettier-printer":
-  version "1.1.0"
+prettier-printer@^1.1.2:
+  version "1.1.2"
+  resolved "http://localhost:4873/prettier-printer/-/prettier-printer-1.1.2.tgz#2f7464521cac31cd236d6ad0ce7ad862f2a4d030"
   dependencies:
-    infestines "^0.4.7"
-    partial.lenses.validation "^1.0.1"
+    infestines "^0.4.9"
+    partial.lenses.validation "^1.0.4"
 
 prettier@^1.5.3:
   version "1.13.5"
@@ -7004,8 +7006,8 @@ resolve-url@^0.2.1:
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
 
 resolve@^1.1.6:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.0.tgz#a7f2ac27b78480ecc09c83782741d9f26e4f0c3e"
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.1.tgz#82f1ec19a423ac1fbd080b0bab06ba36e84a7a26"
   dependencies:
     path-parse "^1.0.5"
 
@@ -8032,7 +8034,7 @@ unzip-response@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/unzip-response/-/unzip-response-2.0.1.tgz#d2f0f737d16b0615e72a6935ed04214572d56f97"
 
-upath@^1.0.0:
+upath@^1.0.0, upath@^1.0.5:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.0.tgz#35256597e46a581db4793d0ce47fa9aebfc9fabd"
 

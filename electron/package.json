@@ -21,7 +21,7 @@
     "@electron-lang/netlist": "^0.0.3",
     "chalk": "^2.4.1",
     "chevrotain": "^3.5.0",
-    "prettier-printer": "file:../../prettier-printer"
+    "prettier-printer": "^1.1.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.3",
