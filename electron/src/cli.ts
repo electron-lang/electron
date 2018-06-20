@@ -10,7 +10,8 @@ const program = new Command('electron')
     .description('Electron compiler')
 
 program.command('compile <file>')
-    .action((file) => {
+    .option('-d, --dump-ast', 'Dumps AST to stdout for debugging purposes.')
+    .action((file, options) => {
         const path = resolve(file)
         const text = readFileSync(path).toString()
         const result = electron.compile(path, text)
@@ -20,7 +21,7 @@ program.command('compile <file>')
                 reportDiagnostic(file, lines[error.src.startLine - 1], error)
             }
         }
-        if (result.ast) {
+        if (result.ast && options.dumpAst) {
             const res = electron.print(result.ast)
             console.log(res)
         }
