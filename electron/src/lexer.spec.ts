@@ -20,6 +20,10 @@ describe('Lexer', () => {
         expectLabel('import', 'Import')
         expectLabel('from', 'From')
         expectLabel('export', 'Export')
+        expectLabel('const', 'Const')
+        expectLabel('clock', 'Clock')
+        expectLabel('power', 'Power')
+        expectLabel('ground', 'Ground')
     })
 
     it('should lex identifiers', () => {
@@ -31,6 +35,11 @@ describe('Lexer', () => {
 
     it('should lex operators', () => {
         expectLabel('=', 'Assign')
+        expectLabel('+', 'Plus')
+        expectLabel('-', 'Minus')
+        expectLabel('*', 'Star')
+        expectLabel('<<', 'ShiftLeft')
+        expectLabel('>>', 'ShiftRight')
     })
 
     it('should lex literals', () => {
@@ -40,8 +49,10 @@ describe('Lexer', () => {
         expectLabel('0', 'Integer')
         expectLabel('10k', 'Unit')
         expectLabel('1nF', 'Unit')
+        expectLabel('2.2k', 'Unit')
         expectLabel("'symbol", 'Identifier')
         expectLabel('"a string"', 'String')
+        expectLabel('1e-3', 'Real')
     })
 
     it('should ignore comments', () => {

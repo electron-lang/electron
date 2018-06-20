@@ -1,9 +1,9 @@
 import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
-import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound, CloseSquare,
-         Colon, Comma, Comment, Constant, Declare, DocComment, Dot, Export,
-         From, Identifier, Import, Inout, Input, Integer, Module, Net,
-         OpenCurly, OpenRound, OpenSquare, Output, String, Unit,
-         Whitespace } from './tokens'
+import { Analog, Assign, Attribute, Cell, Clock, CloseCurly, CloseRound, CloseSquare,
+         Colon, Comma, Comment, Const, Constant, Declare, DocComment, Dot, Export,
+         From, Ground, Identifier, Import, Inout, Input, Integer, Minus, Module, Net,
+         OpenCurly, OpenRound, OpenSquare, Output, Plus, Power, Real, ShiftLeft, ShiftRight,
+         Star, String, Unit, Whitespace } from './tokens'
 
 export const allTokens = [
     // Whitespace
@@ -20,13 +20,23 @@ export const allTokens = [
     From,
     Export,
     Declare,
+    Const,
+    Clock,
+    Power,
+    Ground,
     // Identifiers
     Identifier,
     Attribute,
     // Operators
     Assign,
+    Plus,
+    Minus,
+    Star,
+    ShiftLeft,
+    ShiftRight,
     // Literals
     Constant,
+    Real,
     Integer,
     Unit,
     String,
@@ -54,29 +64,39 @@ setScope(Analog, 'keyword')
 setScope(Assign, 'operator')
 setScope(Attribute, 'string')
 setScope(Cell, 'keyword')
+setScope(Clock, 'keyword')
 setScope(CloseCurly, 'delimiter')
 setScope(CloseRound, 'delimiter')
 setScope(CloseSquare, 'delimiter')
 setScope(Colon, 'delimiter')
 setScope(Comma, 'delimiter')
 setScope(Comment, 'comment')
+setScope(Const, 'keyword')
 setScope(Constant, 'number')
 setScope(Declare, 'keyword')
 setScope(DocComment, 'comment.doc')
 setScope(Dot, 'delimiter')
 setScope(Export, 'keyword')
 setScope(From, 'keyword')
+setScope(Ground, 'keyword')
 setScope(Identifier, 'identifier')
 setScope(Import, 'keyword')
 setScope(Inout, 'keyword')
 setScope(Input, 'keyword')
 setScope(Integer, 'number')
+setScope(Minus, 'operator')
 setScope(Module, 'keyword')
 setScope(Net, 'keyword')
 setScope(OpenCurly, 'delimiter')
 setScope(OpenRound, 'delimiter')
 setScope(OpenSquare, 'delimiter')
 setScope(Output, 'keyword')
+setScope(Plus, 'operator')
+setScope(Power, 'keyword')
+setScope(Real, 'number')
+setScope(ShiftLeft, 'operator')
+setScope(ShiftRight, 'operator')
+setScope(Star, 'operator')
 setScope(String, 'string')
 setScope(Unit, 'number')
 setScope(Whitespace, 'whitespace')
