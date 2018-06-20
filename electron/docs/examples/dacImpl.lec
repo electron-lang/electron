@@ -1,0 +1,36 @@
+import DAC from "dac"
+import TinyFPGA from "tinyFPGA"
+
+module Pcb {
+    net clk, vccio, gnd, vdd, vss, data, out
+    cell tiny = TinyFPGA {
+        clk, vccio, gnd, vdd, vss, data, out
+    }
+    cell dac = DAC(WIDTH=8, L=1uH, C=1nF) {
+        clk,
+        vccio,
+        gnd,
+        vdd, vss,
+        data,
+        out
+    }
+
+    @bom("", "")
+    dac.adac.halfBridge.drivers
+    @bom("", "")
+    dac.adac.lc.l
+    @bom("", "")
+    dac.adac.lc.c
+}
+
+module Firmware {
+    cell pcb = Pcb {}
+
+    @bitstream(pcb)
+    @set_io(clk=A1, data=(A2, A3, A4, A5, A6, A7),
+            out=G2, out_inv=G3)
+    pcb.tiny.fpga
+
+    //@rust("firmware.main")
+    //pcb.lofive.mcu
+}

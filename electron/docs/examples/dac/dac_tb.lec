@@ -1,0 +1,48 @@
+import DAC from "./dac"
+
+declare module Clock(FREQ: Herz) { output clk }
+declare module $V(Voltage) { analog vcc, gnd }
+declare module Sawtooth(WIDTH: Integer) { output data }
+
+export module DACTestbench {
+    // Add a clock
+    net clk
+    cell clk_gen = Clock(FREQ=16MHz) { clk }
+    
+    // IO power
+    net vccio, gnd
+    cell VccIo = $V(3.3V) { vcc=vccio, gnd=gnd }
+    
+    // Driver supply rails
+    net vdd, vss
+    cell Vdd = $V(100V) { vcc=vdd, gnd }
+    cell Vss = $V(100V) { vcc=gnd, gnd=vss }
+
+    // Sawtooth input generator
+    net data
+    cell InputGen = Sawtooth(WIDTH=8) { data } 
+
+    // DAC instance
+    net out
+    cell dac = DAC(WIDTH=8, L=1uH, C=1nF) {
+        clk,
+        vccio,
+        gnd,
+        vdd, vss,
+        data,
+        out,
+    }
+
+    // MOSFET model parameters
+    with dac.adac.halfBridge.drivers.model {
+        @parameter(1)
+        Rg, Rd, Rs
+        @parameter(1uH)
+        Lg, Ld, Ls
+        @parameter(IS=1e-14)
+        Dsd
+    }
+
+    // Capacitive output load
+    cell load = $C(1nF) { out, gnd }
+}
