@@ -6,7 +6,7 @@ import { SymbolTable } from './symbolTable'
 import { IAstDesign, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
-         AstLiteralType } from './ast'
+         Ast, AstLiteralType } from './ast'
 import { allAttributes } from './attributes'
 
 enum Type {
@@ -68,7 +68,7 @@ export class TypeChecker {
             }
 
             for (let stmt of mod.statements) {
-                if ((stmt as IAstDeclStmt).identifier) {
+                if (stmt.ast === Ast.Decl) {
                     this.checkDeclaration(stmt as IAstDeclStmt)
                 } else {
                     if (mod.declaration) {
@@ -80,7 +80,7 @@ export class TypeChecker {
                         })
                     }
 
-                    if ((stmt as IAstAssignStmt).lhs) {
+                    if (stmt.ast === Ast.Assign) {
                         this.checkAssignment(stmt as IAstAssignStmt)
                     }
 
@@ -154,22 +154,28 @@ export class TypeChecker {
     }
 
     checkExpression(expr: AstExpr): IType {
-        if ((expr as IAstLiteral).value) {
-            return this.checkConstant(expr as IAstLiteral)
-        } else if ((expr as IAstIdentifier).id) {
-            return this.checkIdentifier(expr as IAstIdentifier)
-        } else if ((expr as IAstReference).identifier) {
-            return this.checkReference(expr as IAstReference)
-        } else if ((expr as IAstTuple).expressions) {
-            return this.checkConcat(expr as IAstTuple)
-        } else if ((expr as IAstModInst).module) {
-            return this.checkCell(expr as IAstModInst)
-        } else {
-            throw new Error("Programmer error at 'checkExpression'")
+        switch (expr.ast) {
+            case Ast.Literal:
+                return this.checkConstant(expr as IAstLiteral)
+            case Ast.Identifier:
+                return this.checkIdentifier(expr as IAstIdentifier)
+            case Ast.Ref:
+                return this.checkReference(expr as IAstReference)
+            case Ast.Tuple:
+                return this.checkConcat(expr as IAstTuple)
+            case Ast.ModInst:
+                return this.checkCell(expr as IAstModInst)
+            case Ast.AnonymousMod:
+                return {width: 0, ty: Type.Cell} // TODO
+            case Ast.BinOp:
+                return {width: 0, ty: Type.Signal} // TODO
+            default:
+                throw new Error(`Programmer error at 'checkExpression'`)
         }
     }
 
     checkConstant(constant: IAstLiteral): IType {
+        return {width: 0, ty: Type.DigitalSignal} // TODO
         let parts = constant.value.split("'")
         const width: number = parseInt(parts[0])
         const value: string = parts[1]

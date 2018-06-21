@@ -268,8 +268,10 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             declType = AstDeclType.Analog
         } else if (ctx.Cell) {
             declType = AstDeclType.Cell
+        } else if (ctx.Const) {
+            declType = AstDeclType.Const
         } else {
-            throwBug('typeExpression')
+            throwBug('declaration')
         }
 
         const width = this.visit(ctx.width)
@@ -347,8 +349,8 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 expr.src = {
                     startLine: ident.src.startLine,
                     startColumn: ident.src.startColumn,
-                    endLine: expr.dict.src.endLine,
-                    endColumn: expr.dict.src.endColumn,
+                    endLine: (expr.dict.src || ident.src).endLine,
+                    endColumn: (expr.dict.src || ident.src).endColumn,
                 }
             } else {
                 expr = ident
