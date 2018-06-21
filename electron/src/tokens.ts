@@ -117,6 +117,26 @@ export const Ground = createToken({
     label: 'ground',
 })
 
+export const True = createToken({
+    name: 'True',
+    pattern: /true/,
+    longer_alt: Identifier,
+    label: 'true',
+})
+
+export const False = createToken({
+    name: 'False',
+    pattern: /false/,
+    longer_alt: Identifier,
+    label: 'false',
+})
+
+export const With = createToken({
+    name: 'With',
+    pattern: /with/,
+    longer_alt: Identifier,
+    label: 'with',
+})
 
 // Operators
 export const Assign = createToken({
@@ -174,6 +194,12 @@ export const Colon = createToken({
     label: ':',
 })
 
+export const Semicolon = createToken({
+    name: 'Semicolon',
+    pattern: /;/,
+    label: ';',
+})
+
 export const OpenRound = createToken({
     name: 'OpenRound',
     pattern: /\(/,
@@ -218,7 +244,7 @@ export const Constant = createToken({
 
 export const Unit = createToken({
     name: 'Unit',
-    pattern: /(0|[1-9]\d*)(\.[0-9]+)?[GMKkmunpf]?[FHVAW]?/,
+    pattern: /(0|[1-9]\d*)(\.[0-9]+)?[GMKkmunpf]?[FHVAW]?[z]?/,
 })
 
 export const Integer = createToken({

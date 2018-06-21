@@ -1,9 +1,10 @@
 import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
-import { Analog, Assign, Attribute, Cell, Clock, CloseCurly, CloseRound, CloseSquare,
-         Colon, Comma, Comment, Const, Constant, Declare, DocComment, Dot, Export,
-         From, Ground, Identifier, Import, Inout, Input, Integer, Minus, Module, Net,
-         OpenCurly, OpenRound, OpenSquare, Output, Plus, Power, Real, ShiftLeft, ShiftRight,
-         Star, String, Unit, Whitespace } from './tokens'
+import { Analog, Assign, Attribute, Cell, Clock, CloseCurly, CloseRound,
+         CloseSquare, Colon, Comma, Comment, Const, Constant, Declare,
+         DocComment, Dot, Export, False, From, Ground, Identifier, Import,
+         Inout, Input, Integer, Minus, Module, Net, OpenCurly, OpenRound,
+         OpenSquare, Output, Plus, Power, Real, Semicolon, ShiftLeft, ShiftRight,
+         Star, String, True, Unit, With, Whitespace } from './tokens'
 
 export const allTokens = [
     // Whitespace
@@ -24,6 +25,9 @@ export const allTokens = [
     Clock,
     Power,
     Ground,
+    False,
+    True,
+    With,
     // Identifiers
     Identifier,
     Attribute,
@@ -51,6 +55,7 @@ export const allTokens = [
     Dot,
     Colon,
     Comma,
+    Semicolon,
     // Comments
     Comment,
     DocComment
@@ -77,6 +82,7 @@ setScope(Declare, 'keyword')
 setScope(DocComment, 'comment.doc')
 setScope(Dot, 'delimiter')
 setScope(Export, 'keyword')
+setScope(False, 'keyword')
 setScope(From, 'keyword')
 setScope(Ground, 'keyword')
 setScope(Identifier, 'identifier')
@@ -94,11 +100,14 @@ setScope(Output, 'keyword')
 setScope(Plus, 'operator')
 setScope(Power, 'keyword')
 setScope(Real, 'number')
+setScope(Semicolon, 'delimiter')
 setScope(ShiftLeft, 'operator')
 setScope(ShiftRight, 'operator')
 setScope(Star, 'operator')
 setScope(String, 'string')
+setScope(True, 'keyword')
 setScope(Unit, 'number')
+setScope(With, 'keyword')
 setScope(Whitespace, 'whitespace')
 
 export const lexerInstance = new Lexer(allTokens)
@@ -121,106 +130,40 @@ class ElectronParser extends Parser {
 
     public design = this.RULE('design', () => {
         this.MANY({
-            DEF: () => this.SUBRULE(this.importStatement)
+            DEF: () => this.SUBRULE(this.moduleImport)
         })
         this.MANY1({
-            DEF: () => this.SUBRULE(this.moduleStatement)
+            DEF: () => this.SUBRULE(this.moduleDeclaration)
         })
     })
 
-    public importStatement = this.RULE('importStatement', () => {
+    public moduleImport = this.RULE('moduleImport', () => {
         this.CONSUME(Import)
-        this.AT_LEAST_ONE_SEP({
-            SEP: Comma,
-            DEF: () => {
-                this.SUBRULE(this.identifier)
-            }
-        })
+        this.SUBRULE(this.identifiers)
         this.CONSUME(From)
         this.CONSUME(String)
     })
 
-    public moduleStatement = this.RULE('moduleStatement', () => {
+    public moduleDeclaration = this.RULE('moduleDeclaration', () => {
         this.MANY(() => this.SUBRULE(this.attribute))
         this.OPTION(() => { this.CONSUME(Export) })
         this.OPTION1(() => { this.CONSUME(Declare) })
         this.CONSUME(Module)
         this.SUBRULE(this.identifier)
         this.OPTION2(() => this.SUBRULE(this.parameterDeclarationList))
-        this.CONSUME(OpenCurly)
-        this.MANY1(() => { this.SUBRULE(this.statement) })
-        this.CONSUME(CloseCurly)
+        this.SUBRULE(this.statements)
     })
 
+    // Identifiers
     public identifier = this.RULE('identifier', () => {
         this.CONSUME(Identifier)
     })
 
-    // Attributes
-    public attribute = this.RULE('attribute', () => {
-        this.CONSUME(Attribute)
-        this.SUBRULE(this.parameterList)
-    })
-
-    public parameterDeclarationList = this.RULE('parameterDeclarationList', () => {
-        this.CONSUME(OpenRound)
-        this.MANY_SEP({
+    public identifiers = this.RULE('identifiers', () => {
+        this.AT_LEAST_ONE_SEP({
             SEP: Comma,
-            DEF: () => this.SUBRULE(this.parameterDeclaration)
+            DEF: () => { this.SUBRULE(this.identifier) }
         })
-        this.CONSUME(CloseRound)
-    })
-
-    public parameterDeclaration = this.RULE('parameterDeclaration', () => {
-        this.SUBRULE(this.identifier)
-        this.CONSUME(Colon)
-        this.SUBRULE1(this.identifier)
-    })
-
-    public parameterList = this.RULE('parameterList', () => {
-        this.CONSUME(OpenRound)
-        this.MANY_SEP({
-            SEP: Comma,
-            DEF: () => this.SUBRULE(this.parameter),
-        })
-        this.CONSUME(CloseRound)
-    })
-
-    public parameter = this.RULE('parameter', () => {
-        this.OPTION(() => {
-            this.SUBRULE(this.identifier)
-            this.CONSUME(Assign)
-        })
-        this.SUBRULE(this.parameterLiteral)
-    })
-
-    public parameterLiteral = this.RULE('parameterLiteral', () => {
-        this.OR([
-            { ALT: () => this.SUBRULE(this.identifier) },
-            { ALT: () => this.CONSUME(Integer) },
-            { ALT: () => this.CONSUME(Constant) },
-            { ALT: () => this.CONSUME(Unit) },
-            { ALT: () => this.CONSUME(String) },
-        ])
-    })
-
-    // Statements
-    public statement = this.RULE('statement', () => {
-        this.OR([
-            { ALT: () => {
-                this.AT_LEAST_ONE(() => this.SUBRULE(this.attribute))
-                this.OR1([
-                    { ALT: () => this.SUBRULE(this.fullyQualifiedName) },
-                    { ALT: () => this.SUBRULE(this.declaration) },
-                ])
-            }},
-            { ALT: () => {
-                this.OR2([
-                    { ALT: () => this.SUBRULE1(this.declaration) },
-                    { ALT: () => this.SUBRULE(this.assignment) },
-                ])
-            }},
-        ])
     })
 
     public fullyQualifiedName = this.RULE('fullyQualifiedName', () => {
@@ -230,54 +173,132 @@ class ElectronParser extends Parser {
         })
     })
 
-    public assignment = this.RULE('assignment', () => {
-        this.SUBRULE(this.lhs)
+    public fullyQualifiedNames = this.RULE('fullyQualifiedNames', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: Comma,
+            DEF: () => this.SUBRULE(this.fullyQualifiedName)
+        })
+    })
+
+    // Attributes
+    public attribute = this.RULE('attribute', () => {
+        this.CONSUME(Attribute)
+        this.OPTION(() => this.SUBRULE(this.parameterList))
+    })
+
+    public parameterDeclarationList = this.RULE('parameterDeclarationList', () => {
+        this.CONSUME(OpenRound)
+        this.MANY({
+            DEF: () => this.SUBRULE(this.parameterDeclaration)
+        })
+        this.CONSUME(CloseRound)
+    })
+
+    public parameterDeclaration = this.RULE('parameterDeclaration', () => {
+        this.OPTION(() => {
+            this.SUBRULE(this.identifier)
+            this.CONSUME(Colon)
+        })
+        this.SUBRULE1(this.identifier)
+        this.OPTION1(() => this.CONSUME(Comma))
+    })
+
+    public parameterList = this.RULE('parameterList', () => {
+        this.CONSUME(OpenRound)
+        this.MANY({
+            DEF: () => this.SUBRULE(this.parameter),
+        })
+        this.CONSUME(CloseRound)
+    })
+
+    public parameter = this.RULE('parameter', () => {
+        this.OR([
+            { ALT: () => this.SUBRULE(this.identifier) },
+            { ALT: () => this.SUBRULE(this.literal) },
+        ])
+        this.OPTION(() => {
+            this.CONSUME(Assign)
+            this.SUBRULE1(this.expression)
+        })
+        this.OPTION1(() => this.CONSUME(Comma))
+    })
+
+    // Statements
+    public statement = this.RULE('statement', () => {
+        this.OR([
+            { ALT: () => this.SUBRULE(this.attributeStatement) },
+            { ALT: () => this.SUBRULE(this.declaration) },
+            { ALT: () => this.SUBRULE(this.withStatement) },
+            { ALT: () => {
+                this.SUBRULE(this.expressions)
+                this.OR1([
+                    { ALT: () => this.SUBRULE(this.assignStatement) },
+                    { ALT: () => this.SUBRULE(this.applyDictionaryStatement) },
+                ])
+            }}
+        ])
+        this.OPTION(() => this.CONSUME(Semicolon))
+    })
+
+    public statements = this.RULE('statements', () => {
+        this.CONSUME(OpenCurly)
+        this.MANY({
+            DEF: () => this.SUBRULE(this.statement)
+        })
+        this.CONSUME(CloseCurly)
+    })
+
+    public attributeStatement = this.RULE('attributeStatement', () => {
+        this.AT_LEAST_ONE({
+            DEF: () => this.SUBRULE(this.attribute)
+        })
+        this.OR([
+            { ALT: () => this.SUBRULE(this.statements) },
+            { ALT: () => this.SUBRULE(this.declaration) },
+            { ALT: () => this.SUBRULE(this.fullyQualifiedNames) },
+        ])
+    })
+
+    public withStatement = this.RULE('withStatement', () => {
+        this.CONSUME(With)
+        this.SUBRULE(this.fullyQualifiedName)
+        this.SUBRULE(this.statements)
+    })
+
+    public assignStatement = this.RULE('assignStatement', () => {
         this.CONSUME(Assign)
-        this.SUBRULE(this.rhs)
+        this.SUBRULE(this.expressions)
     })
 
-    public lhs = this.RULE('lhs', () => {
-        this.AT_LEAST_ONE_SEP1({
-            SEP: Comma,
-            DEF: () => { this.SUBRULE1(this.expression) }
-        })
-    })
-
-    public rhs = this.RULE('rhs', () => {
-        this.AT_LEAST_ONE_SEP1({
-            SEP: Comma,
-            DEF: () => { this.SUBRULE1(this.expression) }
-        })
+    public applyDictionaryStatement = this.RULE('applyDictionaryStatement', () => {
+        this.SUBRULE(this.dictionary)
     })
 
     public declaration = this.RULE('declaration', () => {
-        this.SUBRULE(this.typeExpression)
-        this.AT_LEAST_ONE_SEP({
-            SEP: Comma,
-            DEF: () => this.SUBRULE(this.identifier)
-        })
-        this.OPTION(() => {
-            this.CONSUME(Assign)
-            this.SUBRULE(this.rhs)
-        })
-    })
-
-    public typeExpression = this.RULE('typeExpression', () => {
         this.OR([
             { ALT: () => this.CONSUME(Net) },
             { ALT: () => this.CONSUME(Input) },
             { ALT: () => this.CONSUME(Output) },
             { ALT: () => this.CONSUME(Inout) },
             { ALT: () => this.CONSUME(Analog) },
+            { ALT: () => this.CONSUME(Clock) },
+            { ALT: () => this.CONSUME(Ground) },
+            { ALT: () => this.CONSUME(Power) },
             { ALT: () => this.CONSUME(Cell) },
+            { ALT: () => this.CONSUME(Const) },
         ])
         this.SUBRULE(this.width)
+        this.SUBRULE(this.identifiers)
+        this.OPTION(() => {
+            this.CONSUME(Assign)
+            this.SUBRULE(this.expressions)
+        })
     })
 
     public width = this.RULE('width', () => {
         this.OPTION(() => {
             this.CONSUME(OpenSquare)
-            this.CONSUME(Integer)
+            this.SUBRULE(this.expression)
             this.CONSUME(CloseSquare)
         })
     })
@@ -285,70 +306,101 @@ class ElectronParser extends Parser {
     // Expressions
     public expression = this.RULE('expression', () => {
         this.OR([
-            { ALT: () => this.SUBRULE(this.signalLiteral) },
-            { ALT: () => this.SUBRULE(this.concatExpression) },
+            { ALT: () => this.SUBRULE(this.literal) },
+            { ALT: () => this.SUBRULE(this.tupleExpression) },
+            { ALT: () => this.SUBRULE(this.anonymousModule) },
             { ALT: () => {
-                this.SUBRULE(this.identifier)
-                this.OPTION(() => {
+                this.SUBRULE1(this.identifier)
+                this.OPTION1(() => {
                     this.OR1([
                         { ALT: () => this.SUBRULE(this.referenceExpression) },
-                        { ALT: () => this.SUBRULE(this.cellExpression) },
+                        { ALT: () => this.SUBRULE(this.moduleInstantiation) },
                     ])
                 })
-            }}
+            }},
+        ])
+        this.OPTION(() => this.SUBRULE(this.binaryOp))
+    })
+
+    public literal = this.RULE('literal', () => {
+        this.OR([
+            { ALT: () => this.CONSUME(Integer) },
+            { ALT: () => this.CONSUME(Constant) },
+            { ALT: () => this.CONSUME(Unit) },
+            { ALT: () => this.CONSUME(String) },
+            { ALT: () => this.CONSUME(Real) },
+            { ALT: () => this.CONSUME(True) },
+            { ALT: () => this.CONSUME(False) },
         ])
     })
 
-    public signalLiteral = this.RULE('signalLiteral', () => {
-        this.CONSUME(Constant)
+    public expressions = this.RULE('expressions', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: Comma,
+            DEF: () => this.SUBRULE(this.expression)
+        })
     })
 
-    public concatExpression = this.RULE('concatExpression', () => {
+    public binaryOp = this.RULE('binaryOp', () => {
+        // TODO proper precedence parsing
+        this.OR([
+            { ALT: () => this.CONSUME(Plus) },
+            { ALT: () => this.CONSUME(Minus) },
+            { ALT: () => this.CONSUME(Star) },
+            { ALT: () => this.CONSUME(ShiftLeft) },
+            { ALT: () => this.CONSUME(ShiftRight) },
+        ])
+        this.SUBRULE(this.expression)
+    })
+
+    public tupleExpression = this.RULE('tupleExpression', () => {
         this.CONSUME(OpenRound)
-        this.MANY_SEP({
+        this.AT_LEAST_ONE_SEP({
             SEP: Comma,
             DEF: () => { this.SUBRULE(this.expression) }
         })
         this.CONSUME(CloseRound)
     })
 
+    public dictionary = this.RULE('dictionary', () => {
+        this.CONSUME(OpenCurly)
+        this.MANY({
+            DEF: () => { this.SUBRULE(this.dictionaryEntry) }
+        })
+        this.OPTION(() => this.CONSUME(Star))
+        this.CONSUME(CloseCurly)
+    })
+
+    public dictionaryEntry = this.RULE('dictionaryEntry', () => {
+        this.SUBRULE(this.identifier)
+        this.OPTION(() => {
+            this.CONSUME(Assign)
+            this.SUBRULE(this.expression)
+        })
+        this.OPTION1(() => this.CONSUME(Comma))
+    })
+
     public referenceExpression = this.RULE('referenceExpression', () => {
         this.CONSUME(OpenSquare)
-        this.CONSUME(Integer)
-        this.OPTION1(() => {
+        this.SUBRULE(this.expression)
+        this.OPTION(() => {
             this.CONSUME(Colon)
-            this.CONSUME1(Integer)
+            this.SUBRULE1(this.expression)
         })
         this.CONSUME(CloseSquare)
     })
 
-    public cellExpression = this.RULE('cellExpression', () => {
-        this.OR([
-            { ALT: () => {
-                this.SUBRULE(this.parameterList)
-                this.SUBRULE(this.width)
-                this.SUBRULE(this.cellBody)
-            }},
-            { ALT: () => this.SUBRULE1(this.cellBody) },
-        ])
+    public anonymousModule = this.RULE('anonymousModule', () => {
+        this.CONSUME(Module)
+        this.SUBRULE(this.statements)
     })
 
-    public cellBody = this.RULE('cellBody', () => {
-        this.CONSUME(OpenCurly)
-        this.MANY_SEP({
-            SEP: Comma,
-            DEF: () => this.SUBRULE(this.connection),
-        })
-        this.CONSUME(CloseCurly)
+    public moduleInstantiation = this.RULE('moduleInstantiation', () => {
+        this.SUBRULE(this.parameterList)
+        this.SUBRULE(this.width)
+        this.OPTION1(() => this.SUBRULE(this.dictionary))
     })
 
-    public connection = this.RULE('connection', () => {
-        this.SUBRULE(this.identifier)
-        this.OPTION1(() => {
-            this.CONSUME(Assign)
-            this.SUBRULE(this.expression)
-        })
-    })
 }
 
 export const parserInstance = new ElectronParser([])

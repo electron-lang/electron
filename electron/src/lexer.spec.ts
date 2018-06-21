@@ -53,6 +53,8 @@ describe('Lexer', () => {
         expectLabel("'symbol", 'Identifier')
         expectLabel('"a string"', 'String')
         expectLabel('1e-3', 'Real')
+        expectLabel('true', 'True')
+        expectLabel('false', 'False')
     })
 
     it('should ignore comments', () => {

@@ -7,7 +7,7 @@ describe('Parser', () => {
 
     it('should parse import statement', () => {
         const parseImport = (text: string) => {
-            parseRule(text, () => { parser.importStatement() })
+            parseRule(text, () => { parser.moduleImport() })
         }
         parseImport('import a, b from "package"')
         parseImport('import a from "./file"')
@@ -15,35 +15,37 @@ describe('Parser', () => {
 
     it('should parse modules', () => {
         const parseModule = (text: string) => {
-            parseRule(text, () => { parser.moduleStatement() })
+            parseRule(text, () => { parser.moduleDeclaration() })
         }
         parseModule('module MOD {}')
         parseModule('export module MOD {}')
         parseModule('declare module MOD {}')
         parseModule("@model(A) module MOD {}")
         parseModule('module MOD(R: Ohm, C: Farad) {}')
+        parseModule('module A(R: Ohm,) {}')
     })
 
     it('should parse attributes', () => {
         const parseAttribute = (text: string) => {
             parseRule(text, () => { parser.attribute() })
         }
+        parseAttribute('@left')
         parseAttribute('@src("file:8")')
         parseAttribute('@bom("Yago", "XYZ")')
         parseAttribute('@model(A)')
     })
 
-    it('should parse types', () => {
+    it('should parse declarations', () => {
         const parseType = (text: string) => {
-            parseRule(text, () => { parser.typeExpression() })
+            parseRule(text, () => { parser.declaration() })
         }
-        parseType('net')
-        parseType('net[2]')
-        parseType('output')
-        parseType('input')
-        parseType('inout')
-        parseType('analog')
-        parseType('cell')
+        parseType('net a')
+        parseType('net[2] a')
+        parseType('output a')
+        parseType('input a')
+        parseType('inout a')
+        parseType('analog a')
+        parseType('cell a')
     })
 
     it('should parse expressions', () => {
@@ -63,17 +65,19 @@ describe('Parser', () => {
         parseExpression('(a, b)')
         parseExpression('(a, (b, c))')
         // Cell
-        parseExpression('$R {}')
-        parseExpression("$R(10k) {}")
+        parseExpression('$R() {}')
+        parseExpression('$R(10k) {}')
+        parseExpression('$R(10k,) {}')
         parseExpression("$R(power_rating=125mW) {}")
         parseExpression("$R(10k, power_rating=125mW) {}")
         parseExpression('$R()[2] {}')
         parseExpression("$R(10k)[2] {}")
-        parseExpression('$R {A}')
-        parseExpression('$R {A=a}')
-        parseExpression('$R {A=(a, b)}')
-        parseExpression('$R {A, A=a, A=(a, b), B=(a, b)}')
-        parseExpression('DAC {}')
+        parseExpression('$R() {A}')
+        parseExpression('$R() {A=a}')
+        parseExpression('$R() {A=(a, b)}')
+        parseExpression('$R() {A, A=a, A=(a, b), B=(a, b),}')
+        parseExpression('DAC() {}')
+        parseExpression('module { @left @set_pad(1) analog TP }')
     })
 
     it('should parse statements', () => {
@@ -87,5 +91,7 @@ describe('Parser', () => {
         parseStatement("output a = 1'1")
         parseStatement('@width(10) net a')
         parseStatement('@bom("Yago", "XYZ") a.b.c')
+        parseStatement('with a.b { @bom("") c; @bom("") d;}')
+        parseStatement('@group { analog A, B }')
     })
 })
