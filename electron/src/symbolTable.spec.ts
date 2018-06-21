@@ -1,14 +1,19 @@
 import { expect } from 'chai'
-import { IAstModule, IAstDeclStmt, AstDeclType, AstLiteralType } from './ast'
+import { IAstModule, IAstDeclStmt, Ast, AstDeclType, AstLiteralType } from './ast'
 import { emptySrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 
 function makeModule(id: string): IAstModule {
     return {
+        ast: Ast.Module,
         attributes: [],
         exported: false,
         declaration: false,
-        identifier: { id, src: emptySrcLoc },
+        identifier: {
+            ast: Ast.Identifier,
+            id,
+            src: emptySrcLoc
+        },
         parameters: [],
         statements: [],
     }
@@ -16,12 +21,18 @@ function makeModule(id: string): IAstModule {
 
 function makeOutput(id: string): IAstDeclStmt {
     return {
+        ast: Ast.Decl,
         declType: AstDeclType.Output,
         width: {
+            ast: Ast.Literal,
             value: '1',
             litType: AstLiteralType.Integer,
         },
-        identifier: { id, src: emptySrcLoc },
+        identifier: {
+            ast: Ast.Identifier,
+            id,
+            src: emptySrcLoc
+        },
     }
 }
 

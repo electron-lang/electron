@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { elaborate } from './elaborator'
-import { AstLiteralType, AstDeclType, AstStmt, AstExpr, IAstDesign, IAstDeclStmt } from './ast'
+import { Ast, AstLiteralType, AstDeclType, AstStmt, AstExpr,
+    IAstDesign, IAstDeclStmt, IAstIdentifier, IAstLiteral } from './ast'
 
 function getLoc(text: string, offset: number) {
     return {
@@ -11,22 +12,49 @@ function getLoc(text: string, offset: number) {
     }
 }
 
+function makeIdentifier(name: string, offset: number): IAstIdentifier {
+    return {
+        ast: Ast.Identifier,
+        id: name,
+        src: getLoc(name, offset),
+    }
+}
+
+function makeInteger(int: number, offset: number): IAstLiteral {
+    const value = int.toString()
+    return {
+        ast: Ast.Literal,
+        litType: AstLiteralType.Integer,
+        value,
+        src: getLoc(value, offset),
+    }
+}
+
+function makeString(str: string, offset: number): IAstLiteral {
+    const value = '"' + str + '"'
+    return {
+        ast: Ast.Literal,
+        litType: AstLiteralType.String,
+        value,
+        src: getLoc(value, offset),
+    }
+}
+
 function expectAst(text: string, ast: IAstDesign) {
     expect(elaborate(text)).to.deep.equal(ast)
 }
 
 function expectAstModule(text: string, smts: AstStmt[]) {
     expectAst('module A {' + text + '}', {
+        ast: Ast.Design,
         imports: [],
         modules: [
             {
+                ast: Ast.Module,
                 attributes: [],
                 exported: false,
                 declaration: false,
-                identifier: {
-                    id: 'A',
-                    src: getLoc('A', 8),
-                },
+                identifier: makeIdentifier('A', 8),
                 parameters: [],
                 statements: smts
             }
@@ -37,7 +65,8 @@ function expectAstModule(text: string, smts: AstStmt[]) {
 function expectAstExpr(text: string, e: AstExpr) {
     expectAstModule('a = ' + text, [
         {
-            lhs: { id: 'a', src: getLoc('a', 1 + 10) },
+            ast: Ast.Assign,
+            lhs: makeIdentifier('a', 1 + 10),
             rhs: e,
         }
     ])
@@ -46,17 +75,13 @@ function expectAstExpr(text: string, e: AstExpr) {
 describe('Elaborator', () => {
     it('should elaborate to IAstImport', () => {
         expectAst('import a, b from "package"', {
+            ast: Ast.Design,
             imports: [
                 {
+                    ast: Ast.Import,
                     identifiers: [
-                        {
-                            id: 'a',
-                            src: getLoc('a', 8)
-                        },
-                        {
-                            id: 'b',
-                            src: getLoc('b', 11)
-                        }
+                        makeIdentifier('a', 8),
+                        makeIdentifier('b', 11),
                     ],
                     package: 'package',
                     src: getLoc('"package"', 18),
@@ -66,14 +91,11 @@ describe('Elaborator', () => {
         })
 
         expectAst('import a from "./file"', {
+            ast: Ast.Design,
             imports: [
                 {
-                    identifiers: [
-                        {
-                            id: 'a',
-                            src: getLoc('a', 8)
-                        }
-                    ],
+                    ast: Ast.Import,
+                    identifiers: [ makeIdentifier('a', 8) ],
                     package: './file',
                     src: getLoc('"./file"', 15),
                 }
@@ -84,16 +106,15 @@ describe('Elaborator', () => {
 
     it('should elaborate to IAstModule', () => {
         expectAst('module A {}', {
+            ast: Ast.Design,
             imports: [],
             modules: [
                 {
+                    ast: Ast.Module,
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    identifier: {
-                        id: 'A',
-                        src: getLoc('A', 8),
-                    },
+                    identifier: makeIdentifier('A', 8),
                     parameters: [],
                     statements: [],
                 }
@@ -101,16 +122,15 @@ describe('Elaborator', () => {
         })
 
         expectAst('export module A {}', {
+            ast: Ast.Design,
             imports: [],
             modules: [
                 {
+                    ast: Ast.Module,
                     attributes: [],
                     exported: true,
                     declaration: false,
-                    identifier: {
-                        id: 'A',
-                        src: getLoc('A', 15)
-                    },
+                    identifier: makeIdentifier('A', 15),
                     parameters: [],
                     statements: [],
                 }
@@ -118,16 +138,15 @@ describe('Elaborator', () => {
         })
 
         expectAst('declare module A {}', {
+            ast: Ast.Design,
             imports: [],
             modules: [
                 {
+                    ast: Ast.Module,
                     attributes: [],
                     exported: false,
                     declaration: true,
-                    identifier: {
-                        id: 'A',
-                        src: getLoc('A', 16)
-                    },
+                    identifier: makeIdentifier('A', 16),
                     parameters: [],
                     statements: [],
                 }
@@ -135,38 +154,36 @@ describe('Elaborator', () => {
         })
 
         expectAst('@bom("Yago", "XYZ") module A {}', {
+            ast: Ast.Design,
             imports: [],
             modules: [
                 {
+                    ast: Ast.Module,
                     attributes: [
                         {
-                            name: { id: 'bom', src: getLoc('@bom', 1) },
+                            ast: Ast.Attribute,
+                            name: {
+                                ast: Ast.Identifier,
+                                id: 'bom',
+                                src: getLoc('@bom', 1)
+                            },
                             parameters: [
                                 {
+                                    ast: Ast.Param,
                                     name: null,
-                                    value: {
-                                        litType: AstLiteralType.String,
-                                        value: '"Yago"',
-                                        src: getLoc('"Yago"', 6),
-                                    }
+                                    value: makeString('Yago', 6),
                                 },
                                 {
+                                    ast: Ast.Param,
                                     name: null,
-                                    value: {
-                                        litType: AstLiteralType.String,
-                                        value: '"XYZ"',
-                                        src: getLoc('"XYZ"', 14),
-                                    }
+                                    value: makeString('XYZ', 14)
                                 }
                             ]
                         }
                     ],
                     exported: false,
                     declaration: false,
-                    identifier: {
-                        id: 'A',
-                        src: getLoc('A', 28)
-                    },
+                    identifier: makeIdentifier('A', 28),
                     parameters: [],
                     statements: [],
                 }
@@ -177,12 +194,11 @@ describe('Elaborator', () => {
     it('should elaborate to AstStatement', () => {
         expectAstModule('net a', [
             {
-                identifier: {
-                    id: 'a',
-                    src: getLoc('a', 5 + 10)
-                },
+                ast: Ast.Decl,
+                identifier: makeIdentifier('a', 5 + 10),
                 declType: AstDeclType.Net,
                 width: {
+                    ast: Ast.Literal,
                     litType: AstLiteralType.Integer,
                     value: '1',
                 },
@@ -191,38 +207,30 @@ describe('Elaborator', () => {
 
         expectAstModule('net[2] a', [
             {
-                identifier: {
-                    id: 'a',
-                    src: getLoc('a', 8 + 10)
-                },
+                ast: Ast.Decl,
+                identifier: makeIdentifier('a', 8 + 10),
                 declType: AstDeclType.Net,
-                width: {
-                    litType: AstLiteralType.Integer,
-                    value: '2',
-                    src: getLoc('2', 5 + 10),
-                },
+                width: makeInteger(2, 5 + 10),
             }
         ])
 
         expectAstModule('net a, b', [
             {
-                identifier: {
-                    id: 'a',
-                    src: getLoc('a', 5 + 10)
-                },
+                ast: Ast.Decl,
+                identifier: makeIdentifier('a', 5 + 10),
                 declType: AstDeclType.Net,
                 width: {
+                    ast: Ast.Literal,
                     litType: AstLiteralType.Integer,
                     value: '1',
                 },
             },
             {
-                identifier: {
-                    id: 'b',
-                    src: getLoc('b', 8 + 10)
-                },
+                ast: Ast.Decl,
+                identifier: makeIdentifier('b', 8 + 10),
                 declType: AstDeclType.Net,
                 width: {
+                    ast: Ast.Literal,
                     litType: AstLiteralType.Integer,
                     value: '1',
                 },
@@ -284,24 +292,22 @@ describe('Elaborator', () => {
             }
         ])*/
 
-        const a_decl = {
-            identifier: {
-                id: 'a',
-                src: getLoc('a', 5 + 10),
-            },
+        const a_decl: IAstDeclStmt = {
+            ast: Ast.Decl,
+            identifier: makeIdentifier('a', 5 + 10),
             declType: AstDeclType.Net,
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
         }
-        const b_decl = {
-            identifier: {
-                id: 'b',
-                src: getLoc('b', 8 + 10),
-            },
+        const b_decl: IAstDeclStmt = {
+            ast: Ast.Decl,
+            identifier: makeIdentifier('b', 8 + 10),
             declType: AstDeclType.Net,
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
@@ -310,62 +316,47 @@ describe('Elaborator', () => {
         expectAstModule('net a = c', [
             a_decl,
             {
-                lhs: {
-                    id: 'a',
-                    src: getLoc('a', 5 + 10)
-                },
-                rhs: {
-                    id: 'c',
-                    src: getLoc('c', 9 + 10)
-                },
+                ast: Ast.Assign,
+                lhs: makeIdentifier('a', 5 + 10),
+                rhs: makeIdentifier('c', 9 + 10),
             }
         ])
 
         expectAstModule('net a, b = c, d', [
             a_decl, b_decl,
             {
-                lhs: { id: 'a', src: getLoc('a', 5 + 10) },
-                rhs: { id: 'c', src: getLoc('c', 12 + 10) },
+                ast: Ast.Assign,
+                lhs: makeIdentifier('a', 5 + 10),
+                rhs: makeIdentifier('c', 12 + 10),
             },
             {
-                lhs: { id: 'b', src: getLoc('b', 8 + 10) },
-                rhs: { id: 'd', src: getLoc('d', 15 + 10) },
+                ast: Ast.Assign,
+                lhs: makeIdentifier('b', 8 + 10),
+                rhs: makeIdentifier('d', 15 + 10),
             }
         ])
 
         expectAstModule('net a, b = c[0], d[1]', [
             a_decl, b_decl,
             {
-                lhs: { id: 'a', src: getLoc('a', 5 + 10) },
+                ast: Ast.Assign,
+                lhs: makeIdentifier('a', 5 + 10),
                 rhs: {
-                    identifier: {id: 'c', src: getLoc('c', 12 + 10)},
-                    'from': {
-                        litType: AstLiteralType.Integer,
-                        value: '0',
-                        src: getLoc('0', 14 + 10),
-                    },
-                    'to': {
-                        litType: AstLiteralType.Integer,
-                        value: '0',
-                        src: getLoc('0', 14 + 10),
-                    },
+                    ast: Ast.Ref,
+                    identifier: makeIdentifier('c', 12 + 10),
+                    from: makeInteger(0, 14 + 10),
+                    to: makeInteger(0, 14 + 10),
                     src: getLoc('c[0]', 12 + 10),
                 },
             },
             {
-                lhs: { id: 'b', src: getLoc('b', 8 + 10) },
+                ast: Ast.Assign,
+                lhs: makeIdentifier('b', 8 + 10),
                 rhs: {
-                    identifier: {id: 'd', src: getLoc('d', 18 + 10) },
-                    'from': {
-                        litType: AstLiteralType.Integer,
-                        value: '1',
-                        src: getLoc('1', 20 + 10),
-                    },
-                    'to': {
-                        litType: AstLiteralType.Integer,
-                        value: '1',
-                        src: getLoc('1', 20 + 10),
-                    },
+                    ast: Ast.Ref,
+                    identifier: makeIdentifier('d', 18 + 10),
+                    from: makeInteger(1, 20 + 10),
+                    to: makeInteger(1, 20 + 10),
                     src: getLoc('d[1]', 18 + 10),
                 },
             }
@@ -399,15 +390,17 @@ describe('Elaborator', () => {
 
     it('should elaborate to AstExpr', () => {
         expectAstExpr('(a, b, c)', {
+            ast: Ast.Tuple,
             expressions: [
-                { id: 'a', src: getLoc('a', 2 + 14) },
-                { id: 'b', src: getLoc('b', 5 + 14) },
-                { id: 'c', src: getLoc('c', 8 + 14) },
+                makeIdentifier('a', 2 + 14),
+                makeIdentifier('b', 5 + 14),
+                makeIdentifier('c', 8 + 14),
             ],
             src: getLoc('(a, b, c)', 1 + 14),
         })
 
         expectAstExpr("4'01xz", {
+            ast: Ast.Literal,
             value: "4'01xz",
             litType: AstLiteralType.Constant,
             src: getLoc("4'01xz", 1 + 14),
@@ -415,64 +408,62 @@ describe('Elaborator', () => {
 
 
         expectAstExpr('a[2:3]', {
-            identifier: { id: 'a', src: getLoc('a', 1 + 14) },
-            from: {
-                litType: AstLiteralType.Integer,
-                value: '2',
-                src: getLoc('2', 3 + 14),
-            },
-            to: {
-                litType: AstLiteralType.Integer,
-                value: '3',
-                src: getLoc('3', 5 + 14),
-            },
+            ast: Ast.Ref,
+            identifier: makeIdentifier('a', 1 + 14),
+            from: makeInteger(2, 3 + 14),
+            to: makeInteger(3, 5 + 14),
             src: getLoc('a[2:3]', 1 + 14),
         })
 
         expectAstExpr('a[2]', {
-            identifier: { id: 'a', src: getLoc('a', 1 + 14) },
-            from: {
-                litType: AstLiteralType.Integer,
-                value: '2',
-                src: getLoc('2', 3 + 14),
-            },
-            to: {
-                litType: AstLiteralType.Integer,
-                value: '2',
-                src: getLoc('2', 3 + 14),
-            },
+            ast: Ast.Ref,
+            identifier: makeIdentifier('a', 1 + 14),
+            from: makeInteger(2, 3 + 14),
+            to: makeInteger(2, 3 + 14),
             src: getLoc('a[2]', 1 + 14),
         })
 
         expectAstExpr('$R() {}', {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
             parameters: [],
-            dict: {entries: [], star: false, src: getLoc('{}', 6 + 14)},
+            dict: {
+                ast: Ast.Dict,
+                entries: [],
+                star: false,
+                src: getLoc('{}', 6 + 14)
+            },
             src: getLoc('$R() {}', 1 + 14),
         })
 
         expectAstExpr('$R()[2] {}', {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: {
-                litType: AstLiteralType.Integer,
-                value: '2',
-                src: getLoc('2', 6 + 14)
-            },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
+            width: makeInteger(2, 6 + 14),
             parameters: [],
-            dict: {entries: [], star: false, src: getLoc('{}', 9 + 14)},
+            dict: {
+                ast: Ast.Dict,
+                entries: [],
+                star: false,
+                src: getLoc('{}', 9 + 14)
+            },
             src: getLoc('$R()[2] {}', 1 + 14),
         })
 
         expectAstExpr("$R(10k) {}", {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
             parameters: [
                 {
+                    ast: Ast.Param,
                     name: null,
                     value: {
+                        ast: Ast.Literal,
                         value: '10k',
                         litType: AstLiteralType.Unit,
                         src: getLoc('10k', 4 + 14),
@@ -480,25 +471,35 @@ describe('Elaborator', () => {
                 }
             ],
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
-            dict: {entries: [], star: false, src: getLoc('{}', 9 + 14)},
+            dict: {
+                ast: Ast.Dict,
+                entries: [],
+                star: false,
+                src: getLoc('{}', 9 + 14)
+            },
             src: getLoc('$R(10k) {}', 1 + 14),
         })
 
         expectAstExpr("$R() {A}", {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
             parameters: [],
             dict: {
+                ast: Ast.Dict,
                 entries: [
                     {
-                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
-                        expr: { id: 'A', src: getLoc('A', 7 + 14) },
+                        ast: Ast.DictEntry,
+                        identifier: makeIdentifier('A', 7 + 14),
+                        expr: makeIdentifier('A', 7 + 14),
                     }
                 ],
                 star: false,
@@ -508,17 +509,21 @@ describe('Elaborator', () => {
         })
 
         expectAstExpr("$R() {A=a}", {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
             parameters: [],
             dict: {
+                ast: Ast.Dict,
                 entries: [
                     {
-                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
-                        expr: { id: 'a', src: getLoc('a', 9 + 14) },
+                        ast: Ast.DictEntry,
+                        identifier: makeIdentifier('A', 7 + 14),
+                        expr: makeIdentifier('a', 9 + 14),
                     }
                 ],
                 star: false,
@@ -528,21 +533,26 @@ describe('Elaborator', () => {
         })
 
         expectAstExpr("$R() {A, B=b}", {
-            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            ast: Ast.ModInst,
+            module: makeIdentifier('$R', 1 + 14),
             width: {
+                ast: Ast.Literal,
                 litType: AstLiteralType.Integer,
                 value: '1',
             },
             parameters: [],
             dict: {
+                ast: Ast.Dict,
                 entries: [
                     {
-                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
-                        expr: { id: 'A', src: getLoc('A', 7 + 14) },
+                        ast: Ast.DictEntry,
+                        identifier: makeIdentifier('A', 7 + 14),
+                        expr: makeIdentifier('A', 7 + 14),
                     },
                     {
-                        identifier: { id: 'B', src: getLoc('B', 10 + 14) },
-                        expr: { id: 'b', src: getLoc('b', 12 + 14) },
+                        ast: Ast.DictEntry,
+                        identifier: makeIdentifier('B', 10 + 14),
+                        expr: makeIdentifier('b', 12 + 14),
                     }
                 ],
                 star: false,

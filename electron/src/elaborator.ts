@@ -2,8 +2,9 @@ import { parserInstance, parse } from './parser'
 import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
          IAstDesign, IAstFQN, IAstIdentifier, IAstImport, IAstLiteral,
          IAstModule, IAstParam, IAstReference, AstLiteralType,
-         AstExpr, AstStmt, IAstParamDecl, IAstAttributeStmt, IAstWithStmt,
-    IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule, IAstApplyDictStmt } from './ast'
+         Ast, AstExpr, AstStmt, IAstParamDecl, IAstAttributeStmt, IAstWithStmt,
+         IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule,
+         IAstApplyDictStmt } from './ast'
 import { IDiagnostic, DiagnosticType, DiagnosticSeverity,
          ISrcLoc, tokenToSrcLoc } from './diagnostic'
 
@@ -51,6 +52,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
 
         return {
+            ast: Ast.Design,
             imports,
             modules,
         }
@@ -58,6 +60,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     moduleImport(ctx: any): IAstImport {
         return {
+            ast: Ast.Import,
             src: tokenToSrcLoc(ctx.String[0]),
             identifiers: this.visit(ctx.identifiers),
             package: parseString(ctx.String[0].image)
@@ -65,7 +68,8 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     moduleDeclaration(ctx: any): IAstModule {
-        let mod = {
+        let mod: IAstModule = {
+            ast: Ast.Module,
             attributes: [],
             exported: !!ctx.Export,
             declaration: !!ctx.Declare,
@@ -90,6 +94,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     identifier(ctx: any): IAstIdentifier {
         return {
+            ast: Ast.Identifier,
             src: tokenToSrcLoc(ctx.Identifier[0]),
             id: ctx.Identifier[0].image,
         }
@@ -101,6 +106,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     fullyQualifiedName(ctx: any): IAstFQN {
         return {
+            ast: Ast.FQN,
             fqn: ctx.identifer.map((ctx: any) => this.visit(ctx))
         }
     }
@@ -112,7 +118,9 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     // Attributes
     attribute(ctx: any): IAstAttribute {
         return {
+            ast: Ast.Attribute,
             name: {
+                ast: Ast.Identifier,
                 id: parseAttribute(ctx.Attribute[0].image),
                 src: tokenToSrcLoc(ctx.Attribute[0]),
             },
@@ -129,6 +137,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     parameterDeclaration(ctx: any): IAstParamDecl {
         return {
+            ast: Ast.ParamDecl,
             name: this.visit(ctx.identifier[0]),
             ty: this.visit(ctx.identifier[1]),
         }
@@ -144,11 +153,13 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     parameter(ctx: any): IAstParam {
         if (ctx.expression.length > 1) {
             return {
+                ast: Ast.Param,
                 name: this.visit(ctx.expression[0]),
                 value: this.visit(ctx.expression[1]),
             }
         } else {
             return {
+                ast: Ast.Param,
                 name: null,
                 value: this.visit(ctx.expression[0]),
             }
@@ -192,6 +203,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 let assigns: IAstAssignStmt[] = []
                 for (let i = 0; i < Math.min(exprs.length, rhs.length); i++) {
                     assigns.push({
+                        ast: Ast.Assign,
                         lhs: exprs[i],
                         rhs: rhs[i],
                     })
@@ -201,7 +213,9 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
             if (ctx.applyDictionaryStatement) {
                 const dict = this.visit(ctx.applyDictionaryStatement[0])
-                return exprs.map((expr: AstExpr) => { return {expr, dict} })
+                return exprs.map((expr: AstExpr) => {
+                    return {ast: Ast.ApplyDict, expr, dict}
+                })
             }
         }
 
@@ -218,6 +232,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     attributeStatement(ctx: any): IAstAttributeStmt {
         // TODO
         return {
+            ast: Ast.Attribute,
             attributes: ctx.attribute.map((ctx: any) => this.visit(ctx)),
             statements: [],
         }
@@ -225,6 +240,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     withStatement(ctx: any): IAstWithStmt {
         return {
+            ast: Ast.With,
             scope: this.visit(ctx.fullyQualifiedName[0]),
             statements: this.visit(ctx.statements[0]),
         }
@@ -260,6 +276,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         const ids = this.visit(ctx.identifiers[0])
         const decls = ids.map((id: IAstIdentifier) => {
             return {
+                ast: Ast.Decl,
                 declType,
                 width,
                 identifier: id,
@@ -285,6 +302,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
             for (let i = 0; i < Math.min(ids.length, exprs.length); i++) {
                 assigns.push({
+                    ast: Ast.Assign,
                     lhs: ids[i],
                     rhs: exprs[i],
                 })
@@ -299,6 +317,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             return this.visit(ctx.expression[0])
         }
         return {
+            ast: Ast.Literal,
             value: '1',
             litType: AstLiteralType.Integer,
         }
@@ -350,6 +369,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     literal(ctx: any): IAstLiteral {
         if (ctx.Integer) {
             return {
+                ast: Ast.Literal,
                 value: ctx.Integer[0].image,
                 litType: AstLiteralType.Integer,
                 src: tokenToSrcLoc(ctx.Integer[0]),
@@ -358,6 +378,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.Constant) {
             return {
+                ast: Ast.Literal,
                 value: ctx.Constant[0].image,
                 litType: AstLiteralType.Constant,
                 src: tokenToSrcLoc(ctx.Constant[0]),
@@ -366,6 +387,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.Unit) {
             return {
+                ast: Ast.Literal,
                 value: ctx.Unit[0].image,
                 litType: AstLiteralType.Unit,
                 src: tokenToSrcLoc(ctx.Unit[0]),
@@ -374,6 +396,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.String) {
             return {
+                ast: Ast.Literal,
                 value: ctx.String[0].image,
                 litType: AstLiteralType.String,
                 src: tokenToSrcLoc(ctx.String[0]),
@@ -382,6 +405,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.Real) {
             return {
+                ast: Ast.Literal,
                 value: ctx.Real[0].image,
                 litType: AstLiteralType.Real,
                 src: tokenToSrcLoc(ctx.Real[0]),
@@ -390,6 +414,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.True) {
             return {
+                ast: Ast.Literal,
                 value: ctx.True[0].image,
                 litType: AstLiteralType.Boolean,
                 src: tokenToSrcLoc(ctx.True[0]),
@@ -398,6 +423,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         if (ctx.False) {
             return {
+                ast: Ast.Literal,
                 value: ctx.False[0].image,
                 litType: AstLiteralType.Boolean,
                 src: tokenToSrcLoc(ctx.False[0]),
@@ -406,7 +432,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         throwBug('literal')
         // Make typechecker happy
-        return { value: '', litType: AstLiteralType.Boolean }
+        return { ast: Ast.Literal, value: '', litType: AstLiteralType.Boolean }
     }
 
     expressions(ctx: any): AstExpr[] {
@@ -431,11 +457,17 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             throwBug('binaryOp')
         }
 
-        return { op, lhs: { id: '' }, rhs: this.visit(ctx.expression[0]) }
+        return {
+            ast: Ast.BinOp,
+            op,
+            lhs: { ast: Ast.Identifier, id: '' },
+            rhs: this.visit(ctx.expression[0])
+        }
     }
 
     tupleExpression(ctx: any): IAstTuple {
         return {
+            ast: Ast.Tuple,
             expressions: this.visit(ctx.expressions[0]),
             src: {
                 startLine: ctx.OpenRound[0].startLine,
@@ -453,6 +485,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
 
         return {
+            ast: Ast.Dict,
             entries,
             star: !!ctx.Star,
             src: {
@@ -468,9 +501,17 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         const identifier = this.visit(ctx.identifier[0])
 
         if (ctx.expression) {
-            return { identifier, expr: this.visit(ctx.expression[0]) }
+            return {
+                ast: Ast.DictEntry,
+                identifier,
+                expr: this.visit(ctx.expression[0])
+            }
         } else {
-            return { identifier, expr: identifier }
+            return {
+                ast: Ast.DictEntry,
+                identifier,
+                expr: identifier
+            }
         }
     }
 
@@ -482,7 +523,8 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         }
 
         return {
-            identifier: { id: '' },
+            ast: Ast.Ref,
+            identifier: { ast: Ast.Identifier, id: '' },
             from: from_,
             to,
             src: {
@@ -495,15 +537,19 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     anonymousModule(ctx: any): IAstAnonymousModule {
-        return { statements: this.visit(ctx.statements[0]) }
+        return {
+            ast: Ast.AnonymousMod,
+            statements: this.visit(ctx.statements[0])
+        }
     }
 
     moduleInstantiation(ctx: any): IAstModInst {
-        let inst = {
-            module: {id: ''},
+        let inst: IAstModInst = {
+            ast: Ast.ModInst,
+            module: { ast: Ast.Identifier, id: '' },
             parameters: this.visit(ctx.parameterList[0]),
             width: this.visit(ctx.width),
-            dict: { entries: [], star: false }
+            dict: { ast: Ast.Dict, entries: [], star: false }
         }
 
         if (ctx.dictionary) {

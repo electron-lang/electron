@@ -1,6 +1,10 @@
 import {expect} from 'chai'
-import { IAstImport, IAstDeclStmt, AstDeclType, AstLiteralType,
-         IAstAttribute } from './ast'
+import { IAstImport, IAstDeclStmt, IAstLiteral, IAstIdentifier,
+         Ast, AstDeclType, AstLiteralType,
+         IAstAttribute, AstExpr,
+    IAstAssignStmt,
+    IAstParam,
+    IAstReference} from './ast'
 import {render, IDoc, emitDesign, emitImport, emitModule,
         emitStatement, emitExpression, emitAttribute} from './printer'
 
@@ -8,49 +12,104 @@ function expectPretty(doc: IDoc, text: string) {
     expect(render(80, doc)).to.deep.equal(text);
 }
 
+function makeIdent(name: string): IAstIdentifier {
+    return {
+        ast: Ast.Identifier,
+        id: name,
+    }
+}
+
+function makeInteger(int: number): IAstLiteral {
+    return {
+        ast: Ast.Literal,
+        value: int.toString(),
+        litType: AstLiteralType.Integer,
+    }
+}
+
+function makeString(str: string): IAstLiteral {
+    return {
+        ast: Ast.Literal,
+        value: '"' + str + '"',
+        litType: AstLiteralType.String,
+    }
+}
+
+function makeDecl(declType: AstDeclType, width: number,
+                  name: string): IAstDeclStmt {
+    return {
+        ast: Ast.Decl,
+        declType,
+        width: makeInteger(width),
+        identifier: makeIdent(name),
+    }
+}
+
+function makeAssign(lhs: AstExpr, rhs: AstExpr): IAstAssignStmt {
+    return {
+        ast: Ast.Assign,
+        rhs,
+        lhs
+    }
+}
+
+function makeAttr(name: string, params: IAstParam[]): IAstAttribute {
+    return {
+        ast: Ast.Attribute,
+        name: makeIdent(name),
+        parameters: params,
+    }
+}
+
+function makeParam(name: null | string, value: AstExpr): IAstParam {
+    return {
+        ast: Ast.Param,
+        name: name ? makeIdent(name) : null,
+        value,
+    }
+}
+
+function makeRef(name: string, _from: number, to: number): IAstReference {
+    return {
+        ast: Ast.Ref,
+        identifier: makeIdent(name),
+        from: makeInteger(_from),
+        to: makeInteger(to),
+    }
+}
+
+function makeImport(ids: string[], pkg: string): IAstImport {
+    return {
+        ast: Ast.Import,
+        identifiers: ids.map(makeIdent),
+        package: pkg,
+    }
+}
+
 describe('Pretty Printer', () => {
     it('should emit attributes', () => {
-        const attributes: IAstAttribute[] = [
-            {
-                name: { id: 'bom' },
-                parameters: [
-                    {
-                        name: null,
-                        value: {
-                            value: '"Yago"',
-                            litType: AstLiteralType.String,
-                        }
-                    },
-                    {
-                        name: null,
-                        value: {
-                            value: '"XYZ"',
-                            litType: AstLiteralType.String,
-                        }
-                    }
-                ]
-            }
-        ]
+        const bomAttr = makeAttr('bom', [
+            makeParam(null, makeString('Yago')),
+            makeParam(null, makeString('XYZ'))
+        ])
 
-        expectPretty(emitAttribute({ name: { id: 'model' }, parameters: [
-            { name: null, value: { id: 'A' }}
-        ]}), '@model(A)\n')
+        expectPretty(
+            emitAttribute(makeAttr('model', [
+                makeParam(null, makeIdent('A'))
+            ])), '@model(A)\n')
 
-        expectPretty(emitAttribute({ name: { id: 'parameter' }, parameters: [
-            {
-                name: { id: 'A_WIDTH' },
-                value: {
-                    value: '1',
-                    litType: AstLiteralType.Integer
-                }
-            }
-        ]}), '@parameter(A_WIDTH=1)\n')
+        expectPretty(
+            emitAttribute(makeAttr('parameter', [
+                makeParam('A_WIDTH', makeInteger(1))
+            ])),
+            '@parameter(A_WIDTH=1)\n')
 
         expectPretty(emitModule({
-            attributes,
+            ast: Ast.Module,
+            attributes: [bomAttr],
             exported: false,
             declaration: false,
-            identifier: { id: 'mod' },
+            identifier: makeIdent('mod'),
             parameters: [],
             statements: [],
         }), '@bom("Yago", "XYZ")\nmodule mod {}\n')
@@ -72,62 +131,49 @@ describe('Pretty Printer', () => {
 
     describe('should emit expressions', () => {
         it('should emit references', () => {
-            expectPretty(emitExpression({
-                identifier: { attributes: [], id: 'a' },
-                from: {
-                    value: '2',
-                    litType: AstLiteralType.Integer,
-                },
-                to: {
-                    value: '2',
-                    litType: AstLiteralType.Integer,
-                },
-            }), 'a[2]')
+            expectPretty(emitExpression(makeRef('a', 2, 2)), 'a[2]')
 
-            expectPretty(emitExpression({
-                identifier: { attributes: [], id: 'a' },
-                from: {
-                    value: '0',
-                    litType: AstLiteralType.Integer,
-                },
-                to: {
-                    value: '1',
-                    litType: AstLiteralType.Integer,
-                },
-            }), 'a[0:1]')
+            expectPretty(emitExpression(makeRef('a', 0, 1)), 'a[0:1]')
         })
 
         it('should emit concatenations', () => {
             expectPretty(emitExpression({
+                ast: Ast.Tuple,
                 expressions: [
-                    { id: 'a' },
-                    { id: 'b' },
-                    { id: 'c' },
+                    { ast: Ast.Identifier, id: 'a' },
+                    { ast: Ast.Identifier, id: 'b' },
+                    { ast: Ast.Identifier, id: 'c' },
                 ],
             }), '(a, b, c)')
         })
 
         it('should emit cells', () => {
             expectPretty(emitExpression({
-                module: { id: '$R' },
+                ast: Ast.ModInst,
+                module: { ast: Ast.Identifier, id: '$R' },
                 width: {
+                    ast: Ast.Literal,
                     value: '2',
                     litType: AstLiteralType.Integer,
                 },
                 parameters: [
                     {
+                        ast: Ast.Param,
                         name: null,
                         value: {
+                            ast: Ast.Literal,
                             value: '10k',
                             litType: AstLiteralType.Unit,
                         }
                     }
                 ],
                 dict: {
+                    ast: Ast.Dict,
                     entries: [
                         {
-                            identifier: { id: 'A' },
-                            expr: { id: 'a' },
+                            ast: Ast.DictEntry,
+                            identifier: { ast: Ast.Identifier, id: 'A' },
+                            expr: { ast: Ast.Identifier, id: 'a' },
                         }
                     ],
                     star: false,
@@ -135,29 +181,36 @@ describe('Pretty Printer', () => {
             }), "$R(10k)[2] {A=a}")
 
             expectPretty(emitExpression({
-                module: { id: '$R' },
+                ast: Ast.ModInst,
+                module: { ast: Ast.Identifier, id: '$R' },
                 parameters: [
                     {
+                        ast: Ast.Param,
                         name: null,
                         value: {
+                            ast: Ast.Literal,
                             value: '10k',
                             litType: AstLiteralType.Unit,
                         }
                     }
                 ],
                 width: {
+                    ast: Ast.Literal,
                     value: '2',
                     litType: AstLiteralType.Integer,
                 },
                 dict: {
+                    ast: Ast.Dict,
                     entries: [
                         {
-                            identifier: { id: 'A' },
-                            expr: { id: 'a' },
+                            ast: Ast.DictEntry,
+                            identifier: { ast: Ast.Identifier, id: 'A' },
+                            expr: { ast: Ast.Identifier, id: 'a' },
                         },
                         {
-                            identifier: { id: 'B' },
-                            expr: { id: 'b' },
+                            ast: Ast.DictEntry,
+                            identifier: { ast: Ast.Identifier, id: 'B' },
+                            expr: { ast: Ast.Identifier, id: 'b' },
                         }
                     ],
                     star: false,
@@ -169,72 +222,32 @@ describe('Pretty Printer', () => {
     describe('should emit statements', () => {
 
         it('should emit declaration', () => {
-            expectPretty(emitStatement({
-                declType: AstDeclType.Input,
-                width: {
-                    value: '1',
-                    litType: AstLiteralType.Integer,
-                },
-                identifier: { id: 'a' },
-            }), 'input a')
+            expectPretty(emitStatement(
+                makeDecl(AstDeclType.Input, 1, 'a')), 'input a')
 
-            expectPretty(emitStatement({
-                declType: AstDeclType.Inout,
-                width: {
-                    value: '1',
-                    litType: AstLiteralType.Integer,
-                },
-                identifier: { id: 'a' },
-            }), 'inout a')
+            expectPretty(emitStatement(
+                makeDecl(AstDeclType.Inout, 1, 'a')), 'inout a')
 
-            expectPretty(emitStatement({
-                declType: AstDeclType.Output,
-                width: {
-                    value: '1',
-                    litType: AstLiteralType.Integer,
-                },
-                identifier: { id: 'a' },
-            }), 'output a')
+            expectPretty(emitStatement(
+                makeDecl(AstDeclType.Output, 1, 'a')), 'output a')
 
-            expectPretty(emitStatement({
-                declType: AstDeclType.Net,
-                width: {
-                    value: '1',
-                    litType: AstLiteralType.Integer,
-                },
-                identifier: { id: 'a' },
-            }), 'net a')
+            expectPretty(emitStatement(
+                makeDecl(AstDeclType.Net, 1, 'a')), 'net a')
 
-            expectPretty(emitStatement({
-                declType: AstDeclType.Cell,
-                width: {
-                    value: '2',
-                    litType: AstLiteralType.Integer,
-                },
-                identifier: { id: 'a' },
-            }), 'cell[2] a')
+            expectPretty(emitStatement(
+                makeDecl(AstDeclType.Cell, 2, 'a')), 'cell[2] a')
         })
 
         it('should emit assignments', () => {
             expectPretty(emitStatement({
-                lhs: { id: 'a' },
-                rhs: { id: 'b' },
+                ast: Ast.Assign,
+                lhs: { ast: Ast.Identifier, id: 'a' },
+                rhs: { ast: Ast.Identifier, id: 'b' },
             }), 'a = b')
 
-            expectPretty(emitStatement({
-                lhs: { id: 'a' },
-                rhs: {
-                    identifier: {id : 'b' },
-                    from: {
-                        value: '0',
-                        litType: AstLiteralType.Integer,
-                    },
-                    to: {
-                        value: '0',
-                        litType: AstLiteralType.Integer,
-                    },
-                },
-            }), 'a = b[0]')
+            expectPretty(
+                emitStatement(makeAssign(makeIdent('a'), makeRef('b', 0, 0))),
+                'a = b[0]')
         })
 
         /*it('should emit fully qualified names', () => {
@@ -246,45 +259,38 @@ describe('Pretty Printer', () => {
     })
 
     it('should emit imports', () => {
-        expectPretty(emitImport({
-            identifiers: [{id: 'a'}],
-            package: 'package',
-        }), 'import a from "package"\n')
+        expectPretty(
+            emitImport(makeImport(['a'], 'package')),
+            'import a from "package"\n')
     })
 
     it('should emit modules', () => {
         expectPretty(emitModule({
+            ast: Ast.Module,
             attributes: [],
             exported: false,
             declaration: false,
-            identifier: {id: 'mod'},
+            identifier: makeIdent('mod'),
             parameters: [],
-            statements: [
-                {
-                    declType: AstDeclType.Net,
-                    width: {
-                        value: '1',
-                        litType: AstLiteralType.Integer,
-                    },
-                    identifier: { id: 'a' },
-                }
-            ],
+            statements: [ makeDecl(AstDeclType.Net, 1, 'a') ],
         }), 'module mod {\n  net a\n}\n')
 
         expectPretty(emitModule({
+            ast: Ast.Module,
             attributes: [],
             exported: true,
             declaration: false,
-            identifier: {id: 'mod'},
+            identifier: makeIdent('mod'),
             parameters: [],
             statements: [],
         }), 'export module mod {}\n')
 
         expectPretty(emitModule({
+            ast: Ast.Module,
             attributes: [],
             exported: true,
             declaration: true,
-            identifier: {id: 'mod'},
+            identifier: makeIdent('mod'),
             parameters: [],
             statements: [],
         }), 'export declare module mod {}\n')
@@ -292,18 +298,15 @@ describe('Pretty Printer', () => {
 
     it('should emit designs', () => {
         expectPretty(emitDesign({
-            imports: [
-                {
-                    identifiers: [{ id: 'a' }],
-                    package: 'b',
-                }
-            ],
+            ast: Ast.Design,
+            imports: [ makeImport(['a'], 'b') ],
             modules: [
                 {
+                    ast: Ast.Module,
                     attributes: [],
                     exported: false,
                     declaration: false,
-                    identifier: {id: 'mod'},
+                    identifier: makeIdent('mod'),
                     parameters: [],
                     statements: [],
                 }
