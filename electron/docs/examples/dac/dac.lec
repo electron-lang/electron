@@ -12,7 +12,7 @@ export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
     analog vdd, vss
 
     net dac_clk
-    cell pll = PLL {
+    cell pll = PLL() {
         A=clk,
         Y=dac_clk,
     }

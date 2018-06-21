@@ -6,9 +6,9 @@ declare module $M { analog G, D, S }
 
 module RCFilter(R: ohm, C: farad) {
     /// First order lowpass filter
-    input in
-    output out
-    analog gnd
+    @left analog in
+    @right analog out
+    @bottom analog gnd
     cell r = $R(R) {A=in, B=out}
     @rotate(90)
     cell c = $C(C) {A=out, B=gnd}
@@ -16,28 +16,30 @@ module RCFilter(R: ohm, C: farad) {
 
 module LCFilter(L: henry, C: farad) {
     /// Second order lowpass filter
-    input in
-    output out
-    analog gnd
+    @left analog in
+    @right analog out
+    @bottom analog gnd
     cell l = $L(L) {A=in, B=out}
     @rotate(90)
     cell c = $C(C) {A=out, B=gnd}
 }
 
 module HalfBridge {
-    input in, in_inv
-    output out
-    analog vdd, vss
+    @left analog in, in_inv
+    @right analog out
+    @top analog vdd
+    @bottom analog vss
+
     @model(PowerMosfetModel)
     cell[2] drivers = (
-        $M {G=in_inv, D=vdd, S=out},
-        $M {G=in, D=out, S=vss}
+        $M() {G=in_inv, D=vdd, S=out},
+        $M() {G=in, D=out, S=vss}
     )
 }
 
 module PowerMosfetModel {
     analog G, D, S
-    
+
     // Gate parasitics
     net rb, lb, g
     cell Rb = $R() {A=G, B=rb}
@@ -49,7 +51,7 @@ module PowerMosfetModel {
     cell Rd = $R() {A=G, B=rd}
     @rotate(90)
     cell Ld = $L() {A=rd, B=d}
-    
+
     // Source parastitics
     net rs, ls, s
     @rotate(270)
@@ -59,20 +61,21 @@ module PowerMosfetModel {
 
     // Ideal mosfet
     cell mos = $M() {G=g, D=d, S=s}
-    
+
     // Parasitic diode
     @rotate(270)
     cell Dsd = $D() {A=d, K=s}
 }
 
 export module DACAnalog(L: Henry, C: Farad) {
-    input in, in_inv
-    output out
-    analog vdd, vss
+    @left analog in, in_inv
+    @right analog out
+    @top analog vdd
+    @bottom analog vss
     net hbout
-    cell halfBridge = HalfBridge {
-        in, in_inv, out=hbout,
+    cell halfBridge = HalfBridge() {
+        in, in_inv=in_inv, out=hbout,
         vdd, vss
     }
-    cell lc = LCFilter(L, C) {in=hbout, out}
+    cell lc = LCFilter(L, C) {in=hbout, out=out}
 }

@@ -25,7 +25,7 @@ declare module BlackBox {
 
 module SubModule {
     analog a, b
-    cell r1 = R10K {a, b}
+    cell r1 = R10K() {a, b}
     output c = 1'1
     net[2] d
     analog co = 1'1
@@ -40,13 +40,13 @@ module SubModule {
 
 module Pcb {
     net '+12V, gnd
-    cell bb = BlackBox { vcc='+12V, gnd }
-    cell sm = SubModule {}
+    cell bb = BlackBox() { vcc='+12V, gnd }
+    cell sm = SubModule() {}
 
-    @bom("Yago", "XYZ")
-    sm
+    //@bom("Yago", "XYZ")
+    //sm
 
     @module(AND)
     @set_io(a="A1", b="F2", c="D3")
-    cell fpga = $fpga {}
+    cell fpga = $fpga() {}
 }

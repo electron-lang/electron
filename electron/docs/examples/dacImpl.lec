@@ -3,7 +3,7 @@ import TinyFPGA from "tinyFPGA"
 
 module Pcb {
     net clk, vccio, gnd, vdd, vss, data, out
-    cell tiny = TinyFPGA {
+    cell tiny = TinyFPGA() {
         clk, vccio, gnd, vdd, vss, data, out
     }
     cell dac = DAC(WIDTH=8, L=1uH, C=1nF) {
@@ -24,7 +24,7 @@ module Pcb {
 }
 
 module Firmware {
-    cell pcb = Pcb {}
+    cell pcb = Pcb() {}
 
     @bitstream(pcb)
     @set_io(clk=A1, data=(A2, A3, A4, A5, A6, A7),
