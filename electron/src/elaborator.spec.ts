@@ -1,7 +1,6 @@
 import { expect } from 'chai'
 import { elaborate } from './elaborator'
-import { AstType, AstLiteralType, AstStatement, AstExpr,
-         IAstDesign } from './ast'
+import { AstLiteralType, AstDeclType, AstStmt, AstExpr, IAstDesign, IAstDeclStmt } from './ast'
 
 function getLoc(text: string, offset: number) {
     return {
@@ -16,18 +15,19 @@ function expectAst(text: string, ast: IAstDesign) {
     expect(elaborate(text)).to.deep.equal(ast)
 }
 
-function expectAstModule(text: string, smts: AstStatement[]) {
+function expectAstModule(text: string, smts: AstStmt[]) {
     expectAst('module A {' + text + '}', {
         imports: [],
         modules: [
             {
                 attributes: [],
-                declaration: false,
                 exported: false,
+                declaration: false,
                 identifier: {
                     id: 'A',
                     src: getLoc('A', 8),
                 },
+                parameters: [],
                 statements: smts
             }
         ]
@@ -48,27 +48,19 @@ describe('Elaborator', () => {
         expectAst('import a, b from "package"', {
             imports: [
                 {
-                    identifier: {
-                        id: 'a',
-                        src: getLoc('a', 8)
-                    },
-                    package: {
-                        value: 'package',
-                        literalType: AstLiteralType.String,
-                        src: getLoc('"package"', 18),
-                    }
+                    identifiers: [
+                        {
+                            id: 'a',
+                            src: getLoc('a', 8)
+                        },
+                        {
+                            id: 'b',
+                            src: getLoc('b', 11)
+                        }
+                    ],
+                    package: 'package',
+                    src: getLoc('"package"', 18),
                 },
-                {
-                    identifier: {
-                        id: 'b',
-                        src: getLoc('b', 11)
-                    },
-                    package: {
-                        value: 'package',
-                        literalType: AstLiteralType.String,
-                        src: getLoc('"package"', 18),
-                    }
-                }
             ],
             modules: [],
         })
@@ -76,15 +68,14 @@ describe('Elaborator', () => {
         expectAst('import a from "./file"', {
             imports: [
                 {
-                    identifier: {
-                        id: 'a',
-                        src: getLoc('a', 8)
-                    },
-                    package: {
-                        value: './file',
-                        literalType: AstLiteralType.String,
-                        src: getLoc('"./file"', 15),
-                    }
+                    identifiers: [
+                        {
+                            id: 'a',
+                            src: getLoc('a', 8)
+                        }
+                    ],
+                    package: './file',
+                    src: getLoc('"./file"', 15),
                 }
             ],
             modules: [],
@@ -103,6 +94,7 @@ describe('Elaborator', () => {
                         id: 'A',
                         src: getLoc('A', 8),
                     },
+                    parameters: [],
                     statements: [],
                 }
             ],
@@ -119,6 +111,7 @@ describe('Elaborator', () => {
                         id: 'A',
                         src: getLoc('A', 15)
                     },
+                    parameters: [],
                     statements: [],
                 }
             ],
@@ -135,6 +128,7 @@ describe('Elaborator', () => {
                         id: 'A',
                         src: getLoc('A', 16)
                     },
+                    parameters: [],
                     statements: [],
                 }
             ],
@@ -151,16 +145,16 @@ describe('Elaborator', () => {
                                 {
                                     name: null,
                                     value: {
-                                        literalType: AstLiteralType.String,
-                                        value: 'Yago',
+                                        litType: AstLiteralType.String,
+                                        value: '"Yago"',
                                         src: getLoc('"Yago"', 6),
                                     }
                                 },
                                 {
                                     name: null,
                                     value: {
-                                        literalType: AstLiteralType.String,
-                                        value: 'XYZ',
+                                        litType: AstLiteralType.String,
+                                        value: '"XYZ"',
                                         src: getLoc('"XYZ"', 14),
                                     }
                                 }
@@ -173,6 +167,7 @@ describe('Elaborator', () => {
                         id: 'A',
                         src: getLoc('A', 28)
                     },
+                    parameters: [],
                     statements: [],
                 }
             ],
@@ -182,58 +177,59 @@ describe('Elaborator', () => {
     it('should elaborate to AstStatement', () => {
         expectAstModule('net a', [
             {
-                attributes: [],
                 identifier: {
                     id: 'a',
                     src: getLoc('a', 5 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 1,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '1',
+                },
             }
         ])
 
         expectAstModule('net[2] a', [
             {
-                attributes: [],
                 identifier: {
                     id: 'a',
                     src: getLoc('a', 8 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 2,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '2',
+                    src: getLoc('2', 5 + 10),
+                },
             }
         ])
 
         expectAstModule('net a, b', [
             {
-                attributes: [],
                 identifier: {
                     id: 'a',
                     src: getLoc('a', 5 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 1,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '1',
+                },
             },
             {
-                attributes: [],
                 identifier: {
                     id: 'b',
                     src: getLoc('b', 8 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 1,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '1',
+                },
             }
         ])
 
-        expectAstModule('@width(10) net a, b', [
+        /*expectAstModule('@width(10) net a, b', [
             {
                 attributes: [
                     {
@@ -242,8 +238,8 @@ describe('Elaborator', () => {
                             {
                                 name: null,
                                 value: {
-                                    literalType: AstLiteralType.Integer,
-                                    value: 10,
+                                    litType: AstLiteralType.Integer,
+                                    value: '10',
                                     src: getLoc('10', 8 + 10),
                                 }
                             }
@@ -254,10 +250,11 @@ describe('Elaborator', () => {
                     id: 'a',
                     src: getLoc('a', 16 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 1,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '1',
+                },
             },
             {
                 attributes: [
@@ -279,34 +276,35 @@ describe('Elaborator', () => {
                     id: 'b',
                     src: getLoc('b', 19 + 10)
                 },
-                'type': {
-                    ty: AstType.Net,
-                    width: 1,
-                }
+                declType: AstDeclType.Net,
+                width: {
+                    litType: AstLiteralType.Integer,
+                    value: '1',
+                },
             }
-        ])
+        ])*/
 
         const a_decl = {
-            attributes: [],
             identifier: {
                 id: 'a',
                 src: getLoc('a', 5 + 10),
             },
-            'type': {
-                ty: AstType.Net,
-                width: 1,
-            }
+            declType: AstDeclType.Net,
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
         }
         const b_decl = {
-            attributes: [],
             identifier: {
                 id: 'b',
                 src: getLoc('b', 8 + 10),
             },
-            'type': {
-                ty: AstType.Net,
-                width: 1,
-            }
+            declType: AstDeclType.Net,
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
         }
 
         expectAstModule('net a = c', [
@@ -341,8 +339,16 @@ describe('Elaborator', () => {
                 lhs: { id: 'a', src: getLoc('a', 5 + 10) },
                 rhs: {
                     identifier: {id: 'c', src: getLoc('c', 12 + 10)},
-                    'from': 0,
-                    'to': 0,
+                    'from': {
+                        litType: AstLiteralType.Integer,
+                        value: '0',
+                        src: getLoc('0', 14 + 10),
+                    },
+                    'to': {
+                        litType: AstLiteralType.Integer,
+                        value: '0',
+                        src: getLoc('0', 14 + 10),
+                    },
                     src: getLoc('c[0]', 12 + 10),
                 },
             },
@@ -350,14 +356,22 @@ describe('Elaborator', () => {
                 lhs: { id: 'b', src: getLoc('b', 8 + 10) },
                 rhs: {
                     identifier: {id: 'd', src: getLoc('d', 18 + 10) },
-                    'from': 1,
-                    'to': 1,
+                    'from': {
+                        litType: AstLiteralType.Integer,
+                        value: '1',
+                        src: getLoc('1', 20 + 10),
+                    },
+                    'to': {
+                        litType: AstLiteralType.Integer,
+                        value: '1',
+                        src: getLoc('1', 20 + 10),
+                    },
                     src: getLoc('d[1]', 18 + 10),
                 },
             }
         ])
 
-        expectAstModule("@width(10) a.b.c", [
+        /*expectAstModule("@width(10) a.b.c", [
             {
                 attributes: [
                     {
@@ -380,10 +394,10 @@ describe('Elaborator', () => {
                     { id: 'c', src: getLoc('c', 16 + 10) },
                 ]
             }
-        ])
+        ])*/
     })
 
-    it('should elaborate to IAstExpr', () => {
+    it('should elaborate to AstExpr', () => {
         expectAstExpr('(a, b, c)', {
             expressions: [
                 { id: 'a', src: getLoc('a', 2 + 14) },
@@ -395,99 +409,146 @@ describe('Elaborator', () => {
 
         expectAstExpr("4'01xz", {
             value: "4'01xz",
-            literalType: AstLiteralType.Constant,
+            litType: AstLiteralType.Constant,
             src: getLoc("4'01xz", 1 + 14),
         })
 
 
         expectAstExpr('a[2:3]', {
             identifier: { id: 'a', src: getLoc('a', 1 + 14) },
-            'from': 2,
-            'to': 3,
+            from: {
+                litType: AstLiteralType.Integer,
+                value: '2',
+                src: getLoc('2', 3 + 14),
+            },
+            to: {
+                litType: AstLiteralType.Integer,
+                value: '3',
+                src: getLoc('3', 5 + 14),
+            },
             src: getLoc('a[2:3]', 1 + 14),
         })
 
         expectAstExpr('a[2]', {
             identifier: { id: 'a', src: getLoc('a', 1 + 14) },
-            'from': 2,
-            'to': 2,
+            from: {
+                litType: AstLiteralType.Integer,
+                value: '2',
+                src: getLoc('2', 3 + 14),
+            },
+            to: {
+                litType: AstLiteralType.Integer,
+                value: '2',
+                src: getLoc('2', 3 + 14),
+            },
             src: getLoc('a[2]', 1 + 14),
         })
 
-        expectAstExpr('$R {}', {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 1,
+        expectAstExpr('$R() {}', {
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
             parameters: [],
-            assignments: [],
-            src: getLoc('$R {}', 1 + 14),
+            dict: {entries: [], star: false, src: getLoc('{}', 6 + 14)},
+            src: getLoc('$R() {}', 1 + 14),
         })
 
         expectAstExpr('$R()[2] {}', {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 2,
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '2',
+                src: getLoc('2', 6 + 14)
+            },
             parameters: [],
-            assignments: [],
+            dict: {entries: [], star: false, src: getLoc('{}', 9 + 14)},
             src: getLoc('$R()[2] {}', 1 + 14),
         })
 
         expectAstExpr("$R(10k) {}", {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 1,
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
             parameters: [
                 {
                     name: null,
                     value: {
                         value: '10k',
-                        literalType: AstLiteralType.Unit,
+                        litType: AstLiteralType.Unit,
                         src: getLoc('10k', 4 + 14),
                     }
                 }
             ],
-            assignments: [],
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
+            dict: {entries: [], star: false, src: getLoc('{}', 9 + 14)},
             src: getLoc('$R(10k) {}', 1 + 14),
         })
 
-        expectAstExpr("$R {A}", {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 1,
+        expectAstExpr("$R() {A}", {
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
             parameters: [],
-            assignments: [
-                {
-                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
-                    rhs: { id: 'A', src: getLoc('A', 5 + 14) },
-                }
-            ],
-            src: getLoc('$R {A}', 1 + 14),
+            dict: {
+                entries: [
+                    {
+                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
+                        expr: { id: 'A', src: getLoc('A', 7 + 14) },
+                    }
+                ],
+                star: false,
+                src: getLoc('{A}', 6 + 14),
+            },
+            src: getLoc('$R() {A}', 1 + 14),
         })
 
-        expectAstExpr("$R {A=a}", {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 1,
+        expectAstExpr("$R() {A=a}", {
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
             parameters: [],
-            assignments: [
-                {
-                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
-                    rhs: { id: 'a', src: getLoc('a', 7 + 14) },
-                }
-            ],
-            src: getLoc('$R {A=a}', 1 + 14),
+            dict: {
+                entries: [
+                    {
+                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
+                        expr: { id: 'a', src: getLoc('a', 9 + 14) },
+                    }
+                ],
+                star: false,
+                src: getLoc('{A=a}', 6 + 14),
+            },
+            src: getLoc('$R() {A=a}', 1 + 14),
         })
 
-        expectAstExpr("$R {A, B=b}", {
-            cellType: { id: '$R', src: getLoc('$R', 1 + 14) },
-            width: 1,
+        expectAstExpr("$R() {A, B=b}", {
+            module: { id: '$R', src: getLoc('$R', 1 + 14) },
+            width: {
+                litType: AstLiteralType.Integer,
+                value: '1',
+            },
             parameters: [],
-            assignments: [
-                {
-                    lhs: { id: 'A', src: getLoc('A', 5 + 14) },
-                    rhs: { id: 'A', src: getLoc('A', 5 + 14) },
-                },
-                {
-                    lhs: { id: 'B', src: getLoc('B', 8 + 14) },
-                    rhs: { id: 'b', src: getLoc('b', 10 + 14) },
-                }
-            ],
-            src: getLoc('$R {A, B=b}', 1 + 14),
+            dict: {
+                entries: [
+                    {
+                        identifier: { id: 'A', src: getLoc('A', 7 + 14) },
+                        expr: { id: 'A', src: getLoc('A', 7 + 14) },
+                    },
+                    {
+                        identifier: { id: 'B', src: getLoc('B', 10 + 14) },
+                        expr: { id: 'b', src: getLoc('b', 12 + 14) },
+                    }
+                ],
+                star: false,
+                src: getLoc('{A, B=b}', 6 + 14)
+            },
+            src: getLoc('$R() {A, B=b}', 1 + 14),
         })
     })
 })

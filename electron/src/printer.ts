@@ -1,10 +1,11 @@
 import { IDoc, nest, enclose, dquotes, braces, brackets, parens,
          intersperse, line, group, indent, render } from 'prettier-printer'
 export { render, IDoc } from 'prettier-printer'
-import { IAstAssignment, IAstAttribute, IAstCell, IAstConcat, IAstDeclaration,
-         IAstDesign, IAstFullyQualifiedName, IAstIdentifier, IAstImport,
-         IAstLiteral, IAstModule, IAstParameter, IAstReference, IAstType,
-         AstType, AstLiteralType, AstExpr, AstStatement } from './ast'
+import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple,
+         IAstDeclStmt, IAstDesign, IAstFQN, IAstIdentifier,
+         IAstImport, IAstLiteral, IAstModule, IAstParam, IAstReference,
+         AstDeclType, AstLiteralType, AstExpr, AstStmt, IAstDict,
+         IAstDictEntry } from './ast'
 
 const tabWidth = 2
 
@@ -22,9 +23,9 @@ export function emitDesign(design: IAstDesign): IDoc {
 export function emitImport(imp: IAstImport): IDoc {
     return [
         'import ',
-        emitIdentifier(imp.identifier),
+        emitIdentifiers(imp.identifiers),
         ' from ',
-        emitLiteral(imp.package),
+        enclose(dquotes, imp.package),
         line
     ]
 }
@@ -55,27 +56,22 @@ export function emitBody(doc: IDoc[]): IDoc {
     ]
 }
 
+export function emitIdentifiers(ids: IAstIdentifier[]): IDoc {
+    return intersperse(', ', ids.map(emitIdentifier))
+}
+
 export function emitIdentifier(id: IAstIdentifier): IDoc {
     return id.id
 }
 
-export function emitWidth(width: number): IDoc {
-    if (width > 1) {
-        return enclose(brackets, width.toString())
-    } else {
+export function emitWidth(width: AstExpr): IDoc {
+    if ((width as IAstLiteral).value == '1') {
         return []
     }
-}
-export function emitType(ty: IAstType): IDoc {
-    return [ty.ty, emitWidth(ty.width)]
+    return enclose(brackets, emitExpression(width))
 }
 
 export function emitLiteral(lit: IAstLiteral): IDoc {
-    if (lit.literalType === AstLiteralType.Integer) {
-        return lit.value.toString()
-    } else if (lit.literalType === AstLiteralType.String) {
-        return enclose(dquotes, lit.value)
-    }
     return lit.value
 }
 
@@ -88,11 +84,11 @@ export function emitAttribute(attr: IAstAttribute): IDoc {
             emitParameters(attr.parameters), line]
 }
 
-export function emitParameters(params: IAstParameter[]): IDoc {
+export function emitParameters(params: IAstParam[]): IDoc {
     return enclose(parens, intersperse(', ', params.map(emitParameter)))
 }
 
-export function emitParameter(param: IAstParameter): IDoc {
+export function emitParameter(param: IAstParam): IDoc {
     let value = null
     if ((param.value as IAstIdentifier).id) {
         value = emitIdentifier(param.value as IAstIdentifier)
@@ -107,30 +103,31 @@ export function emitParameter(param: IAstParameter): IDoc {
 }
 
 // Statements
-export function emitStatement(stmt: AstStatement): IDoc {
-    if ((stmt as IAstDeclaration).identifier) {
-        return emitDeclaration(stmt as IAstDeclaration)
-    } else if ((stmt as IAstAssignment).lhs) {
-        return emitAssignment(stmt as IAstAssignment)
+export function emitStatement(stmt: AstStmt): IDoc {
+    if ((stmt as IAstDeclStmt).identifier) {
+        return emitDeclStmt(stmt as IAstDeclStmt)
+    } else if ((stmt as IAstAssignStmt).lhs) {
+        return emitAssignStmt(stmt as IAstAssignStmt)
     } else {
-        return emitFullyQualifiedName(stmt as IAstFullyQualifiedName)
+        return '' //emitFullyQualifiedName(stmt as IAstFullyQualifiedName)
     }
 }
 
-export function emitDeclaration(decl: IAstDeclaration): IDoc {
+export function emitDeclStmt(decl: IAstDeclStmt): IDoc {
+
     return [
-        emitAttributes(decl.attributes),
-        emitType(decl['type']), ' ',
+        decl.declType.toString(),
+        emitWidth(decl.width), ' ',
         emitIdentifier(decl.identifier)
     ]
 }
 
-export function emitAssignment(assign: IAstAssignment): IDoc {
+export function emitAssignStmt(assign: IAstAssignStmt): IDoc {
     return [emitExpression(assign.lhs), ' = ', emitExpression(assign.rhs)]
 }
 
-export function emitFullyQualifiedName(fqn: IAstFullyQualifiedName): IDoc {
-    return [emitAttributes(fqn.attributes), fqn.fqn.map(emitIdentifier).join('.')]
+export function emitFullyQualifiedName(fqn: IAstFQN): IDoc {
+    return intersperse('.', fqn.fqn.map(emitIdentifier))
 }
 
 // Expressions
@@ -141,35 +138,37 @@ export function emitExpression(expr: AstExpr): IDoc {
         return emitIdentifier(expr as IAstIdentifier)
     } else if ((expr as IAstReference).identifier) {
         return emitReference(expr as IAstReference)
-    } else if ((expr as IAstConcat).expressions) {
-        return emitConcat(expr as IAstConcat)
+    } else if ((expr as IAstTuple).expressions) {
+        return emitConcat(expr as IAstTuple)
     } else {
-        return emitCell(expr as IAstCell)
+        return emitCell(expr as IAstModInst)
     }
 }
 
 export function emitReference(ref: IAstReference): IDoc {
-    const doc = ref.to === ref['from'] ? ref.to.toString()
-        : [ref['from'].toString(), ':', ref.to.toString()]
+    let from_ = emitExpression(ref['from'])
+    let to = emitExpression(ref['to'])
+    const doc = from_ === to ? [ from_ ] : [from_, ':', to]
     return [emitIdentifier(ref.identifier), enclose(brackets, doc)]
 }
 
-export function emitConcat(concat: IAstConcat): IDoc {
+export function emitConcat(concat: IAstTuple): IDoc {
     return enclose(parens, intersperse(', ', concat.expressions.map(emitExpression)))
 }
 
-export function emitCell(cell: IAstCell): IDoc {
-    let assigns = cell.assignments
-        .map(emitAssignment)
-        .map((assign) => [assign, ','])
-    if (assigns.length > 0) {
-        const last = assigns.pop() as IDoc[]
-        assigns.push([last[0]])
-    }
+export function emitDictEntry(entry: IAstDictEntry): IDoc {
+    return [emitIdentifier(entry.identifier), '=', emitExpression(entry.expr)]
+}
+
+export function emitDict(dict: IAstDict): IDoc {
+    return enclose(braces, intersperse(', ', dict.entries.map(emitDictEntry)))
+}
+
+export function emitCell(cell: IAstModInst): IDoc {
     return [
-        emitIdentifier(cell.cellType),
+        emitIdentifier(cell.module),
         emitParameters(cell.parameters),
         emitWidth(cell.width), ' ',
-        emitBody(assigns)
+        emitDict(cell.dict)
     ]
 }

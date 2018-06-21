@@ -212,10 +212,7 @@ class ElectronParser extends Parser {
     })
 
     public parameter = this.RULE('parameter', () => {
-        this.OR([
-            { ALT: () => this.SUBRULE(this.identifier) },
-            { ALT: () => this.SUBRULE(this.literal) },
-        ])
+        this.SUBRULE(this.expression)
         this.OPTION(() => {
             this.CONSUME(Assign)
             this.SUBRULE1(this.expression)
@@ -281,9 +278,6 @@ class ElectronParser extends Parser {
             { ALT: () => this.CONSUME(Output) },
             { ALT: () => this.CONSUME(Inout) },
             { ALT: () => this.CONSUME(Analog) },
-            { ALT: () => this.CONSUME(Clock) },
-            { ALT: () => this.CONSUME(Ground) },
-            { ALT: () => this.CONSUME(Power) },
             { ALT: () => this.CONSUME(Cell) },
             { ALT: () => this.CONSUME(Const) },
         ])
@@ -355,10 +349,7 @@ class ElectronParser extends Parser {
 
     public tupleExpression = this.RULE('tupleExpression', () => {
         this.CONSUME(OpenRound)
-        this.AT_LEAST_ONE_SEP({
-            SEP: Comma,
-            DEF: () => { this.SUBRULE(this.expression) }
-        })
+        this.SUBRULE(this.expressions)
         this.CONSUME(CloseRound)
     })
 

@@ -355,29 +355,9 @@
     "name": "parameter",
     "definition": [
       {
-        "type": "Alternation",
-        "definition": [
-          {
-            "type": "Flat",
-            "definition": [
-              {
-                "type": "NonTerminal",
-                "name": "identifier",
-                "idx": 0
-              }
-            ]
-          },
-          {
-            "type": "Flat",
-            "definition": [
-              {
-                "type": "NonTerminal",
-                "name": "literal",
-                "idx": 0
-              }
-            ]
-          }
-        ]
+        "type": "NonTerminal",
+        "name": "expression",
+        "idx": 0
       },
       {
         "type": "Option",
@@ -695,42 +675,6 @@
                 "label": "analog",
                 "idx": 0,
                 "pattern": "analog"
-              }
-            ]
-          },
-          {
-            "type": "Flat",
-            "definition": [
-              {
-                "type": "Terminal",
-                "name": "Clock",
-                "label": "clock",
-                "idx": 0,
-                "pattern": "clock"
-              }
-            ]
-          },
-          {
-            "type": "Flat",
-            "definition": [
-              {
-                "type": "Terminal",
-                "name": "Ground",
-                "label": "ground",
-                "idx": 0,
-                "pattern": "ground"
-              }
-            ]
-          },
-          {
-            "type": "Flat",
-            "definition": [
-              {
-                "type": "Terminal",
-                "name": "Power",
-                "label": "power",
-                "idx": 0,
-                "pattern": "power"
               }
             ]
           },
@@ -1116,21 +1060,9 @@
         "pattern": "\\("
       },
       {
-        "type": "RepetitionMandatoryWithSeparator",
-        "separator": {
-          "type": "Terminal",
-          "name": "Comma",
-          "label": ",",
-          "idx": 1,
-          "pattern": ","
-        },
-        "definition": [
-          {
-            "type": "NonTerminal",
-            "name": "expression",
-            "idx": 0
-          }
-        ]
+        "type": "NonTerminal",
+        "name": "expressions",
+        "idx": 0
       },
       {
         "type": "Terminal",

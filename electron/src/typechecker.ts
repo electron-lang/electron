@@ -3,9 +3,10 @@ import { existsSync } from 'fs'
 import { IDiagnostic, DiagnosticSeverity, DiagnosticType,
          emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
-import { IAstDesign, IAstAttribute, IAstDeclaration, IAstFullyQualifiedName,
-         IAstAssignment, AstExpr, IAstType, AstType, IAstIdentifier, IAstReference,
-    IAstConcat, IAstLiteral, IAstCell, AstLiteralType } from './ast'
+import { IAstDesign, IAstAttribute, IAstDeclStmt, IAstFQN,
+         IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
+         IAstReference, IAstTuple, IAstLiteral, IAstModInst,
+         AstLiteralType } from './ast'
 import { allAttributes } from './attributes'
 
 enum Type {
@@ -28,23 +29,23 @@ export class TypeChecker {
         for (let imp of design.imports) {
             this.symbolTable.declareExternalModule(imp)
 
-            if (imp.package.value.startsWith('.')) {
-                const absPath = resolve(dir + '/' + imp.package.value + '.lec')
+            if (imp.package.startsWith('.')) {
+                const absPath = resolve(dir + '/' + imp.package + '.lec')
                 if (!existsSync(absPath)) {
                     this.errors.push({
                         message: `File ${absPath} doesn't exist.`,
-                        src: imp.package.src || emptySrcLoc,
+                        src: imp.src || emptySrcLoc,
                         severity: DiagnosticSeverity.Error,
                         errorType: DiagnosticType.TypeCheckingError,
                     })
                 }
-                imp.package.value = absPath
+                imp.package = absPath
                 // TODO resolve external modules
             } else {
                 // TODO resolve external modules from packages
                 this.errors.push({
                     message: 'Package resolution unsupported',
-                    src: imp.package.src || emptySrcLoc,
+                    src: imp.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Warning,
                     errorType: DiagnosticType.TypeCheckingError,
                 })
@@ -67,8 +68,8 @@ export class TypeChecker {
             }
 
             for (let stmt of mod.statements) {
-                if ((stmt as IAstDeclaration).identifier) {
-                    this.checkDeclaration(stmt as IAstDeclaration)
+                if ((stmt as IAstDeclStmt).identifier) {
+                    this.checkDeclaration(stmt as IAstDeclStmt)
                 } else {
                     if (mod.declaration) {
                         this.errors.push({
@@ -79,13 +80,13 @@ export class TypeChecker {
                         })
                     }
 
-                    if ((stmt as IAstAssignment).lhs) {
-                        this.checkAssignment(stmt as IAstAssignment)
+                    if ((stmt as IAstAssignStmt).lhs) {
+                        this.checkAssignment(stmt as IAstAssignStmt)
                     }
 
-                    if ((stmt as IAstFullyQualifiedName).fqn) {
+                    /*if ((stmt as IAstFullyQualifiedName).fqn) {
                         this.checkFQN(stmt as IAstFullyQualifiedName)
-                    }
+                    }*/
                 }
             }
 
@@ -113,12 +114,12 @@ export class TypeChecker {
         }
     }
 
-    checkDeclaration(decl: IAstDeclaration) {
+    checkDeclaration(decl: IAstDeclStmt) {
         this.symbolTable.declareVariable(decl)
-        this.checkAttributes(decl.attributes)
+        //this.checkAttributes(decl.attributes)
     }
 
-    checkAssignment(assign: IAstAssignment) {
+    checkAssignment(assign: IAstAssignStmt) {
         let lhsTy = this.checkExpression(assign.lhs)
         let rhsTy = this.checkExpression(assign.rhs)
         this.checkTypesEqual(lhsTy, rhsTy, assign.lhs.src || emptySrcLoc)
@@ -148,7 +149,7 @@ export class TypeChecker {
         }
     }
 
-    checkFQN(fqn: IAstFullyQualifiedName) {
+    checkFQN(fqn: IAstFQN) {
         // TODO
     }
 
@@ -159,10 +160,10 @@ export class TypeChecker {
             return this.checkIdentifier(expr as IAstIdentifier)
         } else if ((expr as IAstReference).identifier) {
             return this.checkReference(expr as IAstReference)
-        } else if ((expr as IAstConcat).expressions) {
-            return this.checkConcat(expr as IAstConcat)
-        } else if ((expr as IAstCell).cellType) {
-            return this.checkCell(expr as IAstCell)
+        } else if ((expr as IAstTuple).expressions) {
+            return this.checkConcat(expr as IAstTuple)
+        } else if ((expr as IAstModInst).module) {
+            return this.checkCell(expr as IAstModInst)
         } else {
             throw new Error("Programmer error at 'checkExpression'")
         }
@@ -186,15 +187,15 @@ export class TypeChecker {
 
     checkIdentifier(ident: IAstIdentifier): IType {
         let decl = this.symbolTable.resolveDeclaration(ident)
-        let width = 0
+        //let width = 0
         let ty = Type.Signal
         if (decl) {
-            width = decl.type.width
-            if (decl.type.ty === AstType.Cell) {
+            //width = decl.width
+            if (decl.declType === AstDeclType.Cell) {
                 ty = Type.Cell
             }
         }
-        return { width, ty }
+        return { width: 0, ty }
     }
 
     checkReference(ref: IAstReference): IType {
@@ -203,7 +204,7 @@ export class TypeChecker {
             return sig
         }
 
-        if (!(ref.from < sig.width && ref.to < sig.width)) {
+        /*if (!(ref.from < sig.width && ref.to < sig.width)) {
             this.errors.push({
                 message: `Out of bounds access of '${ref.identifier.id}'.`,
                 src: ref.src || emptySrcLoc,
@@ -220,12 +221,12 @@ export class TypeChecker {
                 severity: DiagnosticSeverity.Error,
                 errorType: DiagnosticType.TypeCheckingError,
             })
-        }
+        }*/
 
-        return { width, ty: sig.ty }
+        return { width: 0, ty: sig.ty }
     }
 
-    checkConcat(concat: IAstConcat): IType {
+    checkConcat(concat: IAstTuple): IType {
         let hasCell = false
         let ty = Type.Signal
         let width = 0
@@ -251,25 +252,24 @@ export class TypeChecker {
         return { width, ty }
     }
 
-    checkCell(cell: IAstCell): IType {
-        let mod = this.symbolTable.resolveModule(cell.cellType)
+    checkCell(cell: IAstModInst): IType {
+        let mod = this.symbolTable.resolveModule(cell.module)
 
         // TODO check parameters
 
-        for (let assign of cell.assignments) {
+        for (let entry of cell.dict.entries) {
             // TODO check lhs and rhs type match
-            this.symbolTable.enterScope(cell.cellType)
-            let lhsTy = this.checkIdentifier(assign.lhs as IAstIdentifier)
+            this.symbolTable.enterScope(cell.module)
+            let lhsTy = this.checkIdentifier(entry.identifier)
 
             // Check that assignment is to a port
             // Make sure unresolved symbol error only gets emitted once
             if (lhsTy.width) {
-                let decl = this.symbolTable.resolveDeclaration(
-                    assign.lhs as IAstIdentifier)
-                if (decl && decl.type.ty === AstType.Net) {
+                let decl = this.symbolTable.resolveDeclaration(entry.identifier)
+                if (decl && decl.declType === AstDeclType.Net) {
                     this.errors.push({
-                        message: `Illegal assignment to internal net '${decl.identifier.id}' in '${cell.cellType.id}'.`,
-                        src: assign.lhs.src || emptySrcLoc,
+                        message: `Illegal assignment to internal net '${decl.identifier.id}' in '${cell.module.id}'.`,
+                        src: entry.identifier.src || emptySrcLoc,
                         severity: DiagnosticSeverity.Error,
                         errorType: DiagnosticType.TypeCheckingError,
                     })
@@ -277,11 +277,11 @@ export class TypeChecker {
             }
             this.symbolTable.exitScope()
 
-            let rhsTy = this.checkExpression(assign.rhs)
+            let rhsTy = this.checkExpression(entry.expr)
 
-            this.checkTypesEqual(lhsTy, rhsTy, assign.lhs.src || emptySrcLoc)
+            this.checkTypesEqual(lhsTy, rhsTy, entry.identifier.src || emptySrcLoc)
         }
 
-        return { width: cell.width, ty: Type.Cell }
+        return { width: 0 /*cell.width*/, ty: Type.Cell }
     }
 }

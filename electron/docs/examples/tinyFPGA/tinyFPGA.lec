@@ -40,8 +40,10 @@ module Usb {
 
 /// Voltage Regulation
 module Vreg {
-    power '+5V, '+3V3, '+1V2
-    ground GND
+    @power
+    analog '+5V, '+3V3, '+1V2
+    @ground
+    analog GND
 
     @bom("", "")
     cell C1 = $C(1uF) {A='+5V; B=GND}

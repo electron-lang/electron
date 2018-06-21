@@ -1,7 +1,11 @@
-import { IAstSymbol, IAstIdentifier, IAstModule, IAstImport,
-         IAstDeclaration, AstType} from './ast'
+import { IAstIdentifier, IAstModule, IAstImport,
+         IAstDeclStmt, AstDeclType} from './ast'
 import { ISrcLoc, emptySrcLoc, DiagnosticType, DiagnosticSeverity,
          IDiagnostic } from './diagnostic'
+
+interface IBinder {
+    identifier: IAstIdentifier
+}
 
 enum SymbolType {
     Module,
@@ -14,7 +18,7 @@ export interface ISymbolTable {
 }
 
 export interface ISymbolTableEntry {
-    ast: IAstSymbol
+    ast: IBinder
     ty: SymbolType
     symbols?: ISymbolTable
 }
@@ -82,18 +86,19 @@ export class SymbolTable {
     }
 
     declareExternalModule(imp: IAstImport) {
-        if (this.checkIdentifier(imp.identifier)) {
+        for (let ident of imp.identifiers)
+        if (this.checkIdentifier(ident)) {
             if (!this.isRootScope()) {
                 throw new Error('Programmer Error: Not root scope')
             }
-            this.declareSymbol(imp.identifier, {
-                ast: imp,
+            this.declareSymbol(ident, {
+                ast: {identifier: ident}, // TODO
                 ty: SymbolType.ExternalModule
             })
         }
     }
 
-    declareVariable(decl: IAstDeclaration) {
+    declareVariable(decl: IAstDeclStmt) {
         if (this.checkIdentifier(decl.identifier)) {
             if (this.isRootScope()) {
                 throw new Error('Programmer Error: Root scope')
@@ -116,11 +121,11 @@ export class SymbolTable {
         return null
     }
 
-    resolveDeclaration(ident: IAstIdentifier): IAstDeclaration | null {
+    resolveDeclaration(ident: IAstIdentifier): IAstDeclStmt | null {
         const stentry = this.resolveSymbol(ident)
         if (stentry) {
             if (stentry.ty === SymbolType.Declaration) {
-                return stentry.ast as IAstDeclaration
+                return stentry.ast as IAstDeclStmt
             }
         }
         return null

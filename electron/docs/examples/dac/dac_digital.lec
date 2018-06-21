@@ -2,7 +2,8 @@ declare module $dff(
     WIDTH: Integer,
     CLK_POLARITY: Integer,
 ) {
-    clock CLK
+    @clock
+    input CLK
     input[WIDTH] D
     output[WIDTH] Q
 }
@@ -52,7 +53,8 @@ module Add(WIDTH: Integer) {
 }
 
 module Integrator(WIDTH: Integer) {
-    clock clk
+    @clock
+    input clk
     input A
     net delay_in
     net fb
@@ -64,7 +66,8 @@ module Integrator(WIDTH: Integer) {
 /// DACDigital implements a Delta Sigma Modulator
 /// for use by a Digital Analog Converter
 export module DACDigital(WIDTH: Integer) {
-    clock clk
+    @clock
+    input clk
     input dac_clk
     input[WIDTH] data
     output out, out_inv
@@ -72,7 +75,7 @@ export module DACDigital(WIDTH: Integer) {
     // TODO: Do some kind of synchronization
     //   data is clocked at clk
     //   but our outputs and integrator is clocked at dac_clk
-    
+
     // An integrator is the core of a
     // delta sigma modulator
     const INTEGRATOR_WIDTH = WIDTH + 1
@@ -82,7 +85,7 @@ export module DACDigital(WIDTH: Integer) {
         A=integrator_in,
         Y=integrator_out,
     }
-    
+
     // When MSB is set we reset the MSB by overflowing
     // the register
     net mux_out

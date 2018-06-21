@@ -5,7 +5,8 @@ declare module PLL {input A output Y}
 declare module $dac {analog VCC, GND input A output Y}
 
 export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
-    clock clk
+    @clock
+    input clk
     input[WIDTH] in
     output out
     analog vccio, gnd
