@@ -96,27 +96,6 @@ export const Const = createToken({
     label: 'const',
 })
 
-export const Clock = createToken({
-    name: 'Clock',
-    pattern: /clock/,
-    longer_alt: Identifier,
-    label: 'clock',
-})
-
-export const Power = createToken({
-    name: 'Power',
-    pattern: /power/,
-    longer_alt: Identifier,
-    label: 'power'
-})
-
-export const Ground = createToken({
-    name: 'Ground',
-    pattern: /ground/,
-    longer_alt: Identifier,
-    label: 'ground',
-})
-
 export const True = createToken({
     name: 'True',
     pattern: /true/,
@@ -237,14 +216,14 @@ export const CloseCurly = createToken({
 })
 
 // Literals
-export const Constant = createToken({
-    name: 'Constant',
+export const BitVector = createToken({
+    name: 'BitVector',
     pattern: /[1-9]\d*'[01xz]+/,
 })
 
 export const Unit = createToken({
     name: 'Unit',
-    pattern: /(0|[1-9]\d*)(\.[0-9]+)?[GMKkmunpf]?[FHVAW]?[z]?/,
+    pattern: /(0|[1-9]\d*)(\.[0-9]+)?[GMKkmunpf]?[a-zA-Z]*/,
 })
 
 export const Integer = createToken({

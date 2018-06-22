@@ -1,9 +1,9 @@
 import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
-import { Analog, Assign, Attribute, Cell, Clock, CloseCurly, CloseRound,
-         CloseSquare, Colon, Comma, Comment, Const, Constant, Declare,
-         DocComment, Dot, Export, False, From, Ground, Identifier, Import,
+import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound,
+         CloseSquare, Colon, Comma, Comment, Const, BitVector, Declare,
+         DocComment, Dot, Export, False, From, Identifier, Import,
          Inout, Input, Integer, Minus, Module, Net, OpenCurly, OpenRound,
-         OpenSquare, Output, Plus, Power, Real, Semicolon, ShiftLeft, ShiftRight,
+         OpenSquare, Output, Plus, Real, Semicolon, ShiftLeft, ShiftRight,
          Star, String, True, Unit, With, Whitespace } from './tokens'
 
 export const allTokens = [
@@ -22,9 +22,6 @@ export const allTokens = [
     Export,
     Declare,
     Const,
-    Clock,
-    Power,
-    Ground,
     False,
     True,
     With,
@@ -39,7 +36,7 @@ export const allTokens = [
     ShiftLeft,
     ShiftRight,
     // Literals
-    Constant,
+    BitVector,
     Real,
     Integer,
     Unit,
@@ -68,8 +65,8 @@ function setScope(token: TokenType, scope: string) {
 setScope(Analog, 'keyword')
 setScope(Assign, 'operator')
 setScope(Attribute, 'string')
+setScope(BitVector, 'number')
 setScope(Cell, 'keyword')
-setScope(Clock, 'keyword')
 setScope(CloseCurly, 'delimiter')
 setScope(CloseRound, 'delimiter')
 setScope(CloseSquare, 'delimiter')
@@ -77,14 +74,12 @@ setScope(Colon, 'delimiter')
 setScope(Comma, 'delimiter')
 setScope(Comment, 'comment')
 setScope(Const, 'keyword')
-setScope(Constant, 'number')
 setScope(Declare, 'keyword')
 setScope(DocComment, 'comment.doc')
 setScope(Dot, 'delimiter')
 setScope(Export, 'keyword')
 setScope(False, 'keyword')
 setScope(From, 'keyword')
-setScope(Ground, 'keyword')
 setScope(Identifier, 'identifier')
 setScope(Import, 'keyword')
 setScope(Inout, 'keyword')
@@ -98,7 +93,6 @@ setScope(OpenRound, 'delimiter')
 setScope(OpenSquare, 'delimiter')
 setScope(Output, 'keyword')
 setScope(Plus, 'operator')
-setScope(Power, 'keyword')
 setScope(Real, 'number')
 setScope(Semicolon, 'delimiter')
 setScope(ShiftLeft, 'operator')
@@ -319,7 +313,7 @@ class ElectronParser extends Parser {
     public literal = this.RULE('literal', () => {
         this.OR([
             { ALT: () => this.CONSUME(Integer) },
-            { ALT: () => this.CONSUME(Constant) },
+            { ALT: () => this.CONSUME(BitVector) },
             { ALT: () => this.CONSUME(Unit) },
             { ALT: () => this.CONSUME(String) },
             { ALT: () => this.CONSUME(Real) },

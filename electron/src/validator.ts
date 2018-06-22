@@ -8,8 +8,9 @@ import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQ
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
          Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt,
          IAstWithStmt, IAstApplyDictStmt } from './ast'
-import { IModule } from './smallAst'
+import { IModule, ISmallAst } from './smallAst'
 import { allAttributes } from './attributes'
+import { allTypeHandlers } from './parameters'
 import { compileDeclaration } from './declaration'
 
 enum Type {
@@ -24,7 +25,8 @@ interface IType {
 }
 
 export class Validator {
-    public errors: IDiagnostic[] = []
+    private errors: IDiagnostic[] = []
+    private ast: IModule[] = []
     private symbolTable: SymbolTable = new SymbolTable()
 
     validate(path: string, design: IAstDesign): ISmallAstResult {
@@ -32,11 +34,13 @@ export class Validator {
 
         this.resolveImports(dir, design.imports)
 
-        design.modules.map((mod) => this.validateModule(mod))
+        for (let mod of design.modules) {
+            this.validateModule(mod)
+        }
 
         // get errors from symbol table
         this.errors = this.symbolTable.getErrors().concat(this.errors)
-        return {errors: this.errors}
+        return {sast: this.ast, errors: this.errors}
     }
 
     resolveImports(dir: string, imports: IAstImport[]) {
@@ -145,6 +149,14 @@ export class Validator {
                     `lowercase letters.`,
                     src: param.identifier.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Warning,
+                })
+            }
+
+            if (!(param.ty.id in allTypeHandlers)) {
+                this.errors.push({
+                    message: `Unknown parameter type '${param.ty.id}'`,
+                    src: param.ty.src || emptySrcLoc,
+                    severity: DiagnosticSeverity.Error,
                 })
             }
         }

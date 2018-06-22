@@ -405,12 +405,12 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             }
         }
 
-        if (ctx.Constant) {
+        if (ctx.BitVector) {
             return {
                 ast: Ast.Literal,
-                value: ctx.Constant[0].image,
-                litType: AstLiteralType.Constant,
-                src: tokenToSrcLoc(ctx.Constant[0]),
+                value: ctx.BitVector[0].image,
+                litType: AstLiteralType.BitVector,
+                src: tokenToSrcLoc(ctx.BitVector[0]),
             }
         }
 

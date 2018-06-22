@@ -21,9 +21,6 @@ describe('Lexer', () => {
         expectLabel('from', 'From')
         expectLabel('export', 'Export')
         expectLabel('const', 'Const')
-        expectLabel('clock', 'Clock')
-        expectLabel('power', 'Power')
-        expectLabel('ground', 'Ground')
     })
 
     it('should lex identifiers', () => {
@@ -43,8 +40,8 @@ describe('Lexer', () => {
     })
 
     it('should lex literals', () => {
-        expectLabel("1'1", 'Constant')
-        expectLabel("4'01xz", 'Constant')
+        expectLabel("1'1", 'BitVector')
+        expectLabel("4'01xz", 'BitVector')
         expectLabel('12', 'Integer')
         expectLabel('0', 'Integer')
         expectLabel('10k', 'Unit')

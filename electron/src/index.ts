@@ -22,7 +22,7 @@ export function compile(path: string, text: string): IAstResult {
 
     const validator = new Validator()
     const val = validator.validate(path, elab.ast)
-    errors = errors.concat(errors)
+    errors = errors.concat(val.errors)
 
     if (errors.length > 0) {
         return {ast: elab.ast, errors}

@@ -264,7 +264,7 @@ module ICE40_LP8K_CM81 {
 export module TinyFPGA {
     cell usb = Usb() {*}
     cell vreg = Vreg() {*}
-    cell 'clock = Clock() {*}
+    cell clock = Clock() {*}
     cell flash = Flash() {*}
     cell headers = Headers() {*}
     cell fpga_power = FpgaPower() {*}

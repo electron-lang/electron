@@ -418,11 +418,11 @@ describe('Elaborator', () => {
                 expectAstExpr('0', makeInteger(0, 1 + 14))
             })
 
-            it('should elaborate Constant', () => {
+            it('should elaborate BitVector', () => {
                 expectAstExpr("4'01xz", {
                     ast: Ast.Literal,
                     value: "4'01xz",
-                    litType: AstLiteralType.Constant,
+                    litType: AstLiteralType.BitVector,
                     src: getLoc("4'01xz", 1 + 14),
                 })
             })

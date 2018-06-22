@@ -148,7 +148,7 @@ export interface IAstLiteral extends IAstExpr {
 
 export enum AstLiteralType {
     Integer,
-    Constant,
+    BitVector,
     Unit,
     String,
     Real,
