@@ -1,2 +1,2 @@
-declare module A {}
-declare module B {}
+export declare module A {}
+export declare module B {}

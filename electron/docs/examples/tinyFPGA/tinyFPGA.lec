@@ -14,7 +14,7 @@ module Usb {
 
     @bom("", "")
     @rotate(90)
-    cell C17 = $C(10uF) {A='+5V, B=gnd}
+    cell C17 = $C(10uF) {A='+5V, B=GND}
 
     net vbus, dp, dn, gnd
     cell J3 = module {
@@ -46,7 +46,7 @@ module Vreg {
     analog GND
 
     @bom("", "")
-    cell C1 = $C(1uF) {A='+5V; B=GND}
+    cell C1 = $C(1uF) {A='+5V, B=GND}
 
     @bom("", "MIC5504-3.3YM5-TR")
     cell U2 = module {
@@ -206,7 +206,7 @@ module FpgaReset {
 
     cell R6 = $R(0) {A='+3.3V, B=CRESET_B}
     cell TP2 = Tp() {A=CRESET_B}
-    cell SW1 = Sw() {A=GND, B=CRESET_B}
+    cell SW1 = module {analog A=GND; analog B=CRESET_B}
 }
 
 @bom("Lattice", "")
@@ -261,7 +261,7 @@ module ICE40_LP8K_CM81 {
     @group("F") {}
 }
 
-export module TinyFPGA_Bx {
+export module TinyFPGA {
     cell usb = Usb() {*}
     cell vreg = Vreg() {*}
     cell 'clock = Clock() {*}
@@ -293,7 +293,7 @@ export module TinyFPGA_Bx {
         IOB_56='+3V3
         IOB_57=SDO
         IOB_70=CRESET_B
-        // TODO D, E, F
+       // TODO D, E, F
     }
 
 }

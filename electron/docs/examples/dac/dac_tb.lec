@@ -1,7 +1,8 @@
 import DAC from "./dac"
 
 declare module Clock(FREQ: Herz) { output clk }
-declare module $V(Voltage) { analog vcc, gnd }
+declare module $V(Volt) { analog vcc, gnd }
+declare module $C(Farad) { analog A, B }
 declare module Sawtooth(WIDTH: Integer) { output data }
 
 export module DACTestbench {

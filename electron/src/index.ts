@@ -2,31 +2,35 @@ export { IToken } from 'chevrotain'
 export * from './parser'
 export * from './ast'
 export * from './elaborator'
+export * from './validator'
 export * from './printer'
-export * from './typechecker'
 export * from './diagnostic'
 
-import { IResult } from './diagnostic'
+import { IAstResult, IDiagnostic } from './diagnostic'
 import { elaborate } from './elaborator'
-import { TypeChecker } from './typechecker'
+import { Validator } from './validator'
 
-export function compile(path: string, text: string): IResult {
-    let {ast, errors} = elaborate(path, text)
+export function compile(path: string, text: string): IAstResult {
+    let errors: IDiagnostic[] = []
 
-    if (!ast) {
+    const elab = elaborate(path, text)
+    errors = elab.errors
+
+    if (!elab.ast) {
         return {errors}
     }
 
-    // typecheck
-    const typechecker = new TypeChecker()
-    typechecker.typeCheck(path, ast)
-    errors = errors.concat(typechecker.errors)
+    const validator = new Validator()
+    const val = validator.validate(path, elab.ast)
+    errors = errors.concat(errors)
 
     if (errors.length > 0) {
-        return {ast, errors}
+        return {ast: elab.ast, errors}
     }
 
-    // codegen
-    // TODO
-    return {ast, errors}
+    // TODO typecheck
+
+    // TODO codegen
+
+    return {ast: elab.ast, errors}
 }

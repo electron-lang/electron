@@ -5,8 +5,8 @@ import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
          Ast, AstExpr, AstStmt, IAstParamDecl, IAstAttributeStmt, IAstWithStmt,
          IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule,
          IAstApplyDictStmt } from './ast'
-import { IDiagnostic, DiagnosticType, DiagnosticSeverity,
-         ISrcLoc, tokenToSrcLoc, IResult } from './diagnostic'
+import { IDiagnostic, DiagnosticSeverity,
+         ISrcLoc, tokenToSrcLoc, IAstResult } from './diagnostic'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -131,7 +131,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
     parameterDeclarationList(ctx: any): IAstParamDecl[] {
         this.paramCounter = 0
-        if (ctx.paramDecl) {
+        if (ctx.parameterDeclaration) {
             return ctx.parameterDeclaration.map((ctx: any) => this.visit(ctx))
         }
         return []
@@ -213,7 +213,6 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                             endColumn: rhs[rhs.length - 1].src.endColumn,
                         },
                         severity: DiagnosticSeverity.Error,
-                        errorType: DiagnosticType.ElaborationError,
                     })
                 }
 
@@ -326,7 +325,6 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                         endColumn: exprs[exprs.length - 1].src.endColumn,
                     },
                     severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.ElaborationError,
                 })
             }
 
@@ -595,7 +593,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
 export const elaboratorInstance = new ElectronElaborationVisitor()
 
-export function elaborate(path: string, text: string): IResult {
+export function elaborate(path: string, text: string): IAstResult {
     let errors: IDiagnostic[] = []
 
     // lex
@@ -610,7 +608,6 @@ export function elaborate(path: string, text: string): IResult {
                 endColumn: err.column + err.length,
             },
             severity: DiagnosticSeverity.Error,
-            errorType: DiagnosticType.LexingError,
         })
     }
 
@@ -635,7 +632,6 @@ export function elaborate(path: string, text: string): IResult {
                 endColumn: lastToken.endColumn || 0,
             },
             severity: DiagnosticSeverity.Error,
-            errorType: DiagnosticType.ParsingError,
         })
     }
 

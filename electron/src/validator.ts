@@ -1,12 +1,14 @@
 import { resolve, dirname } from 'path'
 import { existsSync } from 'fs'
-import { IDiagnostic, DiagnosticSeverity, DiagnosticType,
-         emptySrcLoc, ISrcLoc } from './diagnostic'
+import { IDiagnostic, DiagnosticSeverity,
+         emptySrcLoc, ISrcLoc, ISmallAstResult } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
-    Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt, IAstWithStmt, IAstApplyDictStmt } from './ast'
+         Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt,
+         IAstWithStmt, IAstApplyDictStmt } from './ast'
+import { IModule } from './smallAst'
 import { allAttributes } from './attributes'
 import { compileDeclaration } from './declaration'
 
@@ -21,21 +23,20 @@ interface IType {
     ty: Type,
 }
 
-export class TypeChecker {
+export class Validator {
     public errors: IDiagnostic[] = []
     private symbolTable: SymbolTable = new SymbolTable()
 
-    typeCheck(path: string, design: IAstDesign) {
-        let dir = dirname(path)
+    validate(path: string, design: IAstDesign): ISmallAstResult {
+        const dir = dirname(path)
 
         this.resolveImports(dir, design.imports)
 
-        for (let mod of design.modules) {
-            this.checkModule(mod)
-        }
+        design.modules.map((mod) => this.validateModule(mod))
 
         // get errors from symbol table
         this.errors = this.symbolTable.getErrors().concat(this.errors)
+        return {errors: this.errors}
     }
 
     resolveImports(dir: string, imports: IAstImport[]) {
@@ -48,17 +49,26 @@ export class TypeChecker {
                         message: `File ${absPath} doesn't exist.`,
                         src: imp.src || emptySrcLoc,
                         severity: DiagnosticSeverity.Error,
-                        errorType: DiagnosticType.TypeCheckingError,
                     })
                 }
 
                 const {ast, errors} = compileDeclaration(absPath, absDeclPath)
                 if (ast) {
-                    for (let dmod of ast.modules) {
-                        for (let ident in imp.identifiers) {
-                            if (dmod.identifier.id === ident) {
-                                this.checkModule(dmod)
+                    for (let ident of imp.identifiers) {
+                        let foundMod = false
+                        for (let dmod of ast.modules) {
+                            if (dmod.identifier.id === ident.id) {
+                                foundMod = true
+                                this.validateModule(dmod)
                             }
+                        }
+                        if (!foundMod) {
+                            this.errors.push({
+                                message: `No exported module '${ident.id}' ` +
+                                    `in package '${imp.package}'.`,
+                                src: ident.src || emptySrcLoc,
+                                severity: DiagnosticSeverity.Error,
+                            })
                         }
                     }
                 }
@@ -69,13 +79,12 @@ export class TypeChecker {
                     message: 'Package resolution unsupported',
                     src: imp.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Warning,
-                    errorType: DiagnosticType.TypeCheckingError,
                 })
             }
         }
     }
 
-    checkModule(mod: IAstModule) {
+    validateModule(mod: IAstModule) {
         this.symbolTable.declareModule(mod)
         this.symbolTable.enterScope(mod.identifier)
 
@@ -87,23 +96,24 @@ export class TypeChecker {
                     ` letter.`,
                 src: mod.identifier.src || emptySrcLoc,
                 severity: DiagnosticSeverity.Warning,
-                errorType: DiagnosticType.TypeCheckingError,
             })
         }
 
         this.checkParamDecls(mod.parameters)
 
         for (let stmt of mod.statements) {
-            if (mod.declaration && stmt.ast !== Ast.Decl) {
-                this.errors.push({
-                    message: `Declared module '${mod.identifier.id}' ` +
-                        `contains assignments.`,
-                    src: mod.identifier.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.TypeCheckingError,
-                })
-            }
             this.checkStmt(stmt)
+
+            if (mod.declaration) {
+                if (stmt.ast !== Ast.Decl && stmt.ast !== Ast.SetAttributes) {
+                    this.errors.push({
+                        message: `Declared module '${mod.identifier.id}' ` +
+                            `contains assignments.`,
+                        src: mod.identifier.src || emptySrcLoc,
+                        severity: DiagnosticSeverity.Error,
+                    })
+                }
+            }
         }
 
         this.symbolTable.exitScope()
@@ -120,7 +130,6 @@ export class TypeChecker {
                     message: `Unknown attribute '${attr.name.id}'.`,
                     src: attr.name.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.TypeCheckingError,
                 })
             }
         }
@@ -136,7 +145,6 @@ export class TypeChecker {
                     `lowercase letters.`,
                     src: param.identifier.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Warning,
-                    errorType: DiagnosticType.TypeCheckingError,
                 })
             }
         }
@@ -218,7 +226,6 @@ export class TypeChecker {
                 message: `Width doesn't match`,
                 src,
                 severity: DiagnosticSeverity.Error,
-                errorType: DiagnosticType.TypeCheckingError,
             })
         }
         if (ty1.ty == Type.Cell || ty2.ty == Type.Cell) {
@@ -227,7 +234,6 @@ export class TypeChecker {
                     message: `Assigning a cell to a net`,
                     src,
                     severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.TypeCheckingError,
                 })
             }
         }
@@ -264,7 +270,6 @@ export class TypeChecker {
                 message: `Constant literal value doesn't have size '${width}'.`,
                 src: constant.src || emptySrcLoc,
                 severity: DiagnosticSeverity.Error,
-                errorType: DiagnosticType.TypeCheckingError,
             })
             return { width: 0, ty: Type.DigitalSignal }
         }
@@ -327,7 +332,6 @@ export class TypeChecker {
                     message: `Concatenation contains a cell.`,
                     src: concat.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.TypeCheckingError,
                 })
                 return { width: 0, ty: Type.Cell }
             }
@@ -343,9 +347,10 @@ export class TypeChecker {
 
         // TODO check parameters
 
+        // Only enter scope once to avoid multiple error messages
+        this.symbolTable.enterScope(cell.module)
         for (let entry of cell.dict.entries) {
             // TODO check lhs and rhs type match
-            this.symbolTable.enterScope(cell.module)
             let lhsTy = this.checkIdentifier(entry.identifier)
 
             // Check that assignment is to a port
@@ -354,19 +359,20 @@ export class TypeChecker {
                 let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                 if (decl && decl.declType === AstDeclType.Net) {
                     this.errors.push({
-                        message: `Illegal assignment to internal net '${decl.identifier.id}' in '${cell.module.id}'.`,
+                        message: `Illegal assignment to internal net ` +
+                        `'${decl.identifier.id}' in '${cell.module.id}'.`,
                         src: entry.identifier.src || emptySrcLoc,
                         severity: DiagnosticSeverity.Error,
-                        errorType: DiagnosticType.TypeCheckingError,
                     })
                 }
             }
-            this.symbolTable.exitScope()
-
-            let rhsTy = this.checkExpression(entry.expr)
-
-            this.checkTypesEqual(lhsTy, rhsTy, entry.identifier.src || emptySrcLoc)
         }
+        this.symbolTable.exitScope()
+
+        for (let entry of cell.dict.entries) {
+            this.checkExpression(entry.expr)
+        }
+        // this.checkTypesEqual(lhsTy, rhsTy, entry.identifier.src || emptySrcLoc)
 
         return { width: 0 /*cell.width*/, ty: Type.Cell }
     }

@@ -1,5 +1,5 @@
-import DAC from "dac"
-import TinyFPGA from "tinyFPGA"
+import DAC from "./dac/dac"
+import TinyFPGA from "./tinyFPGA/tinyFPGA"
 
 module Pcb {
     net clk, vccio, gnd, vdd, vss, data, out

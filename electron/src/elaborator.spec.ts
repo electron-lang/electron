@@ -195,6 +195,28 @@ describe('Elaborator', () => {
                 }
             ],
         })
+
+        expectAst('module A(R: Ohm) {}', {
+            ast: Ast.Design,
+            imports: [],
+            modules: [
+                {
+                    ast: Ast.Module,
+                    attributes: [],
+                    exported: false,
+                    declaration: false,
+                    identifier: makeIdentifier('A', 8),
+                    parameters: [
+                        {
+                            ast: Ast.ParamDecl,
+                            identifier: makeIdentifier('R', 10),
+                            ty: makeIdentifier('Ohm', 13),
+                        }
+                    ],
+                    statements: [],
+                }
+            ],
+        })
     })
 
     describe('should elaborate statements', () => {

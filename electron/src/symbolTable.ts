@@ -1,6 +1,6 @@
 import { IAstIdentifier, IAstModule, IAstImport,
     IAstDeclStmt, AstDeclType, IAstParamDecl} from './ast'
-import { ISrcLoc, emptySrcLoc, DiagnosticType, DiagnosticSeverity,
+import { ISrcLoc, emptySrcLoc, DiagnosticSeverity,
          IDiagnostic } from './diagnostic'
 
 interface IBinder {
@@ -144,7 +144,6 @@ export class SymbolTable {
                         message: 'Conflicting identifiers ' + symbol,
                         src,
                         severity: DiagnosticSeverity.Error,
-                        errorType: DiagnosticType.SymbolTableError,
                     }
                 })
             conflictErrors = conflictErrors.concat(newErrors)
@@ -156,7 +155,6 @@ export class SymbolTable {
                     message: 'Undeclared identifier ' + ident.id,
                     src: ident.src || emptySrcLoc,
                     severity: DiagnosticSeverity.Error,
-                    errorType: DiagnosticType.SymbolTableError,
                 }
             })
         return conflictErrors.concat(unresolvedErrors)

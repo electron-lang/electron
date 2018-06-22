@@ -1,5 +1,6 @@
 import { IToken } from 'chevrotain'
 import { IAstDesign } from './ast'
+import { IModule } from './smallAst'
 
 export enum DiagnosticSeverity {
     Error,
@@ -7,19 +8,10 @@ export enum DiagnosticSeverity {
     Info,
 }
 
-export enum DiagnosticType {
-    LexingError = 'lexer',
-    ParsingError = 'parser',
-    ElaborationError = 'elaboration',
-    SymbolTableError = 'symbol-table',
-    TypeCheckingError = 'typechecker',
-}
-
 export interface IDiagnostic {
     message: string,
     src: ISrcLoc,
     severity: DiagnosticSeverity,
-    errorType: DiagnosticType,
 }
 
 export interface ISrcLoc {
@@ -45,7 +37,12 @@ export const emptySrcLoc: ISrcLoc = {
     endColumn: 0,
 }
 
-export interface IResult {
+export interface IAstResult {
     ast?: IAstDesign,
+    errors: IDiagnostic[],
+}
+
+export interface ISmallAstResult {
+    sast?: IModule[],
     errors: IDiagnostic[],
 }
