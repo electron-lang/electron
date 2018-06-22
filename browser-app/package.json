@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "browser-app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
-    "@electron-lang/theia-electron": "^0.0.3",
+    "@electron-lang/theia-electron": "^0.0.4",
     "@theia/callhierarchy": "latest",
     "@theia/core": "latest",
     "@theia/cpp": "latest",
