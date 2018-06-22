@@ -1,7 +1,5 @@
-import A, B from "./file"
+import $R, $and from "./cells"
 
-declare module $R { analog A, B }
-declare module $and { input A, B output C}
 declare module $fpga {}
 
 @bom("Yago", "XYZ")
@@ -14,7 +12,7 @@ export module R10K {
 export module AND {
     input a, b
     output c
-    cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, C=c}
+    cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, Y=c}
 }
 
 @model(BlackBoxModel)

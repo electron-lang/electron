@@ -1,10 +1,6 @@
-declare module $R { analog A, B }
-declare module $C { analog A, B }
-declare module $L { analog A, B }
-declare module $D { analog A, K }
-declare module $M { analog G, D, S }
+import $R, $C, $L, $D, $M from "../cells"
 
-module RCFilter(R: ohm, C: farad) {
+module RCFilter(R: Ohm, C: Farad) {
     /// First order lowpass filter
     @left analog in
     @right analog out
@@ -14,7 +10,7 @@ module RCFilter(R: ohm, C: farad) {
     cell c = $C(C) {A=out, B=gnd}
 }
 
-module LCFilter(L: henry, C: farad) {
+module LCFilter(L: Henry, C: Farad) {
     /// Second order lowpass filter
     @left analog in
     @right analog out

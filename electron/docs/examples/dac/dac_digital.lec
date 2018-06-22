@@ -1,55 +1,9 @@
-declare module $dff(
-    WIDTH: Integer,
-    CLK_POLARITY: Integer,
-) {
-    @clock
-    input CLK
-    input[WIDTH] D
-    output[WIDTH] Q
-}
-
-declare module $not(
-    A_SIGNED: Boolean,
-    A_WIDTH: Integer,
-    Y_WIDTH: Integer,
-) {
-    input[A_WIDTH] A
-    output[Y_WIDTH] Y
-}
-
-declare module $add(
-    A_SIGNED: Boolean,
-    A_WIDTH: Integer,
-    B_SIGNED: Boolean,
-    B_WIDTH: Integer,
-    Y_WIDTH: Integer,
-) {
-    input[A_WIDTH] A
-    input[B_WIDTH] B
-    output[Y_WIDTH] Y
-}
-
-declare module $mux(
-    WIDTH: Integer,
-) {
-    input S
-    input[WIDTH] A, B
-    output[WIDTH] Y
-}
-
-module $add2(WIDTH: Integer) {
-    input[WIDTH] A, B, C
-    output[WIDTH] Y
-    net n
-    cell[2] adder = $add(A_WIDTH=WIDTH, B_WIDTH=WIDTH, Y_WIDTH=WIDTH)[2]
-    adder[0] {A, B, Y=n}
-    adder[1] {A=n, B=C, Y}
-}
+import $add, $dff, $mux, $not from "../cells"
 
 module Add(WIDTH: Integer) {
     input[WIDTH] A, B
     output[WIDTH] Y
-    cell add = $add(A_WIDTH=WIDTH, B_WIDTH=WIDTH, Y_WIDTH=WIDTH) {*}
+    cell add = $add(A_WIDTH=WIDTH, B_WIDTH=WIDTH) {*}
 }
 
 module Integrator(WIDTH: Integer) {

@@ -199,17 +199,6 @@ export class Validator {
     checkDeclStmt(decl: IAstDeclStmt) {
         this.symbolTable.declareVariable(decl)
         this.checkAttributes(decl.attributes)
-
-        /*if (decl.identifier.id[0].toLowerCase() !== decl.identifier.id[0]) {
-            this.errors.push({
-                message: `Module '${decl.identifier.id}' starts with a ` +
-                `uppercase letter.`,
-                src: decl.identifier.src || emptySrcLoc,
-                severity: DiagnosticSeverity.Warning,
-                errorType: DiagnosticType.TypeCheckingError,
-            })
-        }*/
-
         //TODO constEval(decl.width)
     }
 
@@ -357,29 +346,55 @@ export class Validator {
     checkCell(cell: IAstModInst): IType {
         let mod = this.symbolTable.resolveModule(cell.module)
 
-        // TODO check parameters
-
-        // Only enter scope once to avoid multiple error messages
-        this.symbolTable.enterScope(cell.module)
-        for (let entry of cell.dict.entries) {
-            // TODO check lhs and rhs type match
-            let lhsTy = this.checkIdentifier(entry.identifier)
-
-            // Check that assignment is to a port
-            // Make sure unresolved symbol error only gets emitted once
-            if (lhsTy.width) {
-                let decl = this.symbolTable.resolveDeclaration(entry.identifier)
-                if (decl && decl.declType === AstDeclType.Net) {
+        if (mod) {
+            for (let param of cell.parameters) {
+                let pdecl = null
+                if (param.identifier.id.startsWith('__')) {
+                    const i = parseInt(param.identifier.id.substring(2))
+                    pdecl = mod.parameters[i - 1]
+                } else {
+                    for (let modpdecl of mod.parameters) {
+                        if (param.identifier.id === modpdecl.identifier.id) {
+                            pdecl = modpdecl
+                        }
+                    }
+                }
+                if (!pdecl) {
                     this.errors.push({
-                        message: `Illegal assignment to internal net ` +
-                        `'${decl.identifier.id}' in '${cell.module.id}'.`,
-                        src: entry.identifier.src || emptySrcLoc,
+                        message: `Module '${mod.identifier.id}' doesn't have ` +
+                            `parameter '${param.identifier.id}'.`,
+                        src: param.identifier.src || param.value.src
+                            || emptySrcLoc,
                         severity: DiagnosticSeverity.Error,
                     })
                 }
+
+                // TODO const eval param.value
+                // allTypeHandlers[pdecl.identifier.id].isValid()
             }
+
+            // Only enter scope once to avoid multiple error messages
+            this.symbolTable.enterScope(cell.module)
+            for (let entry of cell.dict.entries) {
+                // TODO check lhs and rhs type match
+                let lhsTy = this.checkIdentifier(entry.identifier)
+
+                // Check that assignment is to a port
+                // Make sure unresolved symbol error only gets emitted once
+                if (lhsTy.width) {
+                    let decl = this.symbolTable.resolveDeclaration(entry.identifier)
+                    if (decl && decl.declType === AstDeclType.Net) {
+                        this.errors.push({
+                            message: `Illegal assignment to internal net ` +
+                                `'${decl.identifier.id}' in '${cell.module.id}'.`,
+                            src: entry.identifier.src || emptySrcLoc,
+                            severity: DiagnosticSeverity.Error,
+                        })
+                    }
+                }
+            }
+            this.symbolTable.exitScope()
         }
-        this.symbolTable.exitScope()
 
         for (let entry of cell.dict.entries) {
             this.checkExpression(entry.expr)

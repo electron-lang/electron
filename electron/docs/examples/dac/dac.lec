@@ -1,8 +1,8 @@
+import $dac from "../cells"
 import DACDigital from "./dac_digital"
 import DACAnalog from "./dac_analog"
 
 declare module PLL {input A output Y}
-declare module $dac {analog VCC, GND input A output Y}
 
 export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
     @clock

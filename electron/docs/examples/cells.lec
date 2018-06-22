@@ -1,0 +1,55 @@
+export declare module $R(RESISTANCE: Ohm) { analog A, B }
+export declare module $C(CAPACITANCE: Farad) { analog A, B }
+export declare module $L(INDUCTANCE: Henry) { analog A, B }
+export declare module $D { analog A, K }
+export declare module $M { analog G, D, S }
+export declare module $V(VOLTAGE: Volt) { analog vcc, gnd }
+
+export declare module $dac(WIDTH: Integer) {
+    analog VCC, GND
+    input[WIDTH] A
+    analog[WIDTH] Y
+}
+
+export declare module $adc(WIDTH: Integer) {
+    analog VCC, GND
+    analog[WIDTH] A
+    output[WIDTH] Y
+}
+
+export declare module Clock(FREQ: Herz) { output clk }
+
+export declare module $dff(WIDTH: Integer, CLK_POLARITY: Integer) {
+    @clock
+    input CLK
+    input[WIDTH] D
+    output[WIDTH] Q
+}
+
+export declare module $not(A_SIGNED: Boolean, A_WIDTH: Integer) {
+    input[A_WIDTH] A
+    output Y
+}
+
+export declare module $add(
+    A_SIGNED: Boolean,
+    A_WIDTH: Integer,
+    B_SIGNED: Boolean,
+    B_WIDTH: Integer,
+) {
+    input[A_WIDTH] A
+    input[B_WIDTH] B
+    output Y
+}
+
+export declare module $mux(WIDTH: Integer) {
+    input S
+    input[WIDTH] A, B
+    output[WIDTH] Y
+}
+
+export declare module $and(A_WIDTH: Integer, B_WIDTH: Integer) {
+    input[A_WIDTH] A
+    input[B_WIDTH] B
+    output Y
+}
