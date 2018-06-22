@@ -107,7 +107,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     fullyQualifiedName(ctx: any): IAstFQN {
         return {
             ast: Ast.FQN,
-            fqn: ctx.identifer.map((ctx: any) => this.visit(ctx))
+            fqn: ctx.identifier.map((ctx: any) => this.visit(ctx))
         }
     }
 
@@ -230,11 +230,20 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     attributeStatement(ctx: any): IAstAttributeStmt {
-        // TODO
+        let statements: AstStmt[] = []
+        let fqns: IAstFQN[] = []
+        if (ctx.statements) {
+            statements = this.visit(ctx.statements[0])
+        } else if (ctx.declaration) {
+            statements = this.visit(ctx.declaration[0])
+        } else if (ctx.fullyQualifiedNames) {
+            fqns = this.visit(ctx.fullyQualifiedNames[0])
+        }
         return {
-            ast: Ast.Attribute,
+            ast: Ast.SetAttributes,
             attributes: ctx.attribute.map((ctx: any) => this.visit(ctx)),
-            statements: [],
+            statements,
+            fqns,
         }
     }
 
@@ -271,6 +280,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         } else if (ctx.Const) {
             declType = AstDeclType.Const
         } else {
+            /* istanbul ignore next */
             throwBug('declaration')
         }
 
@@ -279,6 +289,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         const decls = ids.map((id: IAstIdentifier) => {
             return {
                 ast: Ast.Decl,
+                attributes: [],
                 declType,
                 width,
                 identifier: id,
@@ -356,6 +367,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 expr = ident
             }
         } else {
+            /* istanbul ignore next */
             throwBug('expression')
         }
 
@@ -432,8 +444,9 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
             }
         }
 
+        /* istanbul ignore next */
         throwBug('literal')
-        // Make typechecker happy
+        /* istanbul ignore next */
         return { ast: Ast.Literal, value: '', litType: AstLiteralType.Boolean }
     }
 
@@ -456,6 +469,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         } else if (ctx.ShiftRight) {
             op = AstBinaryOp.Shr
         } else {
+            /* istanbul ignore next */
             throwBug('binaryOp')
         }
 

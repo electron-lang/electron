@@ -22,6 +22,7 @@ function makeModule(id: string): IAstModule {
 function makeOutput(id: string): IAstDeclStmt {
     return {
         ast: Ast.Decl,
+        attributes: [],
         declType: AstDeclType.Output,
         width: {
             ast: Ast.Literal,

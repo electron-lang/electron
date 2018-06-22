@@ -9,6 +9,7 @@ export enum Ast {
     Attribute,
     ParamDecl,
     Param,
+    SetAttributes,
     With,
     Assign,
     ApplyDict,
@@ -83,9 +84,10 @@ export type AstStmt = IAstAttributeStmt | IAstDeclStmt
     | IAstWithStmt | IAstAssignStmt | IAstApplyDictStmt
 
 export interface IAstAttributeStmt extends IAst {
-    // TODO
+    ast: Ast.SetAttributes
     attributes: IAstAttribute[]
     statements: AstStmt[]
+    fqns: IAstFQN[]
 }
 
 export interface IAstWithStmt extends IAst {
@@ -108,6 +110,7 @@ export interface IAstApplyDictStmt extends IAst {
 
 export interface IAstDeclStmt extends IAst {
     ast: Ast.Decl
+    attributes: IAstAttribute[],
     declType: AstDeclType
     width: AstExpr
     identifier: IAstIdentifier

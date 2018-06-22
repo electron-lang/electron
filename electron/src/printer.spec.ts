@@ -39,6 +39,7 @@ function makeDecl(declType: AstDeclType, width: number,
                   name: string): IAstDeclStmt {
     return {
         ast: Ast.Decl,
+        attributes: [],
         declType,
         width: makeInteger(width),
         identifier: makeIdent(name),

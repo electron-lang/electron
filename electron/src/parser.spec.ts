@@ -46,25 +46,51 @@ describe('Parser', () => {
         parseType('inout a')
         parseType('analog a')
         parseType('cell a')
+        parseType('const a')
     })
 
     it('should parse expressions', () => {
         const parseExpression = (text: string) => {
             parseRule(text, () => { parser.expression() })
         }
-        // Constant
+
+        // Constant expressions
+        /// Literals
+        //// Integer
+        parseExpression('0')
+        parseExpression('10')
+        //// Unit
+        parseExpression('16MHz')
+        parseExpression('10k')
+        parseExpression('1uH')
+        //// Real
+        parseExpression('1.26e-12')
+        //// Boolean
+        parseExpression('true')
+        parseExpression('false')
+
+        /// Binops
+        parseExpression('1 + 1')
+        parseExpression('1 - 1')
+        parseExpression('1 * 1')
+        parseExpression('1 << 1')
+        parseExpression('1 >> 1')
+
+        // Signal expressions
+        /// Digital constant
         parseExpression("1'1")
         parseExpression("4'01xz")
-        // Reference
+        /// Identifier
         parseExpression('a')
         parseExpression("'+12V")
-        // Index
+        /// Reference
         parseExpression('a[2]')
         parseExpression('a[1:2]')
-        // Concat
+        // Tuples
         parseExpression('(a, b)')
         parseExpression('(a, (b, c))')
-        // Cell
+
+        // Cell expressions
         parseExpression('$R() {}')
         parseExpression('$R(10k) {}')
         parseExpression('$R(10k,) {}')
@@ -93,5 +119,6 @@ describe('Parser', () => {
         parseStatement('@bom("Yago", "XYZ") a.b.c')
         parseStatement('with a.b { @bom("") c; @bom("") d;}')
         parseStatement('@group { analog A, B }')
+        parseStatement('A {a=b, c}')
     })
 })
