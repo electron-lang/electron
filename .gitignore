@@ -1,6 +1,7 @@
 node_modules/
 lib/
 *.log
+.nyc_output/
 browser-app/*
 !browser-app/package.json
 electron-app/*

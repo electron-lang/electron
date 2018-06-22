@@ -270,7 +270,6 @@ export module TinyFPGA_Bx {
     cell fpga_power = FpgaPower() {*}
     cell fpga_pll = FpgaPLL() {*}
     cell fpga_reset = FpgaReset() {*}
-    cell fpga_io = FpgaIo() {*}
 
     cell R5 = $R(10k) {A='+3V3; B=SS}
 
