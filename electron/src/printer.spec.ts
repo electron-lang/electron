@@ -4,7 +4,8 @@ import { IAstImport, IAstDeclStmt, IAstLiteral, IAstIdentifier,
          IAstAttribute, AstExpr,
     IAstAssignStmt,
     IAstParam,
-    IAstReference} from './ast'
+    IAstReference,
+    IAstParamDecl} from './ast'
 import {render, IDoc, emitDesign, emitImport, emitModule,
         emitStatement, emitExpression, emitAttribute} from './printer'
 
@@ -70,6 +71,14 @@ function makeParam(name: null | string, value: AstExpr): IAstParam {
     }
 }
 
+function makeParamDecl(name: string, ty: string): IAstParamDecl {
+    return {
+        ast: Ast.ParamDecl,
+        name: makeIdent(name),
+        ty: makeIdent(ty),
+    }
+}
+
 function makeRef(name: string, _from: number, to: number): IAstReference {
     return {
         ast: Ast.Ref,
@@ -114,6 +123,16 @@ describe('Pretty Printer', () => {
             parameters: [],
             statements: [],
         }), '@bom("Yago", "XYZ")\nmodule mod {}\n')
+
+        expectPretty(emitModule({
+            ast: Ast.Module,
+            attributes: [],
+            exported: false,
+            declaration: false,
+            identifier: makeIdent('mod'),
+            parameters: [ makeParamDecl('R', 'Ohm') ],
+            statements: [],
+        }), 'module mod(R: Ohm) {}\n')
 
         /*expectPretty(emitStatement({
             declType: AstDeclType.Cell,

@@ -1,4 +1,5 @@
 import { IToken } from 'chevrotain'
+import { IAstDesign } from './ast'
 
 export enum DiagnosticSeverity {
     Error,
@@ -42,4 +43,9 @@ export const emptySrcLoc: ISrcLoc = {
     startColumn: 0,
     endLine: 0,
     endColumn: 0,
+}
+
+export interface IResult {
+    ast?: IAstDesign,
+    errors: IDiagnostic[],
 }

@@ -5,7 +5,8 @@ import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple,
          IAstDeclStmt, IAstDesign, IAstFQN, IAstIdentifier,
          IAstImport, IAstLiteral, IAstModule, IAstParam, IAstReference,
          AstDeclType, AstLiteralType, AstExpr, AstStmt, IAstDict,
-         IAstDictEntry } from './ast'
+    IAstDictEntry,
+    IAstParamDecl} from './ast'
 
 const tabWidth = 2
 
@@ -35,7 +36,9 @@ export function emitModule(mod: IAstModule): IDoc {
         emitAttributes(mod.attributes),
         mod.exported ? 'export ' : '',
         mod.declaration ? 'declare ' : '',
-        'module ', emitIdentifier(mod.identifier), ' ',
+        'module ', emitIdentifier(mod.identifier),
+        emitParamDecls(mod.parameters),
+        ' ',
         emitBody(mod.statements.map(emitStatement)),
         line
     ]
@@ -100,6 +103,20 @@ export function emitParameter(param: IAstParam): IDoc {
         return [ emitIdentifier(param.name), '=', value ]
     }
     return value
+}
+
+export function emitParamDecls(params: IAstParamDecl[]): IDoc {
+    if (params.length > 0) {
+        return enclose(parens, intersperse(',', params.map(emitParamDecl)))
+    }
+    return []
+}
+
+export function emitParamDecl(param: IAstParamDecl): IDoc {
+    if (param.name) {
+        return [emitIdentifier(param.name), ': ', emitIdentifier(param.ty)]
+    }
+    return [emitIdentifier(param.ty)]
 }
 
 // Statements

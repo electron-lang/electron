@@ -1,7 +1,8 @@
 import { expect } from 'chai'
 import { elaborate } from './elaborator'
 import { Ast, AstLiteralType, AstDeclType, AstStmt, AstExpr,
-    IAstDesign, IAstDeclStmt, IAstIdentifier, IAstLiteral, AstBinaryOp, IAstAttribute } from './ast'
+         IAstDesign, IAstDeclStmt, IAstIdentifier, IAstLiteral, AstBinaryOp,
+         IAstAttribute } from './ast'
 
 function getLoc(text: string, offset: number) {
     return {
@@ -41,7 +42,9 @@ function makeString(str: string, offset: number): IAstLiteral {
 }
 
 function expectAst(text: string, ast: IAstDesign) {
-    expect(elaborate(text)).to.deep.equal(ast)
+    const res = elaborate('elatorator.spec.ts', text)
+    expect(res.errors.length).to.equal(0)
+    expect(res.ast).to.deep.equal(ast)
 }
 
 function expectAstModule(text: string, smts: AstStmt[]) {

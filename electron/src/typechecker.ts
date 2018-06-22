@@ -3,11 +3,12 @@ import { existsSync } from 'fs'
 import { IDiagnostic, DiagnosticSeverity, DiagnosticType,
          emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
-import { IAstDesign, IAstAttribute, IAstDeclStmt, IAstFQN,
+import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
          Ast, AstLiteralType } from './ast'
 import { allAttributes } from './attributes'
+import { compileDeclaration } from './declaration'
 
 enum Type {
     Signal,
@@ -26,11 +27,25 @@ export class TypeChecker {
 
     typeCheck(path: string, design: IAstDesign) {
         let dir = dirname(path)
-        for (let imp of design.imports) {
-            this.symbolTable.declareExternalModule(imp)
 
+        const modules = this.resolveImports(dir, design.imports)
+            .concat(design.modules)
+
+        for (let mod of modules) {
+            this.checkModule(mod)
+        }
+
+        // get errors from symbol table
+        this.errors = this.symbolTable.getErrors().concat(this.errors)
+    }
+
+    resolveImports(dir: string, imports: IAstImport[]): IAstModule[] {
+        let dmodules: IAstModule[] = []
+
+        for (let imp of imports) {
             if (imp.package.startsWith('.')) {
                 const absPath = resolve(dir + '/' + imp.package + '.lec')
+                const absDeclPath = resolve(dir + '/' + imp.package + '.d.lec')
                 if (!existsSync(absPath)) {
                     this.errors.push({
                         message: `File ${absPath} doesn't exist.`,
@@ -39,8 +54,18 @@ export class TypeChecker {
                         errorType: DiagnosticType.TypeCheckingError,
                     })
                 }
-                imp.package = absPath
-                // TODO resolve external modules
+
+                const {ast, errors} = compileDeclaration(absPath, absDeclPath)
+                if (ast) {
+                    for (let dmod of ast.modules) {
+                        for (let ident in imp.identifiers) {
+                            if (dmod.identifier.id === ident) {
+                                dmodules.push(dmod)
+                            }
+                        }
+                    }
+                }
+                this.errors = this.errors.concat(errors)
             } else {
                 // TODO resolve external modules from packages
                 this.errors.push({
@@ -51,26 +76,28 @@ export class TypeChecker {
                 })
             }
         }
+        return dmodules
+    }
 
-        for (let mod of design.modules) {
-            this.symbolTable.declareModule(mod)
-            this.symbolTable.enterScope(mod.identifier)
+    checkModule(mod: IAstModule) {
+        this.symbolTable.declareModule(mod)
+        this.symbolTable.enterScope(mod.identifier)
 
-            this.checkAttributes(mod.attributes)
+        this.checkAttributes(mod.attributes)
 
-            if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
-                this.errors.push({
-                    message: `Module '${mod.identifier.id}' starts with a lowercase letter.`,
-                    src: mod.identifier.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Warning,
-                    errorType: DiagnosticType.TypeCheckingError,
-                })
-            }
+        if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
+            this.errors.push({
+                message: `Module '${mod.identifier.id}' starts with a lowercase letter.`,
+                src: mod.identifier.src || emptySrcLoc,
+                severity: DiagnosticSeverity.Warning,
+                errorType: DiagnosticType.TypeCheckingError,
+            })
+        }
 
-            for (let stmt of mod.statements) {
-                if (stmt.ast === Ast.Decl) {
-                    this.checkDeclaration(stmt as IAstDeclStmt)
-                } else {
+        for (let stmt of mod.statements) {
+            if (stmt.ast === Ast.Decl) {
+                this.checkDeclaration(stmt as IAstDeclStmt)
+            } else {
                     if (mod.declaration) {
                         this.errors.push({
                             message: `Declared module '${mod.identifier.id}' contains assignments.`,
@@ -80,21 +107,17 @@ export class TypeChecker {
                         })
                     }
 
-                    if (stmt.ast === Ast.Assign) {
-                        this.checkAssignment(stmt as IAstAssignStmt)
-                    }
+                if (stmt.ast === Ast.Assign) {
+                    this.checkAssignment(stmt as IAstAssignStmt)
+                }
 
                     /*if ((stmt as IAstFullyQualifiedName).fqn) {
-                        this.checkFQN(stmt as IAstFullyQualifiedName)
-                    }*/
-                }
+                      this.checkFQN(stmt as IAstFullyQualifiedName)
+                      }*/
+            }
             }
 
-            this.symbolTable.exitScope()
-        }
-
-        // get errors from symbol table
-        this.errors = this.symbolTable.getErrors().concat(this.errors)
+        this.symbolTable.exitScope()
     }
 
     checkAttributes(attrs: IAstAttribute[]) {

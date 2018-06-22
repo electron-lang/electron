@@ -1,4 +1,4 @@
-import { parserInstance, parse } from './parser'
+import { lexerInstance, parserInstance } from './parser'
 import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
          IAstDesign, IAstFQN, IAstIdentifier, IAstImport, IAstLiteral,
          IAstModule, IAstParam, IAstReference, AstLiteralType,
@@ -6,7 +6,7 @@ import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
          IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule,
          IAstApplyDictStmt } from './ast'
 import { IDiagnostic, DiagnosticType, DiagnosticSeverity,
-         ISrcLoc, tokenToSrcLoc } from './diagnostic'
+         ISrcLoc, tokenToSrcLoc, IResult } from './diagnostic'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -578,11 +578,57 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
 export const elaboratorInstance = new ElectronElaborationVisitor()
 
-export function elaborate(text: string): IAstDesign {
-    const cst = parse(text);
-    const design = elaboratorInstance.visit(cst)
-    if (elaboratorInstance.errors.length > 0) {
-        throw new Error(elaboratorInstance.errors[0].message)
+export function elaborate(path: string, text: string): IResult {
+    let errors: IDiagnostic[] = []
+
+    // lex
+    const lexingResult = lexerInstance.tokenize(text)
+    for (let err of lexingResult.errors) {
+        errors.push({
+            message: err.message,
+            src: {
+                startLine: err.line,
+                startColumn: err.column,
+                endLine: err.line,
+                endColumn: err.column + err.length,
+            },
+            severity: DiagnosticSeverity.Error,
+            errorType: DiagnosticType.LexingError,
+        })
     }
-    return design
+
+    if (errors.length > 0) {
+        return {errors}
+    }
+
+    // parse
+    parserInstance.input = lexingResult.tokens
+    const cst = parserInstance.design()
+    for (let err of parserInstance.errors) {
+        let lastToken = err.token
+        if (err.resyncedTokens.length > 0) {
+            lastToken = err.resyncedTokens[err.resyncedTokens.length - 1]
+        }
+        errors.push({
+            message: err.message,
+            src: {
+                startLine: err.token.startLine || 0,
+                startColumn: err.token.startColumn || 0,
+                endLine: lastToken.endLine || 0,
+                endColumn: lastToken.endColumn || 0,
+            },
+            severity: DiagnosticSeverity.Error,
+            errorType: DiagnosticType.ParsingError,
+        })
+    }
+
+    if (errors.length > 0) {
+        return {errors}
+    }
+
+    // elaborate
+    const ast = elaboratorInstance.visit(cst)
+    errors = elaboratorInstance.errors
+
+    return {ast, errors}
 }
