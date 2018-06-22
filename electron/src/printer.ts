@@ -92,17 +92,10 @@ export function emitParameters(params: IAstParam[]): IDoc {
 }
 
 export function emitParameter(param: IAstParam): IDoc {
-    let value = null
-    if ((param.value as IAstIdentifier).id) {
-        value = emitIdentifier(param.value as IAstIdentifier)
-    } else {
-        value = emitLiteral(param.value as IAstLiteral)
+    if (param.identifier.id.startsWith('__')) {
+        return [ emitExpression(param.value) ]
     }
-
-    if (param.name) {
-        return [ emitIdentifier(param.name), '=', value ]
-    }
-    return value
+    return [ emitIdentifier(param.identifier), '=', emitExpression(param.value) ]
 }
 
 export function emitParamDecls(params: IAstParamDecl[]): IDoc {
@@ -113,10 +106,7 @@ export function emitParamDecls(params: IAstParamDecl[]): IDoc {
 }
 
 export function emitParamDecl(param: IAstParamDecl): IDoc {
-    if (param.name) {
-        return [emitIdentifier(param.name), ': ', emitIdentifier(param.ty)]
-    }
-    return [emitIdentifier(param.ty)]
+    return [emitIdentifier(param.identifier), ': ', emitIdentifier(param.ty)]
 }
 
 // Statements

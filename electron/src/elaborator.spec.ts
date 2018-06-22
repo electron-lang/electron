@@ -13,12 +13,15 @@ function getLoc(text: string, offset: number) {
     }
 }
 
-function makeIdentifier(name: string, offset: number): IAstIdentifier {
-    return {
-        ast: Ast.Identifier,
-        id: name,
-        src: getLoc(name, offset),
+function makeIdentifier(name: string, offset: number | undefined): IAstIdentifier {
+    if (offset) {
+        return {
+            ast: Ast.Identifier,
+            id: name,
+            src: getLoc(name, offset),
+        }
     }
+    return { ast: Ast.Identifier, id: name }
 }
 
 function makeInteger(int: number, offset: number): IAstLiteral {
@@ -173,12 +176,12 @@ describe('Elaborator', () => {
                             parameters: [
                                 {
                                     ast: Ast.Param,
-                                    name: null,
+                                    identifier: makeIdentifier('__1', undefined),
                                     value: makeString('Yago', 6),
                                 },
                                 {
                                     ast: Ast.Param,
-                                    name: null,
+                                    identifier: makeIdentifier('__2', undefined),
                                     value: makeString('XYZ', 14)
                                 }
                             ]
@@ -329,7 +332,7 @@ describe('Elaborator', () => {
                 parameters: [
                     {
                         ast: Ast.Param,
-                        name: null,
+                        identifier: makeIdentifier('__1', undefined),
                         value: makeInteger(10, 8 + 10),
                     }
                 ]
@@ -591,7 +594,7 @@ describe('Elaborator', () => {
                 parameters: [
                     {
                         ast: Ast.Param,
-                        name: null,
+                        identifier: makeIdentifier('__1', undefined),
                         value: {
                             ast: Ast.Literal,
                             value: '10k',

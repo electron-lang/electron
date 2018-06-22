@@ -69,13 +69,13 @@ export interface IAstAttribute extends IAst {
 
 export interface IAstParamDecl extends IAst {
     ast: Ast.ParamDecl
-    name: IAstIdentifier | null
+    identifier: IAstIdentifier
     ty: IAstIdentifier
 }
 
 export interface IAstParam extends IAst {
     ast: Ast.Param
-    name: IAstIdentifier | null
+    identifier: IAstIdentifier
     value: AstExpr
 }
 

@@ -42,7 +42,6 @@ export function compileDeclaration(path: string, declPath: string): IResult {
         imports: [],
         modules: declarations
     }
-    console.log(dast)
     const dtext = print(dast)
     writeFileSync(declPath, dtext)
     return {ast: dast, errors}

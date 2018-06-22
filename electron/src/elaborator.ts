@@ -30,6 +30,7 @@ function throwBug(rule: string): void {
 
 class ElectronElaborationVisitor extends BaseElectronVisitor {
     public errors: IDiagnostic[] = []
+    public paramCounter: number = 0
 
     constructor() {
         super()
@@ -129,6 +130,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     parameterDeclarationList(ctx: any): IAstParamDecl[] {
+        this.paramCounter = 0
         if (ctx.paramDecl) {
             return ctx.parameterDeclaration.map((ctx: any) => this.visit(ctx))
         }
@@ -136,14 +138,26 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
     }
 
     parameterDeclaration(ctx: any): IAstParamDecl {
+        if (ctx.identifier.length > 1) {
+            return {
+                ast: Ast.ParamDecl,
+                identifier: this.visit(ctx.identifier[0]),
+                ty: this.visit(ctx.identifier[1]),
+            }
+        }
+        this.paramCounter += 1
         return {
             ast: Ast.ParamDecl,
-            name: this.visit(ctx.identifier[0]),
-            ty: this.visit(ctx.identifier[1]),
+            identifier: {
+                ast: Ast.Identifier,
+                id: '__' + this.paramCounter.toString(),
+            },
+            ty: this.visit(ctx.identifier[0]),
         }
     }
 
     parameterList(ctx: any): IAstParam[] {
+        this.paramCounter = 0
         if (ctx.parameter) {
             return ctx.parameter.map((ctx: any) => this.visit(ctx))
         }
@@ -154,15 +168,18 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         if (ctx.expression.length > 1) {
             return {
                 ast: Ast.Param,
-                name: this.visit(ctx.expression[0]),
+                identifier: this.visit(ctx.expression[0]),
                 value: this.visit(ctx.expression[1]),
             }
-        } else {
-            return {
-                ast: Ast.Param,
-                name: null,
-                value: this.visit(ctx.expression[0]),
-            }
+        }
+        this.paramCounter += 1
+        return {
+            ast: Ast.Param,
+            identifier: {
+                ast: Ast.Identifier,
+                id: '__' + this.paramCounter.toString(),
+            },
+            value: this.visit(ctx.expression[0]),
         }
     }
 

@@ -7,16 +7,7 @@ export interface IAttributeHandler {
     generateJson(attr: IAstAttribute): IAttrs
 }
 
-const BomAttribute: IAttributeHandler = {
-    validateParameters(attr: IAstAttribute): IDiagnostic[] {
-        return []
-    },
-
-    generateJson(attr: IAstAttribute): IAttrs {
-        return {}
-    }
-}
-
+/* Attributes for Schematic generation */
 const RotateAttribute: IAttributeHandler = {
     validateParameters(attr: IAstAttribute): IDiagnostic[] {
         return []
@@ -27,6 +18,99 @@ const RotateAttribute: IAttributeHandler = {
     }
 }
 
+const LeftAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const RightAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const TopAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const BottomAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const GroupAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const PowerAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const GroundAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+/* Attributes for RTL */
+const ClockAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+/* Attributes for BOM generation */
+const BomAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+/* Attributes for Simulation */
 const ModelAttribute: IAttributeHandler = {
     validateParameters(attr: IAstAttribute): IDiagnostic[] {
         return []
@@ -37,7 +121,8 @@ const ModelAttribute: IAttributeHandler = {
     }
 }
 
-const ModuleAttribute: IAttributeHandler = {
+/* Attributes for PCB generation */
+const SetPadAttribute: IAttributeHandler = {
     validateParameters(attr: IAstAttribute): IDiagnostic[] {
         return []
     },
@@ -47,7 +132,18 @@ const ModuleAttribute: IAttributeHandler = {
     }
 }
 
-const SetPadAttribute: IAttributeHandler = {
+/* Attributes for FPGA bitstream generation */
+const FpgaAttribute: IAttributeHandler = {
+    validateParameters(attr: IAstAttribute): IDiagnostic[] {
+        return []
+    },
+
+    generateJson(attr: IAstAttribute): IAttrs {
+        return {}
+    }
+}
+
+const BitstreamAttribute: IAttributeHandler = {
     validateParameters(attr: IAstAttribute): IDiagnostic[] {
         return []
     },
@@ -68,10 +164,25 @@ const SetIoAttribute: IAttributeHandler = {
 }
 
 export const allAttributes: {[name: string]: IAttributeHandler} = {
-    bom: BomAttribute,
+    // Schematic
     rotate: RotateAttribute,
+    left: LeftAttribute,
+    right: RightAttribute,
+    top: TopAttribute,
+    bottom: BottomAttribute,
+    group: GroupAttribute,
+    power: PowerAttribute,
+    ground: GroundAttribute,
+    // RTL
+    clock: ClockAttribute,
+    // BOM
+    bom: BomAttribute,
+    // Simulation
     model: ModelAttribute,
-    module: ModuleAttribute,
+    // PCB
     set_pad: SetPadAttribute,
+    // Bitstream
+    fpga: FpgaAttribute,
+    bitstream: BitstreamAttribute,
     set_io: SetIoAttribute,
 }

@@ -1,5 +1,5 @@
 import { IAstIdentifier, IAstModule, IAstImport,
-         IAstDeclStmt, AstDeclType} from './ast'
+    IAstDeclStmt, AstDeclType, IAstParamDecl} from './ast'
 import { ISrcLoc, emptySrcLoc, DiagnosticType, DiagnosticSeverity,
          IDiagnostic } from './diagnostic'
 
@@ -9,7 +9,7 @@ interface IBinder {
 
 enum SymbolType {
     Module,
-    ExternalModule,
+    Parameter,
     Declaration,
 }
 
@@ -85,17 +85,11 @@ export class SymbolTable {
         }
     }
 
-    declareExternalModule(imp: IAstImport) {
-        for (let ident of imp.identifiers)
-        if (this.checkIdentifier(ident)) {
-            if (!this.isRootScope()) {
-                throw new Error('Programmer Error: Not root scope')
-            }
-            this.declareSymbol(ident, {
-                ast: {identifier: ident}, // TODO
-                ty: SymbolType.ExternalModule
-            })
-        }
+    declareParameter(param: IAstParamDecl) {
+        this.declareSymbol(param.identifier, {
+            ast: param,
+            ty: SymbolType.Parameter
+        })
     }
 
     declareVariable(decl: IAstDeclStmt) {
@@ -136,9 +130,6 @@ export class SymbolTable {
         if (stentry) {
             if (stentry.ty === SymbolType.Module) {
                 return stentry.ast as IAstModule
-            } else if (stentry.ty === SymbolType.ExternalModule) {
-                // TODO
-                return null
             }
         }
         return null

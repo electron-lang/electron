@@ -63,10 +63,10 @@ function makeAttr(name: string, params: IAstParam[]): IAstAttribute {
     }
 }
 
-function makeParam(name: null | string, value: AstExpr): IAstParam {
+function makeParam(name: string, value: AstExpr): IAstParam {
     return {
         ast: Ast.Param,
-        name: name ? makeIdent(name) : null,
+        identifier: makeIdent(name),
         value,
     }
 }
@@ -74,7 +74,7 @@ function makeParam(name: null | string, value: AstExpr): IAstParam {
 function makeParamDecl(name: string, ty: string): IAstParamDecl {
     return {
         ast: Ast.ParamDecl,
-        name: makeIdent(name),
+        identifier: makeIdent(name),
         ty: makeIdent(ty),
     }
 }
@@ -99,13 +99,13 @@ function makeImport(ids: string[], pkg: string): IAstImport {
 describe('Pretty Printer', () => {
     it('should emit attributes', () => {
         const bomAttr = makeAttr('bom', [
-            makeParam(null, makeString('Yago')),
-            makeParam(null, makeString('XYZ'))
+            makeParam('__1', makeString('Yago')),
+            makeParam('__2', makeString('XYZ'))
         ])
 
         expectPretty(
             emitAttribute(makeAttr('model', [
-                makeParam(null, makeIdent('A'))
+                makeParam('__1', makeIdent('A'))
             ])), '@model(A)\n')
 
         expectPretty(
@@ -179,7 +179,7 @@ describe('Pretty Printer', () => {
                 parameters: [
                     {
                         ast: Ast.Param,
-                        name: null,
+                        identifier: makeIdent('__1'),
                         value: {
                             ast: Ast.Literal,
                             value: '10k',
@@ -192,8 +192,8 @@ describe('Pretty Printer', () => {
                     entries: [
                         {
                             ast: Ast.DictEntry,
-                            identifier: { ast: Ast.Identifier, id: 'A' },
-                            expr: { ast: Ast.Identifier, id: 'a' },
+                            identifier: makeIdent('A'),
+                            expr: makeIdent('a'),
                         }
                     ],
                     star: false,
@@ -206,7 +206,7 @@ describe('Pretty Printer', () => {
                 parameters: [
                     {
                         ast: Ast.Param,
-                        name: null,
+                        identifier: makeIdent('__1'),
                         value: {
                             ast: Ast.Literal,
                             value: '10k',

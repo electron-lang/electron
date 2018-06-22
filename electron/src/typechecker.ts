@@ -6,7 +6,7 @@ import { SymbolTable } from './symbolTable'
 import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
-         Ast, AstLiteralType } from './ast'
+    Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt, IAstWithStmt, IAstApplyDictStmt } from './ast'
 import { allAttributes } from './attributes'
 import { compileDeclaration } from './declaration'
 
@@ -28,10 +28,9 @@ export class TypeChecker {
     typeCheck(path: string, design: IAstDesign) {
         let dir = dirname(path)
 
-        const modules = this.resolveImports(dir, design.imports)
-            .concat(design.modules)
+        this.resolveImports(dir, design.imports)
 
-        for (let mod of modules) {
+        for (let mod of design.modules) {
             this.checkModule(mod)
         }
 
@@ -39,9 +38,7 @@ export class TypeChecker {
         this.errors = this.symbolTable.getErrors().concat(this.errors)
     }
 
-    resolveImports(dir: string, imports: IAstImport[]): IAstModule[] {
-        let dmodules: IAstModule[] = []
-
+    resolveImports(dir: string, imports: IAstImport[]) {
         for (let imp of imports) {
             if (imp.package.startsWith('.')) {
                 const absPath = resolve(dir + '/' + imp.package + '.lec')
@@ -60,7 +57,7 @@ export class TypeChecker {
                     for (let dmod of ast.modules) {
                         for (let ident in imp.identifiers) {
                             if (dmod.identifier.id === ident) {
-                                dmodules.push(dmod)
+                                this.checkModule(dmod)
                             }
                         }
                     }
@@ -76,7 +73,6 @@ export class TypeChecker {
                 })
             }
         }
-        return dmodules
     }
 
     checkModule(mod: IAstModule) {
@@ -87,35 +83,28 @@ export class TypeChecker {
 
         if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
             this.errors.push({
-                message: `Module '${mod.identifier.id}' starts with a lowercase letter.`,
+                message: `Module '${mod.identifier.id}' starts with a lowercase` +
+                    ` letter.`,
                 src: mod.identifier.src || emptySrcLoc,
                 severity: DiagnosticSeverity.Warning,
                 errorType: DiagnosticType.TypeCheckingError,
             })
         }
 
+        this.checkParamDecls(mod.parameters)
+
         for (let stmt of mod.statements) {
-            if (stmt.ast === Ast.Decl) {
-                this.checkDeclaration(stmt as IAstDeclStmt)
-            } else {
-                    if (mod.declaration) {
-                        this.errors.push({
-                            message: `Declared module '${mod.identifier.id}' contains assignments.`,
-                            src: mod.identifier.src || emptySrcLoc,
-                            severity: DiagnosticSeverity.Error,
-                            errorType: DiagnosticType.TypeCheckingError,
-                        })
-                    }
-
-                if (stmt.ast === Ast.Assign) {
-                    this.checkAssignment(stmt as IAstAssignStmt)
-                }
-
-                    /*if ((stmt as IAstFullyQualifiedName).fqn) {
-                      this.checkFQN(stmt as IAstFullyQualifiedName)
-                      }*/
+            if (mod.declaration && stmt.ast !== Ast.Decl) {
+                this.errors.push({
+                    message: `Declared module '${mod.identifier.id}' ` +
+                        `contains assignments.`,
+                    src: mod.identifier.src || emptySrcLoc,
+                    severity: DiagnosticSeverity.Error,
+                    errorType: DiagnosticType.TypeCheckingError,
+                })
             }
-            }
+            this.checkStmt(stmt)
+        }
 
         this.symbolTable.exitScope()
     }
@@ -137,15 +126,87 @@ export class TypeChecker {
         }
     }
 
-    checkDeclaration(decl: IAstDeclStmt) {
-        this.symbolTable.declareVariable(decl)
-        //this.checkAttributes(decl.attributes)
+    checkParamDecls(params: IAstParamDecl[]) {
+        for (let param of params) {
+            this.symbolTable.declareParameter(param)
+
+            if (param.identifier.id.toUpperCase() !== param.identifier.id) {
+                this.errors.push({
+                    message: `Parameter '${param.identifier.id}' contains ` +
+                    `lowercase letters.`,
+                    src: param.identifier.src || emptySrcLoc,
+                    severity: DiagnosticSeverity.Warning,
+                    errorType: DiagnosticType.TypeCheckingError,
+                })
+            }
+        }
     }
 
-    checkAssignment(assign: IAstAssignStmt) {
+    checkStmt(stmt: AstStmt) {
+        switch(stmt.ast) {
+            case Ast.SetAttributes:
+                this.checkSetAttributes(stmt as IAstAttributeStmt)
+                break
+            case Ast.Decl:
+                this.checkDeclStmt(stmt as IAstDeclStmt)
+                break
+            case Ast.With:
+                this.checkWith(stmt as IAstWithStmt)
+                break
+            case Ast.Assign:
+                this.checkAssign(stmt as IAstAssignStmt)
+                break
+            case Ast.ApplyDict:
+                this.checkApplyDict(stmt as IAstApplyDictStmt)
+                break
+        }
+    }
+
+    checkSetAttributes(setAttrs: IAstAttributeStmt) {
+        this.checkAttributes(setAttrs.attributes)
+        for (let stmt of setAttrs.statements) {
+            this.checkStmt(stmt)
+            if (stmt.ast === Ast.Decl) {
+                stmt.attributes = stmt.attributes.concat(setAttrs.attributes)
+            }
+        }
+        for (let fqn of setAttrs.fqns) {
+            // TODO let decl = this.symbolTable.resolveFQN(fqn)
+            // set attributes
+        }
+    }
+
+    checkDeclStmt(decl: IAstDeclStmt) {
+        this.symbolTable.declareVariable(decl)
+        this.checkAttributes(decl.attributes)
+
+        /*if (decl.identifier.id[0].toLowerCase() !== decl.identifier.id[0]) {
+            this.errors.push({
+                message: `Module '${decl.identifier.id}' starts with a ` +
+                `uppercase letter.`,
+                src: decl.identifier.src || emptySrcLoc,
+                severity: DiagnosticSeverity.Warning,
+                errorType: DiagnosticType.TypeCheckingError,
+            })
+        }*/
+
+        //TODO constEval(decl.width)
+    }
+
+    checkWith(withStmt: IAstWithStmt) {
+        // TODO let decl = this.symbolTable.resolveFQNDecl()
+        //withStmt.scope
+    }
+
+    checkAssign(assign: IAstAssignStmt) {
         let lhsTy = this.checkExpression(assign.lhs)
         let rhsTy = this.checkExpression(assign.rhs)
-        this.checkTypesEqual(lhsTy, rhsTy, assign.lhs.src || emptySrcLoc)
+        //this.checkTypesEqual(lhsTy, rhsTy, assign.lhs.src || emptySrcLoc)
+    }
+
+    checkApplyDict(applyDict: IAstApplyDictStmt) {
+        this.checkExpression(applyDict.expr)
+        // TODO check dict
     }
 
     checkTypesEqual(ty1: IType, ty2: IType, src: ISrcLoc) {
@@ -170,10 +231,6 @@ export class TypeChecker {
                 })
             }
         }
-    }
-
-    checkFQN(fqn: IAstFQN) {
-        // TODO
     }
 
     checkExpression(expr: AstExpr): IType {
