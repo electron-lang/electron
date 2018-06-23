@@ -1,14 +1,14 @@
 import { resolve, dirname } from 'path'
 import { existsSync } from 'fs'
 import { IDiagnostic, DiagnosticSeverity,
-         emptySrcLoc, ISrcLoc, ISmallAstResult } from './diagnostic'
+         emptySrcLoc, ISrcLoc, IIRResult } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
          Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt,
-         IAstWithStmt, IAstApplyDictStmt } from './ast'
-import { IModule, ISmallAst } from './smallAst'
+    IAstWithStmt, IAstApplyDictStmt, IAstDict } from './ast'
+import { IModule, IIdent } from './backend/ir'
 import { allAttributes } from './attributes'
 import { allTypeHandlers } from './parameters'
 import { compileDeclaration } from './declaration'
@@ -29,7 +29,7 @@ export class Validator {
     private ast: IModule[] = []
     private symbolTable: SymbolTable = new SymbolTable()
 
-    validate(path: string, design: IAstDesign): ISmallAstResult {
+    validate(path: string, design: IAstDesign): IIRResult {
         const dir = dirname(path)
 
         this.resolveImports(dir, design.imports)
@@ -40,7 +40,7 @@ export class Validator {
 
         // get errors from symbol table
         this.errors = this.symbolTable.getErrors().concat(this.errors)
-        return {sast: this.ast, errors: this.errors}
+        return {ir: this.ast, errors: this.errors}
     }
 
     resolveImports(dir: string, imports: IAstImport[]) {
@@ -88,10 +88,20 @@ export class Validator {
         }
     }
 
+    /*validateIdentifier(ident: IAstIdentifier): IIdentifier {
+
+    }*/
+
     validateModule(mod: IAstModule) {
         this.symbolTable.declareModule(mod)
         this.symbolTable.enterScope(mod.identifier)
-
+        /*this.ast.push({
+            sast: SmallAst.Module,
+            attributes: [],
+            identifier: ,
+            decls: [],
+            assigns: [],
+        })*/
         this.checkAttributes(mod.attributes)
 
         if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
@@ -251,7 +261,7 @@ export class Validator {
             case Ast.Tuple:
                 return this.checkConcat(expr as IAstTuple)
             case Ast.ModInst:
-                return this.checkCell(expr as IAstModInst)
+                return this.checkModInst(expr as IAstModInst)
             case Ast.AnonymousMod:
                 return {width: 0, ty: Type.Cell} // TODO
             case Ast.BinOp:
@@ -343,7 +353,7 @@ export class Validator {
         return { width, ty }
     }
 
-    checkCell(cell: IAstModInst): IType {
+    checkModInst(cell: IAstModInst): IType {
         let mod = this.symbolTable.resolveModule(cell.module)
 
         if (mod) {
@@ -402,5 +412,35 @@ export class Validator {
         // this.checkTypesEqual(lhsTy, rhsTy, entry.identifier.src || emptySrcLoc)
 
         return { width: 0 /*cell.width*/, ty: Type.Cell }
+    }
+
+    validateDict(mod: IAstModule, dict: IAstDict) {
+        // Only enter scope once to avoid multiple error messages
+        this.symbolTable.enterScope(mod.identifier)
+        for (let entry of dict.entries) {
+            // TODO check lhs and rhs type match
+            let lhsTy = this.checkIdentifier(entry.identifier)
+
+            // Check that assignment is to a port
+            // Make sure unresolved symbol error only gets emitted once
+            if (lhsTy.width) {
+                let decl = this.symbolTable.resolveDeclaration(entry.identifier)
+                if (decl && decl.declType === AstDeclType.Net) {
+                    this.errors.push({
+                        message: `Illegal assignment to internal net ` +
+                            `'${decl.identifier.id}' in '${mod.identifier.id}'.`,
+                        src: entry.identifier.src || emptySrcLoc,
+                            severity: DiagnosticSeverity.Error,
+                    })
+                }
+            }
+        }
+        if (dict.star) {
+        }
+        this.symbolTable.exitScope()
+
+        for (let entry of dict.entries) {
+            this.checkExpression(entry.expr)
+        }
     }
 }

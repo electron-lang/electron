@@ -1,6 +1,6 @@
 import { IToken } from 'chevrotain'
 import { IAstDesign } from './ast'
-import { IModule } from './smallAst'
+import { IR, IModule } from './backend/ir'
 
 export enum DiagnosticSeverity {
     Error,
@@ -42,7 +42,7 @@ export interface IAstResult {
     errors: IDiagnostic[],
 }
 
-export interface ISmallAstResult {
-    sast?: IModule[],
+export interface IIRResult {
+    ir: IModule[],
     errors: IDiagnostic[],
 }
