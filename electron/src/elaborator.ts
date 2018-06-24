@@ -5,8 +5,8 @@ import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
          Ast, AstExpr, AstStmt, IAstParamDecl, IAstAttributeStmt, IAstWithStmt,
          IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule,
          IAstApplyDictStmt } from './ast'
-import { IDiagnostic, DiagnosticSeverity,
-         ISrcLoc, tokenToSrcLoc, IAstResult } from './diagnostic'
+import { IDiagnostic, ISrcLoc, tokenToSrcLoc,
+         DiagnosticPublisher } from './diagnostic'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -28,19 +28,15 @@ function throwBug(rule: string): void {
                     'Please report the bug at https://github.com/electron-lang/electron')
 }
 
-class ElectronElaborationVisitor extends BaseElectronVisitor {
-    public errors: IDiagnostic[] = []
-    public paramCounter: number = 0
+export class Elaborator extends BaseElectronVisitor {
+    private paramCounter: number = 0
 
-    constructor() {
+    constructor(private logger: DiagnosticPublisher) {
         super()
         this.validateVisitor()
     }
 
     design(ctx: any): IAstDesign {
-        // reset state
-        this.errors = []
-
         let imports = []
         let modules = []
 
@@ -125,7 +121,7 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 id: parseAttribute(ctx.Attribute[0].image),
                 src: tokenToSrcLoc(ctx.Attribute[0]),
             },
-            parameters: this.visit(ctx.parameterList),
+            parameters: this.visit(ctx.parameterList) || [],
         }
     }
 
@@ -204,16 +200,12 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
                 const rhs = this.visit(ctx.assignStatement[0])
 
                 if(exprs.length != rhs.length) {
-                    this.errors.push({
-                        message: 'Unbalanced assignment',
-                        src: {
+                    this.logger.error('Unbalanced assignment', {
                             startLine: exprs[0].src.startLine,
                             startColumn: exprs[0].src.startColumn,
                             endLine: rhs[rhs.length - 1].src.endLine,
                             endColumn: rhs[rhs.length - 1].src.endColumn,
-                        },
-                        severity: DiagnosticSeverity.Error,
-                    })
+                        })
                 }
 
                 let assigns: IAstAssignStmt[] = []
@@ -316,15 +308,11 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
         if (ctx.expressions) {
             const exprs = this.visit(ctx.expressions[0])
             if (ids.length != exprs.length) {
-                this.errors.push({
-                    message: 'Unbalanced assignment',
-                    src: {
+                this.logger.error('Unbalanced assignment', {
                         startLine: ids[0].src.startLine,
                         startColumn: ids[0].src.startColumn,
                         endLine: exprs[exprs.length - 1].src.endLine,
                         endColumn: exprs[exprs.length - 1].src.endColumn,
-                    },
-                    severity: DiagnosticSeverity.Error,
                 })
             }
 
@@ -589,59 +577,4 @@ class ElectronElaborationVisitor extends BaseElectronVisitor {
 
         return inst
     }
-}
-
-export const elaboratorInstance = new ElectronElaborationVisitor()
-
-export function elaborate(path: string, text: string): IAstResult {
-    let errors: IDiagnostic[] = []
-
-    // lex
-    const lexingResult = lexerInstance.tokenize(text)
-    for (let err of lexingResult.errors) {
-        errors.push({
-            message: err.message,
-            src: {
-                startLine: err.line,
-                startColumn: err.column,
-                endLine: err.line,
-                endColumn: err.column + err.length,
-            },
-            severity: DiagnosticSeverity.Error,
-        })
-    }
-
-    if (errors.length > 0) {
-        return {errors}
-    }
-
-    // parse
-    parserInstance.input = lexingResult.tokens
-    const cst = parserInstance.design()
-    for (let err of parserInstance.errors) {
-        let lastToken = err.token
-        if (err.resyncedTokens.length > 0) {
-            lastToken = err.resyncedTokens[err.resyncedTokens.length - 1]
-        }
-        errors.push({
-            message: err.message,
-            src: {
-                startLine: err.token.startLine || 0,
-                startColumn: err.token.startColumn || 0,
-                endLine: lastToken.endLine || 0,
-                endColumn: lastToken.endColumn || 0,
-            },
-            severity: DiagnosticSeverity.Error,
-        })
-    }
-
-    if (errors.length > 0) {
-        return {errors}
-    }
-
-    // elaborate
-    const ast = elaboratorInstance.visit(cst)
-    errors = elaboratorInstance.errors
-
-    return {ast, errors}
 }

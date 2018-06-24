@@ -269,8 +269,10 @@ export module TinyFPGA {
     cell fpga_pll = FpgaPLL() {*}
     cell fpga_reset = FpgaReset() {*}
 
-    cell R5 = $R(10k) {A='+3V3; B=SS}
+    net '+3V3, SS
+    cell R5 = $R(10k) {A='+3V3, B=SS}
 
+    net VPP_FAST, CDONE, SDO, SCK, CRESET_B, SDI, GND, '81_GBIN5, '54, '55
     cell fpga = ICE40_LP8K_CM81() {
         VPP_FAST
         VPP_2V5='+3V3

@@ -23,9 +23,11 @@
   {
     "type": "Rule",
     "name": "design",
+    "orgText": "function () {\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.moduleImport); }\n            });\n            _this.MANY1({\n                DEF: function () { return _this.SUBRULE(_this.moduleDeclaration); }\n            });\n        }",
     "definition": [
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -36,6 +38,7 @@
       },
       {
         "type": "Repetition",
+        "idx": 1,
         "definition": [
           {
             "type": "NonTerminal",
@@ -49,6 +52,7 @@
   {
     "type": "Rule",
     "name": "moduleImport",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Import);\n            _this.SUBRULE(_this.identifiers);\n            _this.CONSUME(tokens_1.From);\n            _this.CONSUME(tokens_1.String);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -81,9 +85,11 @@
   {
     "type": "Rule",
     "name": "moduleDeclaration",
+    "orgText": "function () {\n            _this.MANY(function () { return _this.SUBRULE(_this.attribute); });\n            _this.OPTION(function () { _this.CONSUME(tokens_1.Export); });\n            _this.OPTION1(function () { _this.CONSUME(tokens_1.Declare); });\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION2(function () { return _this.SUBRULE(_this.parameterDeclarationList); });\n            _this.SUBRULE(_this.statements);\n        }",
     "definition": [
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -94,6 +100,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -106,6 +113,7 @@
       },
       {
         "type": "Option",
+        "idx": 1,
         "definition": [
           {
             "type": "Terminal",
@@ -130,6 +138,7 @@
       },
       {
         "type": "Option",
+        "idx": 2,
         "definition": [
           {
             "type": "NonTerminal",
@@ -148,6 +157,7 @@
   {
     "type": "Rule",
     "name": "identifier",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Identifier);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -161,9 +171,11 @@
   {
     "type": "Rule",
     "name": "identifiers",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { _this.SUBRULE(_this.identifier); }\n            });\n        }",
     "definition": [
       {
         "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
         "separator": {
           "type": "Terminal",
           "name": "Comma",
@@ -184,9 +196,11 @@
   {
     "type": "Rule",
     "name": "fullyQualifiedName",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Dot,\n                DEF: function () { return _this.SUBRULE(_this.identifier); },\n            });\n        }",
     "definition": [
       {
         "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
         "separator": {
           "type": "Terminal",
           "name": "Dot",
@@ -207,9 +221,11 @@
   {
     "type": "Rule",
     "name": "fullyQualifiedNames",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { return _this.SUBRULE(_this.fullyQualifiedName); }\n            });\n        }",
     "definition": [
       {
         "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
         "separator": {
           "type": "Terminal",
           "name": "Comma",
@@ -230,6 +246,7 @@
   {
     "type": "Rule",
     "name": "attribute",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Attribute);\n            _this.OPTION(function () { return _this.SUBRULE(_this.parameterList); });\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -240,6 +257,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -253,6 +271,7 @@
   {
     "type": "Rule",
     "name": "parameterDeclarationList",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenRound);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.parameterDeclaration); }\n            });\n            _this.CONSUME(tokens_1.CloseRound);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -263,6 +282,7 @@
       },
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -283,9 +303,11 @@
   {
     "type": "Rule",
     "name": "parameterDeclaration",
+    "orgText": "function () {\n            _this.OPTION(function () {\n                _this.SUBRULE(_this.identifier);\n                _this.CONSUME(tokens_1.Colon);\n            });\n            _this.SUBRULE1(_this.identifier);\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
     "definition": [
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -308,6 +330,7 @@
       },
       {
         "type": "Option",
+        "idx": 1,
         "definition": [
           {
             "type": "Terminal",
@@ -323,6 +346,7 @@
   {
     "type": "Rule",
     "name": "parameterList",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenRound);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.parameter); },\n            });\n            _this.CONSUME(tokens_1.CloseRound);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -333,6 +357,7 @@
       },
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -353,6 +378,7 @@
   {
     "type": "Rule",
     "name": "parameter",
+    "orgText": "function () {\n            _this.SUBRULE(_this.expression);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE1(_this.expression);\n            });\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
     "definition": [
       {
         "type": "NonTerminal",
@@ -361,6 +387,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -378,6 +405,7 @@
       },
       {
         "type": "Option",
+        "idx": 1,
         "definition": [
           {
             "type": "Terminal",
@@ -393,9 +421,11 @@
   {
     "type": "Rule",
     "name": "statement",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.attributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                { ALT: function () { return _this.SUBRULE(_this.withStatement); } },\n                { ALT: function () {\n                        _this.SUBRULE(_this.expressions);\n                        _this.OR1([\n                            { ALT: function () { return _this.SUBRULE(_this.assignStatement); } },\n                            { ALT: function () { return _this.SUBRULE(_this.applyDictionaryStatement); } },\n                        ]);\n                    } }\n            ]);\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
     "definition": [
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -437,6 +467,7 @@
               },
               {
                 "type": "Alternation",
+                "idx": 1,
                 "definition": [
                   {
                     "type": "Flat",
@@ -466,6 +497,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -481,6 +513,7 @@
   {
     "type": "Rule",
     "name": "statements",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.statement); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -491,6 +524,7 @@
       },
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -511,9 +545,11 @@
   {
     "type": "Rule",
     "name": "attributeStatement",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE({\n                DEF: function () { return _this.SUBRULE(_this.attribute); }\n            });\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.statements); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                { ALT: function () { return _this.SUBRULE(_this.fullyQualifiedNames); } },\n            ]);\n        }",
     "definition": [
       {
         "type": "RepetitionMandatory",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -524,6 +560,7 @@
       },
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -562,6 +599,7 @@
   {
     "type": "Rule",
     "name": "withStatement",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.With);\n            _this.SUBRULE(_this.fullyQualifiedName);\n            _this.SUBRULE(_this.statements);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -585,6 +623,7 @@
   {
     "type": "Rule",
     "name": "assignStatement",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Assign);\n            _this.SUBRULE(_this.expressions);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -603,6 +642,7 @@
   {
     "type": "Rule",
     "name": "applyDictionaryStatement",
+    "orgText": "function () {\n            _this.SUBRULE(_this.dictionary);\n        }",
     "definition": [
       {
         "type": "NonTerminal",
@@ -614,9 +654,11 @@
   {
     "type": "Rule",
     "name": "declaration",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Net); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Input); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Output); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Inout); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Analog); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Cell); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Const); } },\n            ]);\n            _this.SUBRULE(_this.width);\n            _this.SUBRULE(_this.identifiers);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expressions);\n            });\n        }",
     "definition": [
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -716,6 +758,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -736,9 +779,11 @@
   {
     "type": "Rule",
     "name": "width",
+    "orgText": "function () {\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.OpenSquare);\n                _this.SUBRULE(_this.expression);\n                _this.CONSUME(tokens_1.CloseSquare);\n            });\n        }",
     "definition": [
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -766,9 +811,11 @@
   {
     "type": "Rule",
     "name": "expression",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.literal); } },\n                { ALT: function () { return _this.SUBRULE(_this.tupleExpression); } },\n                { ALT: function () { return _this.SUBRULE(_this.anonymousModule); } },\n                { ALT: function () {\n                        _this.SUBRULE1(_this.identifier);\n                        _this.OPTION1(function () {\n                            _this.OR1([\n                                { ALT: function () { return _this.SUBRULE(_this.referenceExpression); } },\n                                { ALT: function () { return _this.SUBRULE(_this.moduleInstantiation); } },\n                            ]);\n                        });\n                    } },\n            ]);\n            _this.OPTION(function () { return _this.SUBRULE(_this.binaryOp); });\n        }",
     "definition": [
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -810,9 +857,11 @@
               },
               {
                 "type": "Option",
+                "idx": 1,
                 "definition": [
                   {
                     "type": "Alternation",
+                    "idx": 1,
                     "definition": [
                       {
                         "type": "Flat",
@@ -844,6 +893,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -857,9 +907,11 @@
   {
     "type": "Rule",
     "name": "literal",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Integer); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.BitVector); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Unit); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.String); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Real); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.True); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.False); } },\n            ]);\n        }",
     "definition": [
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -878,8 +930,8 @@
             "definition": [
               {
                 "type": "Terminal",
-                "name": "Constant",
-                "label": "Constant",
+                "name": "BitVector",
+                "label": "BitVector",
                 "idx": 0,
                 "pattern": "[1-9]\\d*'[01xz]+"
               }
@@ -893,7 +945,7 @@
                 "name": "Unit",
                 "label": "Unit",
                 "idx": 0,
-                "pattern": "(0|[1-9]\\d*)(\\.[0-9]+)?[GMKkmunpf]?[FHVAW]?[z]?"
+                "pattern": "(0|[1-9]\\d*)(\\.[0-9]+)?[GMKkmunpf]?[a-zA-Z]*"
               }
             ]
           },
@@ -952,9 +1004,11 @@
   {
     "type": "Rule",
     "name": "expressions",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { return _this.SUBRULE(_this.expression); }\n            });\n        }",
     "definition": [
       {
         "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
         "separator": {
           "type": "Terminal",
           "name": "Comma",
@@ -975,9 +1029,11 @@
   {
     "type": "Rule",
     "name": "binaryOp",
+    "orgText": "function () {\n            // TODO proper precedence parsing\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Plus); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Minus); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Star); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.ShiftLeft); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.ShiftRight); } },\n            ]);\n            _this.SUBRULE(_this.expression);\n        }",
     "definition": [
       {
         "type": "Alternation",
+        "idx": 0,
         "definition": [
           {
             "type": "Flat",
@@ -1051,6 +1107,7 @@
   {
     "type": "Rule",
     "name": "tupleExpression",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenRound);\n            _this.SUBRULE(_this.expressions);\n            _this.CONSUME(tokens_1.CloseRound);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -1076,6 +1133,7 @@
   {
     "type": "Rule",
     "name": "dictionary",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { _this.SUBRULE(_this.dictionaryEntry); }\n            });\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Star); });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -1086,6 +1144,7 @@
       },
       {
         "type": "Repetition",
+        "idx": 0,
         "definition": [
           {
             "type": "NonTerminal",
@@ -1096,6 +1155,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -1118,6 +1178,7 @@
   {
     "type": "Rule",
     "name": "dictionaryEntry",
+    "orgText": "function () {\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expression);\n            });\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
     "definition": [
       {
         "type": "NonTerminal",
@@ -1126,6 +1187,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -1143,6 +1205,7 @@
       },
       {
         "type": "Option",
+        "idx": 1,
         "definition": [
           {
             "type": "Terminal",
@@ -1158,6 +1221,7 @@
   {
     "type": "Rule",
     "name": "referenceExpression",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenSquare);\n            _this.SUBRULE(_this.expression);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Colon);\n                _this.SUBRULE1(_this.expression);\n            });\n            _this.CONSUME(tokens_1.CloseSquare);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -1173,6 +1237,7 @@
       },
       {
         "type": "Option",
+        "idx": 0,
         "definition": [
           {
             "type": "Terminal",
@@ -1200,6 +1265,7 @@
   {
     "type": "Rule",
     "name": "anonymousModule",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.statements);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -1218,6 +1284,7 @@
   {
     "type": "Rule",
     "name": "moduleInstantiation",
+    "orgText": "function () {\n            _this.SUBRULE(_this.parameterList);\n            _this.SUBRULE(_this.width);\n            _this.OPTION1(function () { return _this.SUBRULE(_this.dictionary); });\n        }",
     "definition": [
       {
         "type": "NonTerminal",
@@ -1231,6 +1298,7 @@
       },
       {
         "type": "Option",
+        "idx": 1,
         "definition": [
           {
             "type": "NonTerminal",

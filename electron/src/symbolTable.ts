@@ -1,6 +1,6 @@
 import { IAstIdentifier, IAstModule, IAstImport,
     IAstDeclStmt, AstDeclType, IAstParamDecl} from './ast'
-import { ISrcLoc, emptySrcLoc, DiagnosticSeverity,
+import { ISrcLoc, emptySrcLoc, DiagnosticPublisher,
          IDiagnostic } from './diagnostic'
 
 interface IBinder {
@@ -29,7 +29,7 @@ export class SymbolTable {
     conflictingSymbols: {[symbol: string]: ISrcLoc[]} = {}
     unresolvedSymbols: IAstIdentifier[] = []
 
-    constructor() {
+    constructor(private logger: DiagnosticPublisher) {
         this.scopes.push(this.symbols)
     }
 
@@ -56,6 +56,8 @@ export class SymbolTable {
             this.conflictingSymbols[ident.id] = []
         }
         this.conflictingSymbols[ident.id].push(ident.src || emptySrcLoc)
+        this.logger.error('Conflicting identifiers ' + ident.id,
+                          ident.src)
     }
 
     private isRootScope(): boolean {
@@ -111,7 +113,8 @@ export class SymbolTable {
                 return this.scopes[scopeIdx][ident.id]
             }
         }
-        this.unresolvedSymbols.push(ident)
+        this.logger.error(`Undeclared identifier '${ident.id}'`,
+                          ident.src)
         return null
     }
 
@@ -133,30 +136,5 @@ export class SymbolTable {
             }
         }
         return null
-    }
-
-    getErrors(): IDiagnostic[] {
-        let conflictErrors: IDiagnostic[] = []
-        for (let symbol in this.conflictingSymbols) {
-            const newErrors = this.conflictingSymbols[symbol]
-                .map((src: ISrcLoc) => {
-                    return {
-                        message: 'Conflicting identifiers ' + symbol,
-                        src,
-                        severity: DiagnosticSeverity.Error,
-                    }
-                })
-            conflictErrors = conflictErrors.concat(newErrors)
-        }
-
-        const unresolvedErrors = this.unresolvedSymbols
-            .map((ident: IAstIdentifier) => {
-                return {
-                    message: 'Undeclared identifier ' + ident.id,
-                    src: ident.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Error,
-                }
-            })
-        return conflictErrors.concat(unresolvedErrors)
     }
 }

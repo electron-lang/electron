@@ -1,14 +1,7 @@
-import { readFileSync, writeFileSync } from 'fs'
 import { Ast, IAstDesign, IAstModule, IAstDeclStmt, AstDeclType, AstStmt } from './ast'
-import { IAstResult } from './diagnostic'
-import { elaborate } from './elaborator'
-import { print } from './printer'
+import { DiagnosticPublisher } from './diagnostic'
 
-export function compileDeclaration(path: string, declPath: string): IAstResult {
-    const {ast, errors} = elaborate(path, readFileSync(path).toString())
-    if (!ast) {
-        return {errors}
-    }
+export function extractDeclarations(ast: IAstDesign): IAstModule[] {
     let declarations: IAstModule[] = []
     for (let mod of ast.modules) {
         if (!mod.exported) {
@@ -31,9 +24,7 @@ export function compileDeclaration(path: string, declPath: string): IAstResult {
         imports: [],
         modules: declarations
     }
-    const dtext = print(dast)
-    writeFileSync(declPath, dtext)
-    return {ast: dast, errors}
+    return declarations
 }
 
 function getDeclarations(stmts: AstStmt[]): IAstDeclStmt[] {

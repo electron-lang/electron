@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { IAstModule, IAstDeclStmt, Ast, AstDeclType, AstLiteralType } from './ast'
-import { emptySrcLoc } from './diagnostic'
+import { DiagnosticCollector, emptySrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 
 function makeModule(id: string): IAstModule {
@@ -38,8 +38,8 @@ function makeOutput(id: string): IAstDeclStmt {
 }
 
 describe('Symbol Table', () => {
-
-    const st = new SymbolTable()
+    const dc = new DiagnosticCollector()
+    const st = new SymbolTable(dc.toPublisher())
     const A = makeModule('A')
 
     it('should return null when resolving undeclared symbol', () => {

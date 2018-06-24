@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "yarn run build",
     "build": "tsc",
-    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "test": "mocha -r ts-node/register **/*.spec.ts",
     "cov": "nyc yarn run test",
     "docs": "yarn run railroad",
     "railroad": "ts-node docs/railroad.ts"

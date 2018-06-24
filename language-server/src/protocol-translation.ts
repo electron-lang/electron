@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 import URI from 'vscode-uri';
-import { IDiagnostic, DiagnosticSeverity } from '@electron-lang/electron'
+import { IDiagnostic } from '@electron-lang/electron'
 
 export function uriToPath(stringUri: string): string {
     const uri = URI.parse(stringUri);
@@ -11,14 +11,16 @@ export function uriToPath(stringUri: string): string {
     return uri.fsPath;
 }
 
-export function convertSeverity(s: DiagnosticSeverity): lsp.DiagnosticSeverity {
+export function convertSeverity(s: string): lsp.DiagnosticSeverity {
     switch (s) {
-        case DiagnosticSeverity.Error:
+        case 'error':
             return lsp.DiagnosticSeverity.Error
-        case DiagnosticSeverity.Warning:
+        case 'warn':
             return lsp.DiagnosticSeverity.Warning
-        case DiagnosticSeverity.Info:
+        case 'info':
             return lsp.DiagnosticSeverity.Information
+        default:
+            return lsp.DiagnosticSeverity.Hint
     }
 }
 

@@ -34,7 +34,7 @@ export module DACDigital(WIDTH: Integer) {
     // delta sigma modulator
     const INTEGRATOR_WIDTH = WIDTH + 1
     net integrator_in, integrator_out
-    @clock(dac_clk)
+    //@clock(dac_clk)
     cell int = Integrator(WIDTH=INTEGRATOR_WIDTH) {
         A=integrator_in,
         Y=integrator_out,
@@ -59,7 +59,7 @@ export module DACDigital(WIDTH: Integer) {
     net msb = integrator_out[WIDTH]
     net msb_inv
     cell not = $not() { A=msb, Y=msb_inv }
-    @clock(dac_clk)
+    //@clock(dac_clk)
     cell outReg = $dff(WIDTH=2) {
         D=(msb, msb_inv),
         Q=(out, out_inv)

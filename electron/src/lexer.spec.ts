@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {tokenize} from './index'
 
 function getFirstTokenLabel(text: string): string {
-    return (tokenize(text).tokens[0].tokenType || {}).tokenName || '';
+    return (tokenize(text).tokens[0].tokenType || {tokenName: ''}).tokenName || ''
 }
 
 function expectLabel(text: string, label: string) {

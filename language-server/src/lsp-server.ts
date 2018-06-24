@@ -1,5 +1,5 @@
 import * as lsp from 'vscode-languageserver';
-import * as electron from '@electron-lang/electron';
+import { File, DiagnosticCollector } from '@electron-lang/electron';
 import { Logger, PrefixingLogger } from './logger';
 import { LspClient } from './lsp-client';
 import { uriToPath, convertDiagnostic } from './protocol-translation';
@@ -39,9 +39,10 @@ export class LspServer {
         // compile with electron
         let doc = this.openedDocumentUris.get(uri)
         if (doc !== undefined) {
-            let diagnostics: lsp.Diagnostic[] =
-                electron.compile(uriToPath(uri), doc.text)
-                .errors.map(convertDiagnostic)
+            let dc = new DiagnosticCollector()
+            let f = new File(dc, uriToPath(uri), doc.text).compile()
+            let diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
+                .map(convertDiagnostic)
             this.options.lspClient.publishDiagnostics({
                 uri,
                 diagnostics,

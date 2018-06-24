@@ -1,17 +1,17 @@
 import { resolve, dirname } from 'path'
 import { existsSync } from 'fs'
-import { IDiagnostic, DiagnosticSeverity,
-         emptySrcLoc, ISrcLoc, IIRResult } from './diagnostic'
+import { DiagnosticPublisher, DiagnosticLogger,
+         emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
          IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
          IAstReference, IAstTuple, IAstLiteral, IAstModInst,
          Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt,
-    IAstWithStmt, IAstApplyDictStmt, IAstDict } from './ast'
+         IAstWithStmt, IAstApplyDictStmt, IAstDict } from './ast'
 import { IModule, IIdent } from './backend/ir'
 import { allAttributes } from './attributes'
 import { allTypeHandlers } from './parameters'
-import { compileDeclaration } from './declaration'
+import { File } from './file'
 
 enum Type {
     Signal,
@@ -25,11 +25,14 @@ interface IType {
 }
 
 export class Validator {
-    private errors: IDiagnostic[] = []
-    private ast: IModule[] = []
-    private symbolTable: SymbolTable = new SymbolTable()
+    private ir: IModule[] = []
+    private symbolTable: SymbolTable = new SymbolTable(this.logger)
 
-    validate(path: string, design: IAstDesign): IIRResult {
+    constructor(private logger: DiagnosticPublisher) {
+
+    }
+
+    validate(path: string, design: IAstDesign) {
         const dir = dirname(path)
 
         this.resolveImports(dir, design.imports)
@@ -38,52 +41,37 @@ export class Validator {
             this.validateModule(mod)
         }
 
-        // get errors from symbol table
-        this.errors = this.symbolTable.getErrors().concat(this.errors)
-        return {ir: this.ast, errors: this.errors}
+        return this.ir
     }
 
     resolveImports(dir: string, imports: IAstImport[]) {
         for (let imp of imports) {
             if (imp.package.startsWith('.')) {
                 const absPath = resolve(dir + '/' + imp.package + '.lec')
-                const absDeclPath = resolve(dir + '/' + imp.package + '.d.lec')
                 if (!existsSync(absPath)) {
-                    this.errors.push({
-                        message: `File ${absPath} doesn't exist.`,
-                        src: imp.src || emptySrcLoc,
-                        severity: DiagnosticSeverity.Error,
-                    })
-                }
-
-                const {ast, errors} = compileDeclaration(absPath, absDeclPath)
-                if (ast) {
+                    this.logger.error(`File ${absPath} doesn't exist.`, imp.src)
+                } else {
+                    let f = new File(new DiagnosticLogger(), absPath, null)
+                    const modules = f.extractDeclarations()
                     for (let ident of imp.identifiers) {
                         let foundMod = false
-                        for (let dmod of ast.modules) {
+                        for (let dmod of modules) {
                             if (dmod.identifier.id === ident.id) {
                                 foundMod = true
                                 this.validateModule(dmod)
                             }
                         }
                         if (!foundMod) {
-                            this.errors.push({
-                                message: `No exported module '${ident.id}' ` +
+                            this.logger.error(
+                                `No exported module '${ident.id}' ` +
                                     `in package '${imp.package}'.`,
-                                src: ident.src || emptySrcLoc,
-                                severity: DiagnosticSeverity.Error,
-                            })
+                                ident.src)
                         }
                     }
                 }
-                this.errors = this.errors.concat(errors)
             } else {
                 // TODO resolve external modules from packages
-                this.errors.push({
-                    message: 'Package resolution unsupported',
-                    src: imp.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Warning,
-                })
+                this.logger.warn('Package resolution unsupported', imp.src)
             }
         }
     }
@@ -105,12 +93,9 @@ export class Validator {
         this.checkAttributes(mod.attributes)
 
         if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
-            this.errors.push({
-                message: `Module '${mod.identifier.id}' starts with a lowercase` +
-                    ` letter.`,
-                src: mod.identifier.src || emptySrcLoc,
-                severity: DiagnosticSeverity.Warning,
-            })
+            this.logger.warn(
+                `Module '${mod.identifier.id}' starts with a lowercase letter.`,
+                mod.identifier.src)
         }
 
         this.checkParamDecls(mod.parameters)
@@ -120,12 +105,9 @@ export class Validator {
 
             if (mod.declaration) {
                 if (stmt.ast !== Ast.Decl && stmt.ast !== Ast.SetAttributes) {
-                    this.errors.push({
-                        message: `Declared module '${mod.identifier.id}' ` +
-                            `contains assignments.`,
-                        src: mod.identifier.src || emptySrcLoc,
-                        severity: DiagnosticSeverity.Error,
-                    })
+                    this.logger.error(
+                        `Declared module '${mod.identifier.id}' contains assignments.`,
+                        mod.identifier.src)
                 }
             }
         }
@@ -136,15 +118,10 @@ export class Validator {
     checkAttributes(attrs: IAstAttribute[]) {
         for (let attr of attrs) {
             if (attr.name.id in allAttributes) {
-                for (let e of allAttributes[attr.name.id].validateParameters(attr)) {
-                    this.errors.push(e)
-                }
+                allAttributes[attr.name.id].validateParameters(attr, this.logger)
             } else {
-                this.errors.push({
-                    message: `Unknown attribute '${attr.name.id}'.`,
-                    src: attr.name.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Error,
-                })
+                this.logger.error(`Unknown attribute '${attr.name.id}'.`,
+                                  attr.name.src)
             }
         }
     }
@@ -154,20 +131,14 @@ export class Validator {
             this.symbolTable.declareParameter(param)
 
             if (param.identifier.id.toUpperCase() !== param.identifier.id) {
-                this.errors.push({
-                    message: `Parameter '${param.identifier.id}' contains ` +
-                    `lowercase letters.`,
-                    src: param.identifier.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Warning,
-                })
+                this.logger.warn(`Parameter '${param.identifier.id}' contains ` +
+                                 `lowercase letters.`,
+                                 param.identifier.src)
             }
 
             if (!(param.ty.id in allTypeHandlers)) {
-                this.errors.push({
-                    message: `Unknown parameter type '${param.ty.id}'`,
-                    src: param.ty.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Error,
-                })
+                this.logger.error(`Unknown parameter type '${param.ty.id}'`,
+                                  param.ty.src)
             }
         }
     }
@@ -233,19 +204,11 @@ export class Validator {
             return
         }
         if (ty1.width != ty2.width) {
-            this.errors.push({
-                message: `Width doesn't match`,
-                src,
-                severity: DiagnosticSeverity.Error,
-            })
+            this.logger.error(`Width doesn't match`, src)
         }
         if (ty1.ty == Type.Cell || ty2.ty == Type.Cell) {
             if (ty1.ty != ty2.ty) {
-                this.errors.push({
-                    message: `Assigning a cell to a net`,
-                    src,
-                    severity: DiagnosticSeverity.Error,
-                })
+                this.logger.error(`Assigning a cell to a net`, src)
             }
         }
     }
@@ -277,11 +240,8 @@ export class Validator {
         const width: number = parseInt(parts[0])
         const value: string = parts[1]
         if (value.length !== width) {
-            this.errors.push({
-                message: `Constant literal value doesn't have size '${width}'.`,
-                src: constant.src || emptySrcLoc,
-                severity: DiagnosticSeverity.Error,
-            })
+            this.logger.error(`Constant literal value doesn't have size '${width}'.`,
+                constant.src)
             return { width: 0, ty: Type.DigitalSignal }
         }
         return { width, ty: Type.DigitalSignal }
@@ -339,11 +299,8 @@ export class Validator {
             }
             width += eTy.width
             if (eTy.ty === Type.Cell) {
-                this.errors.push({
-                    message: `Concatenation contains a cell.`,
-                    src: concat.src || emptySrcLoc,
-                    severity: DiagnosticSeverity.Error,
-                })
+                this.logger.error(`Concatenation contains a cell.`,
+                    concat.src)
                 return { width: 0, ty: Type.Cell }
             }
             if (eTy.ty !== Type.Signal) {
@@ -370,13 +327,10 @@ export class Validator {
                     }
                 }
                 if (!pdecl) {
-                    this.errors.push({
-                        message: `Module '${mod.identifier.id}' doesn't have ` +
+                    this.logger.error(
+                        `Module '${mod.identifier.id}' doesn't have ` +
                             `parameter '${param.identifier.id}'.`,
-                        src: param.identifier.src || param.value.src
-                            || emptySrcLoc,
-                        severity: DiagnosticSeverity.Error,
-                    })
+                        param.identifier.src || param.value.src)
                 }
 
                 // TODO const eval param.value
@@ -394,12 +348,9 @@ export class Validator {
                 if (lhsTy.width) {
                     let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                     if (decl && decl.declType === AstDeclType.Net) {
-                        this.errors.push({
-                            message: `Illegal assignment to internal net ` +
+                        this.logger.error(`Illegal assignment to internal net ` +
                                 `'${decl.identifier.id}' in '${cell.module.id}'.`,
-                            src: entry.identifier.src || emptySrcLoc,
-                            severity: DiagnosticSeverity.Error,
-                        })
+                            entry.identifier.src)
                     }
                 }
             }
@@ -426,12 +377,10 @@ export class Validator {
             if (lhsTy.width) {
                 let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                 if (decl && decl.declType === AstDeclType.Net) {
-                    this.errors.push({
-                        message: `Illegal assignment to internal net ` +
+                    this.logger.error(
+                        `Illegal assignment to internal net ` +
                             `'${decl.identifier.id}' in '${mod.identifier.id}'.`,
-                        src: entry.identifier.src || emptySrcLoc,
-                            severity: DiagnosticSeverity.Error,
-                    })
+                        entry.identifier.src)
                 }
             }
         }
