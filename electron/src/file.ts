@@ -6,9 +6,10 @@ import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
 import { lexerInstance, parserInstance } from './parser'
 import { Elaborator } from './elaborator'
 import { Validator } from './validator'
-import { IR } from './backend/ir'
+import { IModule } from './backend/ir'
+import { printIR } from './backend/printer'
 import { extractDeclarations } from './declaration'
-import { print } from './printer'
+import { printAST } from './printer'
 
 export class File {
     private logger: DiagnosticPublisher
@@ -19,7 +20,7 @@ export class File {
     private tokens: IToken[] | undefined
     private cst: any
     private ast: IAstDesign | undefined
-    private ir: IR | undefined
+    private ir: IModule[] | undefined
 
     constructor(dc: IDiagnosticConsumer, path: string, text: string | null) {
         this.path = resolve(path)
@@ -82,13 +83,21 @@ export class File {
     validate(): File {
         if (!this.ast) return this
         const validator = new Validator(this.logger)
-        validator.validate(this.path, this.ast)
+        this.ir = validator.validate(this.path, this.ast)
         return this
     }
 
     dumpAst(): void {
         if (this.ast) {
-            console.log(print(this.ast))
+            console.log(printAST(this.ast))
+        }
+    }
+
+    dumpIR(): void {
+        if (this.ir) {
+            for (let mod of this.ir) {
+                console.log(printIR(mod))
+            }
         }
     }
 
@@ -101,7 +110,7 @@ export class File {
         pl.pop()
         pl.push('d.lec')
         const dpath = pl.join('.')
-        writeFileSync(dpath, print({
+        writeFileSync(dpath, printAST({
             ast: Ast.Design,
             imports: [],
             modules: this.declarations

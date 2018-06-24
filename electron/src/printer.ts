@@ -5,12 +5,11 @@ import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple,
          IAstDeclStmt, IAstDesign, IAstFQN, IAstIdentifier,
          IAstImport, IAstLiteral, IAstModule, IAstParam, IAstReference,
          AstDeclType, AstLiteralType, AstExpr, AstStmt, IAstDict,
-    IAstDictEntry,
-    IAstParamDecl} from './ast'
+         IAstDictEntry, IAstParamDecl } from './ast'
 
 const tabWidth = 2
 
-export function print(design: IAstDesign): string {
+export function printAST(design: IAstDesign): string {
     return render(80, emitDesign(design))
 }
 

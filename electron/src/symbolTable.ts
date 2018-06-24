@@ -1,47 +1,51 @@
-import { IAstIdentifier, IAstModule, IAstImport,
-    IAstDeclStmt, AstDeclType, IAstParamDecl} from './ast'
+import { IAstIdentifier } from './ast'
+import { IModule, IPort, INet, IParam } from './backend/ir'
 import { ISrcLoc, emptySrcLoc, DiagnosticPublisher,
          IDiagnostic } from './diagnostic'
 
-interface IBinder {
-    identifier: IAstIdentifier
+export interface ISymbolTable<Declarable> {
+    [symbol: string]: ISymbolTableEntry<Declarable>,
 }
 
-enum SymbolType {
-    Module,
-    Parameter,
-    Declaration,
+export interface ISymbolTableEntry<Declarable> {
+    ir: Declarable
+    symbols: ISymbolTable<Declarable>
 }
 
-export interface ISymbolTable {
-    [symbol: string]: ISymbolTableEntry,
-}
-
-export interface ISymbolTableEntry {
-    ast: IBinder
-    ty: SymbolType
-    symbols?: ISymbolTable
-}
-
-export class SymbolTable {
-    private symbols: ISymbolTable = {}
-    private scopes: ISymbolTable[] = []
-    conflictingSymbols: {[symbol: string]: ISrcLoc[]} = {}
-    unresolvedSymbols: IAstIdentifier[] = []
+export class SymbolTable<Declarable> {
+    private symbols: ISymbolTable<Declarable> = {}
+    private scopes: ISymbolTable<Declarable>[] = []
 
     constructor(private logger: DiagnosticPublisher) {
         this.scopes.push(this.symbols)
     }
 
-    private currentScope(): ISymbolTable {
+    private currentScope(): ISymbolTable<Declarable> {
         return this.scopes[this.scopes.length - 1]
     }
 
-    enterScope(ident: IAstIdentifier) {
-        let stentry = this.resolveSymbol(ident)
-        if (stentry) {
-            stentry.symbols = stentry.symbols || {}
-            this.scopes.push(stentry.symbols)
+    private resolve(symbol: string): ISymbolTableEntry<Declarable> | null {
+        for (let i = 0; i < this.scopes.length; i++) {
+            const scopeIdx = this.scopes.length - 1 - i
+            if (symbol in this.scopes[scopeIdx]) {
+                return this.scopes[scopeIdx][symbol]
+            }
+        }
+        return null
+    }
+
+    public resolveSymbol(symbol: string): Declarable | null {
+        const entry = this.resolve(symbol)
+        if (entry) {
+            return entry.ir
+        }
+        return null
+    }
+
+    enterScope(symbol: string) {
+        let entry = this.resolve(symbol)
+        if (entry) {
+            this.scopes.push(entry.symbols)
         } else {
             this.scopes.push({})
         }
@@ -51,90 +55,16 @@ export class SymbolTable {
         this.scopes.pop()
     }
 
-    private pushConflictingIdentifier(ident: IAstIdentifier) {
-        if (!(ident.id in this.conflictingSymbols)) {
-            this.conflictingSymbols[ident.id] = []
-        }
-        this.conflictingSymbols[ident.id].push(ident.src || emptySrcLoc)
-        this.logger.error('Conflicting identifiers ' + ident.id,
-                          ident.src)
-    }
-
-    private isRootScope(): boolean {
-        return this.scopes.length === 1
-    }
-
-    private checkIdentifier(ident: IAstIdentifier): boolean {
+    public declareSymbol(symbol: string, ir: Declarable): boolean {
         const scope = this.currentScope()
-        if (ident.id in scope) {
-            this.pushConflictingIdentifier(ident)
-            this.pushConflictingIdentifier(scope[ident.id].ast.identifier)
+        if (symbol in scope) {
+            this.logger.error(`Conflicting identifiers '${symbol}'.`,
+                              (ir as any)['src'] || emptySrcLoc)
+            this.logger.error(`Conflicting identifiers '${symbol}'.`,
+                              (scope[symbol].ir as any)['src'] || emptySrcLoc)
             return false
         }
+        scope[symbol] = { ir, symbols: {}}
         return true
-    }
-
-    private declareSymbol(ident: IAstIdentifier, symbol: ISymbolTableEntry) {
-        this.currentScope()[ident.id] = symbol
-    }
-
-    declareModule(mod: IAstModule) {
-        if (this.checkIdentifier(mod.identifier)) {
-            if (!this.isRootScope()) {
-                throw new Error('Programmer Error: Not root scope')
-            }
-            this.declareSymbol(mod.identifier, { ast: mod, ty: SymbolType.Module })
-        }
-    }
-
-    declareParameter(param: IAstParamDecl) {
-        this.declareSymbol(param.identifier, {
-            ast: param,
-            ty: SymbolType.Parameter
-        })
-    }
-
-    declareVariable(decl: IAstDeclStmt) {
-        if (this.checkIdentifier(decl.identifier)) {
-            if (this.isRootScope()) {
-                throw new Error('Programmer Error: Root scope')
-            }
-            this.declareSymbol(decl.identifier, {
-                ast: decl,
-                ty: SymbolType.Declaration
-            })
-        }
-    }
-
-    private resolveSymbol(ident: IAstIdentifier): ISymbolTableEntry | null {
-        for (let i = 0; i < this.scopes.length; i++) {
-            const scopeIdx = this.scopes.length - 1 - i
-            if (ident.id in this.scopes[scopeIdx]) {
-                return this.scopes[scopeIdx][ident.id]
-            }
-        }
-        this.logger.error(`Undeclared identifier '${ident.id}'`,
-                          ident.src)
-        return null
-    }
-
-    resolveDeclaration(ident: IAstIdentifier): IAstDeclStmt | null {
-        const stentry = this.resolveSymbol(ident)
-        if (stentry) {
-            if (stentry.ty === SymbolType.Declaration) {
-                return stentry.ast as IAstDeclStmt
-            }
-        }
-        return null
-    }
-
-    resolveModule(ident: IAstIdentifier): IAstModule | null {
-        const stentry = this.resolveSymbol(ident)
-        if (stentry) {
-            if (stentry.ty === SymbolType.Module) {
-                return stentry.ast as IAstModule
-            }
-        }
-        return null
     }
 }

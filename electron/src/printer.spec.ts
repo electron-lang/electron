@@ -1,11 +1,8 @@
 import {expect} from 'chai'
 import { IAstImport, IAstDeclStmt, IAstLiteral, IAstIdentifier,
          Ast, AstDeclType, AstLiteralType,
-         IAstAttribute, AstExpr,
-    IAstAssignStmt,
-    IAstParam,
-    IAstReference,
-    IAstParamDecl} from './ast'
+         IAstAttribute, AstExpr, IAstAssignStmt,
+         IAstParam, IAstReference, IAstParamDecl } from './ast'
 import {render, IDoc, emitDesign, emitImport, emitModule,
         emitStatement, emitExpression, emitAttribute} from './printer'
 

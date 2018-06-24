@@ -74,32 +74,32 @@ export function Module(name: string): IModule {
 export interface IAttr {
     tag: 'attr'
     name: string
-    params: IParam[]
+    value: string
     src: ISrcLoc
 }
 
-export function Attr(name: string, ...params: IParam[]): IAttr {
+export function Attr(name: string, value: string, src?: ISrcLoc | undefined): IAttr {
     return {
         tag: 'attr',
         name,
-        params,
-        src: emptySrcLoc,
+        value,
+        src: src || emptySrcLoc,
     }
 }
 
 export interface IParam {
     tag: 'param'
     name: string
-    value: string
+    value: any
     src: ISrcLoc
 }
 
-export function Param(name: string, value: string): IParam {
+export function Param(name: string, value: any, src?: ISrcLoc | undefined): IParam {
     return {
         tag: 'param',
         name,
         value,
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
 
@@ -113,7 +113,7 @@ export interface ICell {
     src: ISrcLoc
 }
 
-export function Cell(name: string, modName: string): ICell {
+export function Cell(name: string, modName: string, src?: ISrcLoc | undefined): ICell {
     return {
         tag: 'cell',
         name,
@@ -121,7 +121,7 @@ export function Cell(name: string, modName: string): ICell {
         attrs: [],
         params: [],
         assigns: [],
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
 
@@ -136,14 +136,15 @@ export interface IPort {
 
 export type PortType = 'input' | 'output' | 'inout' | 'analog'
 
-export function Port(name: string, ty: PortType, width: number): IPort {
+export function Port(name: string, ty: PortType, width: number,
+                     src?: ISrcLoc | undefined): IPort {
     return {
         tag: 'port',
         attrs: [],
         ty,
         width,
         name,
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
 
@@ -155,13 +156,13 @@ export interface INet {
     src: ISrcLoc,
 }
 
-export function Net(name: string, width: number): INet {
+export function Net(name: string, width: number, src?: ISrcLoc | undefined): INet {
     return {
         tag: 'net',
         attrs: [],
         width,
         name,
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
 
@@ -192,7 +193,7 @@ export interface IBitVec {
 
 export type Bit = '0' | '1' | 'x' | 'z'
 
-export function BitVec(...bits: Bit[]): IBitVec {
+export function BitVec(bits: Bit[], src?: ISrcLoc | undefined): IBitVec {
     return {
         tag: 'bitvec',
         bits,

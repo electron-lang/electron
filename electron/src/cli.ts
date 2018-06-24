@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { File, print } from './index';
+import { File } from './index';
 import { DiagnosticLogger } from './diagnostic'
 
 const program = new Command('electron')
@@ -9,11 +9,15 @@ const program = new Command('electron')
 
 program.command('compile <file>')
     .option('-d, --dump-ast', 'Dumps AST to stdout for debugging purposes.')
+    .option('-i, --dump-ir', 'Dumps IR to stdout for debugging purposes.')
     .action((path, options) => {
         const file = new File(new DiagnosticLogger(), path, null)
         file.compile()
         if (options.dumpAst) {
             file.dumpAst()
+        }
+        if (options.dumpIr) {
+            file.dumpIR()
         }
     })
 

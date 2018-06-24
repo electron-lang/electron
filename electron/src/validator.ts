@@ -3,36 +3,24 @@ import { existsSync } from 'fs'
 import { DiagnosticPublisher, DiagnosticLogger,
          emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
-import { IAstDesign, IAstImport, IAstModule, IAstAttribute, IAstDeclStmt, IAstFQN,
-         IAstAssignStmt, AstExpr, AstDeclType, IAstIdentifier,
-         IAstReference, IAstTuple, IAstLiteral, IAstModInst,
-         Ast, AstLiteralType, IAstParamDecl, AstStmt, IAstAttributeStmt,
-         IAstWithStmt, IAstApplyDictStmt, IAstDict } from './ast'
-import { IModule, IIdent } from './backend/ir'
+import { Ast } from './ast'
+import * as ast from './ast'
+import * as ir from './backend/ir'
 import { allAttributes } from './attributes'
 import { allTypeHandlers } from './parameters'
 import { File } from './file'
 
-enum Type {
-    Signal,
-    Cell,
-    DigitalSignal,
-}
-
-interface IType {
-    width: number,
-    ty: Type,
-}
+type Declarable = ir.IModule | ir.ICell | ir.IPort | ir.INet | ir.IParam
 
 export class Validator {
-    private ir: IModule[] = []
-    private symbolTable: SymbolTable = new SymbolTable(this.logger)
+    private ir: ir.IModule[] = []
+    private symbolTable: SymbolTable<Declarable> = new SymbolTable(this.logger)
 
     constructor(private logger: DiagnosticPublisher) {
 
     }
 
-    validate(path: string, design: IAstDesign) {
+    validate(path: string, design: ast.IAstDesign) {
         const dir = dirname(path)
 
         this.resolveImports(dir, design.imports)
@@ -44,7 +32,7 @@ export class Validator {
         return this.ir
     }
 
-    resolveImports(dir: string, imports: IAstImport[]) {
+    resolveImports(dir: string, imports: ast.IAstImport[]) {
         for (let imp of imports) {
             if (imp.package.startsWith('.')) {
                 const absPath = resolve(dir + '/' + imp.package + '.lec')
@@ -76,21 +64,15 @@ export class Validator {
         }
     }
 
-    /*validateIdentifier(ident: IAstIdentifier): IIdentifier {
+    validateModule(mod: ast.IAstModule) {
+        let irmod = ir.Module(mod.identifier.id)
+        irmod.src = mod.identifier.src || emptySrcLoc
+        this.ir.push(irmod)
 
-    }*/
+        this.symbolTable.declareSymbol(mod.identifier.id, irmod)
+        this.symbolTable.enterScope(mod.identifier.id)
 
-    validateModule(mod: IAstModule) {
-        this.symbolTable.declareModule(mod)
-        this.symbolTable.enterScope(mod.identifier)
-        /*this.ast.push({
-            sast: SmallAst.Module,
-            attributes: [],
-            identifier: ,
-            decls: [],
-            assigns: [],
-        })*/
-        this.checkAttributes(mod.attributes)
+        irmod.attrs = this.validateAttributes(mod.attributes)
 
         if (mod.identifier.id[0].toUpperCase() !== mod.identifier.id[0]) {
             this.logger.warn(
@@ -98,13 +80,13 @@ export class Validator {
                 mod.identifier.src)
         }
 
-        this.checkParamDecls(mod.parameters)
+        this.validateParamDecls(mod.parameters)
 
         for (let stmt of mod.statements) {
-            this.checkStmt(stmt)
+            this.validateStmt(stmt)
 
             if (mod.declaration) {
-                if (stmt.ast !== Ast.Decl && stmt.ast !== Ast.SetAttributes) {
+                if (stmt.ast !== ast.Ast.Decl && stmt.ast !== ast.Ast.SetAttributes) {
                     this.logger.error(
                         `Declared module '${mod.identifier.id}' contains assignments.`,
                         mod.identifier.src)
@@ -115,20 +97,30 @@ export class Validator {
         this.symbolTable.exitScope()
     }
 
-    checkAttributes(attrs: IAstAttribute[]) {
+    validateAttributes(attrs: ast.IAstAttribute[]): ir.IAttr[] {
+        let irattrs = []
         for (let attr of attrs) {
-            if (attr.name.id in allAttributes) {
-                allAttributes[attr.name.id].validateParameters(attr, this.logger)
-            } else {
+            if (!(attr.name.id in allAttributes)) {
                 this.logger.error(`Unknown attribute '${attr.name.id}'.`,
                                   attr.name.src)
+                continue
+            }
+
+            const attrHandler = allAttributes[attr.name.id]
+            if (attrHandler.validate(this.logger, attr)) {
+                for (let irattr of attrHandler.compile(attr)) {
+                    irattrs.push(irattr)
+                }
             }
         }
+        return irattrs
     }
 
-    checkParamDecls(params: IAstParamDecl[]) {
+    validateParamDecls(params: ast.IAstParamDecl[]) {
         for (let param of params) {
-            this.symbolTable.declareParameter(param)
+            let irparam = ir.Param(param.identifier.id, null,
+                                   param.identifier.src)
+            this.symbolTable.declareSymbol(param.identifier.id, irparam)
 
             if (param.identifier.id.toUpperCase() !== param.identifier.id) {
                 this.logger.warn(`Parameter '${param.identifier.id}' contains ` +
@@ -143,128 +135,184 @@ export class Validator {
         }
     }
 
-    checkStmt(stmt: AstStmt) {
+    validateStmt(stmt: ast.AstStmt) {
         switch(stmt.ast) {
             case Ast.SetAttributes:
-                this.checkSetAttributes(stmt as IAstAttributeStmt)
+                this.validateSetAttributes(stmt as ast.IAstAttributeStmt)
                 break
             case Ast.Decl:
-                this.checkDeclStmt(stmt as IAstDeclStmt)
+                this.validateDeclStmt(stmt as ast.IAstDeclStmt)
                 break
             case Ast.With:
-                this.checkWith(stmt as IAstWithStmt)
+                this.validateWith(stmt as ast.IAstWithStmt)
                 break
             case Ast.Assign:
-                this.checkAssign(stmt as IAstAssignStmt)
+                this.validateAssign(stmt as ast.IAstAssignStmt)
                 break
             case Ast.ApplyDict:
-                this.checkApplyDict(stmt as IAstApplyDictStmt)
+                this.validateApplyDict(stmt as ast.IAstApplyDictStmt)
                 break
+            default:
+                throw new Error('never')
         }
     }
 
-    checkSetAttributes(setAttrs: IAstAttributeStmt) {
-        this.checkAttributes(setAttrs.attributes)
+    validateIdentifier(ident: ast.IAstIdentifier): Declarable | null {
+        let irdecl = this.symbolTable.resolveSymbol(ident.id)
+        if (!irdecl) {
+            this.logger.error(`Unknown symbol '${ident.id}'`, ident.src)
+        }
+        return irdecl
+    }
+
+    validateFQN(fqn: ast.IAstFQN): Declarable | null {
+        let irdecl = null
+
+        for (let i = 0; i < fqn.fqn.length - 2; i++) {
+            this.symbolTable.enterScope(fqn.fqn[i].id)
+        }
+
+        irdecl = this.validateIdentifier(fqn.fqn[fqn.fqn.length - 1])
+
+        for (let i = 0; i < fqn.fqn.length - 2; i++) {
+            this.symbolTable.exitScope()
+        }
+
+        return irdecl
+    }
+
+    validateSetAttributes(setAttrs: ast.IAstAttributeStmt) {
+        let irattrs = this.validateAttributes(setAttrs.attributes)
         for (let stmt of setAttrs.statements) {
-            this.checkStmt(stmt)
+            this.validateStmt(stmt)
             if (stmt.ast === Ast.Decl) {
-                stmt.attributes = stmt.attributes.concat(setAttrs.attributes)
+                let irdecl = this.symbolTable.resolveSymbol(stmt.identifier.id)
+                if (irdecl && irdecl.tag !== 'param') {
+                    for (let irattr of irattrs) {
+                        irdecl.attrs.push(irattr)
+                    }
+                }
             }
         }
         for (let fqn of setAttrs.fqns) {
-            // TODO let decl = this.symbolTable.resolveFQN(fqn)
-            // set attributes
+            let irdecl = this.validateFQN(fqn)
+
+            if (irdecl && irdecl.tag !== 'param') {
+                for (let irattr of irattrs) {
+                    irdecl.attrs.push(irattr)
+                }
+            }
         }
     }
 
-    checkDeclStmt(decl: IAstDeclStmt) {
-        this.symbolTable.declareVariable(decl)
-        this.checkAttributes(decl.attributes)
-        //TODO constEval(decl.width)
+    evalExpr(expr: ast.AstExpr): ast.AstExpr {
+        // TODO
+        return {
+            ast: Ast.Literal,
+            value: '1',
+            litType: ast.AstLiteralType.Integer,
+        }
     }
 
-    checkWith(withStmt: IAstWithStmt) {
+    validateDeclStmt(decl: ast.IAstDeclStmt): ir.ICell | ir.INet | ir.IPort | ir.IParam {
+        let irdecl = (() => {
+            switch(decl.declType) {
+                case ast.AstDeclType.Const:
+                    return ir.Param(decl.identifier.id, null,
+                                    decl.identifier.src)
+                case ast.AstDeclType.Net:
+                    return ir.Net(decl.identifier.id, 1, decl.identifier.src)
+                case ast.AstDeclType.Cell:
+                    return ir.Cell(decl.identifier.id, '', decl.identifier.src)
+                case ast.AstDeclType.Analog:
+                    return ir.Port(decl.identifier.id, 'analog', 1,
+                                   decl.identifier.src)
+                case ast.AstDeclType.Input:
+                    return ir.Port(decl.identifier.id, 'input', 1,
+                                   decl.identifier.src)
+                case ast.AstDeclType.Output:
+                    return ir.Port(decl.identifier.id, 'output', 1,
+                                   decl.identifier.src)
+                case ast.AstDeclType.Inout:
+                    return ir.Port(decl.identifier.id, 'inout', 1,
+                                   decl.identifier.src)
+            }
+        })()
+
+        if (irdecl.tag === 'param') {
+            for (let attr of decl.attributes) {
+                this.logger.error(`Constant declaration can not have attributes.`,
+                                  attr.src || emptySrcLoc)
+            }
+        } else {
+            irdecl.attrs = this.validateAttributes(decl.attributes)
+        }
+
+        this.symbolTable.declareSymbol(decl.identifier.id, irdecl)
+        //TODO evalExpr(decl.width)
+
+        return irdecl
+    }
+
+    validateWith(withStmt: ast.IAstWithStmt) {
         // TODO let decl = this.symbolTable.resolveFQNDecl()
         //withStmt.scope
     }
 
-    checkAssign(assign: IAstAssignStmt) {
-        let lhsTy = this.checkExpression(assign.lhs)
-        let rhsTy = this.checkExpression(assign.rhs)
+    validateAssign(assign: ast.IAstAssignStmt) {
+        //this.validateExpression(assign.lhs)
+        //this.validateExpression(assign.rhs)
         //this.checkTypesEqual(lhsTy, rhsTy, assign.lhs.src || emptySrcLoc)
     }
 
-    checkApplyDict(applyDict: IAstApplyDictStmt) {
-        this.checkExpression(applyDict.expr)
+    validateApplyDict(applyDict: ast.IAstApplyDictStmt) {
+        //this.validateExpression(applyDict.expr)
         // TODO check dict
     }
 
-    checkTypesEqual(ty1: IType, ty2: IType, src: ISrcLoc) {
-        if (!ty1.width || !ty2.width) {
-            return
-        }
-        if (ty1.width != ty2.width) {
-            this.logger.error(`Width doesn't match`, src)
-        }
-        if (ty1.ty == Type.Cell || ty2.ty == Type.Cell) {
-            if (ty1.ty != ty2.ty) {
-                this.logger.error(`Assigning a cell to a net`, src)
-            }
-        }
-    }
-
-    checkExpression(expr: AstExpr): IType {
+    validateExpression(expr: ast.AstExpr) {
         switch (expr.ast) {
             case Ast.Literal:
-                return this.checkConstant(expr as IAstLiteral)
+                this.validateLiteral(expr as ast.IAstLiteral)
+                break
             case Ast.Identifier:
-                return this.checkIdentifier(expr as IAstIdentifier)
+                this.validateIdentifier(expr as ast.IAstIdentifier)
+                break
             case Ast.Ref:
-                return this.checkReference(expr as IAstReference)
+                this.validateRef(expr as ast.IAstReference)
+                break
             case Ast.Tuple:
-                return this.checkConcat(expr as IAstTuple)
+                this.validateTuple(expr as ast.IAstTuple)
+                break
             case Ast.ModInst:
-                return this.checkModInst(expr as IAstModInst)
+                this.validateModInst(expr as ast.IAstModInst)
+                break
             case Ast.AnonymousMod:
-                return {width: 0, ty: Type.Cell} // TODO
+                this.validateAnonymousMod(expr as ast.IAstAnonymousModule)
+                break
             case Ast.BinOp:
-                return {width: 0, ty: Type.Signal} // TODO
+                this.validateBinOp(expr as ast.IAstBinOp)
+                break
             default:
                 throw new Error(`Programmer error at 'checkExpression'`)
         }
     }
 
-    checkConstant(constant: IAstLiteral): IType {
-        return {width: 0, ty: Type.DigitalSignal} // TODO
-        let parts = constant.value.split("'")
-        const width: number = parseInt(parts[0])
-        const value: string = parts[1]
-        if (value.length !== width) {
-            this.logger.error(`Constant literal value doesn't have size '${width}'.`,
-                constant.src)
-            return { width: 0, ty: Type.DigitalSignal }
-        }
-        return { width, ty: Type.DigitalSignal }
-    }
-
-    checkIdentifier(ident: IAstIdentifier): IType {
-        let decl = this.symbolTable.resolveDeclaration(ident)
-        //let width = 0
-        let ty = Type.Signal
-        if (decl) {
-            //width = decl.width
-            if (decl.declType === AstDeclType.Cell) {
-                ty = Type.Cell
+    validateLiteral(lit: ast.IAstLiteral) {
+        if (lit.litType === ast.AstLiteralType.BitVector) {
+            let parts = lit.value.split("'")
+            const width: number = parseInt(parts[0])
+            const value: string = parts[1]
+            if (value.length !== width) {
+                this.logger.error(
+                    `Constant literal value doesn't have size '${width}'.`,
+                    lit.src)
             }
         }
-        return { width: 0, ty }
     }
 
-    checkReference(ref: IAstReference): IType {
-        let sig = this.checkIdentifier(ref.identifier)
-        if (!sig.width) {
-            return sig
-        }
+    validateRef(ref: ast.IAstReference) {
+        this.validateIdentifier(ref.identifier)
 
         /*if (!(ref.from < sig.width && ref.to < sig.width)) {
             this.errors.push({
@@ -284,34 +332,26 @@ export class Validator {
                 errorType: DiagnosticType.TypeCheckingError,
             })
         }*/
-
-        return { width: 0, ty: sig.ty }
     }
 
-    checkConcat(concat: IAstTuple): IType {
+    validateTuple(concat: ast.IAstTuple) {
         let hasCell = false
-        let ty = Type.Signal
-        let width = 0
         for (let expr of concat.expressions) {
-            let eTy = this.checkExpression(expr)
-            if (!eTy.width) {
-                return eTy
-            }
-            width += eTy.width
-            if (eTy.ty === Type.Cell) {
+            this.validateExpression(expr)
+
+            /*if (eTy.ty === Type.Cell) {
                 this.logger.error(`Concatenation contains a cell.`,
                     concat.src)
                 return { width: 0, ty: Type.Cell }
             }
             if (eTy.ty !== Type.Signal) {
                 ty = eTy.ty
-            }
+            }*/
         }
-        return { width, ty }
     }
 
-    checkModInst(cell: IAstModInst): IType {
-        let mod = this.symbolTable.resolveModule(cell.module)
+    validateModInst(cell: ast.IAstModInst) {
+        /*let mod = this.symbolTable.resolveSymbol(cell.module)
 
         if (mod) {
             for (let param of cell.parameters) {
@@ -341,11 +381,11 @@ export class Validator {
             this.symbolTable.enterScope(cell.module)
             for (let entry of cell.dict.entries) {
                 // TODO check lhs and rhs type match
-                let lhsTy = this.checkIdentifier(entry.identifier)
+                let lhsTy = this.validateIdentifier(entry.identifier)
 
                 // Check that assignment is to a port
                 // Make sure unresolved symbol error only gets emitted once
-                if (lhsTy.width) {
+                /*if (lhsTy.width) {
                     let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                     if (decl && decl.declType === AstDeclType.Net) {
                         this.logger.error(`Illegal assignment to internal net ` +
@@ -358,23 +398,20 @@ export class Validator {
         }
 
         for (let entry of cell.dict.entries) {
-            this.checkExpression(entry.expr)
-        }
-        // this.checkTypesEqual(lhsTy, rhsTy, entry.identifier.src || emptySrcLoc)
-
-        return { width: 0 /*cell.width*/, ty: Type.Cell }
+            this.validateExpression(entry.expr)
+        }*/
     }
 
-    validateDict(mod: IAstModule, dict: IAstDict) {
+    validateDict(mod: ast.IAstModule, dict: ast.IAstDict) {
         // Only enter scope once to avoid multiple error messages
-        this.symbolTable.enterScope(mod.identifier)
+        this.symbolTable.enterScope(mod.identifier.id)
         for (let entry of dict.entries) {
             // TODO check lhs and rhs type match
-            let lhsTy = this.checkIdentifier(entry.identifier)
+            let lhsTy = this.validateIdentifier(entry.identifier)
 
             // Check that assignment is to a port
             // Make sure unresolved symbol error only gets emitted once
-            if (lhsTy.width) {
+            /*if (lhsTy.width) {
                 let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                 if (decl && decl.declType === AstDeclType.Net) {
                     this.logger.error(
@@ -382,14 +419,22 @@ export class Validator {
                             `'${decl.identifier.id}' in '${mod.identifier.id}'.`,
                         entry.identifier.src)
                 }
-            }
+            }*/
         }
         if (dict.star) {
         }
         this.symbolTable.exitScope()
 
         for (let entry of dict.entries) {
-            this.checkExpression(entry.expr)
+            this.validateExpression(entry.expr)
         }
+    }
+
+    validateAnonymousMod(mod: ast.IAstAnonymousModule) {
+
+    }
+
+    validateBinOp(op: ast.IAstBinOp) {
+
     }
 }

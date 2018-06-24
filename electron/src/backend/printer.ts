@@ -8,7 +8,7 @@ export interface IPrint<T> {
     print: (e: T) => IDoc
 }
 
-export function print(ir: IR): string {
+export function printIR(ir: IR): string {
     return render(80, printerInstance.print(ir))
 }
 
@@ -38,10 +38,10 @@ class Printer implements IPrint<IR> {
                 return [id.text]
             },
             Attr: (attr) => {
-                return ['@', attr.name, this.printArgList(attr.params), line]
+                return ['@', attr.name, '(', attr.value, ')', line]
             },
             Param: (param) => {
-                return [param.name, '=', '"', param.value, '"']
+                return [param.name, '=', String(param.value)]
             },
             Cell: (cell) => {
                 return [

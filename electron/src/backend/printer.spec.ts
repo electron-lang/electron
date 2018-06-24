@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { Ident, Ref, Concat, BitVec, Net, Port,
          Attr, Param, Cell, Module } from './ir'
-import { print } from './printer'
+import { printIR as print } from './printer'
 
 
 describe('IR Printer', () => {
@@ -19,7 +19,7 @@ describe('IR Printer', () => {
     })
 
     it('should print bit vectors', () => {
-        expect(print(BitVec('0', '1', 'x', 'z'))).to.equal("4'01xz")
+        expect(print(BitVec(['0', '1', 'x', 'z']))).to.equal("4'01xz")
     })
 
     it('should print nets', () => {
@@ -36,8 +36,8 @@ describe('IR Printer', () => {
     })
 
     it('should print attrs', () => {
-        expect(print(Attr('bom', Param('MAN', 'Yago'), Param('MPN', 'XYZ'))))
-            .to.equal('@bom(MAN="Yago", MPN="XYZ")\n')
+        expect(print(Attr('man', 'Yago')))
+            .to.equal('@man(Yago)\n')
     })
 
     it('should print cells', () => {
@@ -47,8 +47,8 @@ describe('IR Printer', () => {
     it('should print modules', () => {
         let mod = Module('A')
         expect(print(mod)).to.equal('module A {}')
-        mod.attrs.push(Attr('model', Param('MODULE', 'AModel')))
-        expect(print(mod)).to.equal('@model(MODULE="AModel")\nmodule A {}')
+        mod.attrs.push(Attr('model', 'AModel'))
+        expect(print(mod)).to.equal('@model(AModel)\nmodule A {}')
         mod.attrs = []
         mod.ports.push(Port('in', 'input', 1))
         mod.nets.push(Net('n1', 1))

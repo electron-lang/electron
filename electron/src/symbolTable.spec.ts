@@ -39,35 +39,32 @@ function makeOutput(id: string): IAstDeclStmt {
 
 describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
-    const st = new SymbolTable(dc.toPublisher())
+    const st = new SymbolTable<IAstModule | IAstDeclStmt>(dc.toPublisher())
     const A = makeModule('A')
 
     it('should return null when resolving undeclared symbol', () => {
-        expect(st.resolveModule(A.identifier)).to.equal(null)
+        expect(st.resolveSymbol(A.identifier.id)).to.equal(null)
     })
 
     it('should return IAstSymbol when resolving a declared symbol', () => {
-        st.declareModule(A)
-        expect(st.resolveModule(A.identifier)).to.equal(A)
+        st.declareSymbol(A.identifier.id, A)
+        expect(st.resolveSymbol(A.identifier.id)).to.equal(A)
     })
 
     it('should keep track of conflicting symbols', () => {
-        st.declareModule(A)
-        expect(st.resolveModule(A.identifier)).to.equal(A)
-        expect(st.conflictingSymbols[A.identifier.id]).to.deep.equal([
-            A.identifier.src, A.identifier.src
-        ])
+        st.declareSymbol(A.identifier.id, A)
+        expect(st.resolveSymbol(A.identifier.id)).to.equal(A)
     })
 
     const B = makeModule('B')
     const a = makeOutput('a')
 
     it('should handle scopes', () => {
-        st.declareModule(B)
-        st.enterScope(B.identifier)
-        st.declareVariable(a)
-        expect(st.resolveDeclaration(a.identifier)).to.equal(a)
+        st.declareSymbol(B.identifier.id, B)
+        st.enterScope(B.identifier.id)
+        st.declareSymbol(a.identifier.id, a)
+        expect(st.resolveSymbol(a.identifier.id)).to.equal(a)
         st.exitScope()
-        expect(st.resolveDeclaration(a.identifier)).to.equal(null)
+        expect(st.resolveSymbol(a.identifier.id)).to.equal(null)
     })
 })
