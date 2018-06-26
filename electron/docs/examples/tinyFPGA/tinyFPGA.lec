@@ -15,7 +15,7 @@ module Usb {
     cell C17 = $C(10uF) {A='+5V, B=GND}
 
     net vbus, dp, dn, gnd
-    cell J3 = module {
+    cell J3 = cell {
         @right {
             @set_pad(1)
             analog VBUS = vbus
@@ -55,7 +55,7 @@ module Vreg {
     cell C1 = $C(1uF) {A='+5V, B=GND}
 
     @bom("", "MIC5504-3.3YM5-TR")
-    cell U2 = module {
+    cell U2 = cell {
         @left {
             @set_pad(1)
             analog VIN='+5V
@@ -80,7 +80,7 @@ module Vreg {
     cell C2 = $C(1uF) {A='+3V3, B=GND}
 
     @bom("", "MIC5365-1.2YC5-TR")
-    cell U4 = module {
+    cell U4 = cell {
         @left {
             @set_pad(1)
             analog VIN='+5V
@@ -106,7 +106,7 @@ module Clock {
     @rotate(90)
     cell C5 = $C(100nF) {A='+3V3, B=GND}
 
-    cell U3 = module {
+    cell U3 = cell {
         @right
         @set_pad(1)
         analog OE='+3V3
@@ -126,7 +126,7 @@ module Flash {
     net WP
 
     @bom("", "AT25SF041-SSHD-B")
-    cell U5 = module {
+    cell U5 = cell {
         @left
         @set_pad(3)
         analog WP
@@ -161,7 +161,7 @@ module Headers {
         SS, SCK, SDI, SDO
 
     @bom("", "CONN_01x14")
-    cell J1 = module {
+    cell J1 = cell {
         @left
         @set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
         analog GND, USB_P, USB_N, CLK, '2B, '221, '224, '3A, '3B,
@@ -169,7 +169,7 @@ module Headers {
     }
 
     @bom("", "CONN_01x14")
-    cell J2 = module {
+    cell J2 = cell {
         @right
         @set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
         analog '+5V, '+3.3V, '+1V2, '185, '177, '174, '116,
@@ -209,7 +209,7 @@ module FpgaReset {
 
     cell R6 = $R(0) {A='+3.3V, B=CRESET_B}
     cell TP2 = Tp() {A=CRESET_B}
-    cell SW1 = module {analog A=GND; analog B=CRESET_B}
+    cell SW1 = cell {analog A=GND; analog B=CRESET_B}
 }
 
 @bom("Lattice", "")
