@@ -286,8 +286,6 @@ export class Validator {
                 }
             }*/
         }
-        if (dict.star) {
-        }
         this.symbolTable.exitScope()
 
         for (let entry of dict.entries) {

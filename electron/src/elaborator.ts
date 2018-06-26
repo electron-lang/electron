@@ -308,18 +308,34 @@ export class Elaborator extends BaseElectronVisitor {
             const ident = this.visit(ctx.identifier[0])
 
             if (ctx.referenceExpression) {
-                expr = this.visit(ctx.referenceExpression[0])
-                expr.ident = ident
-                expr.src.startLine = ident.src.startLine
-                expr.src.startColumn = ident.src.startColumn
+                const ref = this.visit(ctx.referenceExpression[0]) as ast.IRef
+                ref.ident = ident
+                ref.src.startLine = ident.src.startLine
+                ref.src.startColumn = ident.src.startColumn
+                expr = ref
             } else if (ctx.moduleInstantiation) {
-                expr = this.visit(ctx.moduleInstantiation[0])
+                const inst = this.visit(ctx.moduleInstantiation[0]) as ast.IModInst
                 if (ident.id in this.modules) {
-                    expr.module = this.modules[ident.id]
+                    inst.module = this.modules[ident.id]
+                    if (inst.dict.star) {
+                        let dict: {[port: string]: ast.IDictEntry} = {}
+                        for (let entry of inst.dict.entries) {
+                            dict[entry.ident.id] = entry
+                        }
+                        for (let port of inst.module.ports) {
+                            if (!(port.ident.id in dict)) {
+                                const ident = ast.Ident(port.ident.id,
+                                                        inst.dict.starSrc)
+                                inst.dict.entries.push(
+                                    ast.DictEntry(ident, ident))
+                            }
+                        }
+                    }
                 } else {
                     this.logger.error(`Module '${ident.id}' not found.`, ident.src)
                 }
-                expr.src = ident.src
+                inst.src = ident.src
+                expr = inst
             } else {
                 expr = ident
             }
@@ -472,11 +488,16 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     dictionary(ctx: any): ast.IDict {
-        let dict = ast.Dict(!!ctx.Star,
-                            SrcLoc(Pos(ctx.OpenCurly[0].startLine,
+        let dict = ast.Dict(SrcLoc(Pos(ctx.OpenCurly[0].startLine,
                                        ctx.OpenCurly[0].startColumn),
                                    Pos(ctx.CloseCurly[0].endLine,
                                        ctx.CloseCurly[0].endColumn)))
+
+        if (ctx.Star) {
+            dict.star = true
+            dict.starSrc = tokenToSrcLoc(ctx.Star[0])
+        }
+
         if (ctx.dictionaryEntry) {
             dict.entries = ctx.dictionaryEntry.map((ctx: any) => this.visit(ctx))
         }

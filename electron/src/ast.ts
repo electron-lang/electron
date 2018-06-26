@@ -506,14 +506,16 @@ export interface IDict {
     tag: 'dict'
     entries: IDictEntry[]
     star: boolean
+    starSrc: ISrcLoc
     src: ISrcLoc
 }
 
-export function Dict(star?: boolean, src?: ISrcLoc): IDict {
+export function Dict(src?: ISrcLoc): IDict {
     return {
         tag: 'dict',
         entries: [],
-        star: star || false,
+        star: false,
+        starSrc: emptySrcLoc,
         src: src || emptySrcLoc,
     }
 }

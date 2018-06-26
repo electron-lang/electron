@@ -39,12 +39,14 @@ function expectAst(text: string, ast: ast.IDesign) {
 const $R = ast.Module('$R')
 $R.declaration = true
 $R.src = getLoc('$R', Pos(1, 16))
+$R.ports.push(ast.Port(makeIdent('A', Pos(1, 27)), 'analog'))
+$R.ports.push(ast.Port(makeIdent('B', Pos(1, 37)), 'analog'))
 
 function expectAstModule(text: string, stmts: ast.Stmt[]) {
     const design = ast.Design()
     design.modules.push($R)
     design.modules.push(ast.Module('A', stmts, getLoc('A', Pos(2, 8))))
-    expectAst(`declare module $R {}\nmodule A {\n${text}\n}`, design)
+    expectAst(`declare module $R {analog A; analog B}\nmodule A {\n${text}\n}`, design)
 }
 
 function expectAstExpr(text: string, e: ast.Expr) {
@@ -271,7 +273,7 @@ describe('Elaborator', () => {
         })
 
         it('should elaborate ModInst', () => {
-            const dict = ast.Dict(false)
+            const dict = ast.Dict()
             const inst = ast.ModInst($R, [], dict,
                                      getLoc('$R', Pos(4, 1)))
 
@@ -287,15 +289,32 @@ describe('Elaborator', () => {
             expectAstExpr('$R(10k) {}', inst)
             inst.params.pop()
 
-            dict.entries.push(ast.DictEntry(makeIdent('A', Pos(4, 7)),
-                                            makeIdent('A', Pos(4, 7))))
-            dict.src = getLoc('{A}', Pos(4, 6)) || emptySrcLoc
-            expectAstExpr('$R() {A}', inst)
+            dict.entries.push(ast.DictEntry(makeIdent('A', Pos(4, 5)),
+                                            makeIdent('A', Pos(4, 5))))
+            dict.src = getLoc('{A}', Pos(4, 4)) || emptySrcLoc
+            expectAstExpr('$R {A}', inst)
 
-            dict.entries.push(ast.DictEntry(makeIdent('B', Pos(4, 10)),
-                                            makeIdent('b', Pos(4, 12))))
-            dict.src = getLoc('{A, B=b}', Pos(4, 6)) || emptySrcLoc
-            expectAstExpr('$R() {A, B=b}', inst)
+            dict.entries.push(ast.DictEntry(makeIdent('B', Pos(4, 8)),
+                                            makeIdent('B', Pos(4, 10))))
+            dict.src = getLoc('{A, B=B}', Pos(4, 4)) || emptySrcLoc
+            expectAstExpr('$R {A, B=B}', inst)
+
+            dict.src = getLoc('{A, *}', Pos(4, 4))
+            inst.dict.star = true
+            inst.dict.starSrc = getLoc('*', Pos(4, 8))
+            inst.dict.entries[1].ident.src = inst.dict.starSrc
+            inst.dict.entries[1].expr.src = inst.dict.starSrc
+            expectAstExpr('$R {A, *}', inst)
+
+            dict.src = getLoc('{*}', Pos(4, 4))
+            inst.dict.star = true
+            inst.dict.starSrc = getLoc('*', Pos(4, 5))
+            inst.dict.entries[0].ident.src = inst.dict.starSrc
+            inst.dict.entries[0].expr.src = inst.dict.starSrc
+            inst.dict.entries[1].ident.src = inst.dict.starSrc
+            inst.dict.entries[1].expr.src = inst.dict.starSrc
+            expectAstExpr('$R {*}', inst)
+
         })
     })
 })
