@@ -1,31 +1,31 @@
-import { Ast, IAstAttribute, IAstLiteral, AstLiteralType, IAstParam } from './ast'
+import * as ast from './ast'
 import { DiagnosticPublisher, emptySrcLoc } from './diagnostic'
-import { IAttr, Attr } from './backend/ir'
+import * as ir from './backend/ir'
 
 export interface IAttributeHandler {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean
-    compile(attr: IAstAttribute): IAttr[]
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean
+    compile(attr: ast.IAttr): ir.IAttr[]
 }
 
-function validateParameters(logger: DiagnosticPublisher, attr: IAstAttribute,
-                            message: string, tys: AstLiteralType[]): boolean {
+function validateParams(logger: DiagnosticPublisher, attr: ast.IAttr,
+                            message: string, tys: string[]): boolean {
     let ok = true
-    // No parameters and not enough parameters
-    if (attr.parameters.length < 1 && tys.length > 0 ||
-        attr.parameters.length < tys.length) {
+    // No params and not enough parameters
+    if (attr.params.length < 1 && tys.length > 0 ||
+        attr.params.length < tys.length) {
         logger.error(message, attr.name.src)
         ok = false
     }
     // Check each supplied parameter
-    for (let i = 0; i < attr.parameters.length; i++) {
-        let param = attr.parameters[i]
-        if (!(i < tys.length) || param.value.ast !== Ast.Literal) {
+    for (let i = 0; i < attr.params.length; i++) {
+        let param = attr.params[i]
+        if (!(i < tys.length)) {
             logger.error(message, param.value.src)
             ok = false
             continue
         }
         const lit = param.value
-        if (lit.litType !== tys[i]) {
+        if (lit.tag !== tys[i]) {
             logger.error(message, param.value.src)
             ok = false
         }
@@ -33,137 +33,124 @@ function validateParameters(logger: DiagnosticPublisher, attr: IAstAttribute,
     return ok
 }
 
-function param2value(param: IAstParam): string {
-    const lit = param.value as IAstLiteral
-    return (() => {
-        switch(lit.litType) {
-            case AstLiteralType.Boolean:
-            case AstLiteralType.String:
-            case AstLiteralType.Integer:
-            case AstLiteralType.BitVector:
-            case AstLiteralType.Unit:
-            case AstLiteralType.Real:
-                return lit.value
-        }
-    })()
-}
-
 /* Attributes for Schematic generation */
 const RotateAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         let message = `'@${attr.name.id}' takes one parameter of type Integer\n` +
             ` - allowed values are 0, 90, 180, 270`
 
-        if (!validateParameters(logger, attr, message, [AstLiteralType.Integer])) {
+        if (!validateParams(logger, attr, message, ['integer'])) {
             return false
         }
 
-        const value = ((attr.parameters[0].value) as IAstLiteral).value
-        switch(value) {
-            case '0':
-            case '90':
-            case '180':
-            case '270':
+        const angle = (attr.params[0].value) as ast.IInteger
+        switch(angle.value) {
+            case 0:
+            case 90:
+            case 180:
+            case 270:
                 break
             default:
-                logger.error(message, attr.parameters[0].value.src)
+                logger.error(message, angle.src)
                 return false
         }
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const angle = attr.params[0].value as ast.IInteger
         return [
-            Attr('rotate', param2value(attr.parameters[0]), attr.name.src)
+            ir.Attr('rotate', angle.value.toString(), attr.name.src)
         ]
     }
 }
 
 const LeftAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('side', 'left', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('side', 'left', attr.name.src) ]
     }
 }
 
 const RightAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('side', 'right', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('side', 'right', attr.name.src) ]
     }
 }
 
 const TopAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('side', 'top', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('side', 'top', attr.name.src) ]
     }
 }
 
 const BottomAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('side', 'bottom', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('side', 'bottom', attr.name.src) ]
     }
 }
 
 const GroupAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         const message = `@${attr.name.id} takes one parameter of type String.`
-        return validateParameters(logger, attr, message, [AstLiteralType.String])
+        return validateParams(logger, attr, message, ['string'])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('group', param2value(attr.parameters[0]), attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const group = attr.params[0].value as ast.IString
+        return [ ir.Attr('group', group.value, attr.name.src) ]
     }
 }
 
 const PowerAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('splitnet', '$vcc', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('splitnet', '$vcc', attr.name.src) ]
     }
 }
 
 const GroundAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('splitnet', '$gnd', attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        return [ ir.Attr('splitnet', '$gnd', attr.name.src) ]
     }
 }
 
 /* Attributes for RTL */
 const ClockAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes no parameters.`
-        return validateParameters(logger, attr, message, [])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes no params.`
+        return validateParams(logger, attr, message, [])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
         // TODO
         return []
     }
@@ -171,84 +158,86 @@ const ClockAttribute: IAttributeHandler = {
 
 /* Attributes for BOM generation */
 const BomAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
-        const message = `@${attr.name.id} takes two parameters of type String.`
-        return validateParameters(logger, attr, message,
-                           [AstLiteralType.String, AstLiteralType.String])
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name.id} takes two params of type String.`
+        return validateParams(logger, attr, message,
+                              ['string', 'string'])
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const man = attr.params[0].value as ast.IString
+        const mpn = attr.params[1].value as ast.IString
         return [
-            Attr('man', param2value(attr.parameters[0]),
-                 attr.parameters[0].value.src),
-            Attr('mpn', param2value(attr.parameters[1]),
-                 attr.parameters[1].value.src)
+            ir.Attr('man', man.value, man.src),
+            ir.Attr('mpn', mpn.value, mpn.src)
         ]
     }
 }
 
 /* Attributes for Simulation */
 const ModelAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         // TODO
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
         return []
     }
 }
 
 /* Attributes for PCB generation */
 const SetPadAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         // TODO
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
         return []
     }
 }
 
 /* Attributes for FPGA bitstream generation */
 const FpgaAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         const message = `@${attr.name.id} takes a target triple ARCH-FAMILY-PACKAGE.`
-        if (!validateParameters(logger, attr, message, [AstLiteralType.String])) {
+        if (!validateParams(logger, attr, message, ['string'])) {
             return false
         }
-        let arr = (attr.parameters[0].value as IAstLiteral).value.split('-')
+        const fpga = attr.params[0].value as ast.IString
+        let arr = fpga.value.split('-')
         if (arr.length !== 3) {
-            logger.error(`Invalid target triple.`, attr.parameters[0].value.src)
+            logger.error(`Invalid target triple.`, fpga.src)
             return false
         }
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
-        return [ Attr('fpga', param2value(attr.parameters[0]), attr.name.src) ]
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const fpga = attr.params[0].value as ast.IString
+        return [ ir.Attr('fpga', fpga.value, attr.name.src) ]
     }
 }
 
 const BitstreamAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         // TODO
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
         return []
     }
 }
 
 const SetIoAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: IAstAttribute): boolean {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         // TODO
         return true
     },
 
-    compile(attr: IAstAttribute): IAttr[] {
+    compile(attr: ast.IAttr): ir.IAttr[] {
         return []
     }
 }

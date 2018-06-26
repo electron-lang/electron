@@ -10,11 +10,11 @@ describe('IR Printer', () => {
     })
 
     it('should print references', () => {
-        expect(print(Ref('a', 0, 2))).to.equal('a[0:2]')
+        expect(print(Ref(Ident('a'), 0, 2))).to.equal('a[0:2]')
     })
 
     it('should print concatenations', () => {
-        expect(print(Concat(Ident('a'), Ident('b'), Ident('c'))))
+        expect(print(Concat([Ident('a'), Ident('b'), Ident('c')])))
             .to.equal('(a, b, c)')
     })
 

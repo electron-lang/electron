@@ -1,26 +1,9 @@
 import { lexerInstance, parserInstance } from './parser'
-import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple, IAstDeclStmt,
-         IAstDesign, IAstFQN, IAstIdentifier, IAstImport, IAstLiteral,
-         IAstModule, IAstParam, IAstReference, AstLiteralType,
-         Ast, AstExpr, AstStmt, IAstParamDecl, IAstAttributeStmt, IAstWithStmt,
-         IAstDict, AstDeclType, AstBinaryOp, IAstDictEntry, IAstAnonymousModule,
-         IAstApplyDictStmt } from './ast'
-import { IDiagnostic, ISrcLoc, tokenToSrcLoc,
-         DiagnosticPublisher } from './diagnostic'
+import * as ast from './ast'
+import { IDiagnostic, DiagnosticPublisher,
+         SrcLoc, Pos, ISrcLoc, tokenToSrcLoc } from './diagnostic'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
-
-function parseString(text: string): string {
-    return text.substring(1, text.length - 1)
-}
-
-function parseAttribute(name: string): string {
-    return name.substring(1)
-}
-
-function parseInteger(int: string): number {
-    return parseInt(int)
-}
 
 function throwBug(rule: string): void {
     throw new Error('Programming Error: Parser/Elaborator missmatch ' +
@@ -36,96 +19,73 @@ export class Elaborator extends BaseElectronVisitor {
         this.validateVisitor()
     }
 
-    design(ctx: any): IAstDesign {
-        let imports = []
-        let modules = []
+    design(ctx: any): ast.IDesign {
+        let design = ast.Design()
 
         if (ctx.moduleImport) {
-            imports = ctx.moduleImport.map((ctx: any) => this.visit(ctx))
+            design.imports = ctx.moduleImport.map((ctx: any) => this.visit(ctx))
         }
 
         if (ctx.moduleDeclaration) {
-            modules = ctx.moduleDeclaration.map((ctx: any) => this.visit(ctx))
+            design.modules = ctx.moduleDeclaration.map((ctx: any) => this.visit(ctx))
         }
 
-        return {
-            ast: Ast.Design,
-            imports,
-            modules,
-        }
+        return design
     }
 
-    moduleImport(ctx: any): IAstImport {
-        return {
-            ast: Ast.Import,
-            src: tokenToSrcLoc(ctx.String[0]),
-            identifiers: this.visit(ctx.identifiers),
-            package: parseString(ctx.String[0].image)
-        }
+    moduleImport(ctx: any): ast.IImport {
+        const pkg = ctx.String[0].image
+        return ast.Import(this.visit(ctx.identifiers),
+                          pkg.substring(1, pkg.length - 1),
+                          tokenToSrcLoc(ctx.String[0]))
     }
 
-    moduleDeclaration(ctx: any): IAstModule {
-        let mod: IAstModule = {
-            ast: Ast.Module,
-            attributes: [],
-            exported: !!ctx.Export,
-            declaration: !!ctx.Declare,
-            identifier: this.visit(ctx.identifier),
-            parameters: [],
-            statements: [],
-        }
+    moduleDeclaration(ctx: any): ast.IModule {
+        let ident = this.visit(ctx.identifier[0])
+        let mod = ast.Module(ident.id, [], ident.src)
+
+        mod.exported = !!ctx.Export
+        mod.declaration = !!ctx.Declare
+
         if (ctx.attribute) {
-            mod.attributes = ctx.attribute.map((ctx: any) => this.visit(ctx))
+            mod.attrs = ctx.attribute.map((ctx: any) => this.visit(ctx))
         }
 
         if (ctx.parameterDeclarationList) {
-            mod.parameters = this.visit(ctx.parameterDeclarationList[0])
+            mod.params = this.visit(ctx.parameterDeclarationList[0])
         }
 
         if (ctx.statements) {
-            mod.statements = this.visit(ctx.statements[0])
+            ast.AddStmts(mod, this.visit(ctx.statements[0]))
         }
 
         return mod
     }
 
-    identifier(ctx: any): IAstIdentifier {
-        return {
-            ast: Ast.Identifier,
-            src: tokenToSrcLoc(ctx.Identifier[0]),
-            id: ctx.Identifier[0].image,
-        }
+    identifier(ctx: any): ast.IIdent {
+        return ast.Ident(ctx.Identifier[0].image, tokenToSrcLoc(ctx.Identifier[0]))
     }
 
-    identifiers(ctx: any): IAstIdentifier[] {
+    identifiers(ctx: any): ast.IIdent[] {
         return ctx.identifier.map((ctx: any) => this.visit(ctx))
     }
 
-    fullyQualifiedName(ctx: any): IAstFQN {
-        return {
-            ast: Ast.FQN,
-            fqn: ctx.identifier.map((ctx: any) => this.visit(ctx))
-        }
+    fullyQualifiedName(ctx: any): ast.IFQN {
+        return ast.FQN(ctx.identifier.map((ctx: any) => this.visit(ctx)))
     }
 
-    fullyQualifiedNames(ctx: any): IAstFQN[] {
+    fullyQualifiedNames(ctx: any): ast.IFQN[] {
         return ctx.fullyQualifiedName.map((ctx: any) => this.visit(ctx))
     }
 
     // Attributes
-    attribute(ctx: any): IAstAttribute {
-        return {
-            ast: Ast.Attribute,
-            name: {
-                ast: Ast.Identifier,
-                id: parseAttribute(ctx.Attribute[0].image),
-                src: tokenToSrcLoc(ctx.Attribute[0]),
-            },
-            parameters: this.visit(ctx.parameterList) || [],
-        }
+    attribute(ctx: any): ast.IAttr {
+        const name = ast.Ident(ctx.Attribute[0].image.substring(1),
+                               tokenToSrcLoc(ctx.Attribute[0]))
+        return ast.Attr(name, this.visit(ctx.parameterList) || [])
     }
 
-    parameterDeclarationList(ctx: any): IAstParamDecl[] {
+    parameterDeclarationList(ctx: any): ast.IParamDecl[] {
         this.paramCounter = 0
         if (ctx.parameterDeclaration) {
             return ctx.parameterDeclaration.map((ctx: any) => this.visit(ctx))
@@ -133,26 +93,15 @@ export class Elaborator extends BaseElectronVisitor {
         return []
     }
 
-    parameterDeclaration(ctx: any): IAstParamDecl {
+    parameterDeclaration(ctx: any): ast.IParamDecl {
         if (ctx.identifier.length > 1) {
-            return {
-                ast: Ast.ParamDecl,
-                identifier: this.visit(ctx.identifier[0]),
-                ty: this.visit(ctx.identifier[1]),
-            }
+            return ast.ParamDecl(this.visit(ctx.identifier[0]),
+                                 this.visit(ctx.identifier[1]))
         }
-        this.paramCounter += 1
-        return {
-            ast: Ast.ParamDecl,
-            identifier: {
-                ast: Ast.Identifier,
-                id: '__' + this.paramCounter.toString(),
-            },
-            ty: this.visit(ctx.identifier[0]),
-        }
+        return ast.ParamDecl(this.paramCounter++, this.visit(ctx.identifier[0]))
     }
 
-    parameterList(ctx: any): IAstParam[] {
+    parameterList(ctx: any): ast.IParam[] {
         this.paramCounter = 0
         if (ctx.parameter) {
             return ctx.parameter.map((ctx: any) => this.visit(ctx))
@@ -160,27 +109,17 @@ export class Elaborator extends BaseElectronVisitor {
         return []
     }
 
-    parameter(ctx: any): IAstParam {
+    parameter(ctx: any): ast.IParam {
         if (ctx.expression.length > 1) {
-            return {
-                ast: Ast.Param,
-                identifier: this.visit(ctx.expression[0]),
-                value: this.visit(ctx.expression[1]),
-            }
+            return ast.Param(this.visit(ctx.expression[0]),
+                             this.visit(ctx.expression[1]))
         }
-        this.paramCounter += 1
-        return {
-            ast: Ast.Param,
-            identifier: {
-                ast: Ast.Identifier,
-                id: '__' + this.paramCounter.toString(),
-            },
-            value: this.visit(ctx.expression[0]),
-        }
+        return ast.Param(this.paramCounter++,
+                         this.visit(ctx.expression[0]))
     }
 
     // Statements
-    statement(ctx: any): AstStmt[] {
+    statement(ctx: any): ast.Stmt[] {
         if (ctx.attributeStatement) {
             return [this.visit(ctx.attributeStatement[0])]
         }
@@ -208,21 +147,17 @@ export class Elaborator extends BaseElectronVisitor {
                         })
                 }
 
-                let assigns: IAstAssignStmt[] = []
+                let assigns: ast.IAssign[] = []
                 for (let i = 0; i < Math.min(exprs.length, rhs.length); i++) {
-                    assigns.push({
-                        ast: Ast.Assign,
-                        lhs: exprs[i],
-                        rhs: rhs[i],
-                    })
+                    assigns.push(ast.Assign(exprs[i], rhs[i]))
                 }
                 return assigns
             }
 
             if (ctx.applyDictionaryStatement) {
                 const dict = this.visit(ctx.applyDictionaryStatement[0])
-                return exprs.map((expr: AstExpr) => {
-                    return {ast: Ast.ApplyDict, expr, dict}
+                return exprs.map((expr: ast.Expr) => {
+                    return ast.ApplyDict(expr, dict)
                 })
             }
         }
@@ -230,81 +165,68 @@ export class Elaborator extends BaseElectronVisitor {
         return []
     }
 
-    statements(ctx: any): AstStmt[] {
+    statements(ctx: any): ast.Stmt[] {
         if (ctx.statement) {
             return [].concat.apply([], ctx.statement.map((ctx: any) => this.visit(ctx)))
         }
         return []
     }
 
-    attributeStatement(ctx: any): IAstAttributeStmt {
-        let statements: AstStmt[] = []
-        let fqns: IAstFQN[] = []
+    attributeStatement(ctx: any): ast.ISetAttr {
+        const attrs = ctx.attribute.map((ctx: any) => this.visit(ctx))
+        let setattr = ast.SetAttr(attrs)
         if (ctx.statements) {
-            statements = this.visit(ctx.statements[0])
+            setattr.stmts = this.visit(ctx.statements[0])
         } else if (ctx.declaration) {
-            statements = this.visit(ctx.declaration[0])
+            setattr.stmts = this.visit(ctx.declaration[0])
         } else if (ctx.fullyQualifiedNames) {
-            fqns = this.visit(ctx.fullyQualifiedNames[0])
+            setattr.fqns = this.visit(ctx.fullyQualifiedNames[0])
         }
-        return {
-            ast: Ast.SetAttributes,
-            attributes: ctx.attribute.map((ctx: any) => this.visit(ctx)),
-            statements,
-            fqns,
-        }
+        return setattr
     }
 
-    withStatement(ctx: any): IAstWithStmt {
-        return {
-            ast: Ast.With,
-            scope: this.visit(ctx.fullyQualifiedName[0]),
-            statements: this.visit(ctx.statements[0]),
-        }
+    withStatement(ctx: any): ast.IWith {
+        return ast.With(this.visit(ctx.fullyQualifiedName[0]),
+                        this.visit(ctx.statements[0]))
     }
 
-    assignStatement(ctx: any): AstExpr[] {
+    assignStatement(ctx: any): ast.Expr[] {
         return this.visit(ctx.expressions[0])
     }
 
-    applyDictionaryStatement(ctx: any): IAstDict {
+    applyDictionaryStatement(ctx: any): ast.IDict {
         return this.visit(ctx.dictionary[0])
     }
 
-    declaration(ctx: any): AstStmt[] {
-        let declType = AstDeclType.Net
-        if (ctx.Net) {
-            declType = AstDeclType.Net
-        } else if (ctx.Input) {
-            declType = AstDeclType.Input
-        } else if (ctx.Output) {
-            declType = AstDeclType.Output
-        } else if (ctx.Inout) {
-            declType = AstDeclType.Inout
-        } else if (ctx.Analog) {
-            declType = AstDeclType.Analog
-        } else if (ctx.Cell) {
-            declType = AstDeclType.Cell
-        } else if (ctx.Const) {
-            declType = AstDeclType.Const
-        } else {
-            /* istanbul ignore next */
-            throwBug('declaration')
-        }
-
+    declaration(ctx: any): ast.Stmt[] {
         const width = this.visit(ctx.width)
         const ids = this.visit(ctx.identifiers[0])
-        const decls = ids.map((id: IAstIdentifier) => {
-            return {
-                ast: Ast.Decl,
-                attributes: [],
-                declType,
-                width,
-                identifier: id,
-            }
-        })
 
-        let assigns: IAstAssignStmt[] = []
+        let decls = (() => {
+            if (ctx.Net) {
+                return ids.map((ident: ast.IIdent) => ast.Net(ident, width))
+            } else if (ctx.Cell) {
+                return ids.map((ident: ast.IIdent) => ast.Cell(ident, width))
+            } else if (ctx.Const) {
+                return ids.map((ident: ast.IIdent) => ast.Const(ident))
+            } else {
+                const ty = (() => {
+                    if (ctx.Input) {
+                        return 'input'
+                    } else if (ctx.Output) {
+                        return 'output'
+                    } else if (ctx.Inout) {
+                        return 'inout'
+                    } else {
+                        return 'analog'
+                    }
+                })()
+                return ids.map((ident: ast.IIdent) => ast.Port(ident, ty, width))
+            }
+        })()
+
+
+        let assigns: ast.IAssign[] = []
         if (ctx.expressions) {
             const exprs = this.visit(ctx.expressions[0])
             if (ids.length != exprs.length) {
@@ -317,30 +239,22 @@ export class Elaborator extends BaseElectronVisitor {
             }
 
             for (let i = 0; i < Math.min(ids.length, exprs.length); i++) {
-                assigns.push({
-                    ast: Ast.Assign,
-                    lhs: ids[i],
-                    rhs: exprs[i],
-                })
+                assigns.push(ast.Assign(ids[i], exprs[i]))
             }
         }
 
         return decls.concat(assigns)
     }
 
-    width(ctx: any): AstExpr {
+    width(ctx: any): ast.Expr {
         if (ctx.expression) {
             return this.visit(ctx.expression[0])
         }
-        return {
-            ast: Ast.Literal,
-            value: '1',
-            litType: AstLiteralType.Integer,
-        }
+        return ast.Integer(1)
     }
 
     // Expressions
-    expression(ctx: any): AstExpr {
+    expression(ctx: any): ast.Expr {
         let expr = null
 
         if (ctx.literal) {
@@ -354,18 +268,13 @@ export class Elaborator extends BaseElectronVisitor {
 
             if (ctx.referenceExpression) {
                 expr = this.visit(ctx.referenceExpression[0])
-                expr.identifier = ident
+                expr.ident = ident
                 expr.src.startLine = ident.src.startLine
                 expr.src.startColumn = ident.src.startColumn
             } else if (ctx.moduleInstantiation) {
                 expr = this.visit(ctx.moduleInstantiation[0])
-                expr.module = ident
-                expr.src = {
-                    startLine: ident.src.startLine,
-                    startColumn: ident.src.startColumn,
-                    endLine: (expr.dict.src || ident.src).endLine,
-                    endColumn: (expr.dict.src || ident.src).endColumn,
-                }
+                expr.module = ident.id
+                expr.src = ident.src
             } else {
                 expr = ident
             }
@@ -383,193 +292,146 @@ export class Elaborator extends BaseElectronVisitor {
         }
     }
 
-    literal(ctx: any): IAstLiteral {
+    literal(ctx: any): ast.Literal {
         if (ctx.Integer) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.Integer[0].image,
-                litType: AstLiteralType.Integer,
-                src: tokenToSrcLoc(ctx.Integer[0]),
-            }
+            return ast.Integer(parseInt(ctx.Integer[0].image),
+                               tokenToSrcLoc(ctx.Integer[0]))
         }
 
         if (ctx.BitVector) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.BitVector[0].image,
-                litType: AstLiteralType.BitVector,
-                src: tokenToSrcLoc(ctx.BitVector[0]),
+            const bv = ctx.BitVector[0].image.split("'")
+            const size = parseInt(bv[0])
+            let bits: ast.Bit[] = []
+            for (let i = 0; i < bv[1].length; i++) {
+                bits.push(bv[1][i])
             }
+            const src = tokenToSrcLoc(ctx.BitVector[0])
+            return ast.BitVector(bits, src)
         }
 
         if (ctx.Unit) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.Unit[0].image,
-                litType: AstLiteralType.Unit,
-                src: tokenToSrcLoc(ctx.Unit[0]),
-            }
+            const regex = /([0-9\.]*)([GMKkmunpf]?)([a-zA-Z]*)/
+            const unit = ctx.Unit[0].image.match(regex)
+            const src = tokenToSrcLoc(ctx.Unit[0])
+            const exp = ((prefix) => {
+                switch (prefix) {
+                    case 'G': return 9
+                    case 'M': return 6
+                    case 'k':
+                    case 'K': return 3
+                    case 'm': return -3
+                    case 'u': return -6
+                    case 'n': return -9
+                    case 'p': return -12
+                    case 'f': return -15
+                    default: return 0
+                }
+            })(unit[2])
+            return ast.Unit(parseFloat(unit[1]), exp, unit[3], src)
         }
 
         if (ctx.String) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.String[0].image,
-                litType: AstLiteralType.String,
-                src: tokenToSrcLoc(ctx.String[0]),
-            }
+            const val = ctx.String[0].image
+            const src = tokenToSrcLoc(ctx.String[0])
+            return ast.String(val.substring(1, val.length - 1), src)
         }
 
         if (ctx.Real) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.Real[0].image,
-                litType: AstLiteralType.Real,
-                src: tokenToSrcLoc(ctx.Real[0]),
-            }
+            return ast.Real(parseFloat(ctx.Real[0].image),
+                            tokenToSrcLoc(ctx.Real[0]))
         }
 
         if (ctx.True) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.True[0].image,
-                litType: AstLiteralType.Boolean,
-                src: tokenToSrcLoc(ctx.True[0]),
-            }
+            return ast.Bool(true, tokenToSrcLoc(ctx.True[0]))
         }
 
         if (ctx.False) {
-            return {
-                ast: Ast.Literal,
-                value: ctx.False[0].image,
-                litType: AstLiteralType.Boolean,
-                src: tokenToSrcLoc(ctx.False[0]),
-            }
+            return ast.Bool(false, tokenToSrcLoc(ctx.False[0]))
         }
 
-        /* istanbul ignore next */
         throwBug('literal')
-        /* istanbul ignore next */
-        return { ast: Ast.Literal, value: '', litType: AstLiteralType.Boolean }
+        return ast.Bool(true)
     }
 
-    expressions(ctx: any): AstExpr[] {
+    expressions(ctx: any): ast.Expr[] {
         return ctx.expression.map((ctx: any) => {
             return this.visit(ctx)
         })
     }
 
-    binaryOp(ctx: any): AstExpr {
-        let op = AstBinaryOp.Add
-        if (ctx.Plus) {
-            op = AstBinaryOp.Add
-        } else if (ctx.Minus) {
-            op = AstBinaryOp.Sub
-        } else if (ctx.Star) {
-            op = AstBinaryOp.Mul
-        } else if (ctx.ShiftLeft) {
-            op = AstBinaryOp.Shl
-        } else if (ctx.ShiftRight) {
-            op = AstBinaryOp.Shr
-        } else {
-            /* istanbul ignore next */
-            throwBug('binaryOp')
-        }
-
-        return {
-            ast: Ast.BinOp,
-            op,
-            lhs: { ast: Ast.Identifier, id: '' },
-            rhs: this.visit(ctx.expression[0])
-        }
+    binaryOp(ctx: any): ast.IBinOp {
+        const op = (() => {
+          if (ctx.Plus) {
+              return '+'
+          } else if (ctx.Minus) {
+              return '-'
+          } else if (ctx.Star) {
+              return '*'
+          } else if (ctx.ShiftLeft) {
+              return '<<'
+          } else if (ctx.ShiftRight) {
+              return '>>'
+          } else {
+              throwBug('binaryOp')
+              return '+'
+          }
+        })()
+        return ast.BinOp(op, ast.Ident(''), this.visit(ctx.expression[0]))
     }
 
-    tupleExpression(ctx: any): IAstTuple {
-        return {
-            ast: Ast.Tuple,
-            expressions: this.visit(ctx.expressions[0]),
-            src: {
-                startLine: ctx.OpenRound[0].startLine,
-                startColumn: ctx.OpenRound[0].startColumn,
-                endLine: ctx.CloseRound[0].endLine,
-                endColumn: ctx.CloseRound[0].endColumn,
-            }
-        }
+    tupleExpression(ctx: any): ast.ITuple {
+        return ast.Tuple(this.visit(ctx.expressions[0]),
+                         SrcLoc(Pos(ctx.OpenRound[0].startLine,
+                                    ctx.OpenRound[0].startColumn),
+                                Pos(ctx.CloseRound[0].endLine,
+                                    ctx.CloseRound[0].endColumn)))
     }
 
-    dictionary(ctx: any): IAstDict {
-        let entries: IAstDictEntry[] = []
+    dictionary(ctx: any): ast.IDict {
+        let dict = ast.Dict(!!ctx.Star,
+                            SrcLoc(Pos(ctx.OpenCurly[0].startLine,
+                                       ctx.OpenCurly[0].startColumn),
+                                   Pos(ctx.CloseCurly[0].endLine,
+                                       ctx.CloseCurly[0].endColumn)))
         if (ctx.dictionaryEntry) {
-            entries = ctx.dictionaryEntry.map((ctx: any) => this.visit(ctx))
+            dict.entries = ctx.dictionaryEntry.map((ctx: any) => this.visit(ctx))
         }
 
-        return {
-            ast: Ast.Dict,
-            entries,
-            star: !!ctx.Star,
-            src: {
-                startLine: ctx.OpenCurly[0].startLine,
-                startColumn: ctx.OpenCurly[0].startColumn,
-                endLine: ctx.CloseCurly[0].endLine,
-                endColumn: ctx.CloseCurly[0].endColumn,
-            }
-        }
+        return dict
     }
 
-    dictionaryEntry(ctx: any): IAstDictEntry {
-        const identifier = this.visit(ctx.identifier[0])
+    dictionaryEntry(ctx: any): ast.IDictEntry {
+        const ident = this.visit(ctx.identifier[0])
 
         if (ctx.expression) {
-            return {
-                ast: Ast.DictEntry,
-                identifier,
-                expr: this.visit(ctx.expression[0])
-            }
+            return ast.DictEntry(ident, this.visit(ctx.expression[0]))
         } else {
-            return {
-                ast: Ast.DictEntry,
-                identifier,
-                expr: identifier
-            }
+            return ast.DictEntry(ident, ident)
         }
     }
 
-    referenceExpression(ctx: any): IAstReference {
+    referenceExpression(ctx: any): ast.IRef {
         const from_ = this.visit(ctx.expression[0])
         let to = from_
         if (ctx.expression[1]) {
             to = this.visit(ctx.expression[1])
         }
 
-        return {
-            ast: Ast.Ref,
-            identifier: { ast: Ast.Identifier, id: '' },
-            from: from_,
-            to,
-            src: {
-                startLine: 0,
-                startColumn: 0,
-                endLine: ctx.CloseSquare[0].endLine,
-                endColumn: ctx.CloseSquare[0].endColumn,
-            }
-        }
+        return ast.Ref(ast.Ident(''), from_, to,
+                       SrcLoc(Pos(ctx.OpenSquare[0].startLine,
+                                  ctx.OpenSquare[0].endColumn),
+                              Pos(ctx.CloseSquare[0].endLine,
+                                  ctx.CloseSquare[0].endColumn)))
     }
 
-    anonymousModule(ctx: any): IAstAnonymousModule {
-        return {
-            ast: Ast.AnonymousMod,
-            statements: this.visit(ctx.statements[0])
-        }
+    anonymousModule(ctx: any): ast.IAnonMod {
+        return ast.AnonMod(this.visit(ctx.statements[0]))
     }
 
-    moduleInstantiation(ctx: any): IAstModInst {
-        let inst: IAstModInst = {
-            ast: Ast.ModInst,
-            module: { ast: Ast.Identifier, id: '' },
-            parameters: this.visit(ctx.parameterList[0]),
-            width: this.visit(ctx.width),
-            dict: { ast: Ast.Dict, entries: [], star: false }
-        }
+    moduleInstantiation(ctx: any): ast.IModInst {
+        let inst = ast.ModInst('', this.visit(ctx.parameterList[0]),
+                               ast.Dict(),
+                               this.visit(ctx.width))
 
         if (ctx.dictionary) {
             inst.dict = this.visit(ctx.dictionary[0])

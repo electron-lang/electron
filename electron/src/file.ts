@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 import { IToken } from 'chevrotain'
-import { Ast, IAstDesign, IAstModule } from './ast'
+import * as ast from './ast'
 import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
 import { lexerInstance, parserInstance } from './parser'
 import { Elaborator } from './elaborator'
@@ -13,13 +13,13 @@ import { printAST } from './printer'
 
 export class File {
     private logger: DiagnosticPublisher
-    private declarations: IAstModule[] = []
+    private declarations: ast.IModule[] = []
     private path: string
     private text: string
     private lines: string[]
     private tokens: IToken[] | undefined
     private cst: any
-    private ast: IAstDesign | undefined
+    private ast: ast.IDesign | undefined
     private ir: IModule[] | undefined
 
     constructor(dc: IDiagnosticConsumer, path: string, text: string | null) {
@@ -73,7 +73,7 @@ export class File {
         return this
     }
 
-    extractDeclarations(): IAstModule[] {
+    extractDeclarations(): ast.IModule[] {
         this.lex().parse().elaborate()
         if (!this.ast) return this.declarations
         this.declarations = extractDeclarations(this.ast)
@@ -110,11 +110,7 @@ export class File {
         pl.pop()
         pl.push('d.lec')
         const dpath = pl.join('.')
-        writeFileSync(dpath, printAST({
-            ast: Ast.Design,
-            imports: [],
-            modules: this.declarations
-        }))
+        writeFileSync(dpath, this.declarations.map(printAST).join('\n'))
         return this
     }
 }

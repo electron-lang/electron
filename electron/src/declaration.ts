@@ -1,52 +1,36 @@
-import { Ast, IAstDesign, IAstModule, IAstDeclStmt, AstDeclType, AstStmt } from './ast'
+import * as ast from './ast'
 import { DiagnosticPublisher } from './diagnostic'
 
-export function extractDeclarations(ast: IAstDesign): IAstModule[] {
-    let declarations: IAstModule[] = []
-    for (let mod of ast.modules) {
+export function extractDeclarations(design: ast.IDesign): ast.IModule[] {
+    let dmods: ast.IModule[] = []
+    for (let mod of design.modules) {
         if (!mod.exported) {
             continue
         }
-        let dmod: IAstModule = {
-            ast: Ast.Module,
-            attributes: mod.attributes,
-            exported: true,
-            declaration: true,
-            identifier: mod.identifier,
-            parameters: mod.parameters,
-            statements: [],
+        let dmod = ast.Module(mod.name)
+        dmod.attrs = mod.attrs
+        dmod.exported = true
+        dmod.declaration = true
+        dmod.params = mod.params
+        dmod.ports = mod.ports
+
+        for (let setattr of mod.setAttrs) {
+            resolveSetAttr(setattr)
+            ast.AddStmts(dmod, setattr.stmts)
         }
-        dmod.statements = getDeclarations(mod.statements)
-        declarations.push(dmod)
+
+        dmods.push(dmod)
     }
-    const dast: IAstDesign = {
-        ast: Ast.Design,
-        imports: [],
-        modules: declarations
-    }
-    return declarations
+    return dmods
 }
 
-function getDeclarations(stmts: AstStmt[]): IAstDeclStmt[] {
-    let decls: IAstDeclStmt[] = []
-    for (let stmt of stmts) {
-        if (stmt.ast === Ast.Decl) {
-            let decl = stmt as IAstDeclStmt
-            if (decl.declType === AstDeclType.Analog ||
-                decl.declType === AstDeclType.Input ||
-                decl.declType === AstDeclType.Output ||
-                decl.declType === AstDeclType.Inout) {
-                decls.push(decl)
-            }
-        } else if (stmt.ast === Ast.SetAttributes) {
-            let attrs = stmt.attributes
-            const ndecls = getDeclarations(stmt.statements)
-                .map((decl: IAstDeclStmt) => {
-                    decl.attributes = decl.attributes.concat(attrs)
-                    return decl
-                })
-            decls = decls.concat(ndecls)
+function resolveSetAttr(setattr: ast.ISetAttr) {
+    for (let stmt of setattr.stmts) {
+        switch(stmt.tag) {
+            case 'port':
+            case 'net':
+            case 'cell':
+                stmt.attrs = stmt.attrs.concat(setattr.attrs)
         }
     }
-    return decls
 }

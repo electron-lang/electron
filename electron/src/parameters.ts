@@ -1,86 +1,79 @@
-import { IAstLiteral, AstLiteralType } from './ast'
+import * as ast from './ast'
 import { IDiagnostic } from './diagnostic'
 
 export interface ITypeHandler {
-    isValid(value: IAstLiteral): boolean
+    isValid(value: ast.Literal): boolean
 }
 
 const IntegerHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Integer
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'integer'
     }
 }
 
 const StringHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.String
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'string'
     }
 }
 
 const RealHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Real
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'real'
     }
 }
 
 const BitVectorHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.BitVector
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'bv'
     }
 }
 
 const BooleanHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Boolean
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'bool'
     }
 }
 
 const OhmHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit in ['', 'ohm', 'Ohm']
     }
 }
 
 const FaradHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?F$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'F'
     }
 }
 
 const HenryHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?H$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'H'
     }
 }
 
 const VoltHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?V$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'V'
     }
 }
 
 const AmpereHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?A$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'A'
     }
 }
 
 const WattHandler: ITypeHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?W$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'W'
     }
 }
 
 const HerzHandler: ITypeHandler = {
-    isValid(value: IAstLiteral): boolean {
-        return value.litType === AstLiteralType.Unit &&
-            /[0-9][GMKkmunpf]?Hz$/.test(value.value)
+    isValid(value: ast.Literal): boolean {
+        return value.tag === 'unit' && value.unit === 'Hz'
     }
 }
 

@@ -1,49 +1,85 @@
 import { IDoc, nest, enclose, dquotes, braces, brackets, parens,
          intersperse, line, group, indent, render } from 'prettier-printer'
 export { render, IDoc } from 'prettier-printer'
-import { IAstAssignStmt, IAstAttribute, IAstModInst, IAstTuple,
-         IAstDeclStmt, IAstDesign, IAstFQN, IAstIdentifier,
-         IAstImport, IAstLiteral, IAstModule, IAstParam, IAstReference,
-         AstDeclType, AstLiteralType, AstExpr, AstStmt, IAstDict,
-         IAstDictEntry, IAstParamDecl } from './ast'
+import * as ast from './ast'
 
 const tabWidth = 2
 
-export function printAST(design: IAstDesign): string {
-    return render(80, emitDesign(design))
+export function printAST(a: ast.Ast): string {
+    return render(80, emit(a))
 }
 
-export function emitDesign(design: IAstDesign): IDoc {
+function emit(a: ast.Ast): IDoc {
+    return ast.matchAST({
+        Design: emitDesign,
+        Import: emitImport,
+        Module: emitModule,
+        FQN: emitFQN,
+        Attr: emitAttr,
+        ParamDecl: emitParamDecl,
+        Param: emitParam,
+        SetAttr: emitSetAttr,
+        Const: emitConst,
+        Net: emitNet,
+        Port: emitPort,
+        Cell: emitCell,
+        With: emitWith,
+        Assign: emitAssign,
+        ApplyDict: emitApplyDict,
+        Tuple: emitTuple,
+        AnonMod: emitAnonMod,
+        Ident: emitIdent,
+        Ref: emitRef,
+        ModInst: emitModInst,
+        BinOp: emitBinOp,
+        Integer: emitInteger,
+        String: emitString,
+        BitVector: emitBitVector,
+        Unit: emitUnit,
+        Real: emitReal,
+        Bool: emitBool,
+    })(a)
+}
+
+function emitDesign(design: ast.IDesign): IDoc {
     return [
         design.imports.map(emitImport),
         design.modules.map(emitModule)
     ]
 }
 
-export function emitImport(imp: IAstImport): IDoc {
+function emitImport(imp: ast.IImport): IDoc {
     return [
         'import ',
-        emitIdentifiers(imp.identifiers),
+        emitIdents(imp.ids),
         ' from ',
         enclose(dquotes, imp.package),
         line
     ]
 }
 
-export function emitModule(mod: IAstModule): IDoc {
+function emitModule(mod: ast.IModule): IDoc {
     return [
-        emitAttributes(mod.attributes),
+        emitAttrs(mod.attrs),
         mod.exported ? 'export ' : '',
         mod.declaration ? 'declare ' : '',
-        'module ', emitIdentifier(mod.identifier),
-        emitParamDecls(mod.parameters),
+        'module ', mod.name,
+        emitParamDecls(mod.params),
         ' ',
-        emitBody(mod.statements.map(emitStatement)),
+        emitBody([].concat.apply([], [
+            mod.consts.map(emitConst),
+            mod.ports.map(emitPort),
+            mod.nets.map(emitNet),
+            mod.cells.map(emitCell),
+            mod.assigns.map(emitAssign),
+            mod.applyDicts.map(emitApplyDict),
+            mod.withs.map(emitWith)
+        ])),
         line
     ]
 }
 
-export function emitBody(doc: IDoc[]): IDoc {
+function emitBody(doc: IDoc[]): IDoc {
     if (doc.length < 1) {
         return '{}'
     }
@@ -58,123 +94,184 @@ export function emitBody(doc: IDoc[]): IDoc {
     ]
 }
 
-export function emitIdentifiers(ids: IAstIdentifier[]): IDoc {
-    return intersperse(', ', ids.map(emitIdentifier))
+function emitFQNs(fqns: ast.IFQN[]): IDoc {
+    return intersperse(', ', fqns.map(emitFQN))
 }
 
-export function emitIdentifier(id: IAstIdentifier): IDoc {
+function emitFQN(fqn: ast.IFQN): IDoc {
+    return intersperse('.', fqn.ids.map(emitIdent))
+}
+
+function emitIdents(ids: ast.IIdent[]): IDoc {
+    return intersperse(', ', ids.map(emitIdent))
+}
+
+function emitIdent(id: ast.IIdent): IDoc {
     return id.id
 }
 
-export function emitWidth(width: AstExpr): IDoc {
-    if ((width as IAstLiteral).value == '1') {
-        return []
-    }
-    return enclose(brackets, emitExpression(width))
+function emitAttrs(attrs: ast.IAttr[]): IDoc {
+    return [
+        intersperse(line, attrs.map(emitAttr)),
+        attrs.length > 0 ? line : []
+    ]
 }
 
-export function emitLiteral(lit: IAstLiteral): IDoc {
-    return lit.value
+function emitAttr(attr: ast.IAttr): IDoc {
+    return ['@', emitIdent(attr.name),
+            emitParams(attr.params)]
 }
 
-export function emitAttributes(attrs: IAstAttribute[]): IDoc {
-    return attrs.map(emitAttribute)
-}
-
-export function emitAttribute(attr: IAstAttribute): IDoc {
-    return ['@', emitIdentifier(attr.name),
-            emitParameters(attr.parameters), line]
-}
-
-export function emitParameters(params: IAstParam[]): IDoc {
-    return enclose(parens, intersperse(', ', params.map(emitParameter)))
-}
-
-export function emitParameter(param: IAstParam): IDoc {
-    if (param.identifier.id.startsWith('__')) {
-        return [ emitExpression(param.value) ]
-    }
-    return [ emitIdentifier(param.identifier), '=', emitExpression(param.value) ]
-}
-
-export function emitParamDecls(params: IAstParamDecl[]): IDoc {
+function emitParamDecls(params: ast.IParamDecl[]): IDoc {
     if (params.length > 0) {
         return enclose(parens, intersperse(',', params.map(emitParamDecl)))
     }
     return []
 }
 
-export function emitParamDecl(param: IAstParamDecl): IDoc {
-    return [emitIdentifier(param.identifier), ': ', emitIdentifier(param.ty)]
-}
-
-// Statements
-export function emitStatement(stmt: AstStmt): IDoc {
-    if ((stmt as IAstDeclStmt).identifier) {
-        return emitDeclStmt(stmt as IAstDeclStmt)
-    } else if ((stmt as IAstAssignStmt).lhs) {
-        return emitAssignStmt(stmt as IAstAssignStmt)
-    } else {
-        return '' //emitFullyQualifiedName(stmt as IAstFullyQualifiedName)
+function emitParamDecl(param: ast.IParamDecl): IDoc {
+    if (typeof param.name === 'number') {
+        return [emitIdent(param.ty)]
     }
+    return [emitIdent(param.name), ': ', emitIdent(param.ty)]
 }
 
-export function emitDeclStmt(decl: IAstDeclStmt): IDoc {
-
-    return [
-        decl.declType.toString(),
-        emitWidth(decl.width), ' ',
-        emitIdentifier(decl.identifier)
-    ]
+function emitParams(params: ast.IParam[]): IDoc {
+    return enclose(parens, intersperse(', ', params.map(emitParam)))
 }
 
-export function emitAssignStmt(assign: IAstAssignStmt): IDoc {
-    return [emitExpression(assign.lhs), ' = ', emitExpression(assign.rhs)]
-}
-
-export function emitFullyQualifiedName(fqn: IAstFQN): IDoc {
-    return intersperse('.', fqn.fqn.map(emitIdentifier))
-}
-
-// Expressions
-export function emitExpression(expr: AstExpr): IDoc {
-    if ((expr as IAstLiteral).value) {
-        return emitLiteral(expr as IAstLiteral)
-    } else if ((expr as IAstIdentifier).id) {
-        return emitIdentifier(expr as IAstIdentifier)
-    } else if ((expr as IAstReference).identifier) {
-        return emitReference(expr as IAstReference)
-    } else if ((expr as IAstTuple).expressions) {
-        return emitConcat(expr as IAstTuple)
-    } else {
-        return emitCell(expr as IAstModInst)
+function emitParam(param: ast.IParam): IDoc {
+    if (typeof param.name === 'number') {
+        return [emit(param.value)]
     }
+    return [ emitIdent(param.name), '=', emit(param.value) ]
 }
 
-export function emitReference(ref: IAstReference): IDoc {
-    let from_ = emitExpression(ref['from'])
-    let to = emitExpression(ref['to'])
+function emitSetAttr(setattr: ast.ISetAttr): IDoc {
+    const body = [].concat.apply([], [setattr.stmts.map(emit),
+                                      emitFQNs(setattr.fqns)])
+    if (body.length > 1) {
+        return [
+            emitAttrs(setattr.attrs)[0], ' ',
+            emitBody(body)
+        ]
+    }
+    return [ emitAttrs(setattr.attrs), body ]
+}
+
+function emitWidth(width: ast.Expr): IDoc {
+    if (width.tag === 'integer' && width.value === 1) {
+        return []
+    }
+    return enclose(brackets, emit(width))
+}
+
+function emitConst(c: ast.IConst): IDoc {
+    return [ 'const ', emitIdent(c.ident) ]
+}
+
+function emitNet(n: ast.INet): IDoc {
+    return [ emitAttrs(n.attrs), 'net', emitWidth(n.width), ' ',
+             emitIdent(n.ident) ]
+}
+
+function emitPort(p: ast.IPort): IDoc {
+    return [ emitAttrs(p.attrs), p.ty, emitWidth(p.width), ' ',
+             emitIdent(p.ident) ]
+}
+
+function emitCell(c: ast.ICell): IDoc {
+    return [ emitAttrs(c.attrs), 'cell', emitWidth(c.width), ' ',
+             emitIdent(c.ident) ]
+}
+
+function emitWith(w: ast.IWith): IDoc {
+    return [ 'with ', emitFQN(w.scope), emitBody(w.setattrs.map(emitSetAttr)) ]
+}
+
+function emitAssign(assign: ast.IAssign): IDoc {
+    return [ emit(assign.lhs), ' = ', emit(assign.rhs) ]
+}
+
+function emitApplyDict(apply: ast.IApplyDict): IDoc {
+    return [ emit(apply.expr), ' ', emitDict(apply.dict) ]
+}
+
+function emitTuple(tuple: ast.ITuple): IDoc {
+    return enclose(parens, intersperse(', ', tuple.exprs.map(emit)))
+}
+
+function emitAnonMod(amod: ast.IAnonMod): IDoc {
+    return [ 'module', emitBody([
+        amod.ports.map(emitPort),
+        amod.setattrs.map(emitSetAttr),
+        amod.assigns.map(emitAssign)
+    ])]
+}
+
+function emitRef(ref: ast.IRef): IDoc {
+    let from_ = emit(ref['from'])
+    let to = emit(ref['to'])
     const doc = from_ === to ? [ from_ ] : [from_, ':', to]
-    return [emitIdentifier(ref.identifier), enclose(brackets, doc)]
+    return [emitIdent(ref.ident), enclose(brackets, doc)]
 }
 
-export function emitConcat(concat: IAstTuple): IDoc {
-    return enclose(parens, intersperse(', ', concat.expressions.map(emitExpression)))
-}
-
-export function emitDictEntry(entry: IAstDictEntry): IDoc {
-    return [emitIdentifier(entry.identifier), '=', emitExpression(entry.expr)]
-}
-
-export function emitDict(dict: IAstDict): IDoc {
-    return enclose(braces, intersperse(', ', dict.entries.map(emitDictEntry)))
-}
-
-export function emitCell(cell: IAstModInst): IDoc {
+function emitModInst(inst: ast.IModInst): IDoc {
     return [
-        emitIdentifier(cell.module),
-        emitParameters(cell.parameters),
-        emitWidth(cell.width), ' ',
-        emitDict(cell.dict)
+        inst.module,
+        emitParams(inst.params),
+        emitWidth(inst.width),
+        ' ', emitDict(inst.dict)
     ]
+}
+
+function emitBinOp(bo: ast.IBinOp): IDoc {
+    return [ emit(bo.lhs), bo.op, emit(bo.rhs) ]
+}
+
+function emitInteger(int: ast.IInteger): IDoc {
+    return int.value.toString()
+}
+
+function emitString(str: ast.IString): IDoc {
+    return enclose(dquotes, str.value)
+}
+
+function emitBitVector(bv: ast.IBitVector): IDoc {
+    return [bv.value.length.toString(), "'", bv.value]
+}
+
+function emitUnit(u: ast.IUnit): IDoc {
+    const exp: {[k: string]: string} = {
+        '9': 'G',
+        '6': 'M',
+        '3': 'K',
+        '0': '',
+        '-3': 'm',
+        '-6': 'u',
+        '-9': 'n',
+        '-12': 'p',
+        '-15': 'f',
+    }
+    return [ u.value.toString(), exp[u.exp.toString()], u.unit ]
+}
+
+function emitReal(r: ast.IReal): IDoc {
+    return r.value.toString()
+}
+
+function emitBool(b: ast.IBool): IDoc {
+    return b.toString()
+}
+
+function emitDictEntry(entry: ast.IDictEntry): IDoc {
+    return [emitIdent(entry.ident), '=', emit(entry.expr)]
+}
+
+function emitDict(dict: ast.IDict): IDoc {
+    let entries = dict.entries.map(emitDictEntry)
+    if (dict.star) {
+        entries.push('*')
+    }
+    return enclose(braces, intersperse(', ', entries))
 }

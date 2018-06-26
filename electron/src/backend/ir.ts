@@ -78,7 +78,7 @@ export interface IAttr {
     src: ISrcLoc
 }
 
-export function Attr(name: string, value: string, src?: ISrcLoc | undefined): IAttr {
+export function Attr(name: string, value: string, src?: ISrcLoc): IAttr {
     return {
         tag: 'attr',
         name,
@@ -94,7 +94,7 @@ export interface IParam {
     src: ISrcLoc
 }
 
-export function Param(name: string, value: any, src?: ISrcLoc | undefined): IParam {
+export function Param(name: string, value: any, src?: ISrcLoc): IParam {
     return {
         tag: 'param',
         name,
@@ -113,7 +113,7 @@ export interface ICell {
     src: ISrcLoc
 }
 
-export function Cell(name: string, modName: string, src?: ISrcLoc | undefined): ICell {
+export function Cell(name: string, modName: string, src?: ISrcLoc): ICell {
     return {
         tag: 'cell',
         name,
@@ -137,7 +137,7 @@ export interface IPort {
 export type PortType = 'input' | 'output' | 'inout' | 'analog'
 
 export function Port(name: string, ty: PortType, width: number,
-                     src?: ISrcLoc | undefined): IPort {
+                     src?: ISrcLoc): IPort {
     return {
         tag: 'port',
         attrs: [],
@@ -156,7 +156,7 @@ export interface INet {
     src: ISrcLoc,
 }
 
-export function Net(name: string, width: number, src?: ISrcLoc | undefined): INet {
+export function Net(name: string, width: number, src?: ISrcLoc): INet {
     return {
         tag: 'net',
         attrs: [],
@@ -193,7 +193,7 @@ export interface IBitVec {
 
 export type Bit = '0' | '1' | 'x' | 'z'
 
-export function BitVec(bits: Bit[], src?: ISrcLoc | undefined): IBitVec {
+export function BitVec(bits: Bit[], src?: ISrcLoc): IBitVec {
     return {
         tag: 'bitvec',
         bits,
@@ -207,7 +207,7 @@ export interface IConcat {
     src: ISrcLoc
 }
 
-export function Concat(...exprs: Expr[]): IConcat {
+export function Concat(exprs: Expr[]): IConcat {
     return {
         tag: 'concat',
         exprs,
@@ -223,10 +223,10 @@ export interface IRef {
     src: ISrcLoc
 }
 
-export function Ref(id: string, from: number, to: number): IRef {
+export function Ref(id: IIdent, from: number, to: number): IRef {
     return {
         tag: 'ref',
-        ident: Ident(id),
+        ident: id,
         from,
         to,
         src: emptySrcLoc,

@@ -1,5 +1,3 @@
-import { IAstIdentifier } from './ast'
-import { IModule, IPort, INet, IParam } from './backend/ir'
 import { ISrcLoc, emptySrcLoc, DiagnosticPublisher,
          IDiagnostic } from './diagnostic'
 
