@@ -27,33 +27,35 @@ module HalfBridge {
     @bottom analog vss
 
     @model(PowerMosfetModel)
-    cell[2] drivers = (
-        $M() {G=in_inv, D=vdd, S=out},
-        $M() {G=in, D=out, S=vss}
-    )
+    cell[2] drivers
+    drivers[0] = $M() {G=in_inv, D=vdd, S=out}
+    drivers[1] = $M() {G=in, D=out, S=vss}
 }
 
-module PowerMosfetModel {
+module $MosfetModel(Beta: Integer) {}
+
+module PowerMosfetModel(Rb: Ohm, Lb: Henry, Rd: Ohm, Ld: Henry,
+                        Rs: Ohm, Ls: Henry) {
     analog G, D, S
 
     // Gate parasitics
     net rb, lb, g
-    cell Rb = $R() {A=G, B=rb}
-    cell Lb = $L() {A=rb, B=g}
+    cell Rb = $R(Rb) {A=G, B=rb}
+    cell Lb = $L(Lb) {A=rb, B=g}
 
     // Drain parasitics
     net rd, ld, d
     @rotate(90)
-    cell Rd = $R() {A=G, B=rd}
+    cell Rd = $R(Rd) {A=G, B=rd}
     @rotate(90)
-    cell Ld = $L() {A=rd, B=d}
+    cell Ld = $L(Ld) {A=rd, B=d}
 
     // Source parastitics
     net rs, ls, s
     @rotate(270)
-    cell Rs = $R() {A=S, B=rs}
+    cell Rs = $R(Rd) {A=S, B=rs}
     @rotate(270)
-    cell Ls = $R() {A=rs, B=s}
+    cell Ls = $R(Ld) {A=rs, B=s}
 
     // Ideal mosfet
     cell mos = $M() {G=g, D=d, S=s}

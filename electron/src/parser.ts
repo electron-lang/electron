@@ -224,7 +224,6 @@ class ElectronParser extends Parser {
                 this.SUBRULE(this.expressions)
                 this.OR1([
                     { ALT: () => this.SUBRULE(this.assignStatement) },
-                    { ALT: () => this.SUBRULE(this.applyDictionaryStatement) },
                 ])
             }}
         ])
@@ -259,10 +258,6 @@ class ElectronParser extends Parser {
     public assignStatement = this.RULE('assignStatement', () => {
         this.CONSUME(Assign)
         this.SUBRULE(this.expressions)
-    })
-
-    public applyDictionaryStatement = this.RULE('applyDictionaryStatement', () => {
-        this.SUBRULE(this.dictionary)
     })
 
     public declaration = this.RULE('declaration', () => {
@@ -382,7 +377,6 @@ class ElectronParser extends Parser {
 
     public moduleInstantiation = this.RULE('moduleInstantiation', () => {
         this.SUBRULE(this.parameterList)
-        this.SUBRULE(this.width)
         this.OPTION1(() => this.SUBRULE(this.dictionary))
     })
 

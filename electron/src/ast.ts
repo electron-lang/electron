@@ -76,7 +76,6 @@ export interface ASTPattern<T> extends ASTExprPattern<T> {
     Cell: (c: ICell) => T
     With: (w: IWith) => T
     Assign: (a: IAssign) => T
-    ApplyDict: (ad: IApplyDict) => T
 }
 
 export function matchAST<T>(p: ASTPattern<T>): (ast: Ast) => T {
@@ -112,8 +111,6 @@ export function matchAST<T>(p: ASTPattern<T>): (ast: Ast) => T {
                 return p.With(ast)
             case 'assign':
                 return p.Assign(ast)
-            case 'apply-dict':
-                return p.ApplyDict(ast)
             default:
                 return matchASTExpr(p)(ast)
         }
@@ -163,7 +160,6 @@ export interface IModule {
     cells: ICell[]
     withs: IWith[]
     assigns: IAssign[]
-    applyDicts: IApplyDict[]
     setAttrs: ISetAttr[]
     src: ISrcLoc
 }
@@ -189,9 +185,6 @@ export function AddStmts(mod: IModule, stmts: Stmt[]) {
             case 'assign':
                 mod.assigns.push(stmt)
                 break
-            case 'apply-dict':
-                mod.applyDicts.push(stmt)
-                break
             case 'set-attr':
                 mod.setAttrs.push(stmt)
                 break
@@ -216,7 +209,6 @@ export function Module(name: string, stmts?: Stmt[], src?: ISrcLoc): IModule {
         cells: [],
         withs: [],
         assigns: [],
-        applyDicts: [],
         setAttrs: [],
     }
 
@@ -294,7 +286,7 @@ export function Param(name: IIdent | number, value: Expr): IParam {
 }
 
 // Statements
-export type Stmt = ISetAttr | IWith | IAssign | IApplyDict
+export type Stmt = ISetAttr | IWith | IAssign
     | IConst | INet | IPort | ICell
 
 export interface ISetAttr {
@@ -338,20 +330,6 @@ export function Assign(lhs: Expr, rhs: Expr): IAssign {
         tag: 'assign',
         lhs,
         rhs,
-    }
-}
-
-export interface IApplyDict {
-    tag: 'apply-dict'
-    expr: Expr
-    dict: IDict
-}
-
-export function ApplyDict(expr: Expr, dict: IDict): IApplyDict {
-    return {
-        tag: 'apply-dict',
-        expr,
-        dict,
     }
 }
 
@@ -638,18 +616,16 @@ export interface IModInst {
     tag: 'mod-inst'
     module: string
     params: IParam[]
-    width: Expr
     dict: IDict
     src: ISrcLoc
 }
 
 export function ModInst(module: string, params: IParam[],
-                        dict: IDict, width?: Expr, src?: ISrcLoc): IModInst {
+                        dict: IDict, src?: ISrcLoc): IModInst {
     return {
         tag: 'mod-inst',
         module,
         params,
-        width: width || Integer(1),
         dict,
         src: src || emptySrcLoc,
     }

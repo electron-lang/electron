@@ -16,12 +16,20 @@ module Usb {
 
     net vbus, dp, dn, gnd
     cell J3 = module {
-        @right
-        @set_pad(1, 3, 2)
-        analog VBUS, 'D+, 'D- = vbus, dp, dn
-        @bottom
-        @set_pad(5, 6)
-        analog GND, Shield = gnd, gnd
+        @right {
+            @set_pad(1)
+            analog VBUS = vbus
+            @set_pad(3)
+            analog 'D+ = dp
+            @set_pad(2)
+            analog 'D- = dn
+        }
+        @bottom {
+            @set_pad(5)
+            analog GND = gnd
+            @set_pad(6)
+            analog Shield = gnd
+        }
     }
 
     @bom("", "")
@@ -48,18 +56,18 @@ module Vreg {
 
     @bom("", "MIC5504-3.3YM5-TR")
     cell U2 = module {
-        @left
-        @set_pad(1)
-        analog VIN='+5V
-        @left
-        @set_pad(3)
-        analog EN='+5V
-        @right
-        @set_pad(4)
-        analog NC='+3V3
-        @right
-        @set_pad(5)
-        analog VOUT='+3V3
+        @left {
+            @set_pad(1)
+            analog VIN='+5V
+            @set_pad(3)
+            analog EN='+5V
+        }
+        @right {
+            @set_pad(4)
+            analog NC='+3V3
+            @set_pad(5)
+            analog VOUT='+3V3
+        }
         @bottom
         @set_pad(2)
         analog GND
@@ -73,12 +81,12 @@ module Vreg {
 
     @bom("", "MIC5365-1.2YC5-TR")
     cell U4 = module {
-        @left
-        @set_pad(1)
-        analog VIN='+5V
-        @left
-        @set_pad(3)
-        analog EN='+5V
+        @left {
+            @set_pad(1)
+            analog VIN='+5V
+            @set_pad(3)
+            analog EN='+5V
+        }
         @right
         @set_pad(5)
         analog VOUT='+1V2
@@ -122,21 +130,18 @@ module Flash {
         @left
         @set_pad(3)
         analog WP
-        @right
-        @set_pad(8)
-        analog VCC = '+3V3
-        @right
-        @set_pad(6)
-        analog SCK
-        @right
-        @set_pad(5)
-        analog SDO
-        @right
-        @set_pad(2)
-        analog SDI
-        @right
-        @set_pad(1)
-        analog SS
+        @right {
+            @set_pad(8)
+            analog VCC = '+3V3
+            @set_pad(6)
+            analog SCK
+            @set_pad(5)
+            analog SDO
+            @set_pad(2)
+            analog SDI
+            @set_pad(1)
+            analog SS
+        }
         @bottom
         @set_pad(4)
         analog GND

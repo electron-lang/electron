@@ -75,7 +75,7 @@ export class Validator {
         irmod.attrs = this.validateAttributes(mod.attrs)
 
         if (mod.declaration) {
-            if (mod.applyDicts.length + mod.assigns.length + mod.cells.length +
+            if (mod.assigns.length + mod.cells.length +
                 mod.consts.length + mod.nets.length + mod.withs.length > 0) {
                 this.logger.error(
                     `Declared module '${mod.name}' contains assignments.`,
@@ -93,10 +93,6 @@ export class Validator {
 
         for (let setattr of mod.setAttrs) {
             this.validateSetAttr(setattr)
-        }
-
-        for (let apply of mod.applyDicts) {
-            this.validateApplyDict(apply)
         }
 
         for (let w of mod.withs) {
@@ -210,11 +206,6 @@ export class Validator {
                 }
             }
         }*/
-    }
-
-    validateApplyDict(applyDict: ast.IApplyDict) {
-        //this.validateExpression(applyDict.expr)
-        // TODO check dict
     }
 
     validateWith(withStmt: ast.IWith) {

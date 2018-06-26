@@ -60,12 +60,12 @@ describe('Pretty Printer', () => {
             dict.entries.push(ast.DictEntry(ast.Ident('A'), ast.Ident('a')))
             const inst = ast.ModInst('$R', [
                 ast.Param(0, ast.Unit(10, 3, ''))
-            ], dict, ast.Integer(2))
+            ], dict)
 
-            expectPretty(inst, '$R(10K)[2] {A=a}')
+            expectPretty(inst, '$R(10K) {A=a}')
 
             dict.entries.push(ast.DictEntry(ast.Ident('B'), ast.Ident('b')))
-            expectPretty(inst, '$R(10K)[2] {A=a, B=b}')
+            expectPretty(inst, '$R(10K) {A=a, B=b}')
         })
     })
 

@@ -25,7 +25,6 @@ function emit(a: ast.Ast): IDoc {
         Cell: emitCell,
         With: emitWith,
         Assign: emitAssign,
-        ApplyDict: emitApplyDict,
         Tuple: emitTuple,
         AnonMod: emitAnonMod,
         Ident: emitIdent,
@@ -72,7 +71,6 @@ function emitModule(mod: ast.IModule): IDoc {
             mod.nets.map(emitNet),
             mod.cells.map(emitCell),
             mod.assigns.map(emitAssign),
-            mod.applyDicts.map(emitApplyDict),
             mod.withs.map(emitWith)
         ])),
         line
@@ -193,10 +191,6 @@ function emitAssign(assign: ast.IAssign): IDoc {
     return [ emit(assign.lhs), ' = ', emit(assign.rhs) ]
 }
 
-function emitApplyDict(apply: ast.IApplyDict): IDoc {
-    return [ emit(apply.expr), ' ', emitDict(apply.dict) ]
-}
-
 function emitTuple(tuple: ast.ITuple): IDoc {
     return enclose(parens, intersperse(', ', tuple.exprs.map(emit)))
 }
@@ -220,7 +214,6 @@ function emitModInst(inst: ast.IModInst): IDoc {
     return [
         inst.module,
         emitParams(inst.params),
-        emitWidth(inst.width),
         ' ', emitDict(inst.dict)
     ]
 }

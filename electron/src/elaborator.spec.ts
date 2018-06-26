@@ -148,7 +148,7 @@ describe('Elaborator', () => {
             setattr.stmts.push(ast.Net(makeIdent('a', 16 + 10)),
                                ast.Net(makeIdent('b', 19 + 10)))
             expectAstModule('@width(10) net a, b', [setattr])
-            setattr.stmts.pop()
+            setattr.stmts = []
 
             setattr.fqns.push(ast.FQN([
                 makeIdent('a', 12 + 10),
@@ -255,17 +255,14 @@ describe('Elaborator', () => {
 
         it('should elaborate ModInst', () => {
             const dict = ast.Dict(false)
-            const inst = ast.ModInst('$R', [], dict, ast.Integer(1),
-                                     getLoc('$R', 1 + 14))
+            const inst = ast.ModInst('$R', [], dict, getLoc('$R', 1 + 14))
 
 
             dict.src = getLoc('{}', 6 + 14) || emptySrcLoc
             expectAstExpr('$R() {}', inst)
 
-            inst.width = makeInteger(2, 6 + 14)
-            dict.src = getLoc('{}', 9 + 14) || emptySrcLoc
-            expectAstExpr('$R()[2] {}', inst)
-            inst.width = ast.Integer(1)
+            dict.src = getLoc('{}', 6 + 14) || emptySrcLoc
+            expectAstExpr('$R() {}', inst)
 
             inst.params.push(ast.Param(0, ast.Unit(10, 3, '',
                                                    getLoc('10k', 4 + 14))))

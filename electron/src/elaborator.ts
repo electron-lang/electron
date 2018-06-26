@@ -153,13 +153,6 @@ export class Elaborator extends BaseElectronVisitor {
                 }
                 return assigns
             }
-
-            if (ctx.applyDictionaryStatement) {
-                const dict = this.visit(ctx.applyDictionaryStatement[0])
-                return exprs.map((expr: ast.Expr) => {
-                    return ast.ApplyDict(expr, dict)
-                })
-            }
         }
 
         return []
@@ -192,10 +185,6 @@ export class Elaborator extends BaseElectronVisitor {
 
     assignStatement(ctx: any): ast.Expr[] {
         return this.visit(ctx.expressions[0])
-    }
-
-    applyDictionaryStatement(ctx: any): ast.IDict {
-        return this.visit(ctx.dictionary[0])
     }
 
     declaration(ctx: any): ast.Stmt[] {
@@ -430,8 +419,7 @@ export class Elaborator extends BaseElectronVisitor {
 
     moduleInstantiation(ctx: any): ast.IModInst {
         let inst = ast.ModInst('', this.visit(ctx.parameterList[0]),
-                               ast.Dict(),
-                               this.visit(ctx.width))
+                               ast.Dict())
 
         if (ctx.dictionary) {
             inst.dict = this.visit(ctx.dictionary[0])
