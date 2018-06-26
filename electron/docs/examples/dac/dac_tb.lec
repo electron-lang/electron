@@ -33,14 +33,14 @@ export module DACTestbench {
     }
 
     // MOSFET model parameters
-    with dac.adac.halfBridge.drivers.model {
-        @parameter(1)
-        Rg, Rd, Rs
-        @parameter(1uH)
-        Lg, Ld, Ls
-        @parameter(IS=1e-14)
-        Dsd
-    }
+    //with dac.adac.halfBridge.drivers.model {
+    //    @parameter(1)
+    //    Rg, Rd, Rs
+    //    @parameter(1uH)
+    //    Lg, Ld, Ls
+    //    @parameter(IS=1e-14)
+    //    Dsd
+    //}
 
     // Capacitive output load
     cell load = $C(1nF) { out, gnd }

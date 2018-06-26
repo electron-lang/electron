@@ -41,9 +41,6 @@ module Pcb {
     cell bb = BlackBox() { vcc='+12V, gnd }
     cell sm = SubModule() {}
 
-    @bom("Yago", "XYZ")
-    sm.r1
-
     @bitstream(AND)
     @set_io(a="A1", b="F2", c="D3")
     cell fpga = $fpga() {}

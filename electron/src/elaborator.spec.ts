@@ -150,12 +150,12 @@ describe('Elaborator', () => {
             expectAstModule('@width(10) net a, b', [setattr])
             setattr.stmts = []
 
-            setattr.fqns.push(ast.FQN([
+            /*setattr.fqns.push(ast.FQN([
                 makeIdent('a', 12 + 10),
                 makeIdent('b', 14 + 10),
                 makeIdent('c', 16 + 10)
-            ]))
-            expectAstModule("@width(10) a.b.c", [setattr])
+            ]))*/
+            //expectAstModule("@width(10) a.b.c", [setattr])
         })
     })
 

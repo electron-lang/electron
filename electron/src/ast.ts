@@ -1,7 +1,7 @@
 import { ISrcLoc, emptySrcLoc } from './diagnostic'
 
 export type Ast = IDesign | IImport | IModule | IIdent
-    | IFQN | IAttr | IParamDecl | IParam | Stmt | Expr
+    | IAttr | IParamDecl | IParam | Stmt | Expr
 
 export interface ASTLiteralPattern<T> {
     Integer: (int: IInteger) => T
@@ -65,7 +65,6 @@ export interface ASTPattern<T> extends ASTExprPattern<T> {
     Design: (design: IDesign) => T
     Import: (imp: IImport) => T
     Module: (mod: IModule) => T
-    FQN: (fqn: IFQN) => T
     Attr: (attr: IAttr) => T
     ParamDecl: (pd: IParamDecl) => T
     Param: (p: IParam) => T
@@ -74,7 +73,6 @@ export interface ASTPattern<T> extends ASTExprPattern<T> {
     Net: (n: INet) => T
     Port: (p: IPort) => T
     Cell: (c: ICell) => T
-    With: (w: IWith) => T
     Assign: (a: IAssign) => T
 }
 
@@ -89,8 +87,6 @@ export function matchAST<T>(p: ASTPattern<T>): (ast: Ast) => T {
                 return p.Module(ast)
             case 'ident':
                 return p.Ident(ast)
-            case 'fqn':
-                return p.FQN(ast)
             case 'attr':
                 return p.Attr(ast)
             case 'param-decl':
@@ -107,8 +103,6 @@ export function matchAST<T>(p: ASTPattern<T>): (ast: Ast) => T {
                 return p.Port(ast)
             case 'cell':
                 return p.Cell(ast)
-            case 'with':
-                return p.With(ast)
             case 'assign':
                 return p.Assign(ast)
             default:
@@ -158,7 +152,6 @@ export interface IModule {
     nets: INet[]
     ports: IPort[]
     cells: ICell[]
-    withs: IWith[]
     assigns: IAssign[]
     setAttrs: ISetAttr[]
     src: ISrcLoc
@@ -178,9 +171,6 @@ export function AddStmts(mod: IModule, stmts: Stmt[]) {
                 break
             case 'cell':
                 mod.cells.push(stmt)
-                break
-            case 'with':
-                mod.withs.push(stmt)
                 break
             case 'assign':
                 mod.assigns.push(stmt)
@@ -207,7 +197,6 @@ export function Module(name: string, stmts?: Stmt[], src?: ISrcLoc): IModule {
         nets: [],
         ports: [],
         cells: [],
-        withs: [],
         assigns: [],
         setAttrs: [],
     }
@@ -231,7 +220,7 @@ export function Ident(id: string, src?: ISrcLoc): IIdent {
     }
 }
 
-export interface IFQN {
+/*export interface IFQN {
     tag: 'fqn'
     ids: IIdent[]
 }
@@ -241,7 +230,7 @@ export function FQN(ids: IIdent[]): IFQN {
         tag: 'fqn',
         ids,
     }
-}
+}*/
 
 export interface IAttr {
     tag: 'attr'
@@ -286,14 +275,13 @@ export function Param(name: IIdent | number, value: Expr): IParam {
 }
 
 // Statements
-export type Stmt = ISetAttr | IWith | IAssign
+export type Stmt = ISetAttr | IAssign
     | IConst | INet | IPort | ICell
 
 export interface ISetAttr {
     tag: 'set-attr'
     attrs: IAttr[]
     stmts: Stmt[]
-    fqns: IFQN[]
 }
 
 export function SetAttr(attrs: IAttr[]): ISetAttr {
@@ -301,11 +289,10 @@ export function SetAttr(attrs: IAttr[]): ISetAttr {
         tag: 'set-attr',
         attrs,
         stmts: [],
-        fqns: [],
     }
 }
 
-export interface IWith {
+/*export interface IWith {
     tag: 'with'
     scope: IFQN
     setattrs: ISetAttr[]
@@ -317,7 +304,7 @@ export function With(scope: IFQN, setattrs: ISetAttr[]): IWith {
         scope,
         setattrs,
     }
-}
+}*/
 
 export interface IAssign {
     tag: 'assign'

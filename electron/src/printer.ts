@@ -14,7 +14,7 @@ function emit(a: ast.Ast): IDoc {
         Design: emitDesign,
         Import: emitImport,
         Module: emitModule,
-        FQN: emitFQN,
+        //FQN: emitFQN,
         Attr: emitAttr,
         ParamDecl: emitParamDecl,
         Param: emitParam,
@@ -23,7 +23,7 @@ function emit(a: ast.Ast): IDoc {
         Net: emitNet,
         Port: emitPort,
         Cell: emitCell,
-        With: emitWith,
+        //With: emitWith,
         Assign: emitAssign,
         Tuple: emitTuple,
         AnonMod: emitAnonMod,
@@ -71,7 +71,7 @@ function emitModule(mod: ast.IModule): IDoc {
             mod.nets.map(emitNet),
             mod.cells.map(emitCell),
             mod.assigns.map(emitAssign),
-            mod.withs.map(emitWith)
+            //mod.withs.map(emitWith)
         ])),
         line
     ]
@@ -92,13 +92,13 @@ function emitBody(doc: IDoc[]): IDoc {
     ]
 }
 
-function emitFQNs(fqns: ast.IFQN[]): IDoc {
+/*function emitFQNs(fqns: ast.IFQN[]): IDoc {
     return intersperse(', ', fqns.map(emitFQN))
 }
 
 function emitFQN(fqn: ast.IFQN): IDoc {
     return intersperse('.', fqn.ids.map(emitIdent))
-}
+}*/
 
 function emitIdents(ids: ast.IIdent[]): IDoc {
     return intersperse(', ', ids.map(emitIdent))
@@ -147,7 +147,8 @@ function emitParam(param: ast.IParam): IDoc {
 
 function emitSetAttr(setattr: ast.ISetAttr): IDoc {
     const body = [].concat.apply([], [setattr.stmts.map(emit),
-                                      emitFQNs(setattr.fqns)])
+                                      //emitFQNs(setattr.fqns)
+                                     ])
     if (body.length > 1) {
         return [
             emitAttrs(setattr.attrs)[0], ' ',
@@ -183,9 +184,9 @@ function emitCell(c: ast.ICell): IDoc {
              emitIdent(c.ident) ]
 }
 
-function emitWith(w: ast.IWith): IDoc {
+/*function emitWith(w: ast.IWith): IDoc {
     return [ 'with ', emitFQN(w.scope), emitBody(w.setattrs.map(emitSetAttr)) ]
-}
+}*/
 
 function emitAssign(assign: ast.IAssign): IDoc {
     return [ emit(assign.lhs), ' = ', emit(assign.rhs) ]

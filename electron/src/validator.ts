@@ -76,7 +76,7 @@ export class Validator {
 
         if (mod.declaration) {
             if (mod.assigns.length + mod.cells.length +
-                mod.consts.length + mod.nets.length + mod.withs.length > 0) {
+                mod.consts.length + mod.nets.length > 0) {
                 this.logger.error(
                     `Declared module '${mod.name}' contains assignments.`,
                     mod.src)
@@ -93,10 +93,6 @@ export class Validator {
 
         for (let setattr of mod.setAttrs) {
             this.validateSetAttr(setattr)
-        }
-
-        for (let w of mod.withs) {
-            this.validateWith(w)
         }
 
         for (let c of mod.consts) {
@@ -168,22 +164,6 @@ export class Validator {
         return irdecl
     }
 
-    validateFQN(fqn: ast.IFQN): Declarable | null {
-        let irdecl = null
-
-        for (let i = 0; i < fqn.ids.length - 2; i++) {
-            this.symbolTable.enterScope(fqn.ids[i].id)
-        }
-
-        irdecl = this.validateIdentifier(fqn.ids[fqn.ids.length - 1])
-
-        for (let i = 0; i < fqn.ids.length - 2; i++) {
-            this.symbolTable.exitScope()
-        }
-
-        return irdecl
-    }
-
     validateSetAttr(setAttrs: ast.ISetAttr) {
         /*let irattrs = this.validateAttributes(setAttrs.attrs)
         for (let stmt of setAttrs.stmts) {
@@ -206,11 +186,6 @@ export class Validator {
                 }
             }
         }*/
-    }
-
-    validateWith(withStmt: ast.IWith) {
-        // TODO let decl = this.symbolTable.resolveFQNDecl()
-        //withStmt.scope
     }
 
     validateConst(c: ast.IConst) {

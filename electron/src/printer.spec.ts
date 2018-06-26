@@ -35,9 +35,9 @@ describe('Pretty Printer', () => {
         cell.attrs.push(bomAttr)
         expectPretty(cell, '@bom("Yago", "XYZ")\ncell a')
 
-        const setattr = ast.SetAttr([bomAttr])
+        /*const setattr = ast.SetAttr([bomAttr])
         setattr.fqns.push(ast.FQN([ast.Ident('a'), ast.Ident('b'), ast.Ident('c')]))
-        expectPretty(setattr, '@bom("Yago", "XYZ")\na.b.c')
+        expectPretty(setattr, '@bom("Yago", "XYZ")\na.b.c')*/
     })
 
     describe('should emit expressions', () => {
@@ -93,10 +93,10 @@ describe('Pretty Printer', () => {
                          'a = b[0]')
         })
 
-        it('should emit fully qualified names', () => {
+        /*it('should emit fully qualified names', () => {
             expectPretty(ast.FQN([ast.Ident('a'), ast.Ident('b'), ast.Ident('c')]),
                          'a.b.c')
-        })
+        })*/
     })
 
     it('should emit imports', () => {

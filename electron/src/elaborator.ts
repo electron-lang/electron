@@ -70,13 +70,13 @@ export class Elaborator extends BaseElectronVisitor {
         return ctx.identifier.map((ctx: any) => this.visit(ctx))
     }
 
-    fullyQualifiedName(ctx: any): ast.IFQN {
+    /*fullyQualifiedName(ctx: any): ast.IFQN {
         return ast.FQN(ctx.identifier.map((ctx: any) => this.visit(ctx)))
     }
 
     fullyQualifiedNames(ctx: any): ast.IFQN[] {
         return ctx.fullyQualifiedName.map((ctx: any) => this.visit(ctx))
-    }
+    }*/
 
     // Attributes
     attribute(ctx: any): ast.IAttr {
@@ -128,9 +128,9 @@ export class Elaborator extends BaseElectronVisitor {
             return this.visit(ctx.declaration[0])
         }
 
-        if (ctx.withStatment) {
+        /*if (ctx.withStatment) {
             return [this.visit(ctx.withStatement[0])]
-        }
+        }*/
 
         if (ctx.assignStatement) {
             return this.visit(ctx.assignStatement[0])
@@ -153,16 +153,16 @@ export class Elaborator extends BaseElectronVisitor {
             setattr.stmts = this.visit(ctx.statements[0])
         } else if (ctx.declaration) {
             setattr.stmts = this.visit(ctx.declaration[0])
-        } else if (ctx.fullyQualifiedNames) {
+        } /*else if (ctx.fullyQualifiedNames) {
             setattr.fqns = this.visit(ctx.fullyQualifiedNames[0])
-        }
+        }*/
         return setattr
     }
 
-    withStatement(ctx: any): ast.IWith {
+    /*withStatement(ctx: any): ast.IWith {
         return ast.With(this.visit(ctx.fullyQualifiedName[0]),
                         this.visit(ctx.statements[0]))
-    }
+    }*/
 
     assignStatement(ctx: any): ast.IAssign[] {
         const lhs = this.visit(ctx.expressions[0])
@@ -372,6 +372,29 @@ export class Elaborator extends BaseElectronVisitor {
                                     ctx.CloseRound[0].endColumn)))
     }
 
+    referenceExpression(ctx: any): ast.IRef {
+        const from_ = this.visit(ctx.expression[0])
+        let to = from_
+        if (ctx.expression[1]) {
+            to = this.visit(ctx.expression[1])
+        }
+
+        return ast.Ref(ast.Ident(''), from_, to,
+                       SrcLoc(Pos(ctx.OpenSquare[0].startLine,
+                                  ctx.OpenSquare[0].endColumn),
+                              Pos(ctx.CloseSquare[0].endLine,
+                                  ctx.CloseSquare[0].endColumn)))
+    }
+
+    anonymousModule(ctx: any): ast.IAnonMod {
+        return ast.AnonMod(this.visit(ctx.statements[0]))
+    }
+
+    moduleInstantiation(ctx: any): ast.IModInst {
+        return ast.ModInst('', this.visit(ctx.parameterList[0]),
+                           this.visit(ctx.dictionary[0]))
+    }
+
     dictionary(ctx: any): ast.IDict {
         let dict = ast.Dict(!!ctx.Star,
                             SrcLoc(Pos(ctx.OpenCurly[0].startLine,
@@ -395,32 +418,4 @@ export class Elaborator extends BaseElectronVisitor {
         }
     }
 
-    referenceExpression(ctx: any): ast.IRef {
-        const from_ = this.visit(ctx.expression[0])
-        let to = from_
-        if (ctx.expression[1]) {
-            to = this.visit(ctx.expression[1])
-        }
-
-        return ast.Ref(ast.Ident(''), from_, to,
-                       SrcLoc(Pos(ctx.OpenSquare[0].startLine,
-                                  ctx.OpenSquare[0].endColumn),
-                              Pos(ctx.CloseSquare[0].endLine,
-                                  ctx.CloseSquare[0].endColumn)))
-    }
-
-    anonymousModule(ctx: any): ast.IAnonMod {
-        return ast.AnonMod(this.visit(ctx.statements[0]))
-    }
-
-    moduleInstantiation(ctx: any): ast.IModInst {
-        let inst = ast.ModInst('', this.visit(ctx.parameterList[0]),
-                               ast.Dict())
-
-        if (ctx.dictionary) {
-            inst.dict = this.visit(ctx.dictionary[0])
-        }
-
-        return inst
-    }
 }
