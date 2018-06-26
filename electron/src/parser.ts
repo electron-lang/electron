@@ -220,12 +220,7 @@ class ElectronParser extends Parser {
             { ALT: () => this.SUBRULE(this.attributeStatement) },
             { ALT: () => this.SUBRULE(this.declaration) },
             { ALT: () => this.SUBRULE(this.withStatement) },
-            { ALT: () => {
-                this.SUBRULE(this.expressions)
-                this.OR1([
-                    { ALT: () => this.SUBRULE(this.assignStatement) },
-                ])
-            }}
+            { ALT: () => this.SUBRULE(this.assignStatement) },
         ])
         this.OPTION(() => this.CONSUME(Semicolon))
     })
@@ -256,8 +251,9 @@ class ElectronParser extends Parser {
     })
 
     public assignStatement = this.RULE('assignStatement', () => {
-        this.CONSUME(Assign)
         this.SUBRULE(this.expressions)
+        this.CONSUME(Assign)
+        this.SUBRULE1(this.expressions)
     })
 
     public declaration = this.RULE('declaration', () => {

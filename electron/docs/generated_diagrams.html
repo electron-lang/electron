@@ -421,7 +421,7 @@
   {
     "type": "Rule",
     "name": "statement",
-    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.attributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                { ALT: function () { return _this.SUBRULE(_this.withStatement); } },\n                { ALT: function () {\n                        _this.SUBRULE(_this.expressions);\n                        _this.OR1([\n                            { ALT: function () { return _this.SUBRULE(_this.assignStatement); } },\n                            { ALT: function () { return _this.SUBRULE(_this.applyDictionaryStatement); } },\n                        ]);\n                    } }\n            ]);\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.attributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                { ALT: function () { return _this.SUBRULE(_this.withStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.assignStatement); } },\n            ]);\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
     "definition": [
       {
         "type": "Alternation",
@@ -462,34 +462,8 @@
             "definition": [
               {
                 "type": "NonTerminal",
-                "name": "expressions",
+                "name": "assignStatement",
                 "idx": 0
-              },
-              {
-                "type": "Alternation",
-                "idx": 1,
-                "definition": [
-                  {
-                    "type": "Flat",
-                    "definition": [
-                      {
-                        "type": "NonTerminal",
-                        "name": "assignStatement",
-                        "idx": 0
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Flat",
-                    "definition": [
-                      {
-                        "type": "NonTerminal",
-                        "name": "applyDictionaryStatement",
-                        "idx": 0
-                      }
-                    ]
-                  }
-                ]
               }
             ]
           }
@@ -623,8 +597,13 @@
   {
     "type": "Rule",
     "name": "assignStatement",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.Assign);\n            _this.SUBRULE(_this.expressions);\n        }",
+    "orgText": "function () {\n            _this.SUBRULE(_this.expressions);\n            _this.CONSUME(tokens_1.Assign);\n            _this.SUBRULE1(_this.expressions);\n        }",
     "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "expressions",
+        "idx": 0
+      },
       {
         "type": "Terminal",
         "name": "Assign",
@@ -635,19 +614,7 @@
       {
         "type": "NonTerminal",
         "name": "expressions",
-        "idx": 0
-      }
-    ]
-  },
-  {
-    "type": "Rule",
-    "name": "applyDictionaryStatement",
-    "orgText": "function () {\n            _this.SUBRULE(_this.dictionary);\n        }",
-    "definition": [
-      {
-        "type": "NonTerminal",
-        "name": "dictionary",
-        "idx": 0
+        "idx": 1
       }
     ]
   },
@@ -1284,16 +1251,11 @@
   {
     "type": "Rule",
     "name": "moduleInstantiation",
-    "orgText": "function () {\n            _this.SUBRULE(_this.parameterList);\n            _this.SUBRULE(_this.width);\n            _this.OPTION1(function () { return _this.SUBRULE(_this.dictionary); });\n        }",
+    "orgText": "function () {\n            _this.SUBRULE(_this.parameterList);\n            _this.OPTION1(function () { return _this.SUBRULE(_this.dictionary); });\n        }",
     "definition": [
       {
         "type": "NonTerminal",
         "name": "parameterList",
-        "idx": 0
-      },
-      {
-        "type": "NonTerminal",
-        "name": "width",
         "idx": 0
       },
       {

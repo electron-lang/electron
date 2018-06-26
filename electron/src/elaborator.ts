@@ -132,27 +132,8 @@ export class Elaborator extends BaseElectronVisitor {
             return [this.visit(ctx.withStatement[0])]
         }
 
-        if (ctx.expressions) {
-            let exprs = this.visit(ctx.expressions[0])
-
-            if (ctx.assignStatement) {
-                const rhs = this.visit(ctx.assignStatement[0])
-
-                if(exprs.length != rhs.length) {
-                    this.logger.error('Unbalanced assignment', {
-                            startLine: exprs[0].src.startLine,
-                            startColumn: exprs[0].src.startColumn,
-                            endLine: rhs[rhs.length - 1].src.endLine,
-                            endColumn: rhs[rhs.length - 1].src.endColumn,
-                        })
-                }
-
-                let assigns: ast.IAssign[] = []
-                for (let i = 0; i < Math.min(exprs.length, rhs.length); i++) {
-                    assigns.push(ast.Assign(exprs[i], rhs[i]))
-                }
-                return assigns
-            }
+        if (ctx.assignStatement) {
+            return this.visit(ctx.assignStatement[0])
         }
 
         return []
@@ -183,8 +164,23 @@ export class Elaborator extends BaseElectronVisitor {
                         this.visit(ctx.statements[0]))
     }
 
-    assignStatement(ctx: any): ast.Expr[] {
-        return this.visit(ctx.expressions[0])
+    assignStatement(ctx: any): ast.IAssign[] {
+        const lhs = this.visit(ctx.expressions[0])
+        const rhs = this.visit(ctx.expressions[1])
+        if(lhs.length != rhs.length) {
+            this.logger.error('Unbalanced assignment', {
+                startLine: lhs[0].src.startLine,
+                startColumn: lhs[0].src.startColumn,
+                endLine: rhs[rhs.length - 1].src.endLine,
+                endColumn: rhs[rhs.length - 1].src.endColumn,
+            })
+        }
+
+        let assigns: ast.IAssign[] = []
+        for (let i = 0; i < Math.min(lhs.length, rhs.length); i++) {
+            assigns.push(ast.Assign(lhs[i], rhs[i]))
+        }
+        return assigns
     }
 
     declaration(ctx: any): ast.Stmt[] {
