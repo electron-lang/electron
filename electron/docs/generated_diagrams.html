@@ -247,25 +247,19 @@
   {
     "type": "Rule",
     "name": "parameterDeclaration",
-    "orgText": "function () {\n            _this.OPTION(function () {\n                _this.SUBRULE(_this.identifier);\n                _this.CONSUME(tokens_1.Colon);\n            });\n            _this.SUBRULE1(_this.identifier);\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
+    "orgText": "function () {\n            _this.SUBRULE(_this.identifier);\n            _this.CONSUME(tokens_1.Colon);\n            _this.SUBRULE1(_this.identifier);\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
     "definition": [
       {
-        "type": "Option",
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "Colon",
+        "label": ":",
         "idx": 0,
-        "definition": [
-          {
-            "type": "NonTerminal",
-            "name": "identifier",
-            "idx": 0
-          },
-          {
-            "type": "Terminal",
-            "name": "Colon",
-            "label": ":",
-            "idx": 0,
-            "pattern": ":"
-          }
-        ]
+        "pattern": ":"
       },
       {
         "type": "NonTerminal",

@@ -238,11 +238,11 @@ export function Attr(name: IIdent, params: IParam[]): IAttr {
 
 export interface IParamDecl {
     tag: 'param-decl'
-    name: IIdent | number
+    name: IIdent
     ty: IIdent
 }
 
-export function ParamDecl(name: IIdent | number, ty: IIdent): IParamDecl {
+export function ParamDecl(name: IIdent, ty: IIdent): IParamDecl {
     return {
         tag: 'param-decl',
         name,

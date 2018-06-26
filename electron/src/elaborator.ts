@@ -1,9 +1,11 @@
-import { lexerInstance, parserInstance } from './parser'
 import * as ast from './ast'
+import { AddStmts } from './ast'
+import { allAttributes } from './attributes'
+import { allTypeHandlers } from './parameters'
 import { IDiagnostic, DiagnosticPublisher,
          SrcLoc, Pos, ISrcLoc, tokenToSrcLoc } from './diagnostic'
 import { File } from './file'
-import { AddStmts } from './ast';
+import { parserInstance } from './parser'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -79,6 +81,12 @@ export class Elaborator extends BaseElectronVisitor {
         let ident = this.visit(ctx.identifier[0])
         let mod = ast.Module(ident.id, [], ident.src)
 
+        if (mod.name[0].toUpperCase() !== mod.name[0]) {
+            this.logger.warn(
+                `Module '${mod.name}' starts with a lowercase letter.`,
+                mod.src)
+        }
+
         mod.exported = !!ctx.Export
         mod.declaration = !!ctx.Declare
 
@@ -92,6 +100,14 @@ export class Elaborator extends BaseElectronVisitor {
 
         if (ctx.statements) {
             ast.AddStmts(mod, this.visit(ctx.statements[0]))
+        }
+
+        if (mod.declaration) {
+            if (mod.assigns.length + mod.cells.length +
+                mod.consts.length + mod.nets.length > 0) {
+                this.logger.error(`Declared module '${mod.name}' contains ` +
+                                  `assignments.`, mod.src)
+            }
         }
 
         this.modules[mod.name] = mod
@@ -119,7 +135,17 @@ export class Elaborator extends BaseElectronVisitor {
     attribute(ctx: any): ast.IAttr {
         const name = ast.Ident(ctx.Attribute[0].image.substring(1),
                                tokenToSrcLoc(ctx.Attribute[0]))
-        return ast.Attr(name, this.visit(ctx.parameterList) || [])
+        const attr = ast.Attr(name, this.visit(ctx.parameterList) || [])
+
+        if (!(attr.name.id in allAttributes)) {
+            this.logger.error(`Unknown attribute '${attr.name.id}'.`,
+                              attr.name.src)
+        } else {
+            const attrHandler = allAttributes[attr.name.id]
+            attrHandler.validate(this.logger, attr)
+        }
+
+        return attr
     }
 
     parameterDeclarationList(ctx: any): ast.IParamDecl[] {
@@ -131,11 +157,21 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     parameterDeclaration(ctx: any): ast.IParamDecl {
-        if (ctx.identifier.length > 1) {
-            return ast.ParamDecl(this.visit(ctx.identifier[0]),
-                                 this.visit(ctx.identifier[1]))
+        const param = ast.ParamDecl(this.visit(ctx.identifier[0]),
+                                    this.visit(ctx.identifier[1]))
+
+        if (param.name.id.toUpperCase() !== param.name.id) {
+            this.logger.warn(`Parameter '${param.name.id}' contains ` +
+                             `lowercase letters.`,
+                             param.name.src)
         }
-        return ast.ParamDecl(this.paramCounter++, this.visit(ctx.identifier[0]))
+
+        if (!(param.ty.id in allTypeHandlers)) {
+            this.logger.error(`Unknown parameter type '${param.ty.id}'`,
+                              param.ty.src)
+        }
+
+        return param
     }
 
     parameterList(ctx: any): ast.IParam[] {

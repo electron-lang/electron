@@ -5,7 +5,8 @@ import { SymbolTable } from './symbolTable'
 
 describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
-    const st = new SymbolTable<ast.IModule | ast.IPort>(dc.toPublisher())
+    const st = new SymbolTable<ast.IModule | ast.IPort>(
+        dc.toPublisher('symbolTable.spec.ts', []))
     const A = ast.Module('A')
 
     it('should return null when resolving undeclared symbol', () => {

@@ -189,10 +189,8 @@ class ElectronParser extends Parser {
     })
 
     public parameterDeclaration = this.RULE('parameterDeclaration', () => {
-        this.OPTION(() => {
-            this.SUBRULE(this.identifier)
-            this.CONSUME(Colon)
-        })
+        this.SUBRULE(this.identifier)
+        this.CONSUME(Colon)
         this.SUBRULE1(this.identifier)
         this.OPTION1(() => this.CONSUME(Comma))
     })

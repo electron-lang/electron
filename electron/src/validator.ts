@@ -19,17 +19,13 @@ export class Validator {
     }
 
     validate(design: ast.IDesign) {
-
-        //this.resolveImports(dir, design.imports)
-
         for (let mod of design.modules) {
-            this.validateModule(mod)
+            this.compileModule(mod)
         }
-
         return this.ir
     }
 
-    validateModule(mod: ast.IModule) {
+    compileModule(mod: ast.IModule) {
         let irmod = ir.Module(mod.name)
         irmod.src = mod.src || emptySrcLoc
         this.ir.push(irmod)
@@ -37,24 +33,9 @@ export class Validator {
         this.symbolTable.declareSymbol(mod.name, irmod)
         this.symbolTable.enterScope(mod.name)
 
-        irmod.attrs = this.validateAttributes(mod.attrs)
+        irmod.attrs = this.compileAttrs(mod.attrs)
 
-        if (mod.declaration) {
-            if (mod.assigns.length + mod.cells.length +
-                mod.consts.length + mod.nets.length > 0) {
-                this.logger.error(
-                    `Declared module '${mod.name}' contains assignments.`,
-                    mod.src)
-            }
-        }
-
-        if (mod.name[0].toUpperCase() !== mod.name[0]) {
-            this.logger.warn(
-                `Module '${mod.name}' starts with a lowercase letter.`,
-                mod.src)
-        }
-
-        this.validateParamDecls(mod.params)
+        /*this.validateParamDecls(mod.params)
 
         for (let c of mod.consts) {
             this.validateConst(c)
@@ -74,25 +55,17 @@ export class Validator {
 
         for (let assign of mod.assigns) {
             this.validateAssign(assign)
-        }
+        }*/
 
         this.symbolTable.exitScope()
     }
 
-    validateAttributes(attrs: ast.IAttr[]): ir.IAttr[] {
+    compileAttrs(attrs: ast.IAttr[]): ir.IAttr[] {
         let irattrs = []
         for (let attr of attrs) {
-            if (!(attr.name.id in allAttributes)) {
-                this.logger.error(`Unknown attribute '${attr.name.id}'.`,
-                                  attr.name.src)
-                continue
-            }
-
             const attrHandler = allAttributes[attr.name.id]
-            if (attrHandler.validate(this.logger, attr)) {
-                for (let irattr of attrHandler.compile(attr)) {
-                    irattrs.push(irattr)
-                }
+            for (let irattr of attrHandler.compile(attr)) {
+                irattrs.push(irattr)
             }
         }
         return irattrs

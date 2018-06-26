@@ -149,17 +149,18 @@ describe('Elaborator', () => {
         })
 
         it('should elaborate to SetAttributes', () => {
-            const widthAttr = ast.Attr(ast.Ident('width',
-                                                 getLoc('@width', Pos(3, 1))),
-                                       [ ast.Param(0, makeInteger(10, Pos(3, 8))) ])
+            const widthAttr = ast.Attr(
+                ast.Ident('rotate', getLoc('@rotate', Pos(3, 1))), [
+                    ast.Param(0, makeInteger(90, Pos(3, 9)))
+                ])
 
-            const nets = [
-                ast.Net(makeIdent('a', Pos(3, 16))),
-                ast.Net(makeIdent('b', Pos(3, 19)))
+            const cells = [
+                ast.Cell(makeIdent('a', Pos(3, 18))),
+                ast.Cell(makeIdent('b', Pos(3, 21)))
             ]
-            nets[0].attrs.push(widthAttr)
-            nets[1].attrs.push(widthAttr)
-            expectAstModule('@width(10) net a, b', nets)
+            cells[0].attrs.push(widthAttr)
+            cells[1].attrs.push(widthAttr)
+            expectAstModule('@rotate(90) cell a, b', cells)
 
             /*setattr.fqns.push(ast.FQN([
                 makeIdent('a', 12 + 10),
