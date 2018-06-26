@@ -103,7 +103,7 @@ describe('Parser', () => {
         parseExpression('$R {A=(a, b)}')
         parseExpression('$R {A, A=a, A=(a, b), B=(a, b),}')
         parseExpression('DAC {}')
-        parseExpression('module { @left @set_pad(1) analog TP }')
+        parseExpression('cell { @left @set_pad(1) analog TP }')
     })
 
     it('should parse statements', () => {

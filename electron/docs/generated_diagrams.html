@@ -156,20 +156,6 @@
   },
   {
     "type": "Rule",
-    "name": "identifier",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.Identifier);\n        }",
-    "definition": [
-      {
-        "type": "Terminal",
-        "name": "Identifier",
-        "label": "Identifier",
-        "idx": 0,
-        "pattern": "[a-zA-Z$]\\w*|'[^\\(\\)\\[\\]{},:\\s]+"
-      }
-    ]
-  },
-  {
-    "type": "Rule",
     "name": "identifiers",
     "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { _this.SUBRULE(_this.identifier); }\n            });\n        }",
     "definition": [
@@ -190,6 +176,20 @@
             "idx": 0
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "identifier",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Identifier);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Identifier",
+        "label": "Identifier",
+        "idx": 0,
+        "pattern": "[a-zA-Z$]\\w*|'[^\\(\\)\\[\\]{},:\\s]+"
       }
     ]
   },
@@ -370,6 +370,38 @@
   },
   {
     "type": "Rule",
+    "name": "statements",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.statement); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "{",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "statement",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "}",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
     "name": "statement",
     "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.attributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                //{ ALT: () => this.SUBRULE(this.withStatement) },\n                { ALT: function () { return _this.SUBRULE(_this.assignStatement); } },\n            ]);\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
     "definition": [
@@ -421,38 +453,6 @@
             "pattern": ";"
           }
         ]
-      }
-    ]
-  },
-  {
-    "type": "Rule",
-    "name": "statements",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.statement); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
-    "definition": [
-      {
-        "type": "Terminal",
-        "name": "OpenCurly",
-        "label": "{",
-        "idx": 0,
-        "pattern": "{"
-      },
-      {
-        "type": "Repetition",
-        "idx": 0,
-        "definition": [
-          {
-            "type": "NonTerminal",
-            "name": "statement",
-            "idx": 0
-          }
-        ]
-      },
-      {
-        "type": "Terminal",
-        "name": "CloseCurly",
-        "label": "}",
-        "idx": 0,
-        "pattern": "}"
       }
     ]
   },
@@ -684,7 +684,7 @@
   {
     "type": "Rule",
     "name": "expression",
-    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.literal); } },\n                { ALT: function () { return _this.SUBRULE(_this.tupleExpression); } },\n                { ALT: function () { return _this.SUBRULE(_this.anonymousModule); } },\n                { ALT: function () {\n                        _this.SUBRULE1(_this.identifier);\n                        _this.OPTION1(function () {\n                            _this.OR1([\n                                { ALT: function () { return _this.SUBRULE(_this.referenceExpression); } },\n                                { ALT: function () { return _this.SUBRULE(_this.moduleInstantiation); } },\n                            ]);\n                        });\n                    } },\n            ]);\n            _this.OPTION(function () { return _this.SUBRULE(_this.binaryOp); });\n        }",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.literal); } },\n                { ALT: function () { return _this.SUBRULE(_this.tupleExpression); } },\n                { ALT: function () { return _this.SUBRULE(_this.anonymousCell); } },\n                { ALT: function () {\n                        _this.SUBRULE1(_this.identifier);\n                        _this.OPTION1(function () {\n                            _this.OR1([\n                                { ALT: function () { return _this.SUBRULE(_this.referenceExpression); } },\n                                { ALT: function () { return _this.SUBRULE(_this.moduleInstantiation); } },\n                            ]);\n                        });\n                    } },\n            ]);\n            _this.OPTION(function () { return _this.SUBRULE(_this.binaryOp); });\n        }",
     "definition": [
       {
         "type": "Alternation",
@@ -715,7 +715,7 @@
             "definition": [
               {
                 "type": "NonTerminal",
-                "name": "anonymousModule",
+                "name": "anonymousCell",
                 "idx": 0
               }
             ]
@@ -1049,15 +1049,15 @@
   },
   {
     "type": "Rule",
-    "name": "anonymousModule",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.statements);\n        }",
+    "name": "anonymousCell",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Cell);\n            _this.SUBRULE(_this.statements);\n        }",
     "definition": [
       {
         "type": "Terminal",
-        "name": "Module",
-        "label": "module",
+        "name": "Cell",
+        "label": "cell",
         "idx": 0,
-        "pattern": "module"
+        "pattern": "cell"
       },
       {
         "type": "NonTerminal",

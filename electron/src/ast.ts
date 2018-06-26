@@ -1,5 +1,5 @@
 import { ISrcLoc, emptySrcLoc } from './diagnostic'
-
+// TODO remove IDesign and IImport
 export type Ast = IDesign | IImport | IModule | IIdent
     | IAttr | IParamDecl | IParam | Stmt | Expr
 
@@ -33,7 +33,6 @@ export function matchASTLiteral<T>(p: ASTLiteralPattern<T>): (lit: Literal) => T
 
 export interface ASTExprPattern<T> extends ASTLiteralPattern<T> {
     Tuple: (t: ITuple) => T
-    AnonMod: (mod: IAnonMod) => T
     Ident: (ident: IIdent) => T
     Ref: (ref: IRef) => T
     ModInst: (mi: IModInst) => T
@@ -45,8 +44,6 @@ export function matchASTExpr<T>(p: ASTExprPattern<T>): (ast: Expr) => T {
         switch(expr.tag) {
             case 'tuple':
                 return p.Tuple(expr)
-            case 'anon-mod':
-                return p.AnonMod(expr)
             case 'ident':
                 return p.Ident(expr)
             case 'ref':
@@ -68,7 +65,6 @@ export interface ASTPattern<T> extends ASTExprPattern<T> {
     Attr: (attr: IAttr) => T
     ParamDecl: (pd: IParamDecl) => T
     Param: (p: IParam) => T
-    SetAttr: (sa: ISetAttr) => T
     Const: (c: IConst) => T
     Net: (n: INet) => T
     Port: (p: IPort) => T
@@ -93,8 +89,6 @@ export function matchAST<T>(p: ASTPattern<T>): (ast: Ast) => T {
                 return p.ParamDecl(ast)
             case 'param':
                 return p.Param(ast)
-            case 'set-attr':
-                return p.SetAttr(ast)
             case 'const':
                 return p.Const(ast)
             case 'net':
@@ -141,23 +135,25 @@ export function Import(ids: IIdent[], pkg: string, src?: ISrcLoc): IImport {
     }
 }
 
-export interface IModule {
+interface HasStmts {
+    consts: IConst[]
+    nets: INet[]
+    ports: IPort[]
+    cells: ICell[]
+    assigns: IAssign[]
+}
+
+export interface IModule extends HasStmts {
     tag: 'module'
     attrs: IAttr[]
     exported: boolean
     declaration: boolean
     name: string
     params: IParamDecl[]
-    consts: IConst[]
-    nets: INet[]
-    ports: IPort[]
-    cells: ICell[]
-    assigns: IAssign[]
-    setAttrs: ISetAttr[]
     src: ISrcLoc
 }
 
-export function AddStmts(mod: IModule, stmts: Stmt[]) {
+export function AddStmts(mod: HasStmts, stmts: Stmt[]) {
     for (let stmt of stmts) {
         switch(stmt.tag) {
             case 'const':
@@ -175,11 +171,6 @@ export function AddStmts(mod: IModule, stmts: Stmt[]) {
             case 'assign':
                 mod.assigns.push(stmt)
                 break
-            case 'set-attr':
-                mod.setAttrs.push(stmt)
-                break
-            default:
-                throw new Error('bug')
         }
     }
 }
@@ -198,7 +189,6 @@ export function Module(name: string, stmts?: Stmt[], src?: ISrcLoc): IModule {
         ports: [],
         cells: [],
         assigns: [],
-        setAttrs: [],
     }
 
     AddStmts(mod, stmts || [])
@@ -275,8 +265,7 @@ export function Param(name: IIdent | number, value: Expr): IParam {
 }
 
 // Statements
-export type Stmt = ISetAttr | IAssign
-    | IConst | INet | IPort | ICell
+export type Stmt = IConst | INet | IPort | ICell | IAssign
 
 export interface ISetAttr {
     tag: 'set-attr'
@@ -385,8 +374,7 @@ export function Cell(ident: IIdent, width?: Expr): ICell {
 }
 
 // Expressions
-export type Expr = Literal | ITuple | IAnonMod
-    | IIdent | IRef | IModInst | IBinOp
+export type Expr = Literal | ITuple | IIdent | IRef | IModInst | IBinOp
 
 export type Literal = IInteger | IString | IBitVector | IUnit
     | IString | IReal | IBool
@@ -564,50 +552,15 @@ export function Ref(ident: IIdent, from: Expr, to?: Expr, src?: ISrcLoc): IRef {
     }
 }
 
-export interface IAnonMod {
-    tag: 'anon-mod'
-    ports: IPort[]
-    assigns: IAssign[]
-    setattrs: ISetAttr[]
-    src: ISrcLoc
-}
-
-export function AnonMod(stmts: Stmt[], src?: ISrcLoc): IAnonMod {
-    let anon: IAnonMod = {
-        tag: 'anon-mod',
-        ports: [],
-        assigns: [],
-        setattrs: [],
-        src: src || emptySrcLoc,
-    }
-    for (let stmt of stmts) {
-        // TODO Update parser to be more restrictive
-        switch(stmt.tag) {
-            case 'port':
-                anon.ports.push(stmt)
-                break
-            case 'assign':
-                anon.assigns.push(stmt)
-                break
-            case 'set-attr':
-                anon.setattrs.push(stmt)
-                break
-            default:
-                throw new Error('bug')
-        }
-    }
-    return anon
-}
-
 export interface IModInst {
     tag: 'mod-inst'
-    module: string
+    module: IModule
     params: IParam[]
     dict: IDict
     src: ISrcLoc
 }
 
-export function ModInst(module: string, params: IParam[],
+export function ModInst(module: IModule, params: IParam[],
                         dict: IDict, src?: ISrcLoc): IModInst {
     return {
         tag: 'mod-inst',

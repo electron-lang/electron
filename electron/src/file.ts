@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs'
-import { resolve } from 'path'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { dirname, resolve } from 'path'
 import { IToken } from 'chevrotain'
 import * as ast from './ast'
 import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
@@ -8,11 +8,11 @@ import { Elaborator } from './elaborator'
 import { Validator } from './validator'
 import { IModule } from './backend/ir'
 import { printIR } from './backend/printer'
-import { extractDeclarations } from './declaration'
 import { printAST } from './printer'
 
 export class File {
     private logger: DiagnosticPublisher
+    private imports: File[] = []
     private declarations: ast.IModule[] = []
     private path: string
     private text: string
@@ -22,7 +22,7 @@ export class File {
     private ast: ast.IDesign | undefined
     private ir: IModule[] | undefined
 
-    constructor(dc: IDiagnosticConsumer, path: string, text: string | null) {
+    constructor(private dc: IDiagnosticConsumer, path: string, text?: string) {
         this.path = resolve(path)
         if (text) {
             this.text = text
@@ -68,23 +68,20 @@ export class File {
 
     elaborate(): File {
         if (!this.cst) return this
-        let el = new Elaborator(this.logger)
+        let el = new Elaborator(this.logger, this)
         this.ast = el.visit(this.cst)
         return this
-    }
-
-    extractDeclarations(): ast.IModule[] {
-        this.lex().parse().elaborate()
-        if (!this.ast) return this.declarations
-        this.declarations = extractDeclarations(this.ast)
-        return this.declarations
     }
 
     validate(): File {
         if (!this.ast) return this
         const validator = new Validator(this.logger)
-        this.ir = validator.validate(this.path, this.ast)
+        this.ir = validator.validate(this.ast)
         return this
+    }
+
+    getAst() {
+        return this.ast
     }
 
     dumpAst(): void {
@@ -106,6 +103,10 @@ export class File {
     }
 
     emitDeclarations(): File {
+        this.lex().parse().elaborate()
+        if (!this.ast) return this
+        this.declarations = extractDeclarations(this.ast)
+
         const pl = this.path.split('.')
         pl.pop()
         pl.push('d.lec')
@@ -113,4 +114,32 @@ export class File {
         writeFileSync(dpath, this.declarations.map(printAST).join('\n'))
         return this
     }
+
+    importFile(path: string): ast.IModule[] | null {
+        const fullPath = resolve(dirname(this.path) + '/' + path + '.lec')
+        if (!existsSync(fullPath)) {
+            return null
+        }
+        const f = new File(this.dc, fullPath)
+        f.emitDeclarations()
+        this.imports.push(f)
+        return f.declarations
+    }
+}
+
+function extractDeclarations(design: ast.IDesign): ast.IModule[] {
+    let dmods: ast.IModule[] = []
+    for (let mod of design.modules) {
+        if (!mod.exported) {
+            continue
+        }
+        let dmod = ast.Module(mod.name)
+        dmod.attrs = mod.attrs
+        dmod.exported = true
+        dmod.declaration = true
+        dmod.params = mod.params
+        dmod.ports = mod.ports
+        dmods.push(dmod)
+    }
+    return dmods
 }

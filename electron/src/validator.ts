@@ -1,5 +1,3 @@
-import { resolve, dirname } from 'path'
-import { existsSync } from 'fs'
 import { DiagnosticPublisher, DiagnosticLogger,
          emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
@@ -20,48 +18,15 @@ export class Validator {
 
     }
 
-    validate(path: string, design: ast.IDesign) {
-        const dir = dirname(path)
+    validate(design: ast.IDesign) {
 
-        this.resolveImports(dir, design.imports)
+        //this.resolveImports(dir, design.imports)
 
         for (let mod of design.modules) {
             this.validateModule(mod)
         }
 
         return this.ir
-    }
-
-    resolveImports(dir: string, imports: ast.IImport[]) {
-        for (let imp of imports) {
-            if (imp.package.startsWith('.')) {
-                const absPath = resolve(dir + '/' + imp.package + '.lec')
-                if (!existsSync(absPath)) {
-                    this.logger.error(`File ${absPath} doesn't exist.`, imp.src)
-                } else {
-                    let f = new File(new DiagnosticLogger(), absPath, null)
-                    const modules = f.extractDeclarations()
-                    for (let ident of imp.ids) {
-                        let foundMod = false
-                        for (let dmod of modules) {
-                            if (dmod.name === ident.id) {
-                                foundMod = true
-                                this.validateModule(dmod)
-                            }
-                        }
-                        if (!foundMod) {
-                            this.logger.error(
-                                `No exported module '${ident.id}' ` +
-                                    `in package '${imp.package}'.`,
-                                ident.src)
-                        }
-                    }
-                }
-            } else {
-                // TODO resolve external modules from packages
-                this.logger.warn('Package resolution unsupported', imp.src)
-            }
-        }
     }
 
     validateModule(mod: ast.IModule) {
@@ -90,10 +55,6 @@ export class Validator {
         }
 
         this.validateParamDecls(mod.params)
-
-        for (let setattr of mod.setAttrs) {
-            this.validateSetAttr(setattr)
-        }
 
         for (let c of mod.consts) {
             this.validateConst(c)
@@ -222,7 +183,6 @@ export class Validator {
             Ref: this.evaluateRef,
             Tuple: this.evaluateTuple,
             ModInst: this.evalModInst,
-            AnonMod: this.evalAnonMod,
             BinOp: this.evaluateBinOp,
         })(expr)
     }
@@ -333,10 +293,6 @@ export class Validator {
         for (let entry of dict.entries) {
             this.evalExpr(entry.expr)
         }
-    }
-
-    evalAnonMod(mod: ast.IAnonMod): ast.Expr[] {
-        return []
     }
 
     evaluateBinOp(op: ast.IBinOp): ast.Expr[] {

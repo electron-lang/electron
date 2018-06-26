@@ -18,7 +18,6 @@ function emit(a: ast.Ast): IDoc {
         Attr: emitAttr,
         ParamDecl: emitParamDecl,
         Param: emitParam,
-        SetAttr: emitSetAttr,
         Const: emitConst,
         Net: emitNet,
         Port: emitPort,
@@ -26,7 +25,6 @@ function emit(a: ast.Ast): IDoc {
         //With: emitWith,
         Assign: emitAssign,
         Tuple: emitTuple,
-        AnonMod: emitAnonMod,
         Ident: emitIdent,
         Ref: emitRef,
         ModInst: emitModInst,
@@ -145,19 +143,6 @@ function emitParam(param: ast.IParam): IDoc {
     return [ emitIdent(param.name), '=', emit(param.value) ]
 }
 
-function emitSetAttr(setattr: ast.ISetAttr): IDoc {
-    const body = [].concat.apply([], [setattr.stmts.map(emit),
-                                      //emitFQNs(setattr.fqns)
-                                     ])
-    if (body.length > 1) {
-        return [
-            emitAttrs(setattr.attrs)[0], ' ',
-            emitBody(body)
-        ]
-    }
-    return [ emitAttrs(setattr.attrs), body ]
-}
-
 function emitWidth(width: ast.Expr): IDoc {
     if (width.tag === 'integer' && width.value === 1) {
         return []
@@ -196,14 +181,6 @@ function emitTuple(tuple: ast.ITuple): IDoc {
     return enclose(parens, intersperse(', ', tuple.exprs.map(emit)))
 }
 
-function emitAnonMod(amod: ast.IAnonMod): IDoc {
-    return [ 'module', emitBody([
-        amod.ports.map(emitPort),
-        amod.setattrs.map(emitSetAttr),
-        amod.assigns.map(emitAssign)
-    ])]
-}
-
 function emitRef(ref: ast.IRef): IDoc {
     let from_ = emit(ref['from'])
     let to = emit(ref['to'])
@@ -213,7 +190,7 @@ function emitRef(ref: ast.IRef): IDoc {
 
 function emitModInst(inst: ast.IModInst): IDoc {
     return [
-        inst.module,
+        inst.module.name,
         emitParams(inst.params),
         ' ', emitDict(inst.dict)
     ]

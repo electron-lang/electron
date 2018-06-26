@@ -11,7 +11,7 @@ program.command('compile <file>')
     .option('-d, --dump-ast', 'Dumps AST to stdout for debugging purposes.')
     .option('-i, --dump-ir', 'Dumps IR to stdout for debugging purposes.')
     .action((path, options) => {
-        const file = new File(new DiagnosticLogger(), path, null)
+        const file = new File(new DiagnosticLogger(), path)
         file.compile()
         if (options.dumpAst) {
             file.dumpAst()

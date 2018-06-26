@@ -149,15 +149,15 @@ class ElectronParser extends Parser {
     })
 
     // Identifiers
-    public identifier = this.RULE('identifier', () => {
-        this.CONSUME(Identifier)
-    })
-
     public identifiers = this.RULE('identifiers', () => {
         this.AT_LEAST_ONE_SEP({
             SEP: Comma,
             DEF: () => { this.SUBRULE(this.identifier) }
         })
+    })
+
+    public identifier = this.RULE('identifier', () => {
+        this.CONSUME(Identifier)
     })
 
     /*public fullyQualifiedName = this.RULE('fullyQualifiedName', () => {
@@ -217,6 +217,14 @@ class ElectronParser extends Parser {
     })
 
     // Statements
+    public statements = this.RULE('statements', () => {
+        this.CONSUME(OpenCurly)
+        this.MANY({
+            DEF: () => this.SUBRULE(this.statement)
+        })
+        this.CONSUME(CloseCurly)
+    })
+
     public statement = this.RULE('statement', () => {
         this.OR([
             { ALT: () => this.SUBRULE(this.attributeStatement) },
@@ -225,14 +233,6 @@ class ElectronParser extends Parser {
             { ALT: () => this.SUBRULE(this.assignStatement) },
         ])
         this.OPTION(() => this.CONSUME(Semicolon))
-    })
-
-    public statements = this.RULE('statements', () => {
-        this.CONSUME(OpenCurly)
-        this.MANY({
-            DEF: () => this.SUBRULE(this.statement)
-        })
-        this.CONSUME(CloseCurly)
     })
 
     public attributeStatement = this.RULE('attributeStatement', () => {
@@ -289,7 +289,7 @@ class ElectronParser extends Parser {
         this.OR([
             { ALT: () => this.SUBRULE(this.literal) },
             { ALT: () => this.SUBRULE(this.tupleExpression) },
-            { ALT: () => this.SUBRULE(this.anonymousModule) },
+            { ALT: () => this.SUBRULE(this.anonymousCell) },
             { ALT: () => {
                 this.SUBRULE1(this.identifier)
                 this.OPTION1(() => {
@@ -350,8 +350,8 @@ class ElectronParser extends Parser {
         this.CONSUME(CloseSquare)
     })
 
-    public anonymousModule = this.RULE('anonymousModule', () => {
-        this.CONSUME(Module)
+    public anonymousCell = this.RULE('anonymousCell', () => {
+        this.CONSUME(Cell)
         this.SUBRULE(this.statements)
     })
 

@@ -2,6 +2,8 @@ import { lexerInstance, parserInstance } from './parser'
 import * as ast from './ast'
 import { IDiagnostic, DiagnosticPublisher,
          SrcLoc, Pos, ISrcLoc, tokenToSrcLoc } from './diagnostic'
+import { File } from './file'
+import { AddStmts } from './ast';
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -13,31 +15,64 @@ function throwBug(rule: string): void {
 
 export class Elaborator extends BaseElectronVisitor {
     private paramCounter: number = 0
+    private top: ast.IDesign = ast.Design()
+    private modules: {[name: string]: ast.IModule} = {}
 
-    constructor(private logger: DiagnosticPublisher) {
+    constructor(private logger: DiagnosticPublisher, private file: File) {
         super()
         this.validateVisitor()
     }
 
     design(ctx: any): ast.IDesign {
-        let design = ast.Design()
+        this.top = ast.Design()
+        this.modules = {}
 
         if (ctx.moduleImport) {
-            design.imports = ctx.moduleImport.map((ctx: any) => this.visit(ctx))
+            ctx.moduleImport.forEach((ctx: any) => this.visit(ctx))
         }
 
         if (ctx.moduleDeclaration) {
-            design.modules = ctx.moduleDeclaration.map((ctx: any) => this.visit(ctx))
+            this.top.modules = ctx.moduleDeclaration.map((ctx: any) => this.visit(ctx))
         }
 
-        return design
+        return this.top
     }
 
-    moduleImport(ctx: any): ast.IImport {
-        const pkg = ctx.String[0].image
-        return ast.Import(this.visit(ctx.identifiers),
-                          pkg.substring(1, pkg.length - 1),
-                          tokenToSrcLoc(ctx.String[0]))
+    moduleImport(ctx: any) {
+        const str = ctx.String[0].image
+        const pkg = str.substring(1, str.length - 1)
+
+        if (!pkg.startsWith('.')) {
+            // TODO resolve external modules from packages
+            this.logger.warn('Package resolution unsupported', tokenToSrcLoc(pkg))
+            return
+        }
+
+        const modules = this.file.importFile(pkg)
+        if (!modules) {
+            this.logger.error(`File '${pkg}' not found.`, tokenToSrcLoc(pkg))
+            return
+        }
+
+        const modulesDict: {[name: string]: ast.IModule} = {}
+        for (let mod of modules) {
+            modulesDict[mod.name] = mod
+        }
+
+        for (let ident of this.visit(ctx.identifiers[0])) {
+            if (ident.id in modulesDict) {
+                const mod = modulesDict[ident.id]
+                if (ident.id in this.modules) {
+                    this.logger.error(`Duplicate import of '${ident.id}'.`,
+                                      ident.src)
+                } else {
+                    this.modules[ident.id] = mod
+                }
+            } else {
+                this.logger.error(`No exported module '${ident.id}' ` +
+                                  `in package '${pkg}'.`, ident.src)
+            }
+        }
     }
 
     moduleDeclaration(ctx: any): ast.IModule {
@@ -59,16 +94,18 @@ export class Elaborator extends BaseElectronVisitor {
             ast.AddStmts(mod, this.visit(ctx.statements[0]))
         }
 
+        this.modules[mod.name] = mod
         return mod
+    }
+
+    identifiers(ctx: any): ast.IIdent[] {
+        return ctx.identifier.map((ctx: any) => this.visit(ctx))
     }
 
     identifier(ctx: any): ast.IIdent {
         return ast.Ident(ctx.Identifier[0].image, tokenToSrcLoc(ctx.Identifier[0]))
     }
 
-    identifiers(ctx: any): ast.IIdent[] {
-        return ctx.identifier.map((ctx: any) => this.visit(ctx))
-    }
 
     /*fullyQualifiedName(ctx: any): ast.IFQN {
         return ast.FQN(ctx.identifier.map((ctx: any) => this.visit(ctx)))
@@ -119,9 +156,16 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     // Statements
+    statements(ctx: any): ast.Stmt[] {
+        if (ctx.statement) {
+            return [].concat.apply([], ctx.statement.map((ctx: any) => this.visit(ctx)))
+        }
+        return []
+    }
+
     statement(ctx: any): ast.Stmt[] {
         if (ctx.attributeStatement) {
-            return [this.visit(ctx.attributeStatement[0])]
+            return this.visit(ctx.attributeStatement[0])
         }
 
         if (ctx.declaration) {
@@ -139,24 +183,30 @@ export class Elaborator extends BaseElectronVisitor {
         return []
     }
 
-    statements(ctx: any): ast.Stmt[] {
-        if (ctx.statement) {
-            return [].concat.apply([], ctx.statement.map((ctx: any) => this.visit(ctx)))
-        }
-        return []
-    }
-
-    attributeStatement(ctx: any): ast.ISetAttr {
+    attributeStatement(ctx: any): ast.Stmt[] {
         const attrs = ctx.attribute.map((ctx: any) => this.visit(ctx))
-        let setattr = ast.SetAttr(attrs)
+        const addAttrs = (stmt: ast.Stmt) => {
+            switch(stmt.tag) {
+                case 'port':
+                case 'net':
+                case 'cell':
+                    stmt.attrs = stmt.attrs.concat(attrs)
+                    break
+                case 'const':
+                case 'assign':
+                    break
+            }
+            return stmt
+        }
         if (ctx.statements) {
-            setattr.stmts = this.visit(ctx.statements[0])
+            return this.visit(ctx.statements[0]).map(addAttrs)
         } else if (ctx.declaration) {
-            setattr.stmts = this.visit(ctx.declaration[0])
-        } /*else if (ctx.fullyQualifiedNames) {
-            setattr.fqns = this.visit(ctx.fullyQualifiedNames[0])
-        }*/
-        return setattr
+            return this.visit(ctx.declaration[0]).map(addAttrs)
+        } else {
+            throwBug('attributeStatement')
+        }
+
+        return []
     }
 
     /*withStatement(ctx: any): ast.IWith {
@@ -239,6 +289,12 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     // Expressions
+    expressions(ctx: any): ast.Expr[] {
+        return ctx.expression.map((ctx: any) => {
+            return this.visit(ctx)
+        })
+    }
+
     expression(ctx: any): ast.Expr {
         let expr = null
 
@@ -246,8 +302,8 @@ export class Elaborator extends BaseElectronVisitor {
             expr = this.visit(ctx.literal[0])
         } else if (ctx.tupleExpression) {
             expr = this.visit(ctx.tupleExpression[0])
-        } else if (ctx.anonymousModule) {
-            expr = this.visit(ctx.anonymousModule[0])
+        } else if (ctx.anonymousCell) {
+            expr = this.visit(ctx.anonymousCell[0])
         } else if (ctx.identifier) {
             const ident = this.visit(ctx.identifier[0])
 
@@ -258,7 +314,11 @@ export class Elaborator extends BaseElectronVisitor {
                 expr.src.startColumn = ident.src.startColumn
             } else if (ctx.moduleInstantiation) {
                 expr = this.visit(ctx.moduleInstantiation[0])
-                expr.module = ident.id
+                if (ident.id in this.modules) {
+                    expr.module = this.modules[ident.id]
+                } else {
+                    this.logger.error(`Module '${ident.id}' not found.`, ident.src)
+                }
                 expr.src = ident.src
             } else {
                 expr = ident
@@ -338,12 +398,6 @@ export class Elaborator extends BaseElectronVisitor {
         return ast.Bool(true)
     }
 
-    expressions(ctx: any): ast.Expr[] {
-        return ctx.expression.map((ctx: any) => {
-            return this.visit(ctx)
-        })
-    }
-
     binaryOp(ctx: any): ast.IBinOp {
         const op = (() => {
           if (ctx.Plus) {
@@ -386,12 +440,34 @@ export class Elaborator extends BaseElectronVisitor {
                                   ctx.CloseSquare[0].endColumn)))
     }
 
-    anonymousModule(ctx: any): ast.IAnonMod {
-        return ast.AnonMod(this.visit(ctx.statements[0]))
+    anonymousCell(ctx: any): ast.IModInst {
+        let mod = ast.Module('')
+        mod.declaration = true
+        mod.src = tokenToSrcLoc(ctx.Cell[0])
+
+        let dict = ast.Dict()
+        const stmts = this.visit(ctx.statements[0])
+
+        for (let stmt of stmts) {
+            switch(stmt.tag) {
+                case 'port':
+                    mod.ports.push(stmt)
+                    break
+                case 'assign':
+                    dict.entries.push(ast.DictEntry(stmt.lhs, stmt.rhs))
+                    break
+                case 'const':
+                case 'cell':
+                case 'net':
+                    this.logger.error(`Anonymous cells can't declare consts, ` +
+                                      `cells or nets.`, mod.src)
+            }
+        }
+        return ast.ModInst(mod, [], dict, mod.src)
     }
 
     moduleInstantiation(ctx: any): ast.IModInst {
-        return ast.ModInst('', this.visit(ctx.parameterList[0]),
+        return ast.ModInst(ast.Module(''), this.visit(ctx.parameterList[0]),
                            this.visit(ctx.dictionary[0]))
     }
 
