@@ -5,33 +5,34 @@ import { SymbolTable } from './symbolTable'
 
 describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
-    const st = new SymbolTable<ast.IModule | ast.IPort>(
+    const st = new SymbolTable<ast.IPort>(
         dc.toPublisher('symbolTable.spec.ts', []))
-    const A = ast.Module('A')
+
+    const a = ast.Port(ast.Ident('a'), 'output')
+    const b = ast.Port(ast.Ident('b'), 'output')
+
+    st.enterScope('A')
 
     it('should return null when resolving undeclared symbol', () => {
-        expect(st.resolveSymbol(A.name)).to.equal(null)
+        expect(st.lookup(a.ident)).to.equal(null)
     })
 
     it('should return IAstSymbol when resolving a declared symbol', () => {
-        st.declareSymbol(A.name, A)
-        expect(st.resolveSymbol(A.name)).to.equal(A)
+        st.define(a.ident, a)
+        expect(st.lookup(a.ident)).to.equal(a)
     })
 
     it('should keep track of conflicting symbols', () => {
-        st.declareSymbol(A.name, A)
-        expect(st.resolveSymbol(A.name)).to.equal(A)
+        st.define(a.ident, a)
+        expect(st.lookup(a.ident)).to.equal(a)
     })
 
-    const B = ast.Module('B')
-    const a = ast.Port(ast.Ident('a'), 'output')
-
     it('should handle scopes', () => {
-        st.declareSymbol(B.name, B)
-        st.enterScope(B.name)
-        st.declareSymbol(a.ident.id, a)
-        expect(st.resolveSymbol(a.ident.id)).to.equal(a)
+        st.enterScope('B')
+        st.define(b.ident, b)
+        expect(st.lookup(b.ident)).to.equal(b)
         st.exitScope()
-        expect(st.resolveSymbol(a.ident.id)).to.equal(null)
+        expect(st.lookup(b.ident)).to.equal(null)
+        expect(st.lookup(a.ident)).to.equal(a)
     })
 })

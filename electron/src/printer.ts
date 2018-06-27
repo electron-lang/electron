@@ -190,7 +190,7 @@ function emitRef(ref: ast.IRef): IDoc {
 
 function emitModInst(inst: ast.IModInst): IDoc {
     return [
-        inst.module.name,
+        inst.module.anonymous ? emitModule(inst.module) : inst.module.name,
         emitParams(inst.params),
         ' ', emitDict(inst.dict)
     ]

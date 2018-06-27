@@ -101,6 +101,26 @@ export class DiagnosticCollector implements IDiagnosticConsumer {
     getDiagnostics(): IDiagnostic[] {
         return this.diagnostics
     }
+
+    reset() {
+        this.diagnostics = []
+    }
+}
+
+export class DiagnosticTrace implements IDiagnosticConsumer {
+    toPublisher(path: string, lines: string[]): DiagnosticPublisher {
+        return new DiagnosticPublisher(this, path, lines)
+    }
+
+    consume(diag: IDiagnostic) {
+        throw new Error(diag.message)
+    }
+
+    getDiagnostics(): IDiagnostic[] {
+        return []
+    }
+
+    reset() {}
 }
 
 export class DiagnosticLogger implements IDiagnosticConsumer {
@@ -133,4 +153,10 @@ export class DiagnosticLogger implements IDiagnosticConsumer {
         const lineMessage = `${line}\t${diag.context[0]}\n${indent}\n\n`
         console.error(lineMessage)
     }
+}
+
+export function throwBug(rule: string): void {
+    throw new Error('Programming Error: Parser/Elaborator missmatch ' +
+                    `at rule '${rule}'.\n` +
+                    'Please report the bug at https://github.com/electron-lang/electron')
 }

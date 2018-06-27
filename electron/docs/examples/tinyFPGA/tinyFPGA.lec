@@ -41,7 +41,7 @@ module Usb {
     cell R1 = $R(1.5k) {A='+3V3, B=dp}
 
     @bom("", "")
-    cell R2, R3 = $R(68) {A=dp, B=USB_P}, $R(68) {A=dn, B=USB_N}
+    cell R2, R3 = $R(68ohm) {A=dp, B=USB_P}, $R(68ohm) {A=dn, B=USB_N}
 }
 
 /// Voltage Regulation
@@ -198,7 +198,7 @@ module FpgaPower {
 /// FPGA PLL decoupling capacitors
 module FpgaPLL {
     analog '1V2, VCCPLL0, GNDPLL0
-    cell R4 = $R(100) {A='1V2, B=VCCPLL0}
+    cell R4 = $R(100ohm) {A='1V2, B=VCCPLL0}
     cell C6 = $C(10uF) {A=VCCPLL0, B=GNDPLL0}
     cell C7 = $C(100nF) {A=VCCPLL0, B=GNDPLL0}
 }
@@ -207,7 +207,7 @@ module FpgaPLL {
 module FpgaReset {
     analog '+3.3V, GND, CRESET_B
 
-    cell R6 = $R(0) {A='+3.3V, B=CRESET_B}
+    cell R6 = $R(0ohm) {A='+3.3V, B=CRESET_B}
     cell TP2 = Tp() {A=CRESET_B}
     cell SW1 = cell {analog A=GND; analog B=CRESET_B}
 }
@@ -265,6 +265,12 @@ module ICE40_LP8K_CM81 {
 }
 
 export module TinyFPGA {
+    net '+5V, vbus, '+3V3, GND, USB_P, USB_N
+    net dp, dn, gnd, '+1V2, CLK, SCK, SDO, SDI, SS
+    net '+3.3V, '2B, '221, '224, '3A, '3B, '185, '177, '54, '55
+    net '10A, '10B, '24B, '114, '174, '116, '119, '148, '141_GBIN2
+    net VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3, VCCPLL0, GNDPLL0
+    net CRESET_B, '1V2
     cell usb = Usb() {*}
     cell vreg = Vreg() {*}
     cell clock = Clock() {*}
@@ -274,10 +280,9 @@ export module TinyFPGA {
     cell fpga_pll = FpgaPLL() {*}
     cell fpga_reset = FpgaReset() {*}
 
-    net '+3V3, SS
     cell R5 = $R(10k) {A='+3V3, B=SS}
 
-    net VPP_FAST, CDONE, SDO, SCK, CRESET_B, SDI, GND, '81_GBIN5, '54, '55
+    net VPP_FAST, CDONE, '81_GBIN5
     cell fpga = ICE40_LP8K_CM81() {
         VPP_FAST
         VPP_2V5='+3V3

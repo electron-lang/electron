@@ -55,7 +55,7 @@ module PowerMosfetModel(RB: Ohm, LB: Henry, RD: Ohm, LD: Henry,
     @rotate(270)
     cell Rs = $R(RD) {A=S, B=rs}
     @rotate(270)
-    cell Ls = $R(LD) {A=rs, B=s}
+    cell Ls = $L(LD) {A=rs, B=s}
 
     // Ideal mosfet
     cell mos = $M() {G=g, D=d, S=s}

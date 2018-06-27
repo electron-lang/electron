@@ -39,9 +39,11 @@ export class LspServer {
         // compile with electron
         let doc = this.openedDocumentUris.get(uri)
         if (doc !== undefined) {
-            let dc = new DiagnosticCollector()
-            let f = new File(dc, uriToPath(uri), doc.text).compile()
-            let diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
+            const path = uriToPath(uri)
+            const dc = new DiagnosticCollector()
+            const f = new File(dc, path, doc.text).compile()
+            const diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
+                .filter((d) => d.path === path)
                 .map(convertDiagnostic)
             this.options.lspClient.publishDiagnostics({
                 uri,

@@ -56,8 +56,9 @@ describe('Pretty Printer', () => {
         })
 
         it('should emit mod insts', () => {
-            const dict = ast.Dict()
-            dict.entries.push(ast.DictEntry(ast.Ident('A'), ast.Ident('a')))
+            const dict = ast.Dict([
+                ast.DictEntry(ast.Ident('A'), ast.Ident('a'))
+            ])
             const inst = ast.ModInst(ast.Module('$R'), [
                 ast.Param(0, ast.Unit(10, 3, ''))
             ], dict)

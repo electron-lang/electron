@@ -28,7 +28,7 @@ export module DACTestbench {
         vccio,
         gnd,
         vdd, vss,
-        data,
+        data=data,
         out,
     }
 
@@ -43,5 +43,5 @@ export module DACTestbench {
     //}
 
     // Capacitive output load
-    cell load = $C(1nF) { out, gnd }
+    cell load = $C(1nF) { A=out, B=gnd }
 }

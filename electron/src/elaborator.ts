@@ -2,23 +2,19 @@ import * as ast from './ast'
 import { AddStmts } from './ast'
 import { allAttributes } from './attributes'
 import { allTypeHandlers } from './parameters'
-import { IDiagnostic, DiagnosticPublisher,
+import { IDiagnostic, DiagnosticPublisher, throwBug,
          SrcLoc, Pos, ISrcLoc, tokenToSrcLoc } from './diagnostic'
 import { File } from './file'
 import { parserInstance } from './parser'
+import { TypeChecker } from './typechecker'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
-
-function throwBug(rule: string): void {
-    throw new Error('Programming Error: Parser/Elaborator missmatch ' +
-                    `at rule '${rule}'.\n` +
-                    'Please report the bug at https://github.com/electron-lang/electron')
-}
 
 export class Elaborator extends BaseElectronVisitor {
     private paramCounter: number = 0
     private top: ast.IDesign = ast.Design()
     private modules: {[name: string]: ast.IModule} = {}
+    private tc: TypeChecker = new TypeChecker(this.logger)
 
     constructor(private logger: DiagnosticPublisher, private file: File) {
         super()
@@ -69,6 +65,7 @@ export class Elaborator extends BaseElectronVisitor {
                                       ident.src)
                 } else {
                     this.modules[ident.id] = mod
+                    this.tc.defineModule(mod)
                 }
             } else {
                 this.logger.error(`No exported module '${ident.id}' ` +
@@ -80,6 +77,7 @@ export class Elaborator extends BaseElectronVisitor {
     moduleDeclaration(ctx: any): ast.IModule {
         let ident = this.visit(ctx.identifier[0])
         let mod = ast.Module(ident.id, [], ident.src)
+        this.tc.enterScope(ident.id)
 
         if (mod.name[0].toUpperCase() !== mod.name[0]) {
             this.logger.warn(
@@ -111,6 +109,7 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         this.modules[mod.name] = mod
+        this.tc.exitScope()
         return mod
     }
 
@@ -159,6 +158,7 @@ export class Elaborator extends BaseElectronVisitor {
     parameterDeclaration(ctx: any): ast.IParamDecl {
         const param = ast.ParamDecl(this.visit(ctx.identifier[0]),
                                     this.visit(ctx.identifier[1]))
+        this.tc.define(param.name, param)
 
         if (param.name.id.toUpperCase() !== param.name.id) {
             this.logger.warn(`Parameter '${param.name.id}' contains ` +
@@ -252,6 +252,7 @@ export class Elaborator extends BaseElectronVisitor {
 
     assignStatement(ctx: any): ast.IAssign[] {
         const lhs = this.visit(ctx.expressions[0])
+
         const rhs = this.visit(ctx.expressions[1])
         if(lhs.length != rhs.length) {
             this.logger.error('Unbalanced assignment', {
@@ -264,7 +265,9 @@ export class Elaborator extends BaseElectronVisitor {
 
         let assigns: ast.IAssign[] = []
         for (let i = 0; i < Math.min(lhs.length, rhs.length); i++) {
-            assigns.push(ast.Assign(lhs[i], rhs[i]))
+            const assign = ast.Assign(lhs[i], rhs[i])
+            this.tc.checkAssign(assign)
+            assigns.push(assign)
         }
         return assigns
     }
@@ -296,6 +299,9 @@ export class Elaborator extends BaseElectronVisitor {
             }
         })()
 
+        for (let decl of decls) {
+            this.tc.define(decl.ident, decl)
+        }
 
         let assigns: ast.IAssign[] = []
         if (ctx.expressions) {
@@ -310,7 +316,9 @@ export class Elaborator extends BaseElectronVisitor {
             }
 
             for (let i = 0; i < Math.min(ids.length, exprs.length); i++) {
-                assigns.push(ast.Assign(ids[i], exprs[i]))
+                const assign = ast.Assign(ids[i], exprs[i])
+                this.tc.checkAssign(assign)
+                assigns.push(assign)
             }
         }
 
@@ -319,7 +327,9 @@ export class Elaborator extends BaseElectronVisitor {
 
     width(ctx: any): ast.Expr {
         if (ctx.expression) {
-            return this.visit(ctx.expression[0])
+            const expr = this.visit(ctx.expression[0])
+            this.tc.checkIsInteger(expr)
+            return expr
         }
         return ast.Integer(1)
     }
@@ -340,6 +350,7 @@ export class Elaborator extends BaseElectronVisitor {
             expr = this.visit(ctx.tupleExpression[0])
         } else if (ctx.anonymousCell) {
             expr = this.visit(ctx.anonymousCell[0])
+            this.tc.checkModInst(expr)
         } else if (ctx.identifier) {
             const ident = this.visit(ctx.identifier[0])
 
@@ -351,9 +362,13 @@ export class Elaborator extends BaseElectronVisitor {
                 expr = ref
             } else if (ctx.moduleInstantiation) {
                 const inst = this.visit(ctx.moduleInstantiation[0]) as ast.IModInst
+                inst.src = ident.src
+                // Lookup module
                 if (ident.id in this.modules) {
                     inst.module = this.modules[ident.id]
+                    // Elaborate star
                     if (inst.dict.star) {
+                        inst.dict.star = false
                         let dict: {[port: string]: ast.IDictEntry} = {}
                         for (let entry of inst.dict.entries) {
                             dict[entry.ident.id] = entry
@@ -367,10 +382,11 @@ export class Elaborator extends BaseElectronVisitor {
                             }
                         }
                     }
+                    // Typecheck
+                    this.tc.checkModInst(inst)
                 } else {
                     this.logger.error(`Module '${ident.id}' not found.`, ident.src)
                 }
-                inst.src = ident.src
                 expr = inst
             } else {
                 expr = ident
@@ -480,9 +496,11 @@ export class Elaborator extends BaseElectronVisitor {
 
     referenceExpression(ctx: any): ast.IRef {
         const from_ = this.visit(ctx.expression[0])
+        this.tc.checkIsInteger(from_)
         let to = from_
         if (ctx.expression[1]) {
             to = this.visit(ctx.expression[1])
+            this.tc.checkIsInteger(to)
         }
 
         return ast.Ref(ast.Ident(''), from_, to,
@@ -493,11 +511,12 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     anonymousCell(ctx: any): ast.IModInst {
-        let mod = ast.Module('')
+        let mod = ast.Module(undefined)
         mod.declaration = true
         mod.src = tokenToSrcLoc(ctx.Cell[0])
+        this.tc.enterScope()
 
-        let dict = ast.Dict()
+        let dict = ast.Dict([])
         const stmts = this.visit(ctx.statements[0])
 
         for (let stmt of stmts) {
@@ -515,19 +534,23 @@ export class Elaborator extends BaseElectronVisitor {
                                       `cells or nets.`, mod.src)
             }
         }
+
+        this.tc.exitScope()
         return ast.ModInst(mod, [], dict, mod.src)
     }
 
     moduleInstantiation(ctx: any): ast.IModInst {
-        return ast.ModInst(ast.Module(''), this.visit(ctx.parameterList[0]),
-                           this.visit(ctx.dictionary[0]))
+        const inst = ast.ModInst(ast.Module(''), this.visit(ctx.parameterList[0]),
+                                 this.visit(ctx.dictionary[0]))
+
+        return inst
     }
 
     dictionary(ctx: any): ast.IDict {
-        let dict = ast.Dict(SrcLoc(Pos(ctx.OpenCurly[0].startLine,
-                                       ctx.OpenCurly[0].startColumn),
-                                   Pos(ctx.CloseCurly[0].endLine,
-                                       ctx.CloseCurly[0].endColumn)))
+        let dict = ast.Dict([], SrcLoc(Pos(ctx.OpenCurly[0].startLine,
+                                           ctx.OpenCurly[0].startColumn),
+                                       Pos(ctx.CloseCurly[0].endLine,
+                                           ctx.CloseCurly[0].endColumn)))
 
         if (ctx.Star) {
             dict.star = true

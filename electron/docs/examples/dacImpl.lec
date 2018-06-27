@@ -3,9 +3,9 @@ import TinyFPGA from "./tinyFPGA/tinyFPGA"
 
 module Pcb {
     net clk, vccio, gnd, vdd, vss, data, out
-    cell tiny = TinyFPGA() {
-        clk, vccio, gnd, vdd, vss, data, out
-    }
+    //cell tiny = TinyFPGA {
+    //    clk, vccio, gnd, vdd, vss, data, out
+    //}
     cell dac = DAC(WIDTH=8, L=1uH, C=1nF) {
         clk,
         vccio,

@@ -1,4 +1,18 @@
-import { DiagnosticPublisher, DiagnosticLogger,
+import * as ast from './ast'
+import { DiagnosticPublisher } from './diagnostic'
+
+export class Validator {
+
+    constructor(private logger: DiagnosticPublisher) {
+
+    }
+
+    validate(design: ast.IDesign): undefined {
+        return undefined
+    }
+}
+
+/*import { DiagnosticPublisher, DiagnosticLogger,
          emptySrcLoc, ISrcLoc } from './diagnostic'
 import { SymbolTable } from './symbolTable'
 import { Ast } from './ast'
@@ -35,7 +49,7 @@ export class Validator {
 
         irmod.attrs = this.compileAttrs(mod.attrs)
 
-        /*this.validateParamDecls(mod.params)
+        this.validateParamDecls(mod.params)
 
         for (let c of mod.consts) {
             this.validateConst(c)
@@ -55,7 +69,7 @@ export class Validator {
 
         for (let assign of mod.assigns) {
             this.validateAssign(assign)
-        }*/
+        }
 
         this.symbolTable.exitScope()
     }
@@ -71,25 +85,6 @@ export class Validator {
         return irattrs
     }
 
-    validateParamDecls(params: ast.IParamDecl[]) {
-        /*for (let param of params) {
-            let irparam = ir.Param(param.name.id, null,
-                                   param.name.src)
-            this.symbolTable.declareSymbol(param.name.toString(), irparam)
-
-            if (param.name.id.toUpperCase() !== param.name.id) {
-                this.logger.warn(`Parameter '${param.name.id}' contains ` +
-                                 `lowercase letters.`,
-                                 param.name.src)
-            }
-
-            if (!(param.ty.id in allTypeHandlers)) {
-                this.logger.error(`Unknown parameter type '${param.ty.id}'`,
-                                  param.ty.src)
-            }
-        }*/
-    }
-
     validateIdentifier(ident: ast.IIdent): Declarable | null {
         let irdecl = this.symbolTable.resolveSymbol(ident.id)
         if (!irdecl) {
@@ -99,7 +94,7 @@ export class Validator {
     }
 
     validateSetAttr(setAttrs: ast.ISetAttr) {
-        /*let irattrs = this.validateAttributes(setAttrs.attrs)
+        let irattrs = this.validateAttributes(setAttrs.attrs)
         for (let stmt of setAttrs.stmts) {
             this.validateStmt(stmt)
             if (stmt.tag in ['port', 'net', 'cell', 'const']) {
@@ -119,7 +114,7 @@ export class Validator {
                     irdecl.attrs.push(irattr)
                 }
             }
-        }*/
+        }
     }
 
     validateConst(c: ast.IConst) {
@@ -163,7 +158,7 @@ export class Validator {
     evaluateRef(ref: ast.IRef): ast.Expr[] {
         return []//this.evalIdent(ref.ident)
 
-        /*if (!(ref.from < sig.width && ref.to < sig.width)) {
+        if (!(ref.from < sig.width && ref.to < sig.width)) {
             this.errors.push({
                 message: `Out of bounds access of '${ref.identifier.id}'.`,
                 src: ref.src || emptySrcLoc,
@@ -180,7 +175,7 @@ export class Validator {
                 severity: DiagnosticSeverity.Error,
                 errorType: DiagnosticType.TypeCheckingError,
             })
-        }*/
+        }
     }
 
     evaluateTuple(tuple: ast.ITuple): ast.Expr[] {
@@ -189,7 +184,7 @@ export class Validator {
 
     evalModInst(cell: ast.IModInst): ast.Expr[] {
         return []
-        /*let mod = this.symbolTable.resolveSymbol(cell.module)
+        let mod = this.symbolTable.resolveSymbol(cell.module)
 
         if (mod) {
             for (let param of cell.parameters) {
@@ -223,7 +218,7 @@ export class Validator {
 
                 // Check that assignment is to a port
                 // Make sure unresolved symbol error only gets emitted once
-                /*if (lhsTy.width) {
+                if (lhsTy.width) {
                     let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                     if (decl && decl.declType === AstDeclType.Net) {
                         this.logger.error(`Illegal assignment to internal net ` +
@@ -237,7 +232,7 @@ export class Validator {
 
         for (let entry of cell.dict.entries) {
             this.validateExpression(entry.expr)
-        }*/
+        }
     }
 
     validateDict(mod: ast.IModule, dict: ast.IDict) {
@@ -249,7 +244,7 @@ export class Validator {
 
             // Check that assignment is to a port
             // Make sure unresolved symbol error only gets emitted once
-            /*if (lhsTy.width) {
+            if (lhsTy.width) {
                 let decl = this.symbolTable.resolveDeclaration(entry.identifier)
                 if (decl && decl.declType === AstDeclType.Net) {
                     this.logger.error(
@@ -257,7 +252,7 @@ export class Validator {
                             `'${decl.identifier.id}' in '${mod.identifier.id}'.`,
                         entry.identifier.src)
                 }
-            }*/
+            }
         }
         this.symbolTable.exitScope()
 
@@ -293,4 +288,4 @@ export class Validator {
 
         return [ast.Integer(res)]
     }
-}
+}*/

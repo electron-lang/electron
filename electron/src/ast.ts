@@ -135,7 +135,8 @@ export function Import(ids: IIdent[], pkg: string, src?: ISrcLoc): IImport {
     }
 }
 
-interface HasStmts {
+interface HasStmtsOrParamDecl {
+    params: IParamDecl[]
     consts: IConst[]
     nets: INet[]
     ports: IPort[]
@@ -143,19 +144,23 @@ interface HasStmts {
     assigns: IAssign[]
 }
 
-export interface IModule extends HasStmts {
+export interface IModule extends HasStmtsOrParamDecl {
     tag: 'module'
     attrs: IAttr[]
     exported: boolean
     declaration: boolean
+    anonymous: boolean
     name: string
-    params: IParamDecl[]
     src: ISrcLoc
 }
 
-export function AddStmts(mod: HasStmts, stmts: Stmt[]) {
+export type StmtOrParamDecl = Stmt | IParamDecl
+export function AddStmts(mod: HasStmtsOrParamDecl, stmts: StmtOrParamDecl[]) {
     for (let stmt of stmts) {
         switch(stmt.tag) {
+            case 'param-decl':
+                mod.params.push(stmt)
+                break
             case 'const':
                 mod.consts.push(stmt)
                 break
@@ -175,13 +180,15 @@ export function AddStmts(mod: HasStmts, stmts: Stmt[]) {
     }
 }
 
-export function Module(name: string, stmts?: Stmt[], src?: ISrcLoc): IModule {
+export function Module(name: string | undefined, stmts?: StmtOrParamDecl[],
+                       src?: ISrcLoc): IModule {
     let mod: IModule = {
         tag: 'module',
         attrs: [],
         exported: false,
         declaration: false,
-        name,
+        anonymous: name === undefined,
+        name: name || '',
         params: [],
         src: src || emptySrcLoc,
         consts: [],
@@ -510,10 +517,10 @@ export interface IDict {
     src: ISrcLoc
 }
 
-export function Dict(src?: ISrcLoc): IDict {
+export function Dict(entries: IDictEntry[], src?: ISrcLoc): IDict {
     return {
         tag: 'dict',
-        entries: [],
+        entries,
         star: false,
         starSrc: emptySrcLoc,
         src: src || emptySrcLoc,

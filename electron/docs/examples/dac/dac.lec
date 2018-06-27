@@ -7,7 +7,7 @@ declare module PLL {input A output Y}
 export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
     @clock
     input clk
-    input[WIDTH] in
+    input[WIDTH] data
     output out
     analog vccio, gnd
     analog vdd, vss
@@ -21,6 +21,7 @@ export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
     net dac_in, dac_out
     cell ddac = DACDigital(WIDTH) {
         dac_clk,
+        data,
         out=dac_in[0],
         out_inv=dac_in[1],
     }

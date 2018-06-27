@@ -1,68 +1,81 @@
 import { ISrcLoc, emptySrcLoc, DiagnosticPublisher,
          IDiagnostic } from './diagnostic'
 
-export interface ISymbolTable<Declarable> {
-    [symbol: string]: ISymbolTableEntry<Declarable>,
+interface ISymbolTable<Declarable> {
+    [key: string]: IScope<Declarable>
 }
 
-export interface ISymbolTableEntry<Declarable> {
-    ir: Declarable
-    symbols: ISymbolTable<Declarable>
+export interface IScope<Declarable> {
+    [symbol: string]: IEntry<Declarable>,
+}
+
+interface IEntry<Declarable> {
+    sym: ISymbol
+    decl: Declarable
+}
+
+interface ISymbol {
+    id: string,
+    src: ISrcLoc,
 }
 
 export class SymbolTable<Declarable> {
-    private symbols: ISymbolTable<Declarable> = {}
-    private scopes: ISymbolTable<Declarable>[] = []
+    private scopes: ISymbolTable<Declarable> = {}
+    private currScope: IScope<Declarable> = {}
+    private scopeStack: IScope<Declarable>[] = []
 
-    constructor(private logger: DiagnosticPublisher) {
-        this.scopes.push(this.symbols)
-    }
+    constructor(private logger: DiagnosticPublisher) {}
 
-    private currentScope(): ISymbolTable<Declarable> {
-        return this.scopes[this.scopes.length - 1]
-    }
+    enterScope(scope?: string | IScope<Declarable>) {
+        this.scopeStack.push(this.currScope)
 
-    private resolve(symbol: string): ISymbolTableEntry<Declarable> | null {
-        for (let i = 0; i < this.scopes.length; i++) {
-            const scopeIdx = this.scopes.length - 1 - i
-            if (symbol in this.scopes[scopeIdx]) {
-                return this.scopes[scopeIdx][symbol]
+        if (typeof scope === 'undefined') {
+            this.currScope = {}
+        } else if (typeof scope === 'string') {
+            if (!(scope in this.scopes)) {
+                this.scopes[scope] = {}
             }
-        }
-        return null
-    }
-
-    public resolveSymbol(symbol: string): Declarable | null {
-        const entry = this.resolve(symbol)
-        if (entry) {
-            return entry.ir
-        }
-        return null
-    }
-
-    enterScope(symbol: string) {
-        let entry = this.resolve(symbol)
-        if (entry) {
-            this.scopes.push(entry.symbols)
+            this.currScope = this.scopes[scope]
         } else {
-            this.scopes.push({})
+            this.currScope = scope
         }
     }
 
-    exitScope() {
-        this.scopes.pop()
+    exitScope(): IScope<Declarable> {
+        const prev = this.currScope
+        const scope = this.scopeStack.pop()
+        if (scope) {
+            this.currScope = scope
+        }
+        return prev
     }
 
-    public declareSymbol(symbol: string, ir: Declarable): boolean {
-        const scope = this.currentScope()
-        if (symbol in scope) {
-            this.logger.error(`Conflicting identifiers '${symbol}'.`,
-                              (ir as any)['src'] || emptySrcLoc)
-            this.logger.error(`Conflicting identifiers '${symbol}'.`,
-                              (scope[symbol].ir as any)['src'] || emptySrcLoc)
+    lookup(symbol: ISymbol): Declarable | null {
+        if (symbol.id in this.currScope) {
+            return this.currScope[symbol.id].decl
+        }
+
+        this.logger.error(`Unknown symbol '${symbol.id}'`, symbol.src)
+        return null
+    }
+
+
+    define(symbol: ISymbol, decl: Declarable): boolean {
+        if (symbol.id in this.currScope) {
+            this.logger.error(`Conflicting identifiers '${symbol.id}'.`,
+                              symbol.src)
+            this.logger.error(`Conflicting identifiers '${symbol.id}'.`,
+                              this.currScope[symbol.id].sym.src)
             return false
         }
-        scope[symbol] = { ir, symbols: {}}
+        this.currScope[symbol.id] = { sym: symbol, decl }
         return true
+    }
+
+    dump() {
+        console.log('All scopes:')
+        console.log(JSON.stringify(this.scopes))
+        console.log('Scope stack:')
+        console.log(JSON.stringify(this.scopeStack))
     }
 }
