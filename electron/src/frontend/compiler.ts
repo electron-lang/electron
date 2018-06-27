@@ -1,44 +1,117 @@
-import * as ast from './ast'
-import { DiagnosticPublisher } from './diagnostic'
+import * as ast from '../ast'
+import * as ir from '../backend/ir'
+import { DiagnosticPublisher } from '../diagnostic'
+import { SymbolTable } from '../symbolTable'
+import { matchASTExpr } from '../ast';
 
-export class Validator {
+type Value = number | string | boolean | ir.IBitVec | ir.ICell | ir.IRef
+    | ir.IConcat | ir.ICell[] | ir.INet | ir.IPort
+
+export class ASTCompiler {
+    private st: SymbolTable<Value>
 
     constructor(private logger: DiagnosticPublisher) {
-
+        this.st = new SymbolTable(logger)
     }
 
-    validate(design: ast.IDesign): undefined {
-        return undefined
+    compile(design: ast.IDesign): ir.IModule[] {
+        let modules: ir.IModule[] = []
+        for (let mod of design.modules) {
+            if (mod.exported && mod.params.length === 0) {
+                modules = modules.concat(this.compileModule(mod, []))
+            }
+        }
+        return modules
+    }
+
+    compileModule(mod: ast.IModule, params: ast.IParam[]): ir.IModule[] {
+        const irmod = ir.Module(mod.name)
+
+        for (let param of params) {
+            // No longer has numeric name
+            // Resolved by type checker
+            const name = (param as any).name
+            this.st.define(name, this.evalExpr(param.value))
+        }
+
+        for (let cell of mod.cells) {
+            const width = this.evalExpr(cell.width) as number
+            let cells = []
+            if (width > 1) {
+                for (let i = 0; i < width; i++) {
+                    cells.push(ir.Cell(cell.ident.id + '$' + i.toString()))
+                }
+            } else {
+                this.st.define(cell.ident, ir.Cell(cell.ident.id))
+            }
+        }
+
+        for (let port of mod.ports) {
+            const p = ir.Port(port.ident.id, port.ty,
+                              this.evalExpr(port.width) as number,
+                              port.ident.src)
+            this.st.define(port.ident, p)
+        }
+
+        for (let net of mod.nets) {
+            const n = ir.Net(net.ident.id, this.evalExpr(net.width) as number,
+                             net.ident.src)
+            this.st.define(net.ident, n)
+        }
+
+        for (let assign of mod.assigns) {
+            //assign.lhs
+        }
+
+        return []
+    }
+
+    evalExpr(expr: ast.Expr): Value {
+        return 0 /*matchASTExpr({
+            Tuple: t => this.evalTuple(t),
+            Ident: i => this.st.lookup(i),
+            Ref: r => this.evalRef(r),
+            ModInst: inst => inst,
+            BinOp: op => this.evalBinOp(op),
+            Integer: n => n.value,
+            String: str => str.value,
+            BitVector: bv => bv,
+            Unit: u => u.value * 10 ** u.exp,
+            Real: r => r.value,
+            Bool: b => b.value,
+        })(expr)*/
+    }
+
+    evalTuple(t: ast.ITuple): ir.IConcat {
+        return ir.Concat(t.exprs.map(this.evalExpr) as any)
+    }
+
+    evalRef(ref: ast.IRef): ir.IRef {
+        return ir.Ref(this.st.lookup(ref.ident) as any, // should never fail
+                      this.evalExpr(ref.from) as number,
+                      this.evalExpr(ref.to) as number)
+    }
+
+    evalBinOp(op: ast.IBinOp): Value {
+        const lhs = this.evalExpr(op.lhs) as number
+        const rhs = this.evalExpr(op.rhs) as number
+
+        switch (op.op) {
+            case '+':
+                return lhs + rhs
+            case '-':
+                return lhs - rhs
+            case '*':
+                return lhs - rhs
+            case '<<':
+                return lhs << rhs
+            case '>>':
+                return lhs >> rhs
+        }
     }
 }
 
-/*import { DiagnosticPublisher, DiagnosticLogger,
-         emptySrcLoc, ISrcLoc } from './diagnostic'
-import { SymbolTable } from './symbolTable'
-import { Ast } from './ast'
-import * as ast from './ast'
-import * as ir from './backend/ir'
-import { allAttributes } from './attributes'
-import { allTypeHandlers } from './parameters'
-import { File } from './file'
-
-type Declarable = ir.IModule | ir.ICell | ir.IPort | ir.INet | ir.IParam
-
-export class Validator {
-    private ir: ir.IModule[] = []
-    private symbolTable: SymbolTable<Declarable> = new SymbolTable(this.logger)
-
-    constructor(private logger: DiagnosticPublisher) {
-
-    }
-
-    validate(design: ast.IDesign) {
-        for (let mod of design.modules) {
-            this.compileModule(mod)
-        }
-        return this.ir
-    }
-
+/*
     compileModule(mod: ast.IModule) {
         let irmod = ir.Module(mod.name)
         irmod.src = mod.src || emptySrcLoc
@@ -261,31 +334,4 @@ export class Validator {
         }
     }
 
-    evaluateBinOp(op: ast.IBinOp): ast.Expr[] {
-        let lhs = this.evalExpr(op.lhs)[0]
-        let rhs = this.evalExpr(op.rhs)[0]
-        let res = 0
-
-        if (lhs.tag === 'integer' && rhs.tag === 'integer') {
-            let vl = lhs.value
-            let vr = rhs.value
-
-            switch (op.op) {
-                case '+':
-                    res = vl + vr
-                case '-':
-                    res = vl - vr
-                case '*':
-                    res = vl - vr
-                case '<<':
-                    res = vl << vr
-                case '>>':
-                    res = vl >> vr
-            }
-        } else {
-            this.logger.error('Binops can only be performed on integers.', op.src)
-        }
-
-        return [ast.Integer(res)]
-    }
 }*/

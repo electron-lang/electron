@@ -1,37 +1,26 @@
 import { ISrcLoc, emptySrcLoc } from '../diagnostic'
 
-export type IR = IModule | IIdent | IAttr | IParam | ICell | IPort | INet
-    | IAssign | Expr
+export type IR = IModule | IAttr | IParam | ICell | IAssign | Expr
 
-export interface IRPattern<T> {
-    Module: (mod: IModule) => T
-    Ident: (id: IIdent) => T
-    Attr: (attr: IAttr) => T
-    Param: (param: IParam) => T
-    Cell: (cell: ICell) => T
+export interface IRExprPattern<T> {
     Port: (port: IPort) => T
     Net: (net: INet) => T
-    Assign: (assign: IAssign) => T
     BitVec: (bv: IBitVec) => T
     Concat: (ref: IConcat) => T
     Ref: (ref: IRef) => T
 }
 
-export function matchIR<T>(p: IRPattern<T>): (ir: IR) => T {
-  return (ir: IR): T => {
+export interface IRPattern<T> extends IRExprPattern<T> {
+    Module: (mod: IModule) => T
+    Attr: (attr: IAttr) => T
+    Param: (param: IParam) => T
+    Cell: (cell: ICell) => T
+    Assign: (assign: IAssign) => T
+}
+
+export function matchIRExpr<T>(p: IRExprPattern<T>): (ir: Expr) => T {
+  return (ir: Expr): T => {
       switch(ir.tag) {
-          case 'module':
-              return p.Module(ir)
-          case 'ident':
-              return p.Ident(ir)
-          case 'attr':
-              return p.Attr(ir)
-          case 'param':
-              return p.Param(ir)
-          case 'cell':
-              return p.Cell(ir)
-          case 'assign':
-              return p.Assign(ir)
           case 'port':
               return p.Port(ir)
           case 'net':
@@ -42,6 +31,25 @@ export function matchIR<T>(p: IRPattern<T>): (ir: IR) => T {
               return p.Concat(ir)
           case 'ref':
               return p.Ref(ir)
+      }
+  }
+}
+
+export function matchIR<T>(p: IRPattern<T>): (ir: IR) => T {
+  return (ir: IR): T => {
+      switch(ir.tag) {
+          case 'module':
+              return p.Module(ir)
+          case 'attr':
+              return p.Attr(ir)
+          case 'param':
+              return p.Param(ir)
+          case 'cell':
+              return p.Cell(ir)
+          case 'assign':
+              return p.Assign(ir)
+          default:
+              return matchIRExpr(p)(ir)
       }
   }
 }
@@ -74,11 +82,12 @@ export function Module(name: string): IModule {
 export interface IAttr {
     tag: 'attr'
     name: string
-    value: string
+    value: boolean | number | string
     src: ISrcLoc
 }
 
-export function Attr(name: string, value: string, src?: ISrcLoc): IAttr {
+export function Attr(name: string, value: boolean | number | string,
+                     src?: ISrcLoc): IAttr {
     return {
         tag: 'attr',
         name,
@@ -90,11 +99,12 @@ export function Attr(name: string, value: string, src?: ISrcLoc): IAttr {
 export interface IParam {
     tag: 'param'
     name: string
-    value: any
+    value: number | string | boolean | IBitVec
     src: ISrcLoc
 }
 
-export function Param(name: string, value: any, src?: ISrcLoc): IParam {
+export function Param(name: string, value: number | string | boolean | IBitVec,
+                      src?: ISrcLoc): IParam {
     return {
         tag: 'param',
         name,
@@ -106,18 +116,18 @@ export function Param(name: string, value: any, src?: ISrcLoc): IParam {
 export interface ICell {
     tag: 'cell'
     name: string
-    module: IIdent
+    module: IModule
     attrs: IAttr[]
     params: IParam[]
     assigns: IAssign[]
     src: ISrcLoc
 }
 
-export function Cell(name: string, modName: string, src?: ISrcLoc): ICell {
+export function Cell(name: string, mod?: IModule, src?: ISrcLoc): ICell {
     return {
         tag: 'cell',
         name,
-        module: Ident(modName),
+        module: mod || Module(''),
         attrs: [],
         params: [],
         assigns: [],
@@ -183,7 +193,7 @@ export function Assign(lhs: Expr, rhs: Expr): IAssign {
 }
 
 // Expressions
-export type Expr = IBitVec | IConcat | IRef | IIdent
+export type Expr = IBitVec | IConcat | IRef | INet | IPort
 
 export interface IBitVec {
     tag: 'bitvec'
@@ -217,32 +227,18 @@ export function Concat(exprs: Expr[]): IConcat {
 
 export interface IRef {
     tag: 'ref'
-    ident: IIdent
+    sig: Expr
     from: number
     to: number
     src: ISrcLoc
 }
 
-export function Ref(id: IIdent, from: number, to: number): IRef {
+export function Ref(sig: Expr, from: number, to: number): IRef {
     return {
         tag: 'ref',
-        ident: id,
+        sig,
         from,
         to,
-        src: emptySrcLoc,
-    }
-}
-
-export interface IIdent {
-    tag: 'ident'
-    text: string
-    src: ISrcLoc
-}
-
-export function Ident(text: string): IIdent {
-    return {
-        tag: 'ident',
-        text,
         src: emptySrcLoc,
     }
 }

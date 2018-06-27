@@ -5,7 +5,7 @@ import * as ast from './ast'
 import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
 import { lexerInstance, parserInstance } from './parser'
 import { Elaborator } from './elaborator'
-import { Validator } from './validator'
+import { ASTCompiler } from './frontend/compiler'
 import { IModule } from './backend/ir'
 import { printIR } from './backend/printer'
 import { printAST } from './printer'
@@ -73,10 +73,10 @@ export class File {
         return this
     }
 
-    validate(): File {
+    emitModules(): File {
         if (!this.ast) return this
-        const validator = new Validator(this.logger)
-        this.ir = validator.validate(this.ast)
+        const cmp = new ASTCompiler(this.logger)
+        this.ir = cmp.compile(this.ast)
         return this
     }
 
@@ -99,7 +99,7 @@ export class File {
     }
 
     compile(): File {
-        return this.lex().parse().elaborate().validate().emitDeclarations()
+        return this.lex().parse().elaborate().emitDeclarations()
     }
 
     emitDeclarations(): File {

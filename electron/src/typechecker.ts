@@ -84,6 +84,7 @@ export class TypeChecker {
             })()
 
             if (pdecl) {
+                param.name = pdecl.name
                 this.checkParam(pdecl, param)
             } else {
                 const text = (param.name as any).id || param.name.toString()

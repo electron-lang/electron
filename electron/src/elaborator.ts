@@ -118,7 +118,11 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     identifier(ctx: any): ast.IIdent {
-        return ast.Ident(ctx.Identifier[0].image, tokenToSrcLoc(ctx.Identifier[0]))
+        let text = ctx.Identifier[0].image
+        if (text.startsWith("'")) {
+            text.substring(1)
+        }
+        return ast.Ident(text, tokenToSrcLoc(ctx.Identifier[0]))
     }
 
 

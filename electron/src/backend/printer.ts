@@ -1,8 +1,8 @@
 import { IDoc, nest, intersperse, enclose, punctuate, render,
          parens, braces, line } from 'prettier-printer'
 import { IR, IRPattern, matchIR, PortType, Expr, Bit,
-         IModule, IIdent, IAttr, IParam, IAssign, IPort, INet,
-         IConcat, IRef, ICell } from './ir'
+         IModule, IAttr, IParam, IAssign, IPort, INet,
+         IConcat, IRef, ICell, matchIRExpr } from './ir'
 
 export interface IPrint<T> {
     print: (e: T) => IDoc
@@ -34,11 +34,8 @@ class Printer implements IPrint<IR> {
                     '}',
                 ]
             },
-            Ident: (id) => {
-                return [id.text]
-            },
             Attr: (attr) => {
-                return ['@', attr.name, '(', attr.value, ')', line]
+                return ['@', attr.name, '(', String(attr.value), ')', line]
             },
             Param: (param) => {
                 return [param.name, '=', String(param.value)]
@@ -46,7 +43,7 @@ class Printer implements IPrint<IR> {
             Cell: (cell) => {
                 return [
                     this.printList(cell.attrs),
-                    'cell', ' ', cell.name, ' = ', cell.module.text,
+                    'cell', ' ', cell.name, ' = ', cell.module.name,
                     this.printArgList(cell.params),
                     ' ',
                     this.printConnectList(cell.assigns)
@@ -73,17 +70,29 @@ class Printer implements IPrint<IR> {
             Assign: (assign) => {
                 return [this.print(assign.lhs), ' = ', this.print(assign.rhs)]
             },
+            BitVec: (bv) => { return this.printExpr(bv) },
+            Concat: (concat) => { return this.printExpr(concat) },
+            Ref: (ref) => { return this.printExpr(ref) },
+        })(ir)
+    }
+
+    printExpr(expr: Expr): IDoc {
+        return matchIRExpr({
+            Port: (port) => port.name,
+            Net: (net) => net.name,
             BitVec: (bv) => {
                 return [bv.bits.length.toString(), "'", bv.bits]
             },
             Concat: (concat) => {
-                return this.printArgList(concat.exprs)
+                return enclose(
+                    parens, intersperse(
+                        ', ', concat.exprs.map((e) => this.printExpr(e))))
             },
             Ref: (ref) => {
-                return [ref.ident.text, '[', ref.from.toString(),
+                return [this.printExpr(ref.sig), '[', ref.from.toString(),
                         ':', ref.to.toString(), ']']
             }
-        })(ir)
+        })(expr)
     }
 
     printWidth(width: number): IDoc {

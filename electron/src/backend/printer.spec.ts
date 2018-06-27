@@ -1,20 +1,16 @@
 import { expect } from 'chai'
-import { Ident, Ref, Concat, BitVec, Net, Port,
+import { Ref, Concat, BitVec, Net, Port,
          Attr, Param, Cell, Module } from './ir'
 import { printIR as print } from './printer'
 
 
 describe('IR Printer', () => {
-    it('should print identifiers', () => {
-        expect(print(Ident('a'))).to.equal('a')
-    })
-
     it('should print references', () => {
-        expect(print(Ref(Ident('a'), 0, 2))).to.equal('a[0:2]')
+        expect(print(Ref(Net('a', 1), 0, 2))).to.equal('a[0:2]')
     })
 
     it('should print concatenations', () => {
-        expect(print(Concat([Ident('a'), Ident('b'), Ident('c')])))
+        expect(print(Concat([Net('a', 1), Net('b', 1), Net('c', 1)])))
             .to.equal('(a, b, c)')
     })
 
@@ -41,7 +37,7 @@ describe('IR Printer', () => {
     })
 
     it('should print cells', () => {
-        expect(print(Cell('R1', '$R'))).to.equal('cell R1 = $R() {}')
+        expect(print(Cell('R1', Module('$R')))).to.equal('cell R1 = $R() {}')
     })
 
     it('should print modules', () => {
