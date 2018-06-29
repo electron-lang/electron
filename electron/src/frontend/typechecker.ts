@@ -1,20 +1,12 @@
 import * as ast from './ast'
 import { matchASTExpr } from './ast';
-import { DiagnosticPublisher, throwBug } from './diagnostic'
-import { SymbolTable, IScope } from './frontend/symbolTable'
+import { DiagnosticPublisher, throwBug } from '../diagnostic'
 //import { allTypeHandlers } from './parameters';
 
-export type Declarable = ast.IParamDecl | ast.IConst | ast.IPort | ast.INet | ast.ICell
 
 export class TypeChecker {
-    private st: SymbolTable<Declarable>;
 
     constructor(private logger: DiagnosticPublisher) {
-        this.st = new SymbolTable(this.logger)
-    }
-
-    reset() {
-        this.st = new SymbolTable(this.logger)
     }
 
     typeError(expr: ast.Expr, expect: string, found: string): boolean {
@@ -23,53 +15,8 @@ export class TypeChecker {
         return false
     }
 
-    enterScope(name?: string) {
-        this.st.enterScope(name)
-    }
-
-    exitScope(): IScope<Declarable> {
-        return this.st.exitScope()
-    }
-
-    defineModuleElements(mod: ast.IModule) {
-        for (let p of mod.params) {
-            this.define(p.name, p)
-        }
-        for (let c of mod.consts) {
-            this.define(c.ident, c)
-        }
-        for (let p of mod.ports) {
-            this.define(p.ident, p)
-        }
-        for (let n of mod.nets) {
-            this.define(n.ident, n)
-        }
-        for (let c of mod.cells) {
-            this.define(c.ident, c)
-        }
-    }
-
-    defineModule(mod: ast.IModule): IScope<Declarable> {
-        this.enterScope(mod.name)
-        for (let p of mod.params) {
-            this.define(p.name, p)
-        }
-        for (let p of mod.ports) {
-            this.define(p.ident, p)
-        }
-        return this.exitScope()
-    }
-
-    define(ident: ast.IIdent, decl: Declarable) {
-        this.st.define(ident, decl)
-    }
-
-    lookup(sym: ast.IIdent) {
-        return this.st.lookup(sym)
-    }
-
-    checkModInst(inst: ast.IModInst) {
-        for (let param of inst.params) {
+    checkModInst(inst: ast.IInst) {
+        /*for (let param of inst.params) {
             const pdecl = (() => {
                 if (typeof param.name === 'number') {
                     return inst.module.params[param.name]
@@ -114,11 +61,11 @@ export class TypeChecker {
                     this.checkIsSignal(entry.expr)
                 }
             }
-        }
+        }*/
     }
 
-    checkParam(pdecl: ast.IParamDecl, param: ast.IParam) {
-        if (pdecl.ty.id === 'Integer') {
+    checkParam(param: ast.IParam, expr: ast.Expr) {
+        /*if (pdecl.ty.id === 'Integer') {
             this.checkIsInteger(param.value)
             return
         }
@@ -145,7 +92,7 @@ export class TypeChecker {
     }
 
     checkAssign(assign: ast.IAssign) {
-        let ident
+        /*let ident
         if (assign.lhs.tag === 'ref') {
             ident = assign.lhs.ident
         } else if (assign.lhs.tag === 'ident') {
@@ -168,11 +115,11 @@ export class TypeChecker {
         } else {
             this.logger.error(`Only assignments to an Ident or Ref are ` +
                               `supported.`, assign.lhs.src)
-        }
+        }*/
     }
 
-    checkIsInteger(expr: ast.Expr): boolean {
-        const error = (found: string) => {
+    checkIsInteger(expr: ast.Expr) {
+       /* const error = (found: string) => {
             return (e: ast.Expr) =>  this.typeError(e, 'Integer', found)
         }
         return matchASTExpr({
@@ -212,11 +159,11 @@ export class TypeChecker {
                 return this.checkIsInteger(e.lhs) &&
                     this.checkIsInteger(e.rhs)
             }
-        })(expr)
+        })(expr)*/
     }
 
-    checkIsCell(expr: ast.Expr): boolean {
-        const error = (found: string) => {
+    checkIsCell(expr: ast.Expr) {
+       /* const error = (found: string) => {
             return (e: ast.Expr) =>  this.typeError(e, 'Cell', found)
         }
         return matchASTExpr({
@@ -256,11 +203,11 @@ export class TypeChecker {
                 }
                 return false
             }
-        })(expr)
+        })(expr)*/
     }
 
-    checkIsSignal(expr: ast.Expr): boolean {
-        const error = (found: string) => {
+    checkIsSignal(expr: ast.Expr) {
+        /*const error = (found: string) => {
             return (e: ast.Expr) =>  this.typeError(e, 'Signal', found)
         }
         return matchASTExpr({
@@ -294,6 +241,6 @@ export class TypeChecker {
                 return this.checkIsSignal(e.lhs) &&
                     this.checkIsSignal(e.rhs)
             }
-        })(expr)
+        })(expr)*/
     }
 }

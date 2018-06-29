@@ -1,8 +1,8 @@
-import * as ast from '../ast'
+import * as ast from './ast'
 import * as ir from '../backend/ir'
 import { DiagnosticPublisher } from '../diagnostic'
-import { SymbolTable } from './symbolTable'
-import { matchASTExpr } from '../ast';
+import { SymbolTable, Symbol } from './symbolTable'
+import { matchASTStmt, matchASTExpr } from './ast';
 
 type Value = number | string | boolean | ir.IBitVec | ir.ICell | ir.IRef
     | ir.IConcat | ir.ICell[] | ir.INet | ir.IPort
@@ -14,53 +14,64 @@ export class ASTCompiler {
         this.st = new SymbolTable(logger)
     }
 
-    compile(design: ast.IDesign): ir.IModule[] {
-        let modules: ir.IModule[] = []
-        for (let mod of design.modules) {
+    compile(mods: ast.IModule[]): ir.IModule[] {
+        const irmods: ir.IModule[] = []
+        for (let mod of mods) {
             if (mod.exported && mod.params.length === 0) {
-                modules = modules.concat(this.compileModule(mod, []))
+                for (let irmod of this.compileModule(mod, [])) {
+                    irmods.push(irmod)
+                }
             }
         }
-        return modules
+        return irmods
     }
 
-    compileModule(mod: ast.IModule, params: ast.IParam[]): ir.IModule[] {
+    compileModule(mod: ast.IModule,
+                  params: [ast.IRef<ast.IParam>, ast.Expr][]): ir.IModule[] {
         const irmod = ir.Module(mod.name)
 
-        for (let param of params) {
-            // No longer has numeric name
-            // Resolved by type checker
-            const name = (param as any).name
-            this.st.define(name, this.evalExpr(param.value))
+        for (let [param, expr] of params) {
+            this.st.define(Symbol(param.ref.name, param.ref.src),
+                           this.evalExpr(expr))
         }
 
-        for (let cell of mod.cells) {
-            const width = this.evalExpr(cell.width) as number
-            let cells = []
-            if (width > 1) {
-                for (let i = 0; i < width; i++) {
-                    cells.push(ir.Cell(cell.ident.id + '$' + i.toString()))
+        for (let stmt of mod.stmts) {
+            matchASTStmt({
+                Module: (mod) => {},
+                Param: (p) => {},
+                Const: (c) => {
+                    this.st.define(Symbol(c.name, c.src), 0)
+                },
+                Port: (p) => {
+                    this.st.define(
+                        Symbol(p.name, p.src),
+                        ir.Port(p.name, p.ty,
+                                this.evalExpr(p.width) as number,
+                                p.src))
+                },
+                Net: (n) => {
+                    this.st.define(
+                        Symbol(n.name, n.src),
+                        ir.Net(n.name,
+                               this.evalExpr(n.width) as number,
+                               n.src))
+                },
+                Cell: (cell) => {
+                    const width = this.evalExpr(cell.width) as number
+                    let cells = []
+                    if (width > 1) {
+                        for (let i = 0; i < width; i++) {
+                            cells.push(ir.Cell(cell.name + '$' + i.toString()))
+                        }
+                    } else {
+                        this.st.define(Symbol(cell.name, cell.src),
+                                       ir.Cell(cell.name))
+                    }
+                },
+                Assign: (a) => {
+                    // TODO
                 }
-            } else {
-                this.st.define(cell.ident, ir.Cell(cell.ident.id))
-            }
-        }
-
-        for (let port of mod.ports) {
-            const p = ir.Port(port.ident.id, port.ty,
-                              this.evalExpr(port.width) as number,
-                              port.ident.src)
-            this.st.define(port.ident, p)
-        }
-
-        for (let net of mod.nets) {
-            const n = ir.Net(net.ident.id, this.evalExpr(net.width) as number,
-                             net.ident.src)
-            this.st.define(net.ident, n)
-        }
-
-        for (let assign of mod.assigns) {
-            //assign.lhs
+            })(stmt)
         }
 
         return []
@@ -86,10 +97,10 @@ export class ASTCompiler {
         return ir.Concat(t.exprs.map(this.evalExpr) as any)
     }
 
-    evalRef(ref: ast.IRef): ir.IRef {
-        return ir.Ref(this.st.lookup(ref.ident) as any, // should never fail
-                      this.evalExpr(ref.from) as number,
-                      this.evalExpr(ref.to) as number)
+    evalRange(range: ast.IRange): ir.IRef {
+        return ir.Ref({} as ir.Expr,//this.evalExpr(range.expr),
+                      this.evalExpr(range.start) as number,
+                      this.evalExpr(range.end) as number)
     }
 
     evalBinOp(op: ast.IBinOp): Value {
