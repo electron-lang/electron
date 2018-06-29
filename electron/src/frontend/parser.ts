@@ -350,7 +350,28 @@ class ElectronParser extends Parser {
 
     public anonymousCell = this.RULE('anonymousCell', () => {
         this.CONSUME(Cell)
-        this.SUBRULE(this.statements)
+        this.CONSUME(OpenCurly)
+        this.AT_LEAST_ONE({
+            DEF: () => this.SUBRULE(this.anonymousCellDeclaration)
+        })
+        this.CONSUME(CloseCurly)
+    })
+
+    public anonymousCellDeclaration = this.RULE('anonymousCellDeclaration', () => {
+        this.MANY(() => this.SUBRULE(this.attribute))
+        this.OR([
+            { ALT: () => this.CONSUME(Input) },
+            { ALT: () => this.CONSUME(Output) },
+            { ALT: () => this.CONSUME(Inout) },
+            { ALT: () => this.CONSUME(Analog) },
+        ])
+        this.SUBRULE(this.width)
+        this.SUBRULE(this.identifier)
+        this.OPTION(() => {
+            this.CONSUME(Assign)
+            this.SUBRULE(this.expression)
+        })
+        this.OPTION1(() => this.CONSUME(Semicolon))
     })
 
     public moduleInstantiation = this.RULE('moduleInstantiation', () => {

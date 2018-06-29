@@ -1,5 +1,4 @@
-import { ISrcLoc, emptySrcLoc, DiagnosticPublisher,
-         IDiagnostic } from './diagnostic'
+import { DiagnosticPublisher, ISrcLoc, emptySrcLoc } from '../diagnostic'
 
 interface ISymbolTable<Declarable> {
     [key: string]: IScope<Declarable>
@@ -14,9 +13,13 @@ interface IEntry<Declarable> {
     decl: Declarable
 }
 
-interface ISymbol {
+export interface ISymbol {
     id: string,
     src: ISrcLoc,
+}
+
+export function Symbol(id: string, src?: ISrcLoc): ISymbol {
+    return { id, src: src || emptySrcLoc }
 }
 
 export class SymbolTable<Declarable> {

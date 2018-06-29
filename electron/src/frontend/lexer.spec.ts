@@ -1,5 +1,5 @@
-import {expect} from 'chai'
-import {tokenize} from './index'
+import { expect } from 'chai'
+import { tokenize } from './parser'
 
 function getFirstTokenLabel(text: string): string {
     return (tokenize(text).tokens[0].tokenType || {tokenName: ''}).tokenName || ''

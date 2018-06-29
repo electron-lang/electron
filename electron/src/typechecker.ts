@@ -1,8 +1,8 @@
 import * as ast from './ast'
 import { matchASTExpr } from './ast';
 import { DiagnosticPublisher, throwBug } from './diagnostic'
-import { SymbolTable, IScope } from './symbolTable'
-import { allTypeHandlers } from './parameters';
+import { SymbolTable, IScope } from './frontend/symbolTable'
+//import { allTypeHandlers } from './parameters';
 
 export type Declarable = ast.IParamDecl | ast.IConst | ast.IPort | ast.INet | ast.ICell
 
@@ -135,9 +135,9 @@ export class TypeChecker {
             }
         }
 
-        if (!allTypeHandlers[pdecl.ty.id].isValid(param.value)) {
+        /*if (!allTypeHandlers[pdecl.ty.id].isValid(param.value)) {
             this.typeError(param.value, pdecl.ty.id, param.value.tag)
-        }
+        }*/
     }
 
     checkConn(port: ast.IPort, expr: ast.Expr) {

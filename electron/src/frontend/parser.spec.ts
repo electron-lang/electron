@@ -1,4 +1,4 @@
-import {parse, parseRule, parserInstance as parser} from './index'
+import {parse, parseRule, parserInstance as parser} from './parser'
 
 describe('Parser', () => {
     it('should parse design', () => {

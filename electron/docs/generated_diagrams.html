@@ -1044,7 +1044,7 @@
   {
     "type": "Rule",
     "name": "anonymousCell",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.Cell);\n            _this.SUBRULE(_this.statements);\n        }",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Cell);\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.AT_LEAST_ONE({\n                DEF: function () { return _this.SUBRULE(_this.anonymousCellDeclaration); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
     "definition": [
       {
         "type": "Terminal",
@@ -1054,9 +1054,142 @@
         "pattern": "cell"
       },
       {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "{",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "RepetitionMandatory",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "anonymousCellDeclaration",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "}",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "anonymousCellDeclaration",
+    "orgText": "function () {\n            _this.MANY(function () { return _this.SUBRULE(_this.attribute); });\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Input); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Output); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Inout); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Analog); } },\n            ]);\n            _this.SUBRULE(_this.width);\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expression);\n            });\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "attribute",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Input",
+                "label": "input",
+                "idx": 0,
+                "pattern": "input"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Output",
+                "label": "output",
+                "idx": 0,
+                "pattern": "output"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Inout",
+                "label": "inout",
+                "idx": 0,
+                "pattern": "inout"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Analog",
+                "label": "analog",
+                "idx": 0,
+                "pattern": "analog"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "type": "NonTerminal",
-        "name": "statements",
+        "name": "width",
         "idx": 0
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "=",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Semicolon",
+            "label": ";",
+            "idx": 0,
+            "pattern": ";"
+          }
+        ]
       }
     ]
   },

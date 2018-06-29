@@ -1,5 +1,5 @@
 import * as ast from './ast'
-import { IDiagnostic } from './diagnostic'
+import { IDiagnostic } from '../diagnostic'
 
 export interface ITypeHandler {
     isValid(value: ast.Expr): boolean

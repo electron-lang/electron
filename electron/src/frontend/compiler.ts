@@ -1,7 +1,7 @@
 import * as ast from '../ast'
 import * as ir from '../backend/ir'
 import { DiagnosticPublisher } from '../diagnostic'
-import { SymbolTable } from '../symbolTable'
+import { SymbolTable } from './symbolTable'
 import { matchASTExpr } from '../ast';
 
 type Value = number | string | boolean | ir.IBitVec | ir.ICell | ir.IRef

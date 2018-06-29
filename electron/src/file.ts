@@ -1,14 +1,14 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { IToken } from 'chevrotain'
-import * as ast from './ast'
 import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
-import { lexerInstance, parserInstance } from './parser'
-import { Elaborator } from './elaborator'
+import * as ast from './frontend/ast'
+import { lexerInstance, parserInstance } from './frontend/parser'
+import { Elaborator } from './frontend/elaborator'
 import { ASTCompiler } from './frontend/compiler'
-import { IModule } from './backend/ir'
+import { printAST } from './frontend/printer'
+import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
-import { printAST } from './printer'
 
 export class File {
     private logger: DiagnosticPublisher
@@ -19,8 +19,8 @@ export class File {
     private lines: string[]
     private tokens: IToken[] | undefined
     private cst: any
-    private ast: ast.IDesign | undefined
-    private ir: IModule[] | undefined
+    private ast: ast.IModule[] | undefined
+    private ir: ir.IModule[] | undefined
 
     constructor(private dc: IDiagnosticConsumer, path: string, text?: string) {
         this.path = resolve(path)
@@ -76,7 +76,7 @@ export class File {
     emitModules(): File {
         if (!this.ast) return this
         const cmp = new ASTCompiler(this.logger)
-        this.ir = cmp.compile(this.ast)
+        //this.ir = cmp.compile(this.ast)
         return this
     }
 
@@ -86,7 +86,9 @@ export class File {
 
     dumpAst(): void {
         if (this.ast) {
-            console.log(printAST(this.ast))
+            for (let mod of this.ast) {
+                console.log(printAST(mod))
+            }
         }
     }
 
@@ -127,18 +129,18 @@ export class File {
     }
 }
 
-function extractDeclarations(design: ast.IDesign): ast.IModule[] {
+function extractDeclarations(mods: ast.IModule[]): ast.IModule[] {
     let dmods: ast.IModule[] = []
-    for (let mod of design.modules) {
+    for (let mod of mods) {
         if (!mod.exported) {
             continue
         }
-        let dmod = ast.Module(mod.name)
+        let dmod = ast.Module(mod.name, mod.stmts.filter((stmt) => {
+            return stmt.tag === 'param' || stmt.tag === 'port'
+        }))
         dmod.attrs = mod.attrs
         dmod.exported = true
         dmod.declaration = true
-        dmod.params = mod.params
-        dmod.ports = mod.ports
         dmods.push(dmod)
     }
     return dmods
