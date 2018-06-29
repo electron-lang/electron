@@ -193,11 +193,12 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     identifier(ctx: any): ISymbol {
-        let text = ctx.Identifier[0].image
+        const text = ctx.Identifier[0].image
+        const src = tokenToSrcLoc(ctx.Identifier[0])
         if (text.startsWith("'")) {
-            text.substring(1)
+            return Symbol(text.substring(1), src)
         }
-        return Symbol(text, tokenToSrcLoc(ctx.Identifier[0]))
+        return Symbol(text, src)
     }
 
     // Attributes
@@ -289,10 +290,11 @@ export class Elaborator extends BaseElectronVisitor {
             return this.visit(ctx.statements[0]).map(addAttrs)
         } else if (ctx.declaration) {
             return this.visit(ctx.declaration[0]).map(addAttrs)
-        } else {
-            throwBug('attributeStatement')
         }
 
+        /* istanbul ignore next */
+        throwBug('attributeStatement')
+        /* istanbul ignore next */
         return []
     }
 
@@ -470,7 +472,9 @@ export class Elaborator extends BaseElectronVisitor {
             return ast.Bool(false, tokenToSrcLoc(ctx.False[0]))
         }
 
+        /* istanbul ignore next */
         throwBug('literal')
+        /* istanbul ignore next */
         return ast.Bool(true)
     }
 
@@ -487,7 +491,9 @@ export class Elaborator extends BaseElectronVisitor {
           } else if (ctx.ShiftRight) {
               return '>>'
           } else {
+              /* istanbul ignore next */
               throwBug('binaryOp')
+              /* istanbul ignore next */
               return '+'
           }
         })()
@@ -550,7 +556,9 @@ export class Elaborator extends BaseElectronVisitor {
             if (ctx.Inout) {
                 return 'inout'
             }
+            /* istanbul ignore next */
             throwBug('anonymousCellDeclaration')
+            /* istanbul ignore next */
             return 'analog'
         })()
 
@@ -567,6 +575,7 @@ export class Elaborator extends BaseElectronVisitor {
             if (expr) {
                 return [ portRef, ast.Ref(expr, port.src) ]
             }
+            /* istanbul ignore next */
             return [ portRef, ast.Integer(1) ]
         }
     }
@@ -591,14 +600,22 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     parameter(ctx: any): Param {
-        const expr = this.visit(ctx.expression[0])
-
         if (ctx.expression.length > 1) {
-            return [ expr,
-                     this.visit(ctx.expression[1]),
-                     expr.src ]
+            if (ctx.expression[0].children.identifier) {
+                const ident = ctx.expression[0].children.identifier[0].children
+                let sym = this.identifier(ident)
+                const expr = this.visit(ctx.expression[1])
+                return [ sym.id, expr, expr.src ]
+            } else {
+                /* istanbul ignore next */
+                const expr = this.visit(ctx.expression[0])
+                /* istanbul ignore next */
+                this.logger.error(`Expecting identifier but found '${expr.tag}'`,
+                                  expr.src)
+            }
         }
-        return [ this.paramCounter++, this.visit(ctx.expression[0]), expr.src ]
+        const expr = this.visit(ctx.expression[0])
+        return [ this.paramCounter++, expr, expr.src ]
     }
 
     dictionary(ctx: any): Dict {

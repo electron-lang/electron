@@ -47,6 +47,12 @@ function expectAstExpr(text: string, e: ast.Expr) {
 }
 
 describe('Elaborator', () => {
+    describe('Imports', () => {
+        it('should elaborate `import A from "./file"`', () => {
+            expectAst('import A from "./file"', [])
+        })
+    })
+
     describe('Modules', () => {
         it('should elaborate `module A {}`', () => {
             expectAst('module A {}', [
@@ -88,32 +94,38 @@ describe('Elaborator', () => {
 
     describe('Statements', () => {
         describe('Declarations', () => {
-            it('should elaborate `net a`', () => {
-                expectAstModule('net a', [
-                    ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
+            it('should elaborate `const a`', () => {
+                expectAstModule('const a', [
+                    ast.Const('a', getLoc('a', Pos(3, 7)))
                 ])
             })
 
-            it('should elaborate `net[2] a`', () => {
-                expectAstModule('net[2] a', [
-                    ast.Net('a', ast.Integer(2, getLoc('2', Pos(3, 5))),
-                            getLoc('a', Pos(3, 8)))
+            it('should elaborate `inout \'+3.3V`', () => {
+                expectAstModule("inout '+3.3V", [
+                    ast.Port('+3.3V', 'inout', ast.Integer(1), getLoc("'+3.3V", Pos(3, 7)))
                 ])
             })
 
-            it('should elaborate `net a, b`', () => {
-                expectAstModule('net a, b', [
-                    ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5))),
-                    ast.Net('b', ast.Integer(1), getLoc('b', Pos(3, 8)))
+            it('should elaborate `analog[2] a`', () => {
+                expectAstModule('analog[2] a', [
+                    ast.Port('a', 'analog', ast.Integer(2, getLoc('2', Pos(3, 8))),
+                            getLoc('a', Pos(3, 11)))
                 ])
             })
 
-            it('should elaborate `net a = b`', () => {
+            it('should elaborate `input a, b`', () => {
+                expectAstModule('input a, b', [
+                    ast.Port('a', 'input', ast.Integer(1), getLoc('a', Pos(3, 7))),
+                    ast.Port('b', 'input', ast.Integer(1), getLoc('b', Pos(3, 10)))
+                ])
+            })
+
+            it('should elaborate `output a = b`', () => {
                 const a = ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
-                const b = ast.Net('b', ast.Integer(1), getLoc('b', Pos(3, 12)))
-                expectAstModule('net a; net b = a', [
-                    a, b, ast.Assign(ast.Ref(b, getLoc('b', Pos(3, 12))),
-                                     ast.Ref(a, getLoc('a', Pos(3, 16))))
+                const b = ast.Port('b', 'output', ast.Integer(1), getLoc('b', Pos(3, 15)))
+                expectAstModule('net a; output b = a', [
+                    a, b, ast.Assign(ast.Ref(b, getLoc('b', Pos(3, 15))),
+                                     ast.Ref(a, getLoc('a', Pos(3, 19))))
                 ])
             })
 
@@ -266,6 +278,14 @@ describe('Elaborator', () => {
                                       ast.Unit('10k', getLoc('10k', Pos(4, 4)))
                                   ]
                               ], [], getLoc('$R', Pos(4, 1))))
+
+                expectAstExpr('$R(RESISTANCE=10k) {}',
+                              ast.Inst(ref$R, [
+                                  [
+                                      ast.Ref($R.params[0], getLoc('10k', Pos(4, 15))),
+                                      ast.Unit('10k', getLoc('10k', Pos(4, 15)))
+                                  ]
+                              ], [], getLoc('$R', Pos(4, 1))))
             })
 
             it('should elaborate `$R() {A}`', () => {
@@ -348,9 +368,9 @@ describe('Elaborator', () => {
                 ])
             })
 
-            it('should elaborate cell { input A=a; output Y=y }', () => {
+            it('should elaborate `cell { input A=a; output Y }`', () => {
                 const a = ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
-                const y = ast.Net('y', ast.Integer(1), getLoc('y', Pos(3, 8)))
+                const Y = ast.Net('Y', ast.Integer(1), getLoc('Y', Pos(3, 8)))
                 const inv = ast.Cell('inv', ast.Integer(1), getLoc('inv', Pos(3, 16)))
                 const mod = ast.Module(undefined, [
                     ast.Port('A', 'input', ast.Integer(1), getLoc('A', Pos(3, 35))),
@@ -358,8 +378,8 @@ describe('Elaborator', () => {
                 ], getLoc('cell', Pos(3, 22)))
                 mod.declaration = true
 
-                expectAstModule('net a, y; cell inv = cell { input A=a; output Y=y}', [
-                    a, y, inv,
+                expectAstModule('net a, Y; cell inv = cell { input A=a; output Y}', [
+                    a, Y, inv,
                     ast.Assign(ast.Ref(inv, getLoc('inv', Pos(3, 16))),
                                ast.Inst(ast.Ref(mod), [], [
                                    [
@@ -368,7 +388,34 @@ describe('Elaborator', () => {
                                    ],
                                    [
                                        ast.Ref(mod.ports[1], getLoc('Y', Pos(3, 47))),
-                                       ast.Ref(y, getLoc('y', Pos(3, 49)))
+                                       ast.Ref(Y, getLoc('Y', Pos(3, 47)))
+                                   ]
+                               ], getLoc('cell', Pos(3, 22))))
+                ])
+            })
+
+            it('should elaborate `cell { analog A=a; @right inout Y }`', () => {
+                const a = ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
+                const Y = ast.Net('Y', ast.Integer(1), getLoc('Y', Pos(3, 8)))
+                const inv = ast.Cell('inv', ast.Integer(1), getLoc('inv', Pos(3, 16)))
+                const mod = ast.Module(undefined, [
+                    ast.Port('A', 'analog', ast.Integer(1), getLoc('A', Pos(3, 36))),
+                    ast.Port('Y', 'inout', ast.Integer(1), getLoc('Y', Pos(3, 54))),
+                ], getLoc('cell', Pos(3, 22)))
+                mod.declaration = true
+                mod.ports[1].attrs.push(ast.Attr('right', [], getLoc('@right', Pos(3, 41))))
+
+                expectAstModule('net a, Y; cell inv = cell { analog A=a; @right inout Y}', [
+                    a, Y, inv,
+                    ast.Assign(ast.Ref(inv, getLoc('inv', Pos(3, 16))),
+                               ast.Inst(ast.Ref(mod), [], [
+                                   [
+                                       ast.Ref(mod.ports[0], getLoc('A', Pos(3, 36))),
+                                       ast.Ref(a, getLoc('a', Pos(3, 38)))
+                                   ],
+                                   [
+                                       ast.Ref(mod.ports[1], getLoc('Y', Pos(3, 54))),
+                                       ast.Ref(Y, getLoc('Y', Pos(3, 54)))
                                    ]
                                ], getLoc('cell', Pos(3, 22))))
                 ])

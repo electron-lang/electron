@@ -106,16 +106,6 @@ setScope(Whitespace, 'whitespace')
 
 export const lexerInstance = new Lexer(allTokens)
 
-export function tokenize(text: string): ILexingResult {
-    const lexResult = lexerInstance.tokenize(text)
-
-    if (lexResult.errors.length > 0) {
-        throw new Error(lexResult.errors[0].message);
-    }
-
-    return lexResult
-}
-
 class ElectronParser extends Parser {
     constructor(input: IToken[]) {
         super(input, allTokens, { outputCst: true })
@@ -400,20 +390,3 @@ class ElectronParser extends Parser {
 }
 
 export const parserInstance = new ElectronParser([])
-
-export function parseRule(text: string, rule: () => any): any {
-    const lexingResult = tokenize(text)
-    parserInstance.input = lexingResult.tokens
-
-    const cst = rule()
-
-    if (parserInstance.errors.length > 0) {
-        throw new Error(parserInstance.errors[0].message)
-    }
-
-    return cst
-}
-
-export function parse(text: string): any {
-    return parseRule(text, () => { return parserInstance.design() })
-}

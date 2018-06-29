@@ -2,6 +2,7 @@ node_modules/
 lib/
 *.log
 .nyc_output/
+coverage/
 browser-app/*
 !browser-app/package.json
 electron-app/*

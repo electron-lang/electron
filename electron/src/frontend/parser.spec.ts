@@ -1,8 +1,30 @@
-import {parse, parseRule, parserInstance as parser} from './parser'
+import {lexerInstance, parserInstance as parser} from './parser'
+
+function parseRule(text: string, rule: () => any): any {
+    const lexingResult = lexerInstance.tokenize(text)
+
+    if (lexingResult.errors.length > 0) {
+        throw new Error(lexingResult.errors[0].message);
+    }
+
+    parser.input = lexingResult.tokens
+
+    const cst = rule()
+
+    if (parser.errors.length > 0) {
+        throw new Error(parser.errors[0].message)
+    }
+
+    return cst
+}
+
+function parse(text: string): any {
+    return parseRule(text, () => { return parser.design() })
+}
 
 describe('Parser', () => {
     it('should parse design', () => {
-        parse('module A {}\nmodule B {}\n')
+        parse('import C from "./file"\nmodule A {}\nmodule B {}\n')
     })
 
     it('should parse import statement', () => {
@@ -103,7 +125,8 @@ describe('Parser', () => {
         parseExpression('$R {A=(a, b)}')
         parseExpression('$R {A, A=a, A=(a, b), B=(a, b),}')
         parseExpression('DAC {}')
-        parseExpression('cell { @left @set_pad(1) analog TP }')
+        parseExpression('cell { @left @set_pad(1) analog TP;' +
+                        'output A; inout B; input C }')
     })
 
     it('should parse statements', () => {

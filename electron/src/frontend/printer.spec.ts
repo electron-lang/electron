@@ -41,6 +41,16 @@ describe('Pretty Printer', () => {
         const b = ast.Net('b')
         const c = ast.Net('c')
 
+        it('should emit literals', () => {
+            expectPretty(ast.Integer(0), '0')
+            expectPretty(ast.BitVector(['0', '1', 'x', 'z']), "4'01xz")
+            expectPretty(ast.Unit('10k'), '10k')
+            expectPretty(ast.String('hello'), '"hello"')
+            expectPretty(ast.Bool(true), 'true')
+            expectPretty(ast.Bool(false), 'false')
+            expectPretty(ast.Real(1e-9), '1e-9')
+        })
+
         it('should emit indexes', () => {
             const a = ast.Net('a')
             const i = ast.Integer(2)
@@ -73,6 +83,11 @@ describe('Pretty Printer', () => {
             inst.conns.push([ast.Ref(B), ast.Ref(b)])
             expectPretty(inst, '$R(RESISTANCE=10k) {A=a, B=b}')
         })
+
+        it('should emit binops', () => {
+            expectPretty(ast.BinOp('+', ast.Integer(1), ast.Integer(1)),
+                        '1 + 1')
+        })
     })
 
     describe('should emit statements', () => {
@@ -80,6 +95,8 @@ describe('Pretty Printer', () => {
         const b = ast.Net('b')
 
         it('should emit declaration', () => {
+            expectPretty(ast.Const('a'), 'const a')
+
             expectPretty(ast.Port('a', 'input'), 'input a')
 
             expectPretty(ast.Port('a', 'output'), 'output a')

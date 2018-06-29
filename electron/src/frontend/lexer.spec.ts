@@ -1,5 +1,16 @@
 import { expect } from 'chai'
-import { tokenize } from './parser'
+import { ILexingResult } from 'chevrotain'
+import { lexerInstance } from './parser'
+
+function tokenize(text: string): ILexingResult {
+    const lexResult = lexerInstance.tokenize(text)
+
+    if (lexResult.errors.length > 0) {
+        throw new Error(lexResult.errors[0].message);
+    }
+
+    return lexResult
+}
 
 function getFirstTokenLabel(text: string): string {
     return (tokenize(text).tokens[0].tokenType || {tokenName: ''}).tokenName || ''

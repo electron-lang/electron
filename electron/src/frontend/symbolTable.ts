@@ -29,28 +29,24 @@ export class SymbolTable<Declarable> {
 
     constructor(private logger: DiagnosticPublisher) {}
 
-    enterScope(scope?: string | IScope<Declarable>) {
+    enterScope(scope?: string) {
         this.scopeStack.push(this.currScope)
 
-        if (typeof scope === 'undefined') {
-            this.currScope = {}
-        } else if (typeof scope === 'string') {
+        if (scope) {
             if (!(scope in this.scopes)) {
                 this.scopes[scope] = {}
             }
             this.currScope = this.scopes[scope]
         } else {
-            this.currScope = scope
+            this.currScope = {}
         }
     }
 
-    exitScope(): IScope<Declarable> {
-        const prev = this.currScope
+    exitScope() {
         const scope = this.scopeStack.pop()
         if (scope) {
             this.currScope = scope
         }
-        return prev
     }
 
     lookup(symbol: ISymbol): Declarable | null {
@@ -73,12 +69,5 @@ export class SymbolTable<Declarable> {
         }
         this.currScope[symbol.id] = { sym: symbol, decl }
         return true
-    }
-
-    dump() {
-        console.log('All scopes:')
-        console.log(JSON.stringify(this.scopes))
-        console.log('Scope stack:')
-        console.log(JSON.stringify(this.scopeStack))
     }
 }

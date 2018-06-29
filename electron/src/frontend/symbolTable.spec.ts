@@ -10,6 +10,7 @@ describe('Symbol Table', () => {
 
     const a = ast.Port('a', 'output')
     const b = ast.Port('b', 'output')
+    const x = ast.Port('x', 'output')
 
     st.enterScope('A')
 
@@ -34,5 +35,24 @@ describe('Symbol Table', () => {
         st.exitScope()
         expect(st.lookup(Symbol('b'))).to.equal(null)
         expect(st.lookup(Symbol('a'))).to.equal(a)
+    })
+
+    it('should handle anonymous scopes', () => {
+        expect(st.lookup(Symbol('x'))).to.equal(null)
+        st.enterScope()
+        st.define(Symbol('x'), x)
+        expect(st.lookup(Symbol('x'))).to.equal(x)
+        st.exitScope()
+        expect(st.lookup(Symbol('x'))).to.equal(null)
+    })
+
+    it('should never fail when exiting a scope', () => {
+        st.exitScope()
+        st.exitScope()
+    })
+
+    it('should keep named scopes', () => {
+        st.enterScope('B')
+        expect(st.lookup(Symbol('b'))).to.equal(b)
     })
 })
