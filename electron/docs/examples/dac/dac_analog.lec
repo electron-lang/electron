@@ -20,18 +20,6 @@ module LCFilter(L: Henry, C: Farad) {
     cell c = $C(C) {A=out, B=gnd}
 }
 
-module HalfBridge {
-    @left analog in, in_inv
-    @right analog out
-    @top analog vdd
-    @bottom analog vss
-
-    @model(PowerMosfetModel)
-    cell[2] drivers
-    drivers[0] = $M() {G=in_inv, D=vdd, S=out}
-    drivers[1] = $M() {G=in, D=out, S=vss}
-}
-
 module $MosfetModel(BETA: Integer) {}
 
 module PowerMosfetModel(RB: Ohm, LB: Henry, RD: Ohm, LD: Henry,
@@ -63,6 +51,18 @@ module PowerMosfetModel(RB: Ohm, LB: Henry, RD: Ohm, LD: Henry,
     // Parasitic diode
     @rotate(270)
     cell Dsd = $D() {A=d, K=s}
+}
+
+module HalfBridge {
+    @left analog in, in_inv
+    @right analog out
+    @top analog vdd
+    @bottom analog vss
+
+    @model(PowerMosfetModel)
+    cell[2] drivers
+    drivers[0] = $M() {G=in_inv, D=vdd, S=out}
+    drivers[1] = $M() {G=in, D=out, S=vss}
 }
 
 export module DACAnalog(L: Henry, C: Farad) {

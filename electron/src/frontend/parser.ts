@@ -167,7 +167,26 @@ class ElectronParser extends Parser {
     // Attributes
     public attribute = this.RULE('attribute', () => {
         this.CONSUME(Attribute)
-        this.SUBRULE(this.parameterList)
+        this.OPTION(() => {
+            this.CONSUME(OpenRound)
+            this.MANY_SEP({
+                SEP: Comma,
+                DEF: () => this.SUBRULE(this.attributeParameter)
+            })
+            this.CONSUME(CloseRound)
+        })
+    })
+
+    public attributeParameter = this.RULE('attributeParameter', () => {
+        this.OR([
+            {
+                ALT: () => {
+                    this.SUBRULE(this.identifier)
+                    this.OPTION(() => this.SUBRULE(this.moduleInstantiation))
+                }
+            },
+            { ALT: () => this.SUBRULE(this.literal) },
+        ])
     })
 
     public parameterDeclarationList = this.RULE('parameterDeclarationList', () => {
@@ -341,14 +360,35 @@ class ElectronParser extends Parser {
     public anonymousCell = this.RULE('anonymousCell', () => {
         this.CONSUME(Cell)
         this.CONSUME(OpenCurly)
-        this.AT_LEAST_ONE({
-            DEF: () => this.SUBRULE(this.anonymousCellDeclaration)
+        this.MANY({
+            DEF: () => this.SUBRULE(this.cellStatement)
         })
         this.CONSUME(CloseCurly)
     })
 
-    public anonymousCellDeclaration = this.RULE('anonymousCellDeclaration', () => {
-        this.MANY(() => this.SUBRULE(this.attribute))
+    public cellStatement = this.RULE('cellStatement', () => {
+        this.OR([
+            { ALT: () => this.SUBRULE(this.cellAttributeStatement) },
+            { ALT: () => this.SUBRULE(this.cellPortDeclaration) },
+        ])
+        this.OPTION1(() => this.CONSUME(Semicolon))
+    })
+
+    public cellAttributeStatement = this.RULE('cellAttributeStatement', () => {
+        this.AT_LEAST_ONE({ DEF: () => this.SUBRULE(this.attribute) })
+        this.OR([
+            { ALT: () => {
+                this.CONSUME(OpenCurly)
+                this.MANY({
+                    DEF: () => this.SUBRULE(this.cellStatement)
+                })
+                this.CONSUME(CloseCurly)
+            }},
+            { ALT: () => this.SUBRULE1(this.cellPortDeclaration) }
+        ])
+    })
+
+    public cellPortDeclaration = this.RULE('cellPortDeclaration', () => {
         this.OR([
             { ALT: () => this.CONSUME(Input) },
             { ALT: () => this.CONSUME(Output) },
@@ -356,12 +396,11 @@ class ElectronParser extends Parser {
             { ALT: () => this.CONSUME(Analog) },
         ])
         this.SUBRULE(this.width)
-        this.SUBRULE(this.identifier)
+        this.SUBRULE(this.identifiers)
         this.OPTION(() => {
             this.CONSUME(Assign)
-            this.SUBRULE(this.expression)
+            this.SUBRULE(this.expressions)
         })
-        this.OPTION1(() => this.CONSUME(Semicolon))
     })
 
     public moduleInstantiation = this.RULE('moduleInstantiation', () => {

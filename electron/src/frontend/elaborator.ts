@@ -9,6 +9,7 @@ import { allTypeHandlers } from './parameters'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
+type PortDecl = [ast.IRef<ast.IPort>, ast.Expr]
 type DictEntry = [ISymbol, ast.Expr]
 
 interface Dict {
@@ -123,6 +124,7 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         const modules = this.file.importFile(pkg)
+
         if (!modules) {
             this.logger.error(`File '${pkg}' not found.`, tokenToSrcLoc(pkg))
             return
@@ -205,8 +207,13 @@ export class Elaborator extends BaseElectronVisitor {
     attribute(ctx: any): ast.IAttr {
         const name = ctx.Attribute[0].image.substring(1)
         const src = tokenToSrcLoc(ctx.Attribute[0])
-        const params: Param[] = this.visit(ctx.parameterList) || []
-        const attr = ast.Attr(name, params.map((p) => p[1]), src)
+        const params: ast.Expr[] = (() => {
+            if (ctx.attributeParameter) {
+                return ctx.attributeParameter.map((ctx: any) => this.visit(ctx))
+            }
+            return []
+        })()
+        const attr = ast.Attr(name, params, src)
 
         if (!(attr.name in allAttributes)) {
             this.logger.error(`Unknown attribute '${attr.name}'.`,
@@ -217,6 +224,19 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         return attr
+    }
+
+    attributeParameter(ctx: any): ast.Literal | ast.IRef<ast.IModule> {
+        if (ctx.identifier) {
+            const sym = this.visit(ctx.identifier[0])
+            const mod = this.modst.lookup(sym)
+            if (mod) {
+                return ast.Ref(mod, sym.src)
+            }
+            return ast.Integer(1)
+        } else {
+            return this.visit(ctx.literal[0])
+        }
     }
 
     parameterDeclarationList(ctx: any): ast.IParam[] {
@@ -526,7 +546,12 @@ export class Elaborator extends BaseElectronVisitor {
         mod.declaration = true
         mod.src = tokenToSrcLoc(ctx.Cell[0])
 
-        const conns = ctx.anonymousCellDeclaration.map((ctx: any) => this.visit(ctx))
+        const conns = [].concat.apply([], (() => {
+            if (ctx.cellStatement) {
+                return ctx.cellStatement.map((ctx: any) => this.visit(ctx))
+            }
+            return []
+        })())
 
         for (let [ref, _] of conns) {
             mod.ports.push(ref.ref)
@@ -535,14 +560,26 @@ export class Elaborator extends BaseElectronVisitor {
         return ast.Inst(ast.Ref(mod), [], conns, mod.src)
     }
 
-    anonymousCellDeclaration(ctx: any): [ast.IRef<ast.IPort>, ast.Expr] {
-        const attrs: ast.IAttr[] = (() => {
-            if (ctx.attribute) {
-                return ctx.attribute.map((ctx: any) => this.visit(ctx))
-            }
-            return []
-        })()
+    cellStatement(ctx: any): PortDecl[] {
+        if (ctx.cellPortDeclaration) {
+            return this.visit(ctx.cellPortDeclaration[0])
+        } else {
+            return this.visit(ctx.cellAttributeStatement[0])
+        }
+    }
 
+    cellAttributeStatement(ctx: any): PortDecl[] {
+        const attrs: ast.IAttr[] =
+            ctx.attribute.map((ctx: any) => this.visit(ctx))
+
+        return this.visit(ctx.cellPortDeclaration || ctx.cellStatement)
+            .map((p: PortDecl) => {
+                p[0].ref.attrs = attrs
+                return p
+            })
+    }
+
+    cellPortDeclaration(ctx: any): PortDecl[] {
         const ty: ast.PortType = (() => {
             if (ctx.Analog) {
                 return 'analog'
@@ -563,20 +600,39 @@ export class Elaborator extends BaseElectronVisitor {
         })()
 
         const width = this.visit(ctx.width[0])
-        const sym = this.visit(ctx.identifier[0])
-        const port = ast.Port(sym.id, ty, width, sym.src)
-        port.attrs = attrs
-        const portRef = ast.Ref(port, port.src)
+        const syms = this.visit(ctx.identifiers[0])
+        const ports = syms.map((sym: ISymbol) => {
+            return ast.Ref(ast.Port(sym.id, ty, width, sym.src), sym.src)
+        })
 
-        if (ctx.expression) {
-            return [ portRef, this.visit(ctx.expression[0]) ]
-        } else {
-            const expr = this.st.lookup(sym)
-            if (expr) {
-                return [ portRef, ast.Ref(expr, port.src) ]
+        if (ctx.expressions) {
+            const exprs = this.visit(ctx.expressions[0])
+
+            if (ports.length != exprs.length) {
+                this.logger.error('Unbalanced assignment', {
+                        startLine: ports[0].src.startLine,
+                        startColumn: ports[0].src.startColumn,
+                        endLine: exprs[exprs.length - 1].src.endLine,
+                        endColumn: exprs[exprs.length - 1].src.endColumn,
+                })
             }
-            /* istanbul ignore next */
-            return [ portRef, ast.Integer(1) ]
+
+            const pdecls: PortDecl[] = []
+            for (let i = 0; i < Math.min(ports.length, exprs.length); i++) {
+                pdecls.push([ports[i], exprs[i]])
+            }
+            return pdecls
+        } else {
+            const pdecls: PortDecl[] = []
+
+            for (let i = 0; i < syms.length; i++) {
+                const expr = this.st.lookup(syms[i])
+                if (expr) {
+                    pdecls.push([ ports[i], ast.Ref(expr, ports[i].src) ])
+                }
+            }
+
+            return pdecls
         }
     }
 

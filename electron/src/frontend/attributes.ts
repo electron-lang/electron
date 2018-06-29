@@ -230,17 +230,6 @@ const BitstreamAttribute: IAttributeHandler = {
     }
 }
 
-const SetIoAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
-        // TODO
-        return true
-    },
-
-    compile(attr: ast.IAttr): ir.IAttr[] {
-        return []
-    }
-}
-
 export const allAttributes: {[name: string]: IAttributeHandler} = {
     // Schematic
     rotate: RotateAttribute,
@@ -262,5 +251,4 @@ export const allAttributes: {[name: string]: IAttributeHandler} = {
     // Bitstream
     fpga: FpgaAttribute,
     bitstream: BitstreamAttribute,
-    set_io: SetIoAttribute,
 }

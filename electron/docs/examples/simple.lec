@@ -15,6 +15,7 @@ export module AND {
     cell and1 = $and(A_WIDTH=1, B_WIDTH=1) {A=a, B=b, Y=c}
 }
 
+declare module BlackBoxModel {}
 @model(BlackBoxModel)
 declare module BlackBox {
     @set_pad(1, 2)
@@ -41,7 +42,6 @@ module Pcb {
     cell bb = BlackBox() { vcc='+12V, gnd }
     cell sm = SubModule() {}
 
-    @bitstream(AND)
-    @set_io(a="A1", b="F2", c="D3")
+    @bitstream(AND {a="A1", b="F2", c="D3"})
     cell fpga = $fpga() {}
 }

@@ -216,47 +216,47 @@ module FpgaReset {
 @fpga("ice40-lp8k-cm81")
 module ICE40_LP8K_CM81 {
     @group("A") {
-        @set_pad(C7)
+        @set_pad("C7")
         analog VPP_FAST
-        @set_pad(C8)
+        @set_pad("C8")
         analog VPP_2V5
-        @set_pad(E6)
+        @set_pad("E6")
         analog CDONE
-        @set_pad(G5)
+        @set_pad("G5")
         analog IOB_103_CBSEL0
-        @set_pad(G6)
+        @set_pad("G6")
         analog IOB_105_SDO
-        @set_pad(G7)
+        @set_pad("G7")
         analog IOB_107_SCK
-        @set_pad(H5)
+        @set_pad("H5")
         analog IOB_104_CBSEL1
-        @set_pad(H6)
+        @set_pad("H6")
         analog CRESET_B
-        @set_pad(H7)
+        @set_pad("H7")
         analog IOB_106_SDI
-        @set_pad(H8)
+        @set_pad("H8")
         analog VCC_SPI
     }
     @group("B") {
-        @set_pad(F4, F5, F6, F9)
+        @set_pad("F4", "F5", "F6", "F9")
         analog GND
     }
     @group("C") {
-        @set_pad(F7)
+        @set_pad("F7")
         analog IOB_108_SS
-        @set_pad(G4)
+        @set_pad("G4")
         analog IOB_81_GBIN5
-        @set_pad(H1)
+        @set_pad("H1")
         analog IOB_54
-        @set_pad(H4)
+        @set_pad("H4")
         analog IOB_82_GBIN4
-        @set_pad(J1)
+        @set_pad("J1")
         analog IOB_55
-        @set_pad(J2)
+        @set_pad("J2")
         analog IOB_56
-        @set_pad(J3)
+        @set_pad("J3")
         analog IOB_57
-        @set_pad(J4)
+        @set_pad("J4")
         analog IOB_70
     }
     @group("D") {}

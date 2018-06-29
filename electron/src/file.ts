@@ -135,11 +135,10 @@ function extractDeclarations(mods: ast.IModule[]): ast.IModule[] {
         if (!mod.exported) {
             continue
         }
-        let dmod = ast.Module(mod.name, mod.stmts.filter((stmt) => {
-            return stmt.tag === 'param' || stmt.tag === 'port'
-        }))
+        let dmod = ast.Module(mod.name, [], mod.src)
         dmod.attrs = mod.attrs
-        dmod.exported = true
+        dmod.params = mod.params
+        dmod.ports = mod.ports
         dmod.declaration = true
         dmods.push(dmod)
     }
