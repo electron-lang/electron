@@ -6,6 +6,7 @@ import { parserInstance } from './parser'
 import { SymbolTable, Symbol, ISymbol } from './symbolTable'
 import { allAttributes } from './attributes'
 import { allTypeHandlers } from './parameters'
+import { TypeChecker } from './typechecker'
 
 const BaseElectronVisitor = parserInstance.getBaseCstVisitorConstructor()
 
@@ -27,6 +28,7 @@ interface PartialInst extends Dict {
 
 function elaboratePartialInst(logger: DiagnosticPublisher,
                               st: SymbolTable<ast.Decl>,
+                              tc: TypeChecker,
                               ref: ast.IRef<ast.IModule>,
                               pinst: PartialInst): ast.IInst {
     const inst = ast.Inst(ref, [], [], pinst.src)
@@ -51,6 +53,7 @@ function elaboratePartialInst(logger: DiagnosticPublisher,
             param = st.lookup(Symbol(p, src))
         }
         if (param && param.tag === 'param') {
+            tc.checkParam(param, expr)
             inst.params.push([ast.Ref(param, src), expr])
         }
     }
@@ -69,6 +72,7 @@ function elaboratePartialInst(logger: DiagnosticPublisher,
             inst.conns.push([ast.Ref(port, symbol.src), expr])
             dict[port.name] = true
         }
+        tc.checkIsSignal(expr)
     }
     st.exitScope()
 
@@ -78,9 +82,11 @@ function elaboratePartialInst(logger: DiagnosticPublisher,
             if (!dict[port.name]) {
                 const decl = st.lookup(Symbol(port.name, pinst.starSrc))
                 if (!decl) continue
+                const expr = ast.Ref(decl, pinst.starSrc)
+                tc.checkIsSignal(expr)
                 inst.conns.push([
                     ast.Ref(port, pinst.starSrc),
-                    ast.Ref(decl, pinst.starSrc)
+                    expr
                 ])
             }
         }
@@ -91,14 +97,16 @@ function elaboratePartialInst(logger: DiagnosticPublisher,
 
 export class Elaborator extends BaseElectronVisitor {
     private paramCounter: number = 0
-    private modst: SymbolTable<ast.IModule>
-    private st: SymbolTable<ast.Decl>
+    private modst: SymbolTable<ast.IModule>;
+    private st: SymbolTable<ast.Decl>;
+    private tc: TypeChecker;
 
     constructor(private logger: DiagnosticPublisher, private file: File) {
         super()
         this.validateVisitor()
         this.modst = new SymbolTable(logger)
         this.st = new SymbolTable(logger)
+        this.tc = new TypeChecker(logger)
     }
 
     design(ctx: any): ast.IModule[] {
@@ -335,6 +343,7 @@ export class Elaborator extends BaseElectronVisitor {
         for (let i = 0; i < Math.min(lhs.length, rhs.length); i++) {
             const assign = ast.Assign(lhs[i], rhs[i])
             assigns.push(assign)
+            this.tc.checkAssign(assign)
         }
         return assigns
     }
@@ -386,6 +395,7 @@ export class Elaborator extends BaseElectronVisitor {
                 const assign = ast.Assign(ast.Ref(decls[i], decls[i].src),
                                           exprs[i])
                 assigns.push(assign)
+                this.tc.checkAssign(assign)
             }
         }
 
@@ -394,7 +404,9 @@ export class Elaborator extends BaseElectronVisitor {
 
     width(ctx: any): ast.Expr {
         if (ctx.expression) {
-            return this.visit(ctx.expression[0])
+            const expr = this.visit(ctx.expression[0])
+            this.tc.checkIsInteger(expr)
+            return expr
         }
         return ast.Integer(1)
     }
@@ -433,7 +445,7 @@ export class Elaborator extends BaseElectronVisitor {
                 const mod = this.modst.lookup(sym)
                 if (mod) {
                     pinst.src = sym.src
-                    expr = elaboratePartialInst(this.logger, this.st,
+                    expr = elaboratePartialInst(this.logger, this.st, this.tc,
                                                 ast.Ref(mod, sym.src), pinst)
                 }
             } else {
@@ -530,9 +542,11 @@ export class Elaborator extends BaseElectronVisitor {
 
     referenceExpression(ctx: any): [ast.Expr, ast.Expr, ISrcLoc] {
         const start = this.visit(ctx.expression[0])
+        this.tc.checkIsInteger(start)
         let end = start
         if (ctx.expression[1]) {
             end = this.visit(ctx.expression[1])
+            this.tc.checkIsInteger(end)
         }
 
         return [ start, end, SrcLoc(Pos(ctx.OpenSquare[0].startLine,
@@ -695,6 +709,7 @@ export class Elaborator extends BaseElectronVisitor {
         const sym: ISymbol = this.visit(ctx.identifier[0])
         if (ctx.expression) {
             const expr: ast.Expr = this.visit(ctx.expression[0])
+            this.tc.checkIsSignal(expr)
             return [sym, expr]
         } else {
             return [
