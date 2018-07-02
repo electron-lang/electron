@@ -153,9 +153,14 @@ export class Elaborator extends BaseElectronVisitor {
         }
     }
 
+    docComment(ctx: any): string {
+        const doc = ctx.DocComment[0].image
+        return doc.substring(4) + '\n'
+    }
+
     moduleDeclaration(ctx: any): ast.IModule {
-        let ident = this.visit(ctx.identifier[0])
-        let mod = ast.Module(ident.id, [], ident.src)
+        const ident = this.visit(ctx.identifier[0])
+        const mod = ast.Module(ident.id, [], ident.src)
         this.modst.define(ident, mod)
         this.st.enterScope(ident.id)
 
@@ -165,6 +170,9 @@ export class Elaborator extends BaseElectronVisitor {
                 mod.src)
         }
 
+        mod.doc = ctx.docComment
+            ? ctx.docComment.map((ctx: any) => this.visit(ctx)).join('')
+            : ''
         mod.exported = !!ctx.Export
         mod.declaration = !!ctx.Declare
 

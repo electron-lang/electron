@@ -9,6 +9,7 @@ import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
 import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
+import { generateDocs } from './docs'
 
 export class File {
     private logger: DiagnosticPublisher
@@ -31,6 +32,14 @@ export class File {
         }
         this.lines = this.text.split('\n')
         this.logger = dc.toPublisher(this.path, this.lines)
+    }
+
+    getPath(ext?: string): string {
+        if (!ext) return this.path
+        const pl = this.path.split('.')
+        pl.pop()
+        pl.push(ext)
+        return pl.join('.')
     }
 
     lex(): File {
@@ -73,7 +82,7 @@ export class File {
         return this
     }
 
-    emitModules(): File {
+    compileAST(): File {
         if (!this.ast) return this
         const cmp = new ASTCompiler(this.logger)
         this.ir = cmp.compile(this.ast)
@@ -101,19 +110,30 @@ export class File {
     }
 
     compile(): File {
-        return this.lex().parse().elaborate().emitDeclarations().emitModules()
+        return this.lex().parse().elaborate()
+            .emitDeclarations()
+            .emitDocs()
+            .compileAST()
+            .emitIR()
     }
 
     emitDeclarations(): File {
         this.lex().parse().elaborate()
         if (!this.ast) return this
         this.declarations = extractDeclarations(this.ast)
+        writeFileSync(this.getPath('d.lec'), this.declarations.map(printAST).join('\n'))
+        return this
+    }
 
-        const pl = this.path.split('.')
-        pl.pop()
-        pl.push('d.lec')
-        const dpath = pl.join('.')
-        writeFileSync(dpath, this.declarations.map(printAST).join('\n'))
+    emitDocs(): File {
+        if (!this.ast) return this
+        writeFileSync(this.getPath('md'), generateDocs(this.ast))
+        return this
+    }
+
+    emitIR(): File {
+        if (!this.ir) return this
+        writeFileSync(this.getPath('ir'), this.ir.map((mod) => printIR(mod)))
         return this
     }
 

@@ -139,6 +139,7 @@ export function Cell(name: string, width?: Expr, src?: ISrcLoc): ICell {
 /* Module */
 export interface IModule {
     tag: 'module'
+    doc: string
     attrs: IAttr[]
     exported: boolean
     declaration: boolean
@@ -154,6 +155,7 @@ export function Module(name: string | undefined, stmts: Stmt[],
                        src?: ISrcLoc): IModule {
     let mod: IModule = {
         tag: 'module',
+        doc: '',
         attrs: [],
         exported: false,
         declaration: false,

@@ -243,16 +243,16 @@ export const Real = createToken({
 })
 
 // Comments
+export const DocComment = createToken({
+    name: 'DocComment',
+    pattern: /\/\/\/.+/,
+})
+
 export const Comment = createToken({
     name: 'Comment',
     pattern: /\/\/.+/,
-    group: 'Comments'
-})
-
-export const DocComment = createToken({
-    name: 'DocComment',
-    pattern: /\/\/\.+/,
-    group: 'DocComments'
+    group: 'Comments',
+    longer_alt: DocComment,
 })
 
 // Whitespace

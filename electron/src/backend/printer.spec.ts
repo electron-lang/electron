@@ -35,9 +35,9 @@ describe('IR Printer', () => {
 
     it('should print modules', () => {
         let mod = ir.Module('A', [])
-        expect(print(mod)).to.equal('module A {}')
+        expect(print(mod)).to.equal('module A {}\n')
         mod.attrs.push(ir.Attr('model', 'AModel'))
-        expect(print(mod)).to.equal('@model(AModel)\nmodule A {}')
+        expect(print(mod)).to.equal('@model(AModel)\nmodule A {}\n')
         mod.attrs = []
     })
 
@@ -77,7 +77,7 @@ describe('IR Printer', () => {
             '  net __1 = (10)',
             '  cell r1 = $R() {A=(9), B=(10)}',
             '  cell r2 = $R() {A=(10), B=(11)}',
-            '}'
+            '}\n'
         ].join('\n'))
     })
 })

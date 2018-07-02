@@ -8,7 +8,7 @@ const program = new Command('electron')
     .description('Electron compiler')
 
 program.command('compile <file>')
-    .option('-d, --dump-ast', 'Dumps AST to stdout for debugging purposes.')
+    .option('-a, --dump-ast', 'Dumps AST to stdout for debugging purposes.')
     .option('-i, --dump-ir', 'Dumps IR to stdout for debugging purposes.')
     .action((path, options) => {
         const file = new File(new DiagnosticLogger(), path)

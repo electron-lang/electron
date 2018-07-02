@@ -1,0 +1,14 @@
+declare module $R(VALUE: Ohm) {
+    analog A
+    analog B
+}
+
+/// module R {
+///   analog a = (0)
+///   analog b = (1)
+///   cell r1 = $R(VALUE=10000) {A=(0), B=(1)}
+/// }
+module R {
+    analog a, b
+    cell r1 = $R(10k) { A=a, B=b }
+}

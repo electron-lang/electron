@@ -85,6 +85,9 @@ export function Sig(value?: Bit): ISig {
         value,
     }
 }
+export function _resetSigCounter() {
+    sigCounter = 0
+}
 
 export interface IModule {
     tag: 'module',

@@ -11,8 +11,6 @@ export function printIR(ir: ir.IR): string {
 }
 
 class Printer implements IPrint<ir.IR> {
-    //private signals: {[key: number]: string} = {}
-
     print(elem: ir.IR): IDoc {
         return ir.matchIR({
             Module: (mod) => {
@@ -31,6 +29,7 @@ class Printer implements IPrint<ir.IR> {
                         line,
                     ] : [],
                     '}',
+                    line,
                 ]
             },
             Attr: (attr) => {

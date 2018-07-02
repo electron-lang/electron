@@ -54,8 +54,8 @@ export const allTokens = [
     Comma,
     Semicolon,
     // Comments
+    DocComment,
     Comment,
-    DocComment
 ]
 
 export let tokenScopes: {[idx: number]: string} = {}
@@ -114,11 +114,18 @@ class ElectronParser extends Parser {
 
     public design = this.RULE('design', () => {
         this.MANY({
-            DEF: () => this.SUBRULE(this.moduleImport)
+            DEF: () => this.SUBRULE(this.docComment)
         })
         this.MANY1({
+            DEF: () => this.SUBRULE(this.moduleImport)
+        })
+        this.MANY2({
             DEF: () => this.SUBRULE(this.moduleDeclaration)
         })
+    })
+
+    public docComment = this.RULE('docComment', () => {
+        this.CONSUME(DocComment)
     })
 
     public moduleImport = this.RULE('moduleImport', () => {
@@ -129,7 +136,8 @@ class ElectronParser extends Parser {
     })
 
     public moduleDeclaration = this.RULE('moduleDeclaration', () => {
-        this.MANY(() => this.SUBRULE(this.attribute))
+        this.MANY1(() => this.SUBRULE(this.docComment))
+        this.MANY2(() => this.SUBRULE(this.attribute))
         this.OPTION(() => { this.CONSUME(Export) })
         this.OPTION1(() => { this.CONSUME(Declare) })
         this.CONSUME(Module)

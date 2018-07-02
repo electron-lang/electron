@@ -67,7 +67,10 @@ describe('Lexer', () => {
 
     it('should ignore comments', () => {
         expectLabel('// A single line comment\n0', 'Integer')
-        expectLabel('/// A single line doc comment\n0', 'Integer')
+    })
+
+    it('should lex doc comments', () => {
+        expectLabel('/// A single line doc comment\n', 'DocComment')
     })
 
     it('should lex separators', () => {
