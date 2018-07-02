@@ -5,41 +5,6 @@ import { ASTCompiler } from './compiler'
 import { printIR } from '../backend/printer'
 import { DiagnosticCollector, SrcLoc, Pos } from '../diagnostic'
 
-/*type SignalMap = {[key: number]: (ir.IPort | ir.INet | ir.IRef<ir.IPort>)[]}
-function collectSigs(mod: ir.IModule): SignalMap {
-    const sigs: SignalMap = {}
-    for (let p of mod.ports) {
-        for (let sig of p.value) {
-            if (typeof sig.value === 'number') {
-                const nodes = sigs[sig.value] || []
-                nodes.push(p)
-                sigs[sig.value] = nodes
-            }
-        }
-    }
-    for (let n of mod.nets) {
-        for (let sig of n.value) {
-            if (typeof sig.value === 'number') {
-                const nodes = sigs[sig.value] || []
-                nodes.push(n)
-                sigs[sig.value] = nodes
-            }
-        }
-    }
-    for (let c of mod.cells) {
-        for (let a of c.assigns) {
-            for (let sig of a.rhs) {
-                if (typeof sig.value === 'number') {
-                    const nodes = sigs[sig.value] || []
-                    nodes.push(a.lhs)
-                    sigs[sig.value] = nodes
-                }
-            }
-        }
-    }
-    return sigs
-}*/
-
 function transformSigs(mod1: ir.IModule, mod2: ir.IModule) {
     for (let p1 of mod1.ports) {
         for (let p2 of mod2.ports) {
@@ -143,6 +108,7 @@ describe('AST Compiler', () => {
             ast.Port('A', 'analog'),
             ast.Port('B', 'analog'),
         ])
+        $R.declaration = true
 
         const a = ast.Port('a', 'analog')
         const b = ast.Port('b', 'analog')
@@ -165,7 +131,7 @@ describe('AST Compiler', () => {
         const sb = ir.Sig()
         const ia = ir.Port('a', 'analog', [sa], [])
         const ib = ir.Port('b', 'analog', [sb], [])
-        const ir1 = ir.Cell('r1', i$R, [ir.Param('RES', 10e3)], [
+        const ir1 = ir.Cell('r1', '$R', [ir.Param('RES', 10e3)], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [sa]),
             ir.Assign(ir.Ref(i$R.ports[1], 0), [sb]),
         ], [])
@@ -183,6 +149,7 @@ describe('AST Compiler', () => {
             ast.Port('B', 'input', ast.Ref(B_WIDTH)),
             ast.Port('Y', 'output'),
         ])
+        $and.declaration = true
 
         const a = ast.Port('a', 'input', ast.Integer(2))
         const b = ast.Port('b', 'input', ast.Integer(3))
@@ -214,7 +181,7 @@ describe('AST Compiler', () => {
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', i$and, [
+        const iand1 = ir.Cell('and1', '$and', [
             ir.Param('A_WIDTH', 2),
             ir.Param('B_WIDTH', 3),
         ], [
@@ -227,12 +194,13 @@ describe('AST Compiler', () => {
         expectIR(AND).to.equal(iAND)
     })
 
-    /*it('should compile cell vectors', () => {
+    it('should compile cell vectors', () => {
         const $R = ast.Module('$R', [
             ast.Param('RES', 'Ohm'),
             ast.Port('A', 'analog'),
             ast.Port('B', 'analog'),
         ])
+        $R.declaration = true
 
         const a = ast.Port('a', 'analog', ast.Integer(2))
         const b = ast.Port('b', 'analog', ast.Integer(2))
@@ -268,13 +236,13 @@ describe('AST Compiler', () => {
         const sb = [ ir.Sig(), ir.Sig() ]
         const ia = ir.Port('a', 'analog', sa, [])
         const ib = ir.Port('b', 'analog', sb, [])
-        const ir1 = ir.Cell('r1', i$R, [
+        const ir1 = ir.Cell('rx$0', '$R', [
             ir.Param('RES', 10e3),
         ], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[0] ]),
             ir.Assign(ir.Ref(i$R.ports[1], 0), [ sb[0] ]),
         ], [])
-        const ir2 = ir.Cell('r2', i$R, [
+        const ir2 = ir.Cell('rx$1', '$R', [
             ir.Param('RES', 10e3),
         ], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[1] ]),
@@ -283,7 +251,7 @@ describe('AST Compiler', () => {
         iResArray.ports = [ia, ib]
         iResArray.cells = [ir1, ir2]
         expectIR(ResArray).to.equal(iResArray)
-    })*/
+    })
 
     it('should compile const expressions', () => {
         const A_WIDTH = ast.Param('A_WIDTH', 'Integer')
@@ -294,6 +262,7 @@ describe('AST Compiler', () => {
             ast.Port('B', 'input', ast.Ref(B_WIDTH)),
             ast.Port('Y', 'output'),
         ])
+        $and.declaration = true
 
         const WIDTH = ast.Param('WIDTH', 'Integer')
         const AND_WIDTH = ast.Const('AND_WIDTH')
@@ -330,7 +299,7 @@ describe('AST Compiler', () => {
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', i$and, [
+        const iand1 = ir.Cell('and1', '$and', [
             ir.Param('A_WIDTH', 3),
             ir.Param('B_WIDTH', 3),
         ], [
