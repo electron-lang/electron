@@ -1,26 +1,25 @@
 import { IDoc, nest, intersperse, enclose, punctuate, render,
          parens, braces, line } from 'prettier-printer'
-import { IR, IRPattern, matchIR, PortType, Expr, Bit,
-         IModule, IAttr, IParam, IAssign, IPort, INet,
-         IConcat, IRef, ICell, matchIRExpr } from './ir'
+import * as ir from './ir'
 
 export interface IPrint<T> {
     print: (e: T) => IDoc
 }
 
-export function printIR(ir: IR): string {
+export function printIR(ir: ir.IR): string {
     return render(80, printerInstance.print(ir))
 }
 
-class Printer implements IPrint<IR> {
-    print(ir: IR): IDoc {
-        return matchIR({
+class Printer implements IPrint<ir.IR> {
+    //private signals: {[key: number]: string} = {}
+
+    print(elem: ir.IR): IDoc {
+        return ir.matchIR({
             Module: (mod) => {
                 const children: IDoc[] = [].concat.apply([], [
                     this.printList(mod.ports),
                     this.printList(mod.nets),
                     this.printList(mod.cells),
-                    this.printList(mod.assigns)
                 ])
                 return [
                     this.printList(mod.attrs),
@@ -41,9 +40,11 @@ class Printer implements IPrint<IR> {
                 return [param.name, '=', String(param.value)]
             },
             Cell: (cell) => {
+                const mod: string = typeof cell.module === 'string' ? cell.module
+                    : cell.module.name
                 return [
                     this.printList(cell.attrs),
-                    'cell', ' ', cell.name, ' = ', cell.module.name,
+                    'cell', ' ', cell.name, ' = ', mod,
                     this.printArgList(cell.params),
                     ' ',
                     this.printConnectList(cell.assigns)
@@ -53,46 +54,41 @@ class Printer implements IPrint<IR> {
                 return [
                     this.printList(port.attrs),
                     port.ty,
-                    this.printWidth(port.width),
+                    this.printWidth(port.value.length),
                     ' ',
-                    port.name
+                    port.name,
+                    ' = ',
+                    this.printSigList(port.value),
                 ]
             },
             Net: (net) => {
                 return [
                     this.printList(net.attrs),
                     'net',
-                    this.printWidth(net.width),
+                    this.printWidth(net.value.length),
                     ' ',
-                    net.name
+                    net.name,
+                    ' = ',
+                    this.printSigList(net.value),
                 ]
             },
             Assign: (assign) => {
-                return [this.print(assign.lhs), ' = ', this.print(assign.rhs)]
-            },
-            BitVec: (bv) => { return this.printExpr(bv) },
-            Concat: (concat) => { return this.printExpr(concat) },
-            Ref: (ref) => { return this.printExpr(ref) },
-        })(ir)
+                return [ assign.lhs.ref.name, '=', this.printSigList(assign.rhs) ]
+            }
+        })(elem)
     }
 
-    printExpr(expr: Expr): IDoc {
-        return matchIRExpr({
-            Port: (port) => port.name,
-            Net: (net) => net.name,
-            BitVec: (bv) => {
-                return [bv.bits.length.toString(), "'", bv.bits]
-            },
-            Concat: (concat) => {
-                return enclose(
-                    parens, intersperse(
-                        ', ', concat.exprs.map((e) => this.printExpr(e))))
-            },
-            Ref: (ref) => {
-                return [this.printExpr(ref.sig), '[', ref.from.toString(),
-                        ':', ref.to.toString(), ']']
-            }
-        })(expr)
+    printSigList(sigs: ir.ISig[]): IDoc {
+        const sigsList = sigs.map((sig) => this.printSig(sig))
+        return enclose(parens, intersperse(', ', sigsList))
+    }
+
+    printSig(sig: ir.ISig): IDoc {
+        return ir.matchSig<IDoc>({
+            Bit: (b) => b,
+            NC: () => 'nc',
+            Ref: (ref) => ref.toString(), //[ref.ref.name, '[', ref.index.toString(), ']']
+        })(sig)
     }
 
     printWidth(width: number): IDoc {
@@ -102,17 +98,17 @@ class Printer implements IPrint<IR> {
         return ['[', width.toString(), ']']
     }
 
-    printList(lst: IR[]): IDoc[] {
+    printList(lst: ir.IR[]): IDoc[] {
         return lst.map((ir) => this.print(ir))
     }
 
-    printArgList(lst: IR[]): IDoc {
+    printArgList(lst: ir.IR[]): IDoc {
         return enclose(parens, intersperse(', ', this.printList(lst)))
     }
 
-    printConnectList(lst: IAssign[]): IDoc {
+    printConnectList(lst: ir.IAssign[]): IDoc {
         return enclose(braces, intersperse(', ', this.printList(lst)))
     }
 }
 
-export const printerInstance: IPrint<IR> = new Printer()
+export const printerInstance: IPrint<ir.IR> = new Printer()

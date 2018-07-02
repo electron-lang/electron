@@ -56,6 +56,10 @@ export class DiagnosticPublisher {
 
     }
 
+    getPath(): string {
+        return this.path
+    }
+
     error(message: string, src: ISrcLoc | undefined) {
         this.consumer.consume({
             message,

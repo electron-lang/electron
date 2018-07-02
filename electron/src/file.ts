@@ -76,7 +76,7 @@ export class File {
     emitModules(): File {
         if (!this.ast) return this
         const cmp = new ASTCompiler(this.logger)
-        //this.ir = cmp.compile(this.ast)
+        this.ir = cmp.compile(this.ast)
         return this
     }
 
@@ -101,7 +101,7 @@ export class File {
     }
 
     compile(): File {
-        return this.lex().parse().elaborate().emitDeclarations()
+        return this.lex().parse().elaborate().emitDeclarations().emitModules()
     }
 
     emitDeclarations(): File {

@@ -2,123 +2,341 @@ import * as ast from './ast'
 import * as ir from '../backend/ir'
 import { DiagnosticPublisher } from '../diagnostic'
 import { SymbolTable, Symbol } from './symbolTable'
-import { matchASTStmt, matchASTExpr } from './ast';
+import { matchASTStmt, matchASTExpr } from './ast'
+import { allAttributes } from './attributes'
 
-type Value = number | string | boolean | ir.IBitVec | ir.ICell | ir.IRef
-    | ir.IConcat | ir.ICell[] | ir.INet | ir.IPort
+interface ISigWrapper {
+    tag: 'sigs'
+    val: ir.ISig[]
+}
+
+function wrapSig(val: ir.ISig[]): ISigWrapper {
+    return {
+        tag: 'sigs',
+        val,
+    }
+}
+
+interface ICellWrapper {
+    tag: 'cells'
+    val: ir.IRef<ir.ICell>[]
+}
+
+function wrapCell(val: ir.IRef<ir.ICell>[]): ICellWrapper {
+    return {
+        tag: 'cells',
+        val,
+    }
+}
+
+interface IParamWrapper {
+    tag: 'param'
+    val: number | string | boolean
+}
+
+function wrapParam(val: number | string | boolean | ir.Bit[]): IParamWrapper | ISigWrapper {
+    if ((val as ir.Bit[]).length) {
+        const bits = val as ir.Bit[]
+        return {
+            tag: 'sigs',
+            val: bits.map((bit) => ir.Sig(bit))
+        }
+    } else {
+        const param = val as number | string | boolean
+        return {
+            tag: 'param',
+            val: param,
+        }
+    }
+}
+
+type WrappedValue = IParamWrapper | ISigWrapper | ICellWrapper
+type Value = number | string | boolean | ir.ISig[] | ir.IRef<ir.ICell>[]
+
+function unwrap(val: WrappedValue): Value {
+    return val.val
+}
+
+interface ValuePattern<T> {
+    Number: (num: number) => T
+    String: (str: string) => T
+    Bool: (bool: boolean) => T
+    Sig: (sigs: ir.ISig[]) => T
+    Cell: (cells: ir.IRef<ir.ICell>[]) => T
+}
+
+function matchValue<T>(p: ValuePattern<T>): (val: WrappedValue) => T {
+    return (val: WrappedValue) => {
+        if (val.tag === 'param') {
+            if (typeof val.val === 'number') {
+                return p.Number(val.val)
+            }
+            if (typeof val.val === 'string') {
+                return p.String(val.val)
+            }
+            if (typeof val.val === 'boolean') {
+                return p.Bool(val.val)
+            }
+        }
+        if (val.tag === 'sigs') {
+            return p.Sig(val.val)
+        }
+        if (val.tag === 'cells') {
+            return p.Cell(val.val)
+        }
+        return p.Number(0)
+    }
+}
+
+function unwrapParam(val: WrappedValue): number | string | boolean | ir.Bit[] {
+    const valueToBits = (sigs: ir.ISig[]): ir.Bit[] => {
+        const bits: ir.Bit[] = []
+        for (let sig of sigs) {
+            bits.push(sig.value as ir.Bit)
+        }
+        return bits
+    }
+
+    return matchValue<number | string | boolean | ir.Bit[]>({
+        Number: (num) => num,
+        String: (str) => str,
+        Bool: (bool) => bool,
+        Sig: (sig) => valueToBits(sig),
+        Cell: (cell) => []
+    })(val)
+}
+
+function compileAttrs(attrs: ast.IAttr[]): ir.IAttr[] {
+    const irattrs = []
+    for (let attr of attrs) {
+        for (let irattr of allAttributes[attr.name].compile(attr)) {
+            irattrs.push(irattr)
+        }
+    }
+    return irattrs
+}
 
 export class ASTCompiler {
-    private st: SymbolTable<Value>
+    private st: SymbolTable<WrappedValue>;
+    private mods: ir.IModule[] = []
 
     constructor(private logger: DiagnosticPublisher) {
         this.st = new SymbolTable(logger)
     }
 
     compile(mods: ast.IModule[]): ir.IModule[] {
-        const irmods: ir.IModule[] = []
+        this.mods = []
         for (let mod of mods) {
-            if (mod.exported && mod.params.length === 0) {
-                for (let irmod of this.compileModule(mod, [])) {
-                    irmods.push(irmod)
-                }
+            if (mod.params.length === 0 && !mod.declaration) {
+                this.mods.push(this.compileModule(mod, []))
             }
         }
-        return irmods
+        return this.mods
+    }
+
+    define(decl: ast.IPort | ast.INet): ir.ISig[] {
+        const width = unwrap(this.evalExpr(decl.width)) as number
+        const sigs = (() => {
+            let sigs: ir.ISig[] = []
+            for (let i = 0; i < width; i++) {
+                sigs.push(ir.Sig())
+            }
+            return sigs
+        })()
+        this.st.define(Symbol(decl.name, decl.src), wrapSig(sigs))
+        return sigs
+    }
+
+    defineCell(cell: ast.ICell): ir.IRef<ir.ICell>[] {
+        const width = unwrap(this.evalExpr(cell.width)) as number
+        const cells = (() => {
+            let cells: ir.IRef<ir.ICell>[] = []
+            for (let i = 0; i < width; i++) {
+                const ircell = ir.Cell(cell.name, ir.Module('', []), [], [],
+                                       compileAttrs(cell.attrs), cell.src)
+                cells.push(ir.Ref(ircell, 0))
+            }
+            return cells
+        })()
+        this.st.define(Symbol(cell.name, cell.src), wrapCell(cells))
+        return cells
     }
 
     compileModule(mod: ast.IModule,
-                  params: [ast.IRef<ast.IParam>, ast.Expr][]): ir.IModule[] {
-        const irmod = ir.Module(mod.name)
-
-        for (let [param, expr] of params) {
-            this.st.define(Symbol(param.ref.name, param.ref.src),
-                           this.evalExpr(expr))
+                  params: ir.IParam[]): ir.IModule {
+        this.st.enterScope()
+        const irmod = ir.Module(mod.name, compileAttrs(mod.attrs), mod.src)
+        for (let param of params) {
+            this.st.define(Symbol(param.name, param.src), wrapParam(param.value))
         }
 
+        const cellRefs: ir.IRef<ir.ICell>[] = []
         for (let stmt of mod.stmts) {
             matchASTStmt({
                 Module: (mod) => {},
                 Param: (p) => {},
                 Const: (c) => {
-                    this.st.define(Symbol(c.name, c.src), 0)
+                    this.st.define(Symbol(c.name, c.src), wrapParam(0))
                 },
-                Port: (p) => {
-                    this.st.define(
-                        Symbol(p.name, p.src),
-                        ir.Port(p.name, p.ty,
-                                this.evalExpr(p.width) as number,
-                                p.src))
+                Port: (port) => {
+                    const sigs = this.define(port)
+                    const irport = ir.Port(port.name, port.ty, sigs,
+                                           compileAttrs(port.attrs), port.src)
+                    irmod.ports.push(irport)
                 },
-                Net: (n) => {
-                    this.st.define(
-                        Symbol(n.name, n.src),
-                        ir.Net(n.name,
-                               this.evalExpr(n.width) as number,
-                               n.src))
+                Net: (net) => {
+                    const sigs = this.define(net)
+                    const irnet = ir.Net(net.name, sigs, compileAttrs(net.attrs),
+                                         net.src)
+                    irmod.nets.push(irnet)
                 },
                 Cell: (cell) => {
-                    const width = this.evalExpr(cell.width) as number
-                    let cells = []
-                    if (width > 1) {
-                        for (let i = 0; i < width; i++) {
-                            cells.push(ir.Cell(cell.name + '$' + i.toString()))
-                        }
-                    } else {
-                        this.st.define(Symbol(cell.name, cell.src),
-                                       ir.Cell(cell.name))
+                    const refs = this.defineCell(cell)
+                    for (let ref of refs) {
+                        cellRefs.push(ref)
                     }
                 },
-                Assign: (a) => {
-                    // TODO
-                }
+                Assign: (a) => this.evalAssign(a)
             })(stmt)
         }
 
-        return []
+        irmod.cells = cellRefs.map((ref) => ref.ref)
+
+        this.st.exitScope()
+        return irmod
     }
 
-    evalExpr(expr: ast.Expr): Value {
-        return 0 /*matchASTExpr({
-            Tuple: t => this.evalTuple(t),
-            Ident: i => this.st.lookup(i),
-            Ref: r => this.evalRef(r),
-            ModInst: inst => inst,
-            BinOp: op => this.evalBinOp(op),
-            Integer: n => n.value,
-            String: str => str.value,
-            BitVector: bv => bv,
-            Unit: u => u.value * 10 ** u.exp,
-            Real: r => r.value,
-            Bool: b => b.value,
-        })(expr)*/
-    }
-
-    evalTuple(t: ast.ITuple): ir.IConcat {
-        return ir.Concat(t.exprs.map(this.evalExpr) as any)
-    }
-
-    evalRange(range: ast.IRange): ir.IRef {
-        return ir.Ref({} as ir.Expr,//this.evalExpr(range.expr),
-                      this.evalExpr(range.start) as number,
-                      this.evalExpr(range.end) as number)
-    }
-
-    evalBinOp(op: ast.IBinOp): Value {
-        const lhs = this.evalExpr(op.lhs) as number
-        const rhs = this.evalExpr(op.rhs) as number
-
-        switch (op.op) {
-            case '+':
-                return lhs + rhs
-            case '-':
-                return lhs - rhs
-            case '*':
-                return lhs - rhs
-            case '<<':
-                return lhs << rhs
-            case '>>':
-                return lhs >> rhs
+    evalAssign(assign: ast.IAssign) {
+        const lhs = this.evalExpr(assign.lhs)
+        const rhs = this.evalExpr(assign.rhs)
+        if (lhs.tag === 'cells' && rhs.tag === 'cells') {
+            if (lhs.val.length === rhs.val.length) {
+                for (let i = 0; i < lhs.val.length; i++) {
+                    const c1 = lhs.val[i].ref
+                    const c2 = rhs.val[i].ref
+                    lhs.val[i].ref = ir.Cell(c1.name, c2.module, c2.params,
+                                             c2.assigns, c1.attrs, c1.src)
+                }
+            }
+        } else if (lhs.tag === 'sigs' && rhs.tag === 'sigs') {
+            if (lhs.val.length === rhs.val.length) {
+                for (let i = 0; i < lhs.val.length; i++) {
+                    lhs.val[i] = rhs.val[i]
+                }
+            }
+        } else if (lhs.tag === 'param' && rhs.tag === 'param') {
+            lhs.val = rhs.val
+        } else {
+            console.log(lhs, rhs)
         }
+    }
+
+    evalExpr(expr: ast.Expr): WrappedValue {
+        return matchASTExpr<WrappedValue>({
+            Tuple: tuple => this.evalTuple(tuple),
+            Ref: ref => this.evalRef(ref),
+            Range: range => this.evalRange(range),
+            Inst: inst => this.evalInst(inst),
+            BinOp: op => this.evalBinOp(op),
+            Integer: n => wrapParam(n.value),
+            String: str => wrapParam(str.value),
+            BitVector: bv => this.evalBitVector(bv),
+            Unit: u => wrapParam(u.value),
+            Real: r => wrapParam(r.value),
+            Bool: b => wrapParam(b.value),
+        })(expr)
+    }
+
+    evalRef(ref: ast.IRef<ast.Decl>): WrappedValue {
+        const val = this.st.lookup(Symbol(ref.ref.name, ref.ref.src))
+        if (val === null) {
+            return wrapParam(0)
+        }
+        return val
+    }
+
+    evalInst(inst: ast.IInst): WrappedValue {
+        const params = []
+        for (let [paramRef, expr] of inst.params) {
+            const p = this.evalExpr(expr)
+            const val = unwrapParam(p)
+            params.push(ir.Param(paramRef.ref.name, val, paramRef.ref.src))
+        }
+
+        const irmod = this.compileModule(inst.mod.ref, params)
+
+        const assigns: ir.IAssign[] = []
+        for (let [portRef, expr] of inst.conns) {
+            const sigs = this.evalExpr(expr)
+            for (let p of irmod.ports) {
+                if (p.name === portRef.ref.name) {
+                    assigns.push(ir.Assign(ir.Ref(p, 0),
+                                           unwrap(sigs) as ir.ISig[],
+                                           portRef.src))
+                }
+            }
+        }
+
+        const ircellmod = (() => {
+            if (inst.mod.ref.declaration) {
+                return inst.mod.ref.name
+            }
+            return irmod
+        })()
+        const ircell = ir.Cell('', ircellmod, params, assigns, [], inst.src)
+
+        return wrapCell([ir.Ref(ircell, 0)])
+    }
+
+    evalTuple(t: ast.ITuple): WrappedValue {
+        return wrapSig([].concat.apply([], t.exprs.map((e) => {
+            return unwrap(this.evalExpr(e))
+        }) as ir.ISig[][]))
+    }
+
+    evalRange(range: ast.IRange): WrappedValue {
+        const sigs = unwrap(this.evalExpr(range.expr)) as ir.ISig[]
+        const start = unwrap(this.evalExpr(range.start)) as number
+        const end = unwrap(this.evalExpr(range.end)) as number
+        if (start > end) {
+            this.logger.error(`Start index '${start}' is larger ` +
+                              `than end index '${end}.'`, range.src)
+        }
+        if (start < 0) {
+            this.logger.error(`Start index '${start}' out of bounds.`, range.src)
+        }
+        if (end > sigs.length - 1) {
+            this.logger.error(`End index '${end}' out of bounds.`, range.src)
+        }
+        const newSigs: ir.ISig[] = []
+        for (let i = start; i < end; i++) {
+            newSigs.push(sigs[i])
+        }
+        return wrapSig(newSigs)
+    }
+
+    evalBitVector(bv: ast.IBitVector): WrappedValue {
+        return wrapSig(bv.value.map((bit) => ir.Sig(bit)))
+    }
+
+    evalBinOp(op: ast.IBinOp): WrappedValue {
+        const lhs = unwrap(this.evalExpr(op.lhs)) as number
+        const rhs = unwrap(this.evalExpr(op.rhs)) as number
+
+        return wrapParam((() => {
+            switch (op.op) {
+                case '+':
+                    return lhs + rhs
+                case '-':
+                    return lhs - rhs
+                case '*':
+                    return lhs - rhs
+                case '<<':
+                    return lhs << rhs
+                case '>>':
+                    return lhs >> rhs
+            }
+        })())
     }
 }
 
@@ -346,3 +564,45 @@ export class ASTCompiler {
     }
 
 }*/
+
+        /*if (assign.lhs.tag === 'range' && assign.lhs.expr.tag === 'ref') {
+            const range = assign.lhs
+            const decl = assign.lhs.expr.ref
+            switch(decl.tag) {
+                case 'cell':
+                    /*const cell = this.st.lookup(Symbol(a.lhs.expr.ref.name))
+                      if (cell && cell.tag === 'ref' && cell.ref.length) {
+                      cell.ref[this.evalExpr(a.lhs.start)] = this.evalExpr(a.rhs)
+                      }
+                    break
+                case 'port':
+                case 'net':
+                    break
+            }
+        }
+        if (a.lhs.tag === 'ref') {
+            const decl = a.lhs.ref
+            switch(decl.tag) {
+                case 'cell':
+                    /*
+                      const cell = this.st.lookup(Symbol(a.lhs.expr.ref.name))
+                      if (cell) {
+                      cell = this.evalExpr(a.rhs)
+                      }
+                case 'port':
+                case 'net':
+                    const value = this.st.lookup(Symbol(decl.name, decl.src))
+                    if (value !== null) {
+                        matchValue({
+                            Number: (num) => null,
+                            String: (str) => null,
+                            Bool: (bool) => null,
+                            Sig: (sigs) => {
+                                if (sigs.length !== )
+                                    }
+                        })(value)
+                    }
+                    break
+
+            }
+        }*/

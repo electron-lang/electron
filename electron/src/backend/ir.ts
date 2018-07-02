@@ -1,59 +1,90 @@
 import { ISrcLoc, emptySrcLoc } from '../diagnostic'
 
-export type IR = IModule | IAttr | IParam | ICell | IAssign | Expr
+export type IR = IModule | IAttr | IParam | ICell | IPort | INet | IAssign
 
-export interface IRExprPattern<T> {
-    Port: (port: IPort) => T
-    Net: (net: INet) => T
-    BitVec: (bv: IBitVec) => T
-    Concat: (ref: IConcat) => T
-    Ref: (ref: IRef) => T
-}
-
-export interface IRPattern<T> extends IRExprPattern<T> {
+export interface IRPattern<T> {
     Module: (mod: IModule) => T
     Attr: (attr: IAttr) => T
     Param: (param: IParam) => T
     Cell: (cell: ICell) => T
+    Port: (port: IPort) => T
+    Net: (net: INet) => T
     Assign: (assign: IAssign) => T
 }
 
-export function matchIRExpr<T>(p: IRExprPattern<T>): (ir: Expr) => T {
-  return (ir: Expr): T => {
-      switch(ir.tag) {
-          case 'port':
-              return p.Port(ir)
-          case 'net':
-              return p.Net(ir)
-          case 'bitvec':
-              return p.BitVec(ir)
-          case 'concat':
-              return p.Concat(ir)
-          case 'ref':
-              return p.Ref(ir)
-      }
-  }
-}
-
 export function matchIR<T>(p: IRPattern<T>): (ir: IR) => T {
-  return (ir: IR): T => {
-      switch(ir.tag) {
-          case 'module':
-              return p.Module(ir)
-          case 'attr':
-              return p.Attr(ir)
-          case 'param':
-              return p.Param(ir)
-          case 'cell':
-              return p.Cell(ir)
-          case 'assign':
-              return p.Assign(ir)
-          default:
-              return matchIRExpr(p)(ir)
-      }
-  }
+    return (ir) => {
+        switch(ir.tag) {
+            case 'module':
+                return p.Module(ir)
+            case 'attr':
+                return p.Attr(ir)
+            case 'param':
+                return p.Param(ir)
+            case 'cell':
+                return p.Cell(ir)
+            case 'port':
+                return p.Port(ir)
+            case 'net':
+                return p.Net(ir)
+            case 'assign':
+                return p.Assign(ir)
+        }
+    }
 }
 
+export interface SigPattern<T> {
+    Bit: (bit: Bit) => T
+    NC: () => T
+    Ref: (ref: number) => T
+}
+
+export function matchSig<T>(p: SigPattern<T>): (sig: ISig) => T {
+    return (sig) => {
+        if (sig.value === null) {
+            return p.NC()
+        } else if (typeof sig.value === 'string') {
+            return p.Bit(sig.value)
+        } else {
+            return p.Ref(sig.value)
+        }
+    }
+}
+
+export type Bit = '0' | '1' | 'x' | 'z'
+
+export interface IRef<T> {
+    tag: 'ref'
+    ref: T
+    index: number
+}
+
+export function Ref<T>(ref: T, index: number): IRef<T> {
+    return {
+        tag: 'ref',
+        ref,
+        index,
+    }
+}
+
+export interface ISig {
+    tag: 'sig'
+    value: Bit | number
+}
+
+let sigCounter = 0
+export function Sig(value?: Bit): ISig {
+    if (typeof value === 'undefined') {
+        return {
+            tag: 'sig',
+            value: sigCounter++,
+        }
+    }
+    return {
+        tag: 'sig',
+        value,
+    }
+}
 
 export interface IModule {
     tag: 'module',
@@ -62,27 +93,25 @@ export interface IModule {
     ports: IPort[]
     nets: INet[]
     cells: ICell[]
-    assigns: IAssign[]
     src: ISrcLoc
 }
 
-export function Module(name: string): IModule {
+export function Module(name: string, attrs: IAttr[], src?: ISrcLoc): IModule {
     return {
         tag: 'module',
-        attrs: [],
+        attrs,
         name,
         ports: [],
         nets: [],
         cells: [],
-        assigns: [],
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
 
 export interface IAttr {
     tag: 'attr'
     name: string
-    value: boolean | number | string
+    value: number | string | boolean
     src: ISrcLoc
 }
 
@@ -99,11 +128,11 @@ export function Attr(name: string, value: boolean | number | string,
 export interface IParam {
     tag: 'param'
     name: string
-    value: number | string | boolean | IBitVec
+    value: number | string | boolean | Bit[]
     src: ISrcLoc
 }
 
-export function Param(name: string, value: number | string | boolean | IBitVec,
+export function Param(name: string, value: number | string | boolean | Bit[],
                       src?: ISrcLoc): IParam {
     return {
         tag: 'param',
@@ -116,21 +145,22 @@ export function Param(name: string, value: number | string | boolean | IBitVec,
 export interface ICell {
     tag: 'cell'
     name: string
-    module: IModule
+    module: IModule | string
     attrs: IAttr[]
     params: IParam[]
     assigns: IAssign[]
     src: ISrcLoc
 }
 
-export function Cell(name: string, mod?: IModule, src?: ISrcLoc): ICell {
+export function Cell(name: string, mod: IModule | string, params: IParam[],
+                     assigns: IAssign[], attrs: IAttr[], src?: ISrcLoc): ICell {
     return {
         tag: 'cell',
         name,
-        module: mod || Module(''),
-        attrs: [],
-        params: [],
-        assigns: [],
+        module: mod,
+        attrs,
+        params,
+        assigns,
         src: src || emptySrcLoc,
     }
 }
@@ -139,21 +169,21 @@ export interface IPort {
     tag: 'port'
     attrs: IAttr[],
     ty: PortType
-    width: number
     name: string
+    value: ISig[]
     src: ISrcLoc
 }
 
 export type PortType = 'input' | 'output' | 'inout' | 'analog'
 
-export function Port(name: string, ty: PortType, width: number,
-                     src?: ISrcLoc): IPort {
+export function Port(name: string, ty: PortType, value: ISig[],
+                     attrs: IAttr[], src?: ISrcLoc): IPort {
     return {
         tag: 'port',
-        attrs: [],
+        attrs,
         ty,
-        width,
         name,
+        value,
         src: src || emptySrcLoc,
     }
 }
@@ -161,84 +191,34 @@ export function Port(name: string, ty: PortType, width: number,
 export interface INet {
     tag: 'net'
     attrs: IAttr[],
-    width: number
     name: string
+    value: ISig[]
     src: ISrcLoc,
 }
 
-export function Net(name: string, width: number, src?: ISrcLoc): INet {
+export function Net(name: string, value: ISig[], attrs: IAttr[],
+                    src?: ISrcLoc): INet {
     return {
         tag: 'net',
-        attrs: [],
-        width,
+        attrs,
         name,
+        value,
         src: src || emptySrcLoc,
     }
 }
 
 export interface IAssign {
     tag: 'assign'
-    lhs: Expr
-    rhs: Expr
+    lhs: IRef<IPort>
+    rhs: ISig[]
     src: ISrcLoc
 }
 
-export function Assign(lhs: Expr, rhs: Expr): IAssign {
+export function Assign(lhs: IRef<IPort>, rhs: ISig[], src?: ISrcLoc): IAssign {
     return {
         tag: 'assign',
         lhs,
         rhs,
-        src: emptySrcLoc,
-    }
-}
-
-// Expressions
-export type Expr = IBitVec | IConcat | IRef | INet | IPort
-
-export interface IBitVec {
-    tag: 'bitvec'
-    bits: Bit[]
-    src: ISrcLoc
-}
-
-export type Bit = '0' | '1' | 'x' | 'z'
-
-export function BitVec(bits: Bit[], src?: ISrcLoc): IBitVec {
-    return {
-        tag: 'bitvec',
-        bits,
-        src: emptySrcLoc,
-    }
-}
-
-export interface IConcat {
-    tag: 'concat'
-    exprs: Expr[]
-    src: ISrcLoc
-}
-
-export function Concat(exprs: Expr[]): IConcat {
-    return {
-        tag: 'concat',
-        exprs,
-        src: emptySrcLoc,
-    }
-}
-
-export interface IRef {
-    tag: 'ref'
-    sig: Expr
-    from: number
-    to: number
-    src: ISrcLoc
-}
-
-export function Ref(sig: Expr, from: number, to: number): IRef {
-    return {
-        tag: 'ref',
-        sig,
-        from,
-        to,
-        src: emptySrcLoc,
+        src: src || emptySrcLoc,
     }
 }
