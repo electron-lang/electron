@@ -110,6 +110,9 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     design(ctx: any): ast.IModule[] {
+        if (ctx.DesignComment) {
+            // TODO
+        }
         if (ctx.moduleImport) {
             ctx.moduleImport.forEach((ctx: any) => this.visit(ctx))
         }
@@ -153,11 +156,6 @@ export class Elaborator extends BaseElectronVisitor {
         }
     }
 
-    docComment(ctx: any): string {
-        const doc = ctx.DocComment[0].image
-        return doc.substring(4) + '\n'
-    }
-
     moduleDeclaration(ctx: any): ast.IModule {
         const ident = this.visit(ctx.identifier[0])
         const mod = ast.Module(ident.id, [], ident.src)
@@ -170,8 +168,10 @@ export class Elaborator extends BaseElectronVisitor {
                 mod.src)
         }
 
-        mod.doc = ctx.docComment
-            ? ctx.docComment.map((ctx: any) => this.visit(ctx)).join('')
+        mod.doc = ctx.ModuleComment
+            ? ctx.ModuleComment.map((doc: any) => {
+                return doc.image.substring(4) + '\n'
+            }).join('')
             : ''
         mod.exported = !!ctx.Export
         mod.declaration = !!ctx.Declare
@@ -565,7 +565,6 @@ export class Elaborator extends BaseElectronVisitor {
 
     anonymousCell(ctx: any): ast.IInst {
         let mod = ast.Module(undefined, [])
-        mod.declaration = true
         mod.src = tokenToSrcLoc(ctx.Cell[0])
 
         const conns = [].concat.apply([], (() => {

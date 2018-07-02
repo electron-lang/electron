@@ -15,8 +15,14 @@ describe('Compiler: PASS tests', () => {
         it('should compile ' + f, () => {
             _resetSigCounter()
             const file = new File(tr, __dirname + '/pass/' + f).compile()
-            expect(readFileSync(file.getPath('ir')).toString())
-                .to.equal(readFileSync(file.getPath('md')).toString())
+            const ir = readFileSync(file.getPath('ir')).toString()
+            const md = readFileSync(file.getPath('md')).toString()
+            try {
+                expect(ir).to.equal(md)
+            } catch(e) {
+                console.log(ir)
+                throw e
+            }
         })
     }
 })

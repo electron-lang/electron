@@ -29,14 +29,13 @@ class Printer implements IPrint<ir.IR> {
                         line,
                     ] : [],
                     '}',
-                    line,
                 ]
             },
             Attr: (attr) => {
-                return ['@', attr.name, '(', String(attr.value), ')', line]
+                return ['@', attr.name, '(', this.printValue(attr.value), ')', line]
             },
             Param: (param) => {
-                return [param.name, '=', String(param.value)]
+                return [param.name, '=', this.printValue(param.value)]
             },
             Cell: (cell) => {
                 const mod: string = typeof cell.module === 'string' ? cell.module
@@ -75,6 +74,14 @@ class Printer implements IPrint<ir.IR> {
                 return [ assign.lhs.ref.name, '=', this.printSigList(assign.rhs) ]
             }
         })(elem)
+    }
+
+    printValue(val: string | boolean | number | ir.Bit[]): IDoc {
+        if (typeof val === 'string') {
+            return ['"', val, '"']
+        } else {
+            return val.toString()
+        }
     }
 
     printSigList(sigs: ir.ISig[]): IDoc {

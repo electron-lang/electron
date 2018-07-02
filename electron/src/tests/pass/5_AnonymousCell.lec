@@ -1,0 +1,25 @@
+/// module u1$mod {
+///   @side("left")
+///   analog in = (3)
+///   @side("right")
+///   analog out = (4)
+///   @side("bottom")
+///   analog gnd = (5)
+/// }
+/// module Pcb {
+///   net in = (0)
+///   net out = (1)
+///   net gnd = (2)
+///   @man("NXP")
+///   @mpn("7805")
+///   cell u1 = u1$mod() {in=(0), out=(1), gnd=(2)}
+/// }
+module Pcb {
+    net in, out, gnd
+    @bom("NXP", "7805")
+    cell u1 = cell {
+        @left analog in
+        @right analog out
+        @bottom analog gnd
+    }
+}

@@ -89,7 +89,7 @@ export const allTypeHandlers: {[ty: string]: ITypeHandler} = {
     Integer: IntegerHandler,
     String: StringHandler,
     Real: RealHandler,
-    BitVecotr: BitVectorHandler,
+    BitVector: BitVectorHandler,
     Boolean: BooleanHandler,
     Ohm: OhmHandler,
     Farad: FaradHandler,

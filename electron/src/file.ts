@@ -133,7 +133,8 @@ export class File {
 
     emitIR(): File {
         if (!this.ir) return this
-        writeFileSync(this.getPath('ir'), this.ir.map((mod) => printIR(mod)))
+        writeFileSync(this.getPath('ir'),
+                      this.ir.map((mod) => printIR(mod)).join('\n') + '\n')
         return this
     }
 

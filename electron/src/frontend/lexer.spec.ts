@@ -70,7 +70,8 @@ describe('Lexer', () => {
     })
 
     it('should lex doc comments', () => {
-        expectLabel('/// A single line doc comment\n', 'DocComment')
+        expectLabel('//! A single line design comment\n', 'DesignComment')
+        expectLabel('/// A single line module comment\n', 'ModuleComment')
     })
 
     it('should lex separators', () => {

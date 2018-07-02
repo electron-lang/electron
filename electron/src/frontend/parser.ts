@@ -1,10 +1,10 @@
 import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
 import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound,
          CloseSquare, Colon, Comma, Comment, Const, BitVector, Declare,
-         DocComment, Dot, Export, False, From, Identifier, Import,
-         Inout, Input, Integer, Minus, Module, Net, OpenCurly, OpenRound,
-         OpenSquare, Output, Plus, Real, Semicolon, ShiftLeft, ShiftRight,
-         Star, String, True, Unit, With, Whitespace } from './tokens'
+         DesignComment, Dot, Export, False, From, Identifier, Import,
+         Inout, Input, Integer, Minus, Module, ModuleComment, Net, OpenCurly,
+         OpenRound, OpenSquare, Output, Plus, Real, Semicolon, ShiftLeft,
+         ShiftRight, Star, String, True, Unit, With, Whitespace } from './tokens'
 
 export const allTokens = [
     // Whitespace
@@ -54,7 +54,8 @@ export const allTokens = [
     Comma,
     Semicolon,
     // Comments
-    DocComment,
+    ModuleComment,
+    DesignComment,
     Comment,
 ]
 
@@ -75,7 +76,7 @@ setScope(Comma, 'delimiter')
 setScope(Comment, 'comment')
 setScope(Const, 'keyword')
 setScope(Declare, 'keyword')
-setScope(DocComment, 'comment.doc')
+setScope(DesignComment, 'comment.doc')
 setScope(Dot, 'delimiter')
 setScope(Export, 'keyword')
 setScope(False, 'keyword')
@@ -87,6 +88,7 @@ setScope(Input, 'keyword')
 setScope(Integer, 'number')
 setScope(Minus, 'operator')
 setScope(Module, 'keyword')
+setScope(ModuleComment, 'comment.doc')
 setScope(Net, 'keyword')
 setScope(OpenCurly, 'delimiter')
 setScope(OpenRound, 'delimiter')
@@ -114,7 +116,7 @@ class ElectronParser extends Parser {
 
     public design = this.RULE('design', () => {
         this.MANY({
-            DEF: () => this.SUBRULE(this.docComment)
+            DEF: () => this.CONSUME(DesignComment)
         })
         this.MANY1({
             DEF: () => this.SUBRULE(this.moduleImport)
@@ -122,10 +124,6 @@ class ElectronParser extends Parser {
         this.MANY2({
             DEF: () => this.SUBRULE(this.moduleDeclaration)
         })
-    })
-
-    public docComment = this.RULE('docComment', () => {
-        this.CONSUME(DocComment)
     })
 
     public moduleImport = this.RULE('moduleImport', () => {
@@ -136,7 +134,7 @@ class ElectronParser extends Parser {
     })
 
     public moduleDeclaration = this.RULE('moduleDeclaration', () => {
-        this.MANY1(() => this.SUBRULE(this.docComment))
+        this.MANY1(() => this.CONSUME(ModuleComment))
         this.MANY2(() => this.SUBRULE(this.attribute))
         this.OPTION(() => { this.CONSUME(Export) })
         this.OPTION1(() => { this.CONSUME(Declare) })

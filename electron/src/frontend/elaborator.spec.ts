@@ -376,7 +376,6 @@ describe('Elaborator', () => {
                     ast.Port('A', 'input', ast.Integer(1), getLoc('A', Pos(3, 35))),
                     ast.Port('Y', 'output', ast.Integer(1), getLoc('Y', Pos(3, 47))),
                 ], getLoc('cell', Pos(3, 22)))
-                mod.declaration = true
 
                 expectAstModule('net a, Y; cell inv = cell { input A=a; output Y}', [
                     a, Y, inv,
@@ -402,7 +401,6 @@ describe('Elaborator', () => {
                     ast.Port('A', 'analog', ast.Integer(1), getLoc('A', Pos(3, 36))),
                     ast.Port('Y', 'inout', ast.Integer(1), getLoc('Y', Pos(3, 54))),
                 ], getLoc('cell', Pos(3, 22)))
-                mod.declaration = true
                 mod.ports[1].attrs.push(ast.Attr('right', [], getLoc('@right', Pos(3, 41))))
 
                 expectAstModule('net a, Y; cell inv = cell { analog A=a; @right inout Y}', [
