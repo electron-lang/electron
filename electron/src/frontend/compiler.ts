@@ -236,6 +236,8 @@ export class ASTCompiler {
                 for (let i = 0; i < lhs.val.length; i++) {
                     lhs.val[i] = rhs.val[i]
                 }
+            } else {
+                console.log(lhs.val, rhs.val)
             }
         } else if (lhs.tag === 'param' && rhs.tag === 'param') {
             lhs.val = rhs.val
@@ -263,6 +265,7 @@ export class ASTCompiler {
     evalRef(ref: ast.IRef<ast.Decl>): WrappedValue {
         const val = this.st.lookup(Symbol(ref.ref.name, ref.ref.src))
         if (val === null) {
+            console.log(ref.ref.name + ' not found.')
             return wrapParam(0)
         }
         return val

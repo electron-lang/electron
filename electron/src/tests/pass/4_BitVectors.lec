@@ -1,13 +1,13 @@
 
-/// module BitVecParam {
-///   net[4] n = 4'01xz
+/// module bvp$BitVecParam {
+///   net[4] n = ("0", "1", "x", "z")
 /// }
 module BitVecParam(BV: BitVector) {
     net[4] n = BV
 }
 
 /// module Test {
-///   cell bvp = BitVecParam(4'01xz)
+///   cell bvp = bvp$BitVecParam(BV=("0", "1", "x", "z")) {}
 /// }
 module Test {
     cell bvp = BitVecParam(4'01xz) {}

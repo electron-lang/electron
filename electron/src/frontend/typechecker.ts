@@ -118,7 +118,10 @@ export class TypeChecker {
                     case 'module':
                         return error('Module')(e)
                     case 'param':
-                        return error('Param')(e)
+                        if (e.ref.ty !== 'BitVector') {
+                            return error('Param')(e)
+                        }
+                        return true
                     case 'const':
                         return error('Integer')(e)
                     case 'cell':

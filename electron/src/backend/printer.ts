@@ -1,5 +1,5 @@
 import { IDoc, nest, intersperse, enclose, punctuate, render,
-         parens, braces, line } from 'prettier-printer'
+         parens, braces, dquotes, line } from 'prettier-printer'
 import * as ir from './ir'
 
 export interface IPrint<T> {
@@ -24,7 +24,7 @@ class Printer implements IPrint<ir.IR> {
                     'module ',
                     mod.name,
                     ' ', '{',
-                    children.length > 1 ? [
+                    children.length > 0 ? [
                         nest(2, [line, intersperse(line, children)]),
                         line,
                     ] : [],
@@ -79,6 +79,8 @@ class Printer implements IPrint<ir.IR> {
     printValue(val: string | boolean | number | ir.Bit[]): IDoc {
         if (typeof val === 'string') {
             return ['"', val, '"']
+        } else if (typeof val === 'object') {
+            return ['(', intersperse(', ', val.map((x) => enclose(dquotes, x))), ')']
         } else {
             return val.toString()
         }
@@ -91,7 +93,7 @@ class Printer implements IPrint<ir.IR> {
 
     printSig(sig: ir.ISig): IDoc {
         return ir.matchSig<IDoc>({
-            Bit: (b) => b,
+            Bit: (b) => ['"', b, '"'],
             NC: () => 'nc',
             Ref: (ref) => ref.toString(), //[ref.ref.name, '[', ref.index.toString(), ']']
         })(sig)
