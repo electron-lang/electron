@@ -217,9 +217,12 @@ export class ASTCompiler {
                     const c1 = lhs.val[i].ref
                     const c2 = rhs.val[i].ref
 
-                    if (typeof c2.module !== 'string' &&
-                        c2.module.name === '') {
-                        c2.module.name = c1.name + '$mod'
+                    if (typeof c2.module !== 'string') {
+                        if (c2.module.name === '') {
+                            c2.module.name = c1.name + '$mod'
+                        } else {
+                            c2.module.name = c1.name + '$' + c2.module.name
+                        }
                     }
 
                     lhs.val[i].ref = ir.Cell(c1.name, c2.module, c2.params,
@@ -288,12 +291,10 @@ export class ASTCompiler {
         }
 
         const ircellmod = (() => {
-            if (inst.mod.ref.anonymous) {
-                this.mods.push(irmod)
-            }
             if (inst.mod.ref.declaration) {
                 return inst.mod.ref.name
             }
+            this.mods.push(irmod)
             return irmod
         })()
 
