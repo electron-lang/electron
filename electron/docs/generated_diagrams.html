@@ -23,16 +23,18 @@
   {
     "type": "Rule",
     "name": "design",
-    "orgText": "function () {\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.docComment); }\n            });\n            _this.MANY1({\n                DEF: function () { return _this.SUBRULE(_this.moduleImport); }\n            });\n            _this.MANY2({\n                DEF: function () { return _this.SUBRULE(_this.moduleDeclaration); }\n            });\n        }",
+    "orgText": "function () {\n            _this.MANY({\n                DEF: function () { return _this.CONSUME(tokens_1.DesignComment); }\n            });\n            _this.MANY1({\n                DEF: function () { return _this.SUBRULE(_this.moduleImport); }\n            });\n            _this.MANY2({\n                DEF: function () { return _this.SUBRULE(_this.moduleDeclaration); }\n            });\n        }",
     "definition": [
       {
         "type": "Repetition",
         "idx": 0,
         "definition": [
           {
-            "type": "NonTerminal",
-            "name": "docComment",
-            "idx": 0
+            "type": "Terminal",
+            "name": "DesignComment",
+            "label": "DesignComment",
+            "idx": 0,
+            "pattern": "\\/\\/!.+"
           }
         ]
       },
@@ -57,20 +59,6 @@
             "idx": 0
           }
         ]
-      }
-    ]
-  },
-  {
-    "type": "Rule",
-    "name": "docComment",
-    "orgText": "function () {\n            _this.CONSUME(tokens_1.DocComment);\n        }",
-    "definition": [
-      {
-        "type": "Terminal",
-        "name": "DocComment",
-        "label": "DocComment",
-        "idx": 0,
-        "pattern": "\\/\\/\\/.+"
       }
     ]
   },
@@ -110,16 +98,18 @@
   {
     "type": "Rule",
     "name": "moduleDeclaration",
-    "orgText": "function () {\n            _this.MANY1(function () { return _this.SUBRULE(_this.docComment); });\n            _this.MANY2(function () { return _this.SUBRULE(_this.attribute); });\n            _this.OPTION(function () { _this.CONSUME(tokens_1.Export); });\n            _this.OPTION1(function () { _this.CONSUME(tokens_1.Declare); });\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION2(function () { return _this.SUBRULE(_this.parameterDeclarationList); });\n            _this.SUBRULE(_this.statements);\n        }",
+    "orgText": "function () {\n            _this.MANY1(function () { return _this.CONSUME(tokens_1.ModuleComment); });\n            _this.MANY2(function () { return _this.SUBRULE(_this.attribute); });\n            _this.OPTION(function () { _this.CONSUME(tokens_1.Export); });\n            _this.OPTION1(function () { _this.CONSUME(tokens_1.Declare); });\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION2(function () { return _this.SUBRULE(_this.parameterDeclarationList); });\n            _this.SUBRULE(_this.statements);\n        }",
     "definition": [
       {
         "type": "Repetition",
         "idx": 1,
         "definition": [
           {
-            "type": "NonTerminal",
-            "name": "docComment",
-            "idx": 0
+            "type": "Terminal",
+            "name": "ModuleComment",
+            "label": "ModuleComment",
+            "idx": 0,
+            "pattern": "\\/\\/\\/.+"
           }
         ]
       },
