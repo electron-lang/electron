@@ -21,7 +21,7 @@ export interface IPorts {
 export interface IPort {
     attributes?: IAttrs
     direction: PortDirection
-    bits: IConnections
+    bits: Vector
 }
 
 export interface INets {
@@ -31,7 +31,7 @@ export interface INets {
 export interface INet {
     attributes?: IAttrs
     hide_name?: 0 | 1
-    bits: IConnections
+    bits: Vector
 }
 
 export interface ICells {
@@ -82,20 +82,10 @@ export interface IDigitalConnections extends IConnections {
 export interface IPortDirections {
     [port_name: string]: PortDirection
 }
-export enum PortDirection {
-    Input = 'input',
-    Output = 'output',
-    Inout = 'inout',
-}
 
-export enum BitConstant {
-    S0 = '0',
-    S1 = '1',
-    Sx = 'x', // undefined value
-    Sz = 'z', // high-impedance / not-connected
-    Sa = '-', // don't care (used only in cases)
-    Sm = 'm', // marker (used internally by yosys)
-}
+export type PortDirection = 'input' | 'output' | 'inout' | 'analog'
+export type BitConstant = '0' | '1' | 'x' | 'z'
+
 export type DigitalValue = BitConstant | number
 export type DigitalVector = DigitalValue[]
 

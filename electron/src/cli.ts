@@ -12,7 +12,7 @@ program.command('compile <file>')
     .option('-i, --dump-ir', 'Dumps IR to stdout for debugging purposes.')
     .action((path, options) => {
         const file = new File(new DiagnosticLogger(), path)
-        file.compile()
+        file.compile().emitJSON()
         if (options.dumpAst) {
             file.dumpAst()
         }

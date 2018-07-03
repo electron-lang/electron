@@ -10,8 +10,8 @@ export interface IUnaryCell extends IDigitalCell {
         Y_WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -63,9 +63,9 @@ export interface IBinaryCell extends IDigitalCell {
         Y_WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -121,11 +121,11 @@ export interface IFa extends IDigitalCell {
         WIDTH: number
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        C: PortDirection.Input,
-        X: PortDirection.Output,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        C: 'input',
+        X: 'output',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -142,10 +142,10 @@ export interface ILcu extends IDigitalCell {
         WIDTH: number
     },
     port_directions: {
-        P: PortDirection.Input,
-        G: PortDirection.Input,
-        CI: PortDirection.Input,
-        CO: PortDirection.Output,
+        P: 'input',
+        G: 'input',
+        CI: 'input',
+        CO: 'output',
     },
     connections: {
         P: DigitalVector,
@@ -165,13 +165,13 @@ export interface IAlu extends IDigitalCell {
         Y_WIDTH: number
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        CI: PortDirection.Input,
-        BI: PortDirection.Input,
-        X: PortDirection.Output,
-        Y: PortDirection.Output,
-        CO: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        CI: 'input',
+        BI: 'input',
+        X: 'output',
+        Y: 'output',
+        CO: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -238,9 +238,9 @@ export interface IMacc extends IDigitalCell {
         CONFIG_WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -281,8 +281,8 @@ export interface ISlice extends IDigitalCell {
         Y_WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -297,9 +297,9 @@ export interface IConcat extends IDigitalCell {
         B_WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -314,10 +314,10 @@ export interface IMux extends IDigitalCell {
         WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        S: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        S: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -333,10 +333,10 @@ export interface IPMux extends IDigitalCell {
         WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        S: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        S: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -353,8 +353,8 @@ export interface ILut extends IDigitalCell {
         LUT: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -370,8 +370,8 @@ export interface ISop extends IDigitalCell {
         TABLE: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -385,9 +385,9 @@ export interface ITriBuf extends IDigitalCell {
         WIDTH: number,
     },
     port_directions: {
-        A: PortDirection.Input,
-        EN: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        EN: 'input',
+        Y: 'output',
     },
     connections: {
         A: DigitalVector,
@@ -399,8 +399,8 @@ export interface ITriBuf extends IDigitalCell {
 export interface IFormalCheck extends IDigitalCell {
     parameters: {},
     port_directions: {
-        A: PortDirection.Input,
-        EN: PortDirection.Input,
+        A: 'input',
+        EN: 'input',
     },
     connections: {
         A: [DigitalValue],
@@ -432,7 +432,7 @@ export interface IInitState extends IDigitalCell {
     type: '$initstate',
     parameters: {},
     port_directions: {
-        Y: PortDirection.Output,
+        Y: 'output',
     },
     connections: {
         Y: [DigitalValue],
@@ -444,7 +444,7 @@ export interface IFormalInput extends IDigitalCell {
         WIDTH: number,
     },
     port_directions: {
-        Y: PortDirection.Output,
+        Y: 'output',
     },
     connections: {
         Y: DigitalVector,
@@ -471,9 +471,9 @@ export interface IEquiv extends IDigitalCell {
     type: '$equiv',
     parameters: {},
     port_directions: {
-        A: PortDirection.Input,
-        B: PortDirection.Input,
-        Y: PortDirection.Output,
+        A: 'input',
+        B: 'input',
+        Y: 'output',
     },
     connections: {
         A: [DigitalValue],
@@ -490,9 +490,9 @@ export interface ISr extends IDigitalCell {
         CLR_POLARITY: number,
     },
     port_directions: {
-        SET: PortDirection.Input,
-        CLR: PortDirection.Input,
-        Q: PortDirection.Output,
+        SET: 'input',
+        CLR: 'input',
+        Q: 'output',
     },
     connections: {
         SET: DigitalVector,
@@ -507,8 +507,8 @@ export interface IFf extends IDigitalCell {
         WIDTH: number,
     },
     port_directions: {
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         D: DigitalVector,
@@ -523,9 +523,9 @@ export interface IDff extends IDigitalCell {
         CLK_POLARITY: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        CLK: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -542,10 +542,10 @@ export interface IDffe extends IDigitalCell {
         EN_POLARITY: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        EN: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        CLK: 'input',
+        EN: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -564,11 +564,11 @@ export interface IDffSr extends IDigitalCell {
         CLR_POLARITY: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        SET: PortDirection.Input,
-        CLR: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        CLK: 'input',
+        SET: 'input',
+        CLR: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -588,10 +588,10 @@ export interface IAdff extends IDigitalCell {
         ARST_VALUE: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        ARST: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        CLK: 'input',
+        ARST: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -608,9 +608,9 @@ export interface IDlatch extends IDigitalCell {
         EN_POLARITY: number,
     },
     port_directions: {
-        EN: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        EN: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         EN: [DigitalValue],
@@ -628,11 +628,11 @@ export interface IDlatchSr extends IDigitalCell {
         CLR_POLARITY: number,
     },
     port_directions: {
-        EN: PortDirection.Input,
-        SET: PortDirection.Input,
-        CLR: PortDirection.Input,
-        D: PortDirection.Input,
-        Q: PortDirection.Output,
+        EN: 'input',
+        SET: 'input',
+        CLR: 'input',
+        D: 'input',
+        Q: 'output',
     },
     connections: {
         EN: [DigitalValue],
@@ -660,10 +660,10 @@ export interface IFsm extends IDigitalCell {
         TRANS_TABLE: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        ARST: PortDirection.Input,
-        CTRL_IN: PortDirection.Input,
-        CTRL_OUT: PortDirection.Output,
+        CLK: 'input',
+        ARST: 'input',
+        CTRL_IN: 'input',
+        CTRL_OUT: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -684,10 +684,10 @@ export interface IMemRd extends IDigitalCell {
         TRANSPARENT: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        EN: PortDirection.Input,
-        ADDR: PortDirection.Input,
-        DATA: PortDirection.Output,
+        CLK: 'input',
+        EN: 'input',
+        ADDR: 'input',
+        DATA: 'output',
     },
     connections: {
         CLK: [DigitalValue],
@@ -708,10 +708,10 @@ export interface IMemWr extends IDigitalCell {
         PRIORITY: number,
     },
     port_directions: {
-        CLK: PortDirection.Input,
-        EN: PortDirection.Input,
-        ADDR: PortDirection.Input,
-        DATA: PortDirection.Input,
+        CLK: 'input',
+        EN: 'input',
+        ADDR: 'input',
+        DATA: 'input',
     },
     connections: {
         CLK: [DigitalValue],
@@ -731,8 +731,8 @@ export interface IMemInit extends IDigitalCell {
         PRIORITY: number,
     },
     port_directions: {
-        ADDR: PortDirection.Input,
-        DATA: PortDirection.Input,
+        ADDR: 'input',
+        DATA: 'input',
     },
     connections: {
         ADDR: DigitalVector,
@@ -758,14 +758,14 @@ export interface IMem extends IDigitalCell {
         WR_CLK_POLARITY: number,
     },
     port_directions: {
-        RD_CLK: PortDirection.Input,
-        RD_EN: PortDirection.Input,
-        RD_ADDR: PortDirection.Input,
-        RD_DATA: PortDirection.Output,
-        WR_CLK: PortDirection.Input,
-        WR_EN: PortDirection.Input,
-        WR_ADDR: PortDirection.Input,
-        WR_DATA: PortDirection.Input,
+        RD_CLK: 'input',
+        RD_EN: 'input',
+        RD_ADDR: 'input',
+        RD_DATA: 'output',
+        WR_CLK: 'input',
+        WR_EN: 'input',
+        WR_ADDR: 'input',
+        WR_DATA: 'input',
     },
     connections: {
         RD_CLK: DigitalVector,

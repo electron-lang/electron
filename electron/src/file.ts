@@ -9,6 +9,7 @@ import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
 import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
+import { compileNetlist } from './backend/json'
 import { generateDocs } from './docs'
 
 export class File {
@@ -110,11 +111,7 @@ export class File {
     }
 
     compile(): File {
-        return this.lex().parse().elaborate()
-            .emitDeclarations()
-            .emitDocs()
-            .compileAST()
-            .emitIR()
+        return this.lex().parse().elaborate().compileAST()
     }
 
     emitDeclarations(): File {
@@ -135,6 +132,13 @@ export class File {
         if (!this.ir) return this
         writeFileSync(this.getPath('ir'),
                       this.ir.map((mod) => printIR(mod)).join('\n') + '\n')
+        return this
+    }
+
+    emitJSON(): File {
+        if (!this.ir) return this
+        writeFileSync(this.getPath('json'),
+                      JSON.stringify(compileNetlist(this.ir)));
         return this
     }
 

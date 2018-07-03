@@ -14,7 +14,8 @@ describe('Compiler: PASS tests', () => {
     for (let f of files) {
         it('should compile ' + f, () => {
             _resetSigCounter()
-            const file = new File(tr, __dirname + '/pass/' + f).compile()
+            const file = new File(tr, __dirname + '/pass/' + f)
+            file.compile().emitDocs().emitIR().emitJSON()
             const ir = readFileSync(file.getPath('ir')).toString()
             const md = readFileSync(file.getPath('md')).toString()
             try {

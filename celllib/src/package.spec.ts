@@ -9,15 +9,15 @@ describe('$not', () => {
             parameters: {
                 A_SIGNED: 0,
                 A_WIDTH: 1,
-                Y_WIDTH: 1
+                Y_WIDTH: 1,
             },
             port_directions: {
-                A: PortDirection.Input,
-                Y: PortDirection.Output
+                A: 'input',
+                Y: 'output',
             },
             connections: {
                 A: [2],
-                Y: [3]
+                Y: [3],
             }
         }
     });
@@ -32,7 +32,7 @@ describe('$res', () => {
             },
             connections: {
                 A: [2],
-                B: [3]
+                B: [3],
             }
         }
     });
