@@ -1,7 +1,7 @@
 import $R, $C, $L, $D, $M from "../cells"
 
+/// First order lowpass filter
 module RCFilter(R: Ohm, C: Farad) {
-    /// First order lowpass filter
     @left analog in
     @right analog out
     @bottom analog gnd
@@ -10,8 +10,8 @@ module RCFilter(R: Ohm, C: Farad) {
     cell c = $C(C) {A=out, B=gnd}
 }
 
+/// Second order lowpass filter
 module LCFilter(L: Henry, C: Farad) {
-    /// Second order lowpass filter
     @left analog in
     @right analog out
     @bottom analog gnd
