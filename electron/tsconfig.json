@@ -1,17 +1,10 @@
 {
+  "extends": "../base.tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["es2015"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "lib",
-    "strict": true,
-    "declaration": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "sourceMap": true
+    "rootDir": "src",
+    "outDir": "lib"
   },
   "include": [
-    "src",
+    "src"
   ]
 }

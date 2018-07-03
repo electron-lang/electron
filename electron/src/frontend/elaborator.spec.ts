@@ -1,8 +1,7 @@
 import { expect } from 'chai'
 import { File } from '../file'
 import * as ast from './ast'
-import { DiagnosticCollector, SrcLoc, ISrcLoc, emptySrcLoc,
-         Pos, IPos } from '../diagnostic';
+import { DiagnosticCollector, SrcLoc, ISrcLoc, Pos, IPos } from '../diagnostic';
 
 function getLoc(text: string, start: IPos): ISrcLoc {
     const lines = text.split('\n')

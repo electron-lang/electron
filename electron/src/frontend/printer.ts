@@ -1,8 +1,8 @@
-import { IDoc, nest, enclose, dquotes, braces, brackets, parens,
-         intersperse, line, group, indent, render } from 'prettier-printer'
+import { IDoc, nest, enclose, braces, parens,
+         intersperse, line, render } from 'prettier-printer'
 export { render, IDoc } from 'prettier-printer'
 import * as ast from './ast'
-import { matchASTLiteral, matchASTDecl, matchASTExpr } from './ast';
+import { matchASTLiteral, matchASTDecl } from './ast';
 
 const tabWidth = 2
 

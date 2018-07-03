@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import * as ast from './ast'
 import { TypeChecker } from './typechecker'
-import { DiagnosticCollector, DiagnosticTrace } from '../diagnostic';
+import { DiagnosticCollector } from '../diagnostic';
 
 const dc = new DiagnosticCollector()
 const tc = new TypeChecker(dc.toPublisher('typechecker.spec.ts', []))

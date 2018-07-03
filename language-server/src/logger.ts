@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { LspClient } from './lsp-client';
 import * as lsp from 'vscode-languageserver';
 
@@ -54,20 +53,20 @@ export class ConsoleLogger implements Logger {
 
     constructor(private isLogEnabled?: boolean) {}
 
-    private toStrings(...arg): string[] {
+    private toStrings(...arg: any[]): string[] {
         return (arg.map(a => JSON.stringify(a, null, 2)));
     }
 
-    error(...arg) {
+    error(...arg: any[]) {
         console.error(...this.toStrings(arg));
     }
-    warn(...arg) {
+    warn(...arg: any[]) {
         console.warn(...this.toStrings(arg));
     }
-    info(...arg) {
+    info(...arg: any[]) {
         console.info(...this.toStrings(arg));
     }
-    log(...arg) {
+    log(...arg: any[]) {
         if (this.isLogEnabled) {
             console.log(...this.toStrings(arg));
         }

@@ -1,5 +1,5 @@
 import * as ast from './ast'
-import { DiagnosticPublisher, emptySrcLoc } from '../diagnostic'
+import { DiagnosticPublisher } from '../diagnostic'
 import * as ir from '../backend/ir'
 
 export interface IAttributeHandler {

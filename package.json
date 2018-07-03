@@ -12,6 +12,7 @@
     "netlist",
     "celllib",
     "language-server",
+    "netlist-graph",
     "theia-electron",
     "browser-app",
     "electron-app"

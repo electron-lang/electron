@@ -1,7 +1,6 @@
-import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
 import { IAttr } from './attribute'
-import { Ref, IRef, Expr } from './expression'
-import { Decl, IParam, IPort, matchASTDecl, ASTDeclPattern } from './declaration'
+import { Expr } from './expression'
+import { Decl, matchASTDecl, ASTDeclPattern } from './declaration'
 
 export type Ast = IAttr | Stmt | Expr
 export type Stmt = Decl | IAssign

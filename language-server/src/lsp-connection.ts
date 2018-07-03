@@ -1,7 +1,7 @@
 import * as lsp from 'vscode-languageserver';
 
 import { LspServer } from './lsp-server';
-import { LspClient, LspClientImpl } from './lsp-client';
+import { LspClientImpl } from './lsp-client';
 import { LspClientLogger } from './logger'
 
 export interface IServerOptions {

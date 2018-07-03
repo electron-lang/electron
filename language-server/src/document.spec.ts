@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import * as path from 'path';
 import { LspDocument } from './document';
 
 describe('document', () => {

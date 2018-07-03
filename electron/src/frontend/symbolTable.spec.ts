@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import * as ast from './ast'
-import { DiagnosticCollector, emptySrcLoc } from '../diagnostic'
+import { DiagnosticCollector } from '../diagnostic'
 import { Symbol, SymbolTable } from './symbolTable'
 
 describe('Symbol Table', () => {

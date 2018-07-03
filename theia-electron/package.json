@@ -13,10 +13,11 @@
   "dependencies": {
     "@electron-lang/electron": "^0.0.4",
     "@electron-lang/language-server": "^0.0.4",
-    "@theia/core": "latest",
-    "@theia/editor": "latest",
-    "@theia/languages": "latest",
-    "@theia/monaco": "latest"
+    "@electron-lang/netlist-graph": "^0.0.4",
+    "@theia/core": "next",
+    "@theia/editor": "next",
+    "@theia/languages": "next",
+    "@theia/monaco": "next"
   },
   "devDependencies": {
     "typescript": "latest"

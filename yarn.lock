@@ -2,81 +2,81 @@
 # yarn lockfile v1
 
 
-"@babel/code-frame@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fcode-frame/-/code-frame-7.0.0-beta.49.tgz#becd805482734440c9d137e46d77340e64d7f51b"
+"@babel/code-frame@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fcode-frame/-/code-frame-7.0.0-beta.51.tgz#bd71d9b192af978df915829d39d4094456439a0c"
   dependencies:
-    "@babel/highlight" "7.0.0-beta.49"
+    "@babel/highlight" "7.0.0-beta.51"
 
-"@babel/generator@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fgenerator/-/generator-7.0.0-beta.49.tgz#e9cffda913996accec793bbc25ab91bc19d0bf7a"
+"@babel/generator@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fgenerator/-/generator-7.0.0-beta.51.tgz#6c7575ffde761d07485e04baedc0392c6d9e30f6"
   dependencies:
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/types" "7.0.0-beta.51"
     jsesc "^2.5.1"
     lodash "^4.17.5"
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
-"@babel/helper-function-name@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fhelper-function-name/-/helper-function-name-7.0.0-beta.49.tgz#a25c1119b9f035278670126e0225c03041c8de32"
+"@babel/helper-function-name@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fhelper-function-name/-/helper-function-name-7.0.0-beta.51.tgz#21b4874a227cf99ecafcc30a90302da5a2640561"
   dependencies:
-    "@babel/helper-get-function-arity" "7.0.0-beta.49"
-    "@babel/template" "7.0.0-beta.49"
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/helper-get-function-arity" "7.0.0-beta.51"
+    "@babel/template" "7.0.0-beta.51"
+    "@babel/types" "7.0.0-beta.51"
 
-"@babel/helper-get-function-arity@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fhelper-get-function-arity/-/helper-get-function-arity-7.0.0-beta.49.tgz#cf5023f32d2ad92d087374939cec0951bcb51441"
+"@babel/helper-get-function-arity@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fhelper-get-function-arity/-/helper-get-function-arity-7.0.0-beta.51.tgz#3281b2d045af95c172ce91b20825d85ea4676411"
   dependencies:
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/types" "7.0.0-beta.51"
 
-"@babel/helper-split-export-declaration@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fhelper-split-export-declaration/-/helper-split-export-declaration-7.0.0-beta.49.tgz#40d78eda0968d011b1c52866e5746cfb23e57548"
+"@babel/helper-split-export-declaration@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fhelper-split-export-declaration/-/helper-split-export-declaration-7.0.0-beta.51.tgz#8a6c3f66c4d265352fc077484f9f6e80a51ab978"
   dependencies:
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/types" "7.0.0-beta.51"
 
-"@babel/highlight@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fhighlight/-/highlight-7.0.0-beta.49.tgz#96bdc6b43e13482012ba6691b1018492d39622cc"
+"@babel/highlight@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fhighlight/-/highlight-7.0.0-beta.51.tgz#e8844ae25a1595ccfd42b89623b4376ca06d225d"
   dependencies:
     chalk "^2.0.0"
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@babel/parser@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2fparser/-/parser-7.0.0-beta.49.tgz#944d0c5ba2812bb159edbd226743afd265179bdc"
+"@babel/parser@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2fparser/-/parser-7.0.0-beta.51.tgz#27cec2df409df60af58270ed8f6aa55409ea86f6"
 
-"@babel/template@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2ftemplate/-/template-7.0.0-beta.49.tgz#e38abe8217cb9793f461a5306d7ad745d83e1d27"
+"@babel/template@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2ftemplate/-/template-7.0.0-beta.51.tgz#9602a40aebcf357ae9677e2532ef5fc810f5fbff"
   dependencies:
-    "@babel/code-frame" "7.0.0-beta.49"
-    "@babel/parser" "7.0.0-beta.49"
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/code-frame" "7.0.0-beta.51"
+    "@babel/parser" "7.0.0-beta.51"
+    "@babel/types" "7.0.0-beta.51"
     lodash "^4.17.5"
 
-"@babel/traverse@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2ftraverse/-/traverse-7.0.0-beta.49.tgz#4f2a73682a18334ed6625d100a8d27319f7c2d68"
+"@babel/traverse@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2ftraverse/-/traverse-7.0.0-beta.51.tgz#981daf2cec347a6231d3aa1d9e1803b03aaaa4a8"
   dependencies:
-    "@babel/code-frame" "7.0.0-beta.49"
-    "@babel/generator" "7.0.0-beta.49"
-    "@babel/helper-function-name" "7.0.0-beta.49"
-    "@babel/helper-split-export-declaration" "7.0.0-beta.49"
-    "@babel/parser" "7.0.0-beta.49"
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/code-frame" "7.0.0-beta.51"
+    "@babel/generator" "7.0.0-beta.51"
+    "@babel/helper-function-name" "7.0.0-beta.51"
+    "@babel/helper-split-export-declaration" "7.0.0-beta.51"
+    "@babel/parser" "7.0.0-beta.51"
+    "@babel/types" "7.0.0-beta.51"
     debug "^3.1.0"
     globals "^11.1.0"
     invariant "^2.2.0"
     lodash "^4.17.5"
 
-"@babel/types@7.0.0-beta.49":
-  version "7.0.0-beta.49"
-  resolved "http://localhost:4873/@babel%2ftypes/-/types-7.0.0-beta.49.tgz#b7e3b1c3f4d4cfe11bdf8c89f1efd5e1617b87a6"
+"@babel/types@7.0.0-beta.51":
+  version "7.0.0-beta.51"
+  resolved "http://localhost:4873/@babel%2ftypes/-/types-7.0.0-beta.51.tgz#d802b7b543b5836c778aa691797abf00f3d97ea9"
   dependencies:
     esutils "^2.0.2"
     lodash "^4.17.5"
@@ -192,11 +192,34 @@
   version "0.7.0"
   resolved "http://localhost:4873/@sindresorhus%2fis/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
-"@theia/application-manager@^0.3.11":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fapplication-manager/-/application-manager-0.3.11.tgz#c0a284898442f7531e081426385616ead51f89a1"
+"@theia/application-manager@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fapplication-manager/-/application-manager-0.4.0-next.b9941f63.tgz#1bcbbc761a3a8aadbf237e40dc364fe3e77949fa"
   dependencies:
-    "@theia/application-package" "^0.3.11"
+    "@theia/application-package" "0.4.0-next.b9941f63"
+    bunyan "^1.8.10"
+    circular-dependency-plugin "^4.0.0"
+    copy-webpack-plugin "^4.5.0"
+    css-loader "^0.28.1"
+    electron "1.8.2-beta.5"
+    electron-rebuild "^1.5.11"
+    file-loader "^1.1.11"
+    font-awesome-webpack "0.0.5-beta.2"
+    ignore-loader "^0.1.2"
+    less "^2.7.2"
+    source-map-loader "^0.2.1"
+    source-map-support "^0.4.18"
+    umd-compat-loader "^2.1.1"
+    url-loader "^1.0.1"
+    webpack "^4.0.0"
+    webpack-cli "2.0.12"
+    worker-loader "^1.1.1"
+
+"@theia/application-manager@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fapplication-manager/-/application-manager-0.4.0-next.e7eb69fc.tgz#cb7affd5c9fb1e9969925feb20f565c0a3bb4636"
+  dependencies:
+    "@theia/application-package" "0.4.0-next.e7eb69fc"
     bunyan "^1.8.10"
     circular-dependency-plugin "^4.0.0"
     copy-webpack-plugin "^4.5.0"
@@ -214,9 +237,9 @@
     webpack "^4.0.0"
     webpack-cli "2.0.12"
 
-"@theia/application-package@^0.3.11":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fapplication-package/-/application-package-0.3.11.tgz#738d68c222ce209c4edd48987855750740e11346"
+"@theia/application-package@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fapplication-package/-/application-package-0.4.0-next.b9941f63.tgz#fbd1820f26378c1969c1414adacbcad8c1faf8b0"
   dependencies:
     "@types/fs-extra" "^4.0.2"
     "@types/request" "^2.0.3"
@@ -228,28 +251,134 @@
     semver "^5.4.1"
     write-json-file "^2.2.0"
 
-"@theia/callhierarchy@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fcallhierarchy/-/callhierarchy-0.3.11.tgz#4a17d2b35b20194575c8e9f4d49e1bbf7da77def"
+"@theia/application-package@0.4.0-next.e358acd5":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2fapplication-package/-/application-package-0.4.0-next.e358acd5.tgz#90264e8a463a29d0bd222357a0d6e8731740f11d"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/languages" "^0.3.11"
-    "@theia/monaco" "^0.3.11"
+    "@types/fs-extra" "^4.0.2"
+    "@types/request" "^2.0.3"
+    "@types/semver" "^5.4.0"
+    "@types/write-json-file" "^2.2.1"
+    changes-stream "^2.2.0"
+    fs-extra "^4.0.2"
+    request "^2.82.0"
+    semver "^5.4.1"
+    write-json-file "^2.2.0"
+
+"@theia/application-package@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fapplication-package/-/application-package-0.4.0-next.e7eb69fc.tgz#4b503b30765637dcc6a12e659bd9e63fdd2a3d99"
+  dependencies:
+    "@types/fs-extra" "^4.0.2"
+    "@types/request" "^2.0.3"
+    "@types/semver" "^5.4.0"
+    "@types/write-json-file" "^2.2.1"
+    changes-stream "^2.2.0"
+    fs-extra "^4.0.2"
+    request "^2.82.0"
+    semver "^5.4.1"
+    write-json-file "^2.2.0"
+
+"@theia/callhierarchy@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fcallhierarchy/-/callhierarchy-0.4.0-next.e7eb69fc.tgz#8e1654a19e2e5d11956a4b4f816c9d7979678b1c"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+    "@theia/monaco" "0.4.0-next.e7eb69fc"
     ts-md5 "^1.2.2"
 
-"@theia/cli@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fcli/-/cli-0.3.11.tgz#7b55f52d553ac604ce34b65aab980add213bfbbc"
+"@theia/cli@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fcli/-/cli-0.4.0-next.b9941f63.tgz#1b135e267fe023a496e935b11c7ff0c2b2bd4e97"
   dependencies:
-    "@theia/application-manager" "^0.3.11"
+    "@theia/application-manager" "0.4.0-next.b9941f63"
 
-"@theia/core@^0.3.11", "@theia/core@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fcore/-/core-0.3.11.tgz#64383408ccd0a49f87693c63aaed22f84590c03e"
+"@theia/core@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fcore/-/core-0.4.0-next.b9941f63.tgz#5016a19df5e796149fdaa682d7bd12fad3c10147"
   dependencies:
     "@phosphor/widgets" "^1.5.0"
-    "@theia/application-package" "^0.3.11"
+    "@theia/application-package" "0.4.0-next.b9941f63"
+    "@types/body-parser" "^1.16.4"
+    "@types/bunyan" "^1.8.0"
+    "@types/express" "^4.16.0"
+    "@types/lodash.debounce" "4.0.3"
+    "@types/lodash.throttle" "^4.1.3"
+    "@types/react" "^16.4.1"
+    "@types/react-dom" "^16.0.6"
+    "@types/route-parser" "^0.1.1"
+    "@types/ws" "^3.0.2"
+    "@types/yargs" "^8.0.2"
+    ajv "^5.2.2"
+    body-parser "^1.17.2"
+    electron "1.8.2-beta.5"
+    es6-promise "^4.2.4"
+    express "^4.16.3"
+    file-icons-js "^1.0.3"
+    font-awesome "^4.7.0"
+    inversify "^4.2.0"
+    lodash.debounce "^4.0.8"
+    lodash.throttle "^4.1.1"
+    perfect-scrollbar "^1.3.0"
+    react "^16.4.1"
+    react-dom "^16.4.1"
+    reconnecting-websocket "^3.0.7"
+    reflect-metadata "^0.1.10"
+    route-parser "^0.0.5"
+    vscode-languageserver-types "^3.6.1"
+    vscode-nsfw "^1.0.17"
+    vscode-uri "^1.0.1"
+    vscode-ws-jsonrpc "^0.0.2-1"
+    ws "^3.0.0"
+    yargs "^9.0.1"
+
+"@theia/core@0.4.0-next.e358acd5":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2fcore/-/core-0.4.0-next.e358acd5.tgz#9d75c48200a621dd00d2a8df8e68525bde1d9e68"
+  dependencies:
+    "@phosphor/widgets" "^1.5.0"
+    "@theia/application-package" "0.4.0-next.e358acd5"
+    "@types/body-parser" "^1.16.4"
+    "@types/bunyan" "^1.8.0"
+    "@types/express" "^4.16.0"
+    "@types/lodash.debounce" "4.0.3"
+    "@types/lodash.throttle" "^4.1.3"
+    "@types/react" "^16.4.1"
+    "@types/react-dom" "^16.0.6"
+    "@types/route-parser" "^0.1.1"
+    "@types/ws" "^3.0.2"
+    "@types/yargs" "^8.0.2"
+    ajv "^5.2.2"
+    body-parser "^1.17.2"
+    electron "1.8.2-beta.5"
+    es6-promise "^4.2.4"
+    express "^4.16.3"
+    file-icons-js "^1.0.3"
+    font-awesome "^4.7.0"
+    inversify "^4.2.0"
+    lodash.debounce "^4.0.8"
+    lodash.throttle "^4.1.1"
+    perfect-scrollbar "^1.3.0"
+    react "^16.4.1"
+    react-dom "^16.4.1"
+    reconnecting-websocket "^3.0.7"
+    reflect-metadata "^0.1.10"
+    route-parser "^0.0.5"
+    vscode-languageserver-types "^3.6.1"
+    vscode-nsfw "^1.0.17"
+    vscode-uri "^1.0.1"
+    vscode-ws-jsonrpc "^0.0.2-1"
+    ws "^3.0.0"
+    yargs "^9.0.1"
+
+"@theia/core@0.4.0-next.e7eb69fc", "@theia/core@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fcore/-/core-0.4.0-next.e7eb69fc.tgz#bc3fb0c538a2ad84499306985ef9a5b0a180218a"
+  dependencies:
+    "@phosphor/widgets" "^1.5.0"
+    "@theia/application-package" "0.4.0-next.e7eb69fc"
     "@types/body-parser" "^1.16.4"
     "@types/bunyan" "^1.8.0"
     "@types/express" "^4.0.36"
@@ -280,42 +409,50 @@
     ws "^3.0.0"
     yargs "^9.0.1"
 
-"@theia/cpp@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fcpp/-/cpp-0.3.11.tgz#d9f926a177c02147eb198327604fbe3008b337b8"
+"@theia/cpp@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fcpp/-/cpp-0.4.0-next.e7eb69fc.tgz#229cfc48a72aa6d95d2d9efc55c554ed093e398a"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/languages" "^0.3.11"
-    "@theia/monaco" "^0.3.11"
-    "@theia/preferences" "^0.3.11"
-    "@theia/process" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+    "@theia/monaco" "0.4.0-next.e7eb69fc"
+    "@theia/preferences" "0.4.0-next.e7eb69fc"
+    "@theia/process" "0.4.0-next.e7eb69fc"
 
-"@theia/editor@^0.3.11", "@theia/editor@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2feditor/-/editor-0.3.11.tgz#f743083b78974b6f697b145cf57bd74c5ac51e6d"
+"@theia/editor@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2feditor/-/editor-0.4.0-next.b9941f63.tgz#3351f16776b75df2ff465ac963e517bd5aa1beca"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/languages" "^0.3.11"
-    "@theia/variable-resolver" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/languages" "0.4.0-next.b9941f63"
+    "@theia/variable-resolver" "0.4.0-next.b9941f63"
 
-"@theia/editorconfig@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2feditorconfig/-/editorconfig-0.3.11.tgz#eb04037215cb5f8f70dfdc35ec282c9a0c7b4e5f"
+"@theia/editor@0.4.0-next.e7eb69fc", "@theia/editor@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2feditor/-/editor-0.4.0-next.e7eb69fc.tgz#010a7206d78080f61d3a911c97ff7c59fa417d31"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/monaco" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+    "@theia/variable-resolver" "0.4.0-next.e7eb69fc"
+
+"@theia/editorconfig@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2feditorconfig/-/editorconfig-0.4.0-next.e7eb69fc.tgz#dea4a6783cbbd6d9e26b6445f46b17459b29d0d8"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/monaco" "0.4.0-next.e7eb69fc"
     editorconfig "^0.15.0"
 
-"@theia/extension-manager@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fextension-manager/-/extension-manager-0.3.11.tgz#f1430ae127d1b948194af34c570105b9a349c4a3"
+"@theia/extension-manager@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fextension-manager/-/extension-manager-0.4.0-next.e7eb69fc.tgz#78dc0cbe0747cc7574c550890e0f67a7a134bcda"
   dependencies:
-    "@theia/application-manager" "^0.3.11"
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
+    "@theia/application-manager" "0.4.0-next.e7eb69fc"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
     "@types/fs-extra" "^4.0.2"
     "@types/sanitize-html" "^1.13.31"
     "@types/showdown" "^1.7.1"
@@ -323,21 +460,73 @@
     sanitize-html "^1.14.1"
     showdown "^1.7.4"
 
-"@theia/file-search@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2ffile-search/-/file-search-0.3.11.tgz#73531e7a83c176879eb1eca303cbee7815eef57d"
+"@theia/file-search@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2ffile-search/-/file-search-0.4.0-next.e7eb69fc.tgz#771f1ff771a73fd4f583a78854f5fcb7d553b931"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     fuzzy "^0.1.3"
     vscode-ripgrep "^1.0.0"
 
-"@theia/filesystem@^0.3.11", "@theia/filesystem@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2ffilesystem/-/filesystem-0.3.11.tgz#f831009c311c8d95b006cc191e452a2c8d17d364"
+"@theia/filesystem@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2ffilesystem/-/filesystem-0.4.0-next.b9941f63.tgz#b0774b0b2cfaa4701901cb2c911708de335684ca"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@types/base64-js" "^1.2.5"
+    "@types/body-parser" "^1.17.0"
+    "@types/fs-extra" "^4.0.2"
+    "@types/mime-types" "^2.1.0"
+    "@types/rimraf" "^2.0.2"
+    "@types/tar-fs" "^1.16.1"
+    "@types/touch" "0.0.1"
+    "@types/uuid" "^3.4.3"
+    base64-js "^1.2.1"
+    body-parser "^1.18.3"
+    fs-extra "^4.0.2"
+    http-status-codes "^1.3.0"
+    mime-types "^2.1.18"
+    mv "^2.1.1"
+    rimraf "^2.6.2"
+    tar-fs "^1.16.2"
+    touch "^3.1.0"
+    trash "^4.0.1"
+    uuid "^3.2.1"
+    zip-dir "^1.0.2"
+
+"@theia/filesystem@0.4.0-next.e358acd5":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2ffilesystem/-/filesystem-0.4.0-next.e358acd5.tgz#051435251a4e86622cc0d0e4965bcdd704ec3ec5"
+  dependencies:
+    "@theia/core" "0.4.0-next.e358acd5"
+    "@types/base64-js" "^1.2.5"
+    "@types/body-parser" "^1.17.0"
+    "@types/fs-extra" "^4.0.2"
+    "@types/mime-types" "^2.1.0"
+    "@types/rimraf" "^2.0.2"
+    "@types/tar-fs" "^1.16.1"
+    "@types/touch" "0.0.1"
+    "@types/uuid" "^3.4.3"
+    base64-js "^1.2.1"
+    body-parser "^1.18.3"
+    fs-extra "^4.0.2"
+    http-status-codes "^1.3.0"
+    mime-types "^2.1.18"
+    mv "^2.1.1"
+    rimraf "^2.6.2"
+    tar-fs "^1.16.2"
+    touch "^3.1.0"
+    trash "^4.0.1"
+    uuid "^3.2.1"
+    zip-dir "^1.0.2"
+
+"@theia/filesystem@0.4.0-next.e7eb69fc", "@theia/filesystem@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2ffilesystem/-/filesystem-0.4.0-next.e7eb69fc.tgz#54d46a0413e28b147d90e68296746baef0ee95c6"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
     "@types/base64-js" "^1.2.5"
     "@types/fs-extra" "^4.0.2"
     "@types/touch" "0.0.1"
@@ -347,16 +536,16 @@
     touch "^3.1.0"
     trash "^4.0.1"
 
-"@theia/git@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fgit/-/git-0.3.11.tgz#bf90282443d5601ff2a6739499c8c26e60fd8294"
+"@theia/git@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fgit/-/git-0.4.0-next.e7eb69fc.tgz#50fdd11a0283e795b7a223b33a545536e087ce3c"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/languages" "^0.3.11"
-    "@theia/navigator" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+    "@theia/navigator" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     "@types/diff" "^3.2.2"
     "@types/fs-extra" "^4.0.2"
     diff "^3.4.0"
@@ -367,126 +556,186 @@
     octicons "^7.1.0"
     ts-md5 "^1.2.2"
 
-"@theia/keymaps@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fkeymaps/-/keymaps-0.3.11.tgz#797834d786e18024e72cc0ff8d8178d622cf1cb0"
+"@theia/keymaps@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fkeymaps/-/keymaps-0.4.0-next.e7eb69fc.tgz#e8bd7553b714fa57c9f485e2d9ec48bdfdb9668e"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/userstorage" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/userstorage" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     ajv "^5.2.2"
     jsonc-parser "^1.0.1"
 
-"@theia/languages@^0.3.11", "@theia/languages@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2flanguages/-/languages-0.3.11.tgz#7ca96802bb0fdac24713d3b2fd7e6f9c88033b9a"
+"@theia/languages@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2flanguages/-/languages-0.4.0-next.b9941f63.tgz#4f22328573dcf2693ac7ba2cb93283735bf9ecc0"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/output" "^0.3.11"
-    "@theia/process" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/output" "0.4.0-next.b9941f63"
+    "@theia/process" "0.4.0-next.b9941f63"
     vscode-base-languageclient "^0.0.1-alpha.5"
     vscode-languageserver-protocol "^3.6.0"
 
-"@theia/markers@^0.3.11", "@theia/markers@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmarkers/-/markers-0.3.11.tgz#fe4e00cabd14158b87a667e64335885b826a6958"
+"@theia/languages@0.4.0-next.e7eb69fc", "@theia/languages@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2flanguages/-/languages-0.4.0-next.e7eb69fc.tgz#fa3324ae1159e2468c27e6a40db0ded124edff5d"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/navigator" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/output" "0.4.0-next.e7eb69fc"
+    "@theia/process" "0.4.0-next.e7eb69fc"
+    vscode-base-languageclient "^0.0.1-alpha.5"
+    vscode-languageserver-protocol "^3.6.0"
 
-"@theia/merge-conflicts@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmerge-conflicts/-/merge-conflicts-0.3.11.tgz#719c0eb630b7be63ace8404f033622b37a829b52"
+"@theia/markers@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fmarkers/-/markers-0.4.0-next.b9941f63.tgz#131129dccbf1c4c6bcba076f26f53150d2cf32c4"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/languages" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/navigator" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
 
-"@theia/messages@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmessages/-/messages-0.3.11.tgz#3516fbccb1a447ab0805ed544bf815d5fe75eba5"
+"@theia/markers@0.4.0-next.e7eb69fc", "@theia/markers@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmarkers/-/markers-0.4.0-next.e7eb69fc.tgz#8cc3bc4a33e2fd90435990510bdab90f26a1e2b3"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/navigator" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
 
-"@theia/metrics@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmetrics/-/metrics-0.3.11.tgz#6423787f7d6f31d041c68a6991943616be6403dc"
+"@theia/merge-conflicts@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmerge-conflicts/-/merge-conflicts-0.4.0-next.e7eb69fc.tgz#76578feb5559001ebc668a9174dd1ef05009eae1"
   dependencies:
-    "@theia/application-manager" "^0.3.11"
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+
+"@theia/messages@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmessages/-/messages-0.4.0-next.e7eb69fc.tgz#f775d8b06c9776aae6a96dc8d02ecc0a4d093a5c"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+
+"@theia/metrics@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmetrics/-/metrics-0.4.0-next.e7eb69fc.tgz#cf9612c323f10c224b7d350c52dd2a7fb46cfc2d"
+  dependencies:
+    "@theia/application-manager" "0.4.0-next.e7eb69fc"
+    "@theia/core" "0.4.0-next.e7eb69fc"
     prom-client "^10.2.0"
 
-"@theia/mini-browser@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmini-browser/-/mini-browser-0.3.11.tgz#92e480f0c296d4f73353d2ba6cbd5cfb10d84211"
+"@theia/mini-browser@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmini-browser/-/mini-browser-0.4.0-next.e7eb69fc.tgz#8245a4ab7f01c0948f65556e92103808ea982ad0"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
     "@types/mime-types" "^2.1.0"
     mime-types "^2.1.18"
     pdfobject "^2.0.201604172"
 
-"@theia/monaco@^0.3.11", "@theia/monaco@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fmonaco/-/monaco-0.3.11.tgz#24d8b7c563ab4d8d7e178339b7b912997279cc00"
+"@theia/monaco@0.4.0-next.e7eb69fc", "@theia/monaco@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fmonaco/-/monaco-0.4.0-next.e7eb69fc.tgz#fd753c5ce67162a3c9279cad98433d3dfbe458df"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/languages" "^0.3.11"
-    "@theia/markers" "^0.3.11"
-    "@theia/outline-view" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/editor" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/languages" "0.4.0-next.e7eb69fc"
+    "@theia/markers" "0.4.0-next.e7eb69fc"
+    "@theia/outline-view" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     monaco-css "^2.0.1"
     monaco-html "^2.0.2"
     monaco-json "^2.0.1"
     monaco-languageclient "0.6.3"
     monaco-languages "^1.0.4"
 
-"@theia/navigator@^0.3.11", "@theia/navigator@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fnavigator/-/navigator-0.3.11.tgz#45c9683c21e96a1c55478003caa20528060d45cf"
+"@theia/navigator@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fnavigator/-/navigator-0.4.0-next.b9941f63.tgz#a5859cce7131c52776896bb84537e3dfa77d7c20"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
+    "@types/throttle-debounce" "^1.0.0"
+    fuzzy "^0.1.3"
+    throttle-debounce "1.0.1"
+
+"@theia/navigator@0.4.0-next.e7eb69fc", "@theia/navigator@next":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fnavigator/-/navigator-0.4.0-next.e7eb69fc.tgz#5cd26a62ecaa5c5cca1b100fc6c79a34c99890f4"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     "@types/throttle-debounce" "^1.0.0"
     fuzzy "^0.1.3"
     throttle-debounce "^1.0.1"
 
-"@theia/outline-view@^0.3.11", "@theia/outline-view@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2foutline-view/-/outline-view-0.3.11.tgz#a127931bd52703af28137873905a3dffc667bff3"
+"@theia/outline-view@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2foutline-view/-/outline-view-0.4.0-next.e7eb69fc.tgz#ab8721d798f55521775f82bb28c458de34c4d4ce"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
 
-"@theia/output@^0.3.11", "@theia/output@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2foutput/-/output-0.3.11.tgz#5b001560deb57fd519036e267d8e98546272ef04"
+"@theia/outline-view@next":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2foutline-view/-/outline-view-0.4.0-next.e358acd5.tgz#44d50b95c91e7e31dfb85f84bae09fb0d455b453"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.e358acd5"
 
-"@theia/preferences@^0.3.11", "@theia/preferences@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fpreferences/-/preferences-0.3.11.tgz#c1661e0ca9f5cfa145c4b991b079453df125941f"
+"@theia/output@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2foutput/-/output-0.4.0-next.b9941f63.tgz#d7c7eb30ebde71c5ba6ff72c9ec605fabb01376b"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/userstorage" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+
+"@theia/output@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2foutput/-/output-0.4.0-next.e7eb69fc.tgz#0917585cdc44458dc403084aaff81daa6df5cbc2"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+
+"@theia/output@next":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2foutput/-/output-0.4.0-next.e358acd5.tgz#1b33adcf1fd921f68398bba819bd3e3c1ca536f6"
+  dependencies:
+    "@theia/core" "0.4.0-next.e358acd5"
+
+"@theia/preferences@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fpreferences/-/preferences-0.4.0-next.e7eb69fc.tgz#84d20f9f4d3c9d8395fe367279ea32314515665c"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/userstorage" "0.4.0-next.e7eb69fc"
+    "@theia/workspace" "0.4.0-next.e7eb69fc"
     "@types/fs-extra" "^4.0.2"
     fs-extra "^4.0.2"
     jsonc-parser "^1.0.1"
 
-"@theia/preview@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fpreview/-/preview-0.3.11.tgz#d38c6decb97a4cc434d22901bc7d150c01a52076"
+"@theia/preferences@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fpreferences/-/preferences-0.4.0-next.b9941f63.tgz#fc9fb95cb56aa7d1dd65d9601cb206b53e650cbc"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    "@theia/languages" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/userstorage" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
+    "@types/fs-extra" "^4.0.2"
+    fs-extra "^4.0.2"
+    jsonc-parser "^1.0.1"
+
+"@theia/preview@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fpreview/-/preview-0.4.0-next.b9941f63.tgz#aad7a62bd077d3eb0bb1959f6eac8750845a2dcf"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/editor" "0.4.0-next.b9941f63"
+    "@theia/languages" "0.4.0-next.b9941f63"
     "@types/highlight.js" "^9.12.2"
     "@types/markdown-it" "^0.0.4"
     "@types/markdown-it-anchor" "^4.0.1"
@@ -494,66 +743,123 @@
     highlight.js "^9.12.0"
     markdown-it "^8.4.0"
     markdown-it-anchor "^4.0.0"
-    throttle-debounce "^1.0.1"
+    throttle-debounce "1.0.1"
 
-"@theia/process@^0.3.11", "@theia/process@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fprocess/-/process-0.3.11.tgz#71c6a8833f73c302b38026ea04a3e81f009238a7"
+"@theia/process@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fprocess/-/process-0.4.0-next.b9941f63.tgz#0d23bacc05fccaee6ff5b5c4d7499e3e909279bc"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    node-pty "0.7.4"
+    string-argv "0.0.2"
+
+"@theia/process@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fprocess/-/process-0.4.0-next.e7eb69fc.tgz#af522864a309a4a0dfa79179bb93e751a3b7c4f6"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
     node-pty "^0.7.0"
     string-argv "0.0.2"
 
-"@theia/search-in-workspace@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fsearch-in-workspace/-/search-in-workspace-0.3.11.tgz#f98a0d1fb8718d59e5ee45f665d73e6993663ba3"
+"@theia/process@next":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2fprocess/-/process-0.4.0-next.e358acd5.tgz#03cac4c1e9c4dbcf716f7dc6f0158140a9bb3425"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/editor" "^0.3.11"
-    vscode-ripgrep "^1.0.0"
+    "@theia/core" "0.4.0-next.e358acd5"
+    node-pty "0.7.4"
+    string-argv "0.0.2"
 
-"@theia/task@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2ftask/-/task-0.3.11.tgz#56be26ef874f24d42da92c56a1d28654ff15eea3"
+"@theia/search-in-workspace@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fsearch-in-workspace/-/search-in-workspace-0.4.0-next.b9941f63.tgz#671c961a76daf3d17ced85c05b36a0c038980954"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/markers" "^0.3.11"
-    "@theia/process" "^0.3.11"
-    "@theia/terminal" "^0.3.11"
-    "@theia/variable-resolver" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/editor" "0.4.0-next.b9941f63"
+    vscode-ripgrep "^1.0.1"
+
+"@theia/task@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2ftask/-/task-0.4.0-next.b9941f63.tgz#82d15bf360fb8fc21d0cb2fb33612ce0ba56a2dc"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/markers" "0.4.0-next.b9941f63"
+    "@theia/process" "0.4.0-next.b9941f63"
+    "@theia/terminal" "0.4.0-next.b9941f63"
+    "@theia/variable-resolver" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
     jsonc-parser "^1.0.1"
 
-"@theia/terminal@^0.3.11", "@theia/terminal@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fterminal/-/terminal-0.3.11.tgz#31af40eb50406feab35fd0c6cac6ba6f4eed9fd6"
+"@theia/terminal@0.4.0-next.b9941f63", "@theia/terminal@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fterminal/-/terminal-0.4.0-next.b9941f63.tgz#0672e2baf676524a75cd69a4acb50f2a49376e5d"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/process" "^0.3.11"
-    "@theia/workspace" "^0.3.11"
-    xterm "^3.0.1"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/process" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
+    xterm "<3.4.0"
 
-"@theia/userstorage@^0.3.11", "@theia/userstorage@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fuserstorage/-/userstorage-0.3.11.tgz#5794551436736db29cde3b5985bfd4dddebc897b"
+"@theia/userstorage@0.4.0-next.b9941f63", "@theia/userstorage@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fuserstorage/-/userstorage-0.4.0-next.b9941f63.tgz#427cc152a3137c36da6ec4812bf070c01d6212d2"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
 
-"@theia/variable-resolver@^0.3.11", "@theia/variable-resolver@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fvariable-resolver/-/variable-resolver-0.3.11.tgz#4c36e301e021a891e251029a85ae6f08ebd75f1d"
+"@theia/userstorage@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fuserstorage/-/userstorage-0.4.0-next.e7eb69fc.tgz#dc10879e68e2c11d4abcef3d0502a9f17342544c"
   dependencies:
-    "@theia/core" "^0.3.11"
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
 
-"@theia/workspace@^0.3.11", "@theia/workspace@latest":
-  version "0.3.11"
-  resolved "http://localhost:4873/@theia%2fworkspace/-/workspace-0.3.11.tgz#74183365c281c5e036ca9b02cbd485fc83d79853"
+"@theia/variable-resolver@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fvariable-resolver/-/variable-resolver-0.4.0-next.b9941f63.tgz#a09cd531dfd94a4b4356708306eab761b0887eb1"
   dependencies:
-    "@theia/core" "^0.3.11"
-    "@theia/filesystem" "^0.3.11"
-    "@theia/variable-resolver" "^0.3.11"
+    "@theia/core" "0.4.0-next.b9941f63"
+
+"@theia/variable-resolver@0.4.0-next.e358acd5", "@theia/variable-resolver@next":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2fvariable-resolver/-/variable-resolver-0.4.0-next.e358acd5.tgz#05cb99744a1f1e202857254ccb18af57237b8ee6"
+  dependencies:
+    "@theia/core" "0.4.0-next.e358acd5"
+
+"@theia/variable-resolver@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fvariable-resolver/-/variable-resolver-0.4.0-next.e7eb69fc.tgz#5119a2aa1933ae1bebe628febd3d897f0be45b01"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+
+"@theia/workspace@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fworkspace/-/workspace-0.4.0-next.b9941f63.tgz#6e44dfae7262f0e3b196b8d5da576ac86509f087"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/variable-resolver" "0.4.0-next.b9941f63"
+    "@types/fs-extra" "^4.0.2"
+    fs-extra "^4.0.2"
+    valid-filename "^2.0.1"
+
+"@theia/workspace@0.4.0-next.e7eb69fc":
+  version "0.4.0-next.e7eb69fc"
+  resolved "http://localhost:4873/@theia%2fworkspace/-/workspace-0.4.0-next.e7eb69fc.tgz#c89f1108eccf818df8605fd48fbab3aec5881c5d"
+  dependencies:
+    "@theia/core" "0.4.0-next.e7eb69fc"
+    "@theia/filesystem" "0.4.0-next.e7eb69fc"
+    "@theia/variable-resolver" "0.4.0-next.e7eb69fc"
+    "@types/fs-extra" "^4.0.2"
+    fs-extra "^4.0.2"
+    valid-filename "^2.0.1"
+
+"@theia/workspace@next":
+  version "0.4.0-next.e358acd5"
+  resolved "http://localhost:4873/@theia%2fworkspace/-/workspace-0.4.0-next.e358acd5.tgz#a681d70a191adcddf9f37ba053df7b4c6bb67a72"
+  dependencies:
+    "@theia/core" "0.4.0-next.e358acd5"
+    "@theia/filesystem" "0.4.0-next.e358acd5"
+    "@theia/variable-resolver" "0.4.0-next.e358acd5"
     "@types/fs-extra" "^4.0.2"
     fs-extra "^4.0.2"
     valid-filename "^2.0.1"
@@ -562,7 +868,7 @@
   version "1.2.5"
   resolved "http://localhost:4873/@types%2fbase64-js/-/base64-js-1.2.5.tgz#582b2476169a6cba460a214d476c744441d873d5"
 
-"@types/body-parser@*", "@types/body-parser@^1.16.4":
+"@types/body-parser@*", "@types/body-parser@^1.16.4", "@types/body-parser@^1.17.0":
   version "1.17.0"
   resolved "http://localhost:4873/@types%2fbody-parser/-/body-parser-1.17.0.tgz#9f5c9d9bd04bb54be32d5eb9fc0d8c974e6cf58c"
   dependencies:
@@ -612,7 +918,7 @@
     "@types/node" "*"
     "@types/range-parser" "*"
 
-"@types/express@^4.0.36":
+"@types/express@^4.0.36", "@types/express@^4.16.0":
   version "4.16.0"
   resolved "http://localhost:4873/@types%2fexpress/-/express-4.16.0.tgz#6d8bc42ccaa6f35cf29a2b7c3333cb47b5a32a19"
   dependencies:
@@ -630,6 +936,14 @@
   version "4.0.8"
   resolved "http://localhost:4873/@types%2ffs-extra/-/fs-extra-4.0.8.tgz#6957ddaf9173195199cb96da3db44c74700463d2"
   dependencies:
+    "@types/node" "*"
+
+"@types/glob@*":
+  version "5.0.35"
+  resolved "http://localhost:4873/@types%2fglob/-/glob-5.0.35.tgz#1ae151c802cece940443b5ac246925c85189f32a"
+  dependencies:
+    "@types/events" "*"
+    "@types/minimatch" "*"
     "@types/node" "*"
 
 "@types/handlebars@^4.0.38":
@@ -678,13 +992,17 @@
   version "2.0.0"
   resolved "http://localhost:4873/@types%2fmime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
 
+"@types/minimatch@*":
+  version "3.0.3"
+  resolved "http://localhost:4873/@types%2fminimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
+
 "@types/mocha@^5.2.2":
-  version "5.2.3"
-  resolved "http://localhost:4873/@types%2fmocha/-/mocha-5.2.3.tgz#11f3a5629d67cd444fa6c94536576244e6a52ea9"
+  version "5.2.4"
+  resolved "http://localhost:4873/@types%2fmocha/-/mocha-5.2.4.tgz#2f8fbdf95c69ebf82150a7864864010f186745bf"
 
 "@types/node@*", "@types/node@^10.3.2", "@types/node@^10.3.3":
-  version "10.3.5"
-  resolved "http://localhost:4873/@types%2fnode/-/node-10.3.5.tgz#8423cdf6e6fb83433e489900d7600d3b61c8260c"
+  version "10.5.1"
+  resolved "http://localhost:4873/@types%2fnode/-/node-10.5.1.tgz#d578446f4abff5c0b49ade9b4e5274f6badaadfc"
 
 "@types/node@^8.0.24", "@types/node@^8.0.26":
   version "8.10.20"
@@ -693,6 +1011,19 @@
 "@types/range-parser@*":
   version "1.2.2"
   resolved "http://localhost:4873/@types%2frange-parser/-/range-parser-1.2.2.tgz#fa8e1ad1d474688a757140c91de6dace6f4abc8d"
+
+"@types/react-dom@^16.0.6":
+  version "16.0.6"
+  resolved "http://localhost:4873/@types%2freact-dom/-/react-dom-16.0.6.tgz#f1a65a4e7be8ed5d123f8b3b9eacc913e35a1a3c"
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+
+"@types/react@*", "@types/react@^16.4.1":
+  version "16.4.6"
+  resolved "http://localhost:4873/@types%2freact/-/react-16.4.6.tgz#5024957c6bcef4f02823accf5974faba2e54fada"
+  dependencies:
+    csstype "^2.2.0"
 
 "@types/readline-sync@^1.4.3":
   version "1.4.3"
@@ -706,6 +1037,13 @@
     "@types/form-data" "*"
     "@types/node" "*"
     "@types/tough-cookie" "*"
+
+"@types/rimraf@^2.0.2":
+  version "2.0.2"
+  resolved "http://localhost:4873/@types%2frimraf/-/rimraf-2.0.2.tgz#7f0fc3cf0ff0ad2a99bb723ae1764f30acaf8b6e"
+  dependencies:
+    "@types/glob" "*"
+    "@types/node" "*"
 
 "@types/route-parser@^0.1.1":
   version "0.1.1"
@@ -727,8 +1065,14 @@
     "@types/mime" "*"
 
 "@types/showdown@^1.7.1":
-  version "1.7.4"
-  resolved "http://localhost:4873/@types%2fshowdown/-/showdown-1.7.4.tgz#6403b730bf58b9609cb29b34801697f81667dba6"
+  version "1.7.5"
+  resolved "http://localhost:4873/@types%2fshowdown/-/showdown-1.7.5.tgz#91061f2f16d5bdf66b186185999ed675a8908b6a"
+
+"@types/tar-fs@^1.16.1":
+  version "1.16.1"
+  resolved "http://localhost:4873/@types%2ftar-fs/-/tar-fs-1.16.1.tgz#6e3fba276c173e365ae91e55f7b797a0e64298e5"
+  dependencies:
+    "@types/node" "*"
 
 "@types/throttle-debounce@^1.0.0":
   version "1.0.0"
@@ -741,6 +1085,12 @@
 "@types/tough-cookie@*":
   version "2.3.3"
   resolved "http://localhost:4873/@types%2ftough-cookie/-/tough-cookie-2.3.3.tgz#7f226d67d654ec9070e755f46daebf014628e9d9"
+
+"@types/uuid@^3.4.3":
+  version "3.4.3"
+  resolved "http://localhost:4873/@types%2fuuid/-/uuid-3.4.3.tgz#121ace265f5569ce40f4f6d0ff78a338c732a754"
+  dependencies:
+    "@types/node" "*"
 
 "@types/write-json-file@^2.2.1":
   version "2.2.1"
@@ -945,8 +1295,8 @@ ajv@^5.1.0, ajv@^5.2.2:
     json-schema-traverse "^0.3.0"
 
 ajv@^6.1.0:
-  version "6.5.1"
-  resolved "http://localhost:4873/ajv/-/ajv-6.5.1.tgz#88ebc1263c7133937d108b80c5572e64e1d9322d"
+  version "6.5.2"
+  resolved "http://localhost:4873/ajv/-/ajv-6.5.2.tgz#678495f9b82f7cca6be248dd92f59bff5e1f4360"
   dependencies:
     fast-deep-equal "^2.0.1"
     fast-json-stable-stringify "^2.0.0"
@@ -1155,7 +1505,7 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "http://localhost:4873/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
-async@^1.4.0, async@^1.5.0:
+async@^1.4.0, async@^1.5.0, async@^1.5.2:
   version "1.5.2"
   resolved "http://localhost:4873/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
@@ -1813,8 +2163,8 @@ base@^0.11.1:
     pascalcase "^0.1.1"
 
 bcrypt-pbkdf@^1.0.0:
-  version "1.0.1"
-  resolved "http://localhost:4873/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"
+  version "1.0.2"
+  resolved "http://localhost:4873/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz#a4301d389b6a43f9b67ff3ca11a3f6637e360e9e"
   dependencies:
     tweetnacl "^0.14.3"
 
@@ -1833,6 +2183,13 @@ binaryextensions@2:
 bintrees@1.0.1:
   version "1.0.1"
   resolved "http://localhost:4873/bintrees/-/bintrees-1.0.1.tgz#0e655c9b9c2435eaab68bf4027226d2b55a34524"
+
+bl@^1.0.0:
+  version "1.2.2"
+  resolved "http://localhost:4873/bl/-/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
+  dependencies:
+    readable-stream "^2.3.5"
+    safe-buffer "^5.1.1"
 
 block-stream@*:
   version "0.0.9"
@@ -1863,7 +2220,7 @@ body-parser@1.18.2:
     raw-body "2.3.2"
     type-is "~1.6.15"
 
-body-parser@^1.17.2:
+body-parser@^1.17.2, body-parser@^1.18.3:
   version "1.18.3"
   resolved "http://localhost:4873/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
   dependencies:
@@ -1980,6 +2337,21 @@ browserslist@^1.3.6, browserslist@^1.5.2, browserslist@^1.7.6:
   dependencies:
     caniuse-db "^1.0.30000639"
     electron-to-chromium "^1.2.7"
+
+buffer-alloc-unsafe@^1.1.0:
+  version "1.1.0"
+  resolved "http://localhost:4873/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
+
+buffer-alloc@^1.1.0:
+  version "1.2.0"
+  resolved "http://localhost:4873/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
+  dependencies:
+    buffer-alloc-unsafe "^1.1.0"
+    buffer-fill "^1.0.0"
+
+buffer-fill@^1.0.0:
+  version "1.0.0"
+  resolved "http://localhost:4873/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
 
 buffer-from@^1.0.0, buffer-from@^1.1.0:
   version "1.1.0"
@@ -2119,8 +2491,8 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000858"
-  resolved "http://localhost:4873/caniuse-db/-/caniuse-db-1.0.30000858.tgz#153c9348350641dc624d150ec174262c2ad985e5"
+  version "1.0.30000862"
+  resolved "http://localhost:4873/caniuse-db/-/caniuse-db-1.0.30000862.tgz#6c1e296f8bbe5e5ea46f04215e8b90ed8fb9da8d"
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -2198,8 +2570,8 @@ checksum@^0.1.1:
     optimist "~0.3.5"
 
 chevrotain@^3.5.0:
-  version "3.6.1"
-  resolved "http://localhost:4873/chevrotain/-/chevrotain-3.6.1.tgz#e4374a16172c95cf09525c873dea7e98d81ec4c1"
+  version "3.7.0"
+  resolved "http://localhost:4873/chevrotain/-/chevrotain-3.7.0.tgz#9b2a4556fdc8479313b37578348d9d2824fefb5c"
   dependencies:
     regexp-to-ast "0.3.4"
 
@@ -2450,7 +2822,11 @@ command-join@^2.0.0:
   version "2.0.0"
   resolved "http://localhost:4873/command-join/-/command-join-2.0.0.tgz#52e8b984f4872d952ff1bdc8b98397d27c7144cf"
 
-commander@*, commander@2.15.1, commander@^2.11.0, commander@^2.15.1:
+commander@*, commander@^2.11.0, commander@^2.15.1:
+  version "2.16.0"
+  resolved "http://localhost:4873/commander/-/commander-2.16.0.tgz#f16390593996ceb4f3eeb020b31d78528f7f8a50"
+
+commander@2.15.1:
   version "2.15.1"
   resolved "http://localhost:4873/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
@@ -2686,8 +3062,8 @@ copy-descriptor@^0.1.0:
   resolved "http://localhost:4873/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
 
 copy-webpack-plugin@^4.5.0:
-  version "4.5.1"
-  resolved "http://localhost:4873/copy-webpack-plugin/-/copy-webpack-plugin-4.5.1.tgz#fc4f68f4add837cc5e13d111b20715793225d29c"
+  version "4.5.2"
+  resolved "http://localhost:4873/copy-webpack-plugin/-/copy-webpack-plugin-4.5.2.tgz#d53444a8fea2912d806e78937390ddd7e632ee5c"
   dependencies:
     cacache "^10.0.4"
     find-cache-dir "^1.0.0"
@@ -2697,6 +3073,10 @@ copy-webpack-plugin@^4.5.0:
     minimatch "^3.0.4"
     p-limit "^1.0.0"
     serialize-javascript "^1.4.0"
+
+core-js@^1.0.0:
+  version "1.2.7"
+  resolved "http://localhost:4873/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
 
 core-js@^2.4.0, core-js@^2.4.1, core-js@^2.5.0:
   version "2.5.7"
@@ -2890,6 +3270,10 @@ csso@~2.3.1:
     clap "^1.0.9"
     source-map "^0.5.3"
 
+csstype@^2.2.0:
+  version "2.5.5"
+  resolved "http://localhost:4873/csstype/-/csstype-2.5.5.tgz#4125484a3d42189a863943f23b9e4b80fedfa106"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "http://localhost:4873/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2978,10 +3362,6 @@ deep-eql@^3.0.0:
   resolved "http://localhost:4873/deep-eql/-/deep-eql-3.0.1.tgz#dfc9404400ad1c8fe023e7da1df1c147c4b444df"
   dependencies:
     type-detect "^4.0.0"
-
-deep-extend@^0.5.1:
-  version "0.5.1"
-  resolved "http://localhost:4873/deep-extend/-/deep-extend-0.5.1.tgz#b894a9dd90d3023fbf1c55a394fb858eb2066f1f"
 
 deep-extend@^0.6.0:
   version "0.6.0"
@@ -3242,6 +3622,10 @@ elegant-spinner@^1.0.1:
   version "1.0.1"
   resolved "http://localhost:4873/elegant-spinner/-/elegant-spinner-1.0.1.tgz#db043521c95d7e303fd8f345bedc3349cfb0729e"
 
+elkjs@latest:
+  version "0.3.0"
+  resolved "http://localhost:4873/elkjs/-/elkjs-0.3.0.tgz#b58d8c9ba0939b51b4c29bd93b576395ab02ebeb"
+
 elliptic@^6.0.0:
   version "6.4.0"
   resolved "http://localhost:4873/elliptic/-/elliptic-6.4.0.tgz#cac9af8762c85836187003c8dfe193e5e2eae5df"
@@ -3262,15 +3646,21 @@ encodeurl@~1.0.2:
   version "1.0.2"
   resolved "http://localhost:4873/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
 
+encoding@^0.1.11:
+  version "0.1.12"
+  resolved "http://localhost:4873/encoding/-/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
+  dependencies:
+    iconv-lite "~0.4.13"
+
 end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   version "1.4.1"
   resolved "http://localhost:4873/end-of-stream/-/end-of-stream-1.4.1.tgz#ed29634d19baba463b6ce6b80a37213eab71ec43"
   dependencies:
     once "^1.4.0"
 
-enhanced-resolve@^4.0.0:
-  version "4.0.0"
-  resolved "http://localhost:4873/enhanced-resolve/-/enhanced-resolve-4.0.0.tgz#e34a6eaa790f62fccd71d93959f56b2b432db10a"
+enhanced-resolve@^4.0.0, enhanced-resolve@^4.1.0:
+  version "4.1.0"
+  resolved "http://localhost:4873/enhanced-resolve/-/enhanced-resolve-4.1.0.tgz#41c7e0bfdfe74ac1ffe1e57ad6a5c6c9f3742a7f"
   dependencies:
     graceful-fs "^4.1.2"
     memory-fs "^0.4.0"
@@ -3431,7 +3821,7 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
-express@^4.15.3:
+express@^4.15.3, express@^4.16.3:
   version "4.16.3"
   resolved "http://localhost:4873/express/-/express-4.16.3.tgz#6af8a502350db3246ecc4becf6b5a34d22f7ed53"
   dependencies:
@@ -3554,6 +3944,18 @@ fastparse@^1.1.1:
   version "1.1.1"
   resolved "http://localhost:4873/fastparse/-/fastparse-1.1.1.tgz#d1e2643b38a94d7583b479060e6c4affc94071f8"
 
+fbjs@^0.8.16:
+  version "0.8.17"
+  resolved "http://localhost:4873/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
+  dependencies:
+    core-js "^1.0.0"
+    isomorphic-fetch "^2.1.1"
+    loose-envify "^1.0.0"
+    object-assign "^4.1.0"
+    promise "^7.1.1"
+    setimmediate "^1.0.5"
+    ua-parser-js "^0.7.18"
+
 fd-slicer@~1.0.1:
   version "1.0.1"
   resolved "http://localhost:4873/fd-slicer/-/fd-slicer-1.0.1.tgz#8b5bcbd9ec327c5041bf9ab023fd6750f1177e65"
@@ -3583,6 +3985,10 @@ file-loader@^1.1.11:
   dependencies:
     loader-utils "^1.0.2"
     schema-utils "^0.4.5"
+
+file-saver@1.3.3:
+  version "1.3.3"
+  resolved "http://localhost:4873/file-saver/-/file-saver-1.3.3.tgz#cdd4c44d3aa264eac2f68ec165bc791c34af1232"
 
 filename-regex@^2.0.0:
   version "2.0.1"
@@ -3754,6 +4160,10 @@ from2@^2.1.0, from2@^2.1.1:
   dependencies:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
+
+fs-constants@^1.0.0:
+  version "1.0.0"
+  resolved "http://localhost:4873/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
 
 fs-extra@^0.26.5:
   version "0.26.7"
@@ -4029,7 +4439,7 @@ globby@^7.1.1:
     pify "^3.0.0"
     slash "^1.0.0"
 
-globby@^8.0.0, globby@^8.0.1:
+globby@^8.0.1:
   version "8.0.1"
   resolved "http://localhost:4873/globby/-/globby-8.0.1.tgz#b5ad48b8aa80b35b814fc1281ecc851f1d2b5b50"
   dependencies:
@@ -4077,8 +4487,8 @@ got@^7.0.0:
     url-to-options "^1.0.1"
 
 got@^8.2.0:
-  version "8.3.1"
-  resolved "http://localhost:4873/got/-/got-8.3.1.tgz#093324403d4d955f5a16a7a8d39955d055ae10ed"
+  version "8.3.2"
+  resolved "http://localhost:4873/got/-/got-8.3.2.tgz#1d23f64390e97f776cac52e5b936e5f514d2e937"
   dependencies:
     "@sindresorhus/is" "^0.7.0"
     cacheable-request "^2.1.1"
@@ -4270,12 +4680,18 @@ homedir-polyfill@^1.0.1:
     parse-passwd "^1.0.0"
 
 hosted-git-info@^2.1.4, hosted-git-info@^2.5.0:
-  version "2.6.0"
-  resolved "http://localhost:4873/hosted-git-info/-/hosted-git-info-2.6.0.tgz#23235b29ab230c576aab0d4f13fc046b0b038222"
+  version "2.6.1"
+  resolved "http://localhost:4873/hosted-git-info/-/hosted-git-info-2.6.1.tgz#6e4cee78b01bb849dcf93527708c69fdbee410df"
 
 html-comment-regex@^1.1.0:
   version "1.1.1"
   resolved "http://localhost:4873/html-comment-regex/-/html-comment-regex-1.1.1.tgz#668b93776eaae55ebde8f3ad464b307a4963625e"
+
+html-parse-stringify2@^2:
+  version "2.0.1"
+  resolved "http://localhost:4873/html-parse-stringify2/-/html-parse-stringify2-2.0.1.tgz#dc5670b7292ca158b7bc916c9a6735ac8872834a"
+  dependencies:
+    void-elements "^2.0.1"
 
 htmlparser2@^3.9.0:
   version "3.9.2"
@@ -4330,6 +4746,10 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
+http-status-codes@^1.3.0:
+  version "1.3.0"
+  resolved "http://localhost:4873/http-status-codes/-/http-status-codes-1.3.0.tgz#9cd0e71391773d0671b489d41cbc5094aa4163b6"
+
 https-browserify@^1.0.0:
   version "1.0.0"
   resolved "http://localhost:4873/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
@@ -4338,7 +4758,7 @@ iconv-lite@0.4.19:
   version "0.4.19"
   resolved "http://localhost:4873/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
 
-iconv-lite@0.4.23, iconv-lite@^0.4.17, iconv-lite@^0.4.4:
+iconv-lite@0.4.23, iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.23"
   resolved "http://localhost:4873/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
   dependencies:
@@ -4479,7 +4899,7 @@ invariant@^2.2.0, invariant@^2.2.2:
   dependencies:
     loose-envify "^1.0.0"
 
-inversify@^4.2.0:
+inversify@^4.2.0, inversify@^4.3.0:
   version "4.13.0"
   resolved "http://localhost:4873/inversify/-/inversify-4.13.0.tgz#0ab40570bfa4474b04d5b919bbab3a4f682a72f5"
 
@@ -4653,12 +5073,6 @@ is-observable@^0.2.0:
   dependencies:
     symbol-observable "^0.2.2"
 
-is-odd@^2.0.0:
-  version "2.0.0"
-  resolved "http://localhost:4873/is-odd/-/is-odd-2.0.0.tgz#7646624671fd7ea558ccd9a2795182f2958f1b24"
-  dependencies:
-    is-number "^4.0.0"
-
 is-plain-obj@^1.0.0, is-plain-obj@^1.1.0:
   version "1.1.0"
   resolved "http://localhost:4873/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
@@ -4695,7 +5109,7 @@ is-scoped@^1.0.0:
   dependencies:
     scoped-regex "^1.0.0"
 
-is-stream@^1.0.0, is-stream@^1.1.0:
+is-stream@^1.0.0, is-stream@^1.0.1, is-stream@^1.1.0:
   version "1.1.0"
   resolved "http://localhost:4873/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
 
@@ -4753,6 +5167,13 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "http://localhost:4873/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
+isomorphic-fetch@^2.1.1:
+  version "2.2.1"
+  resolved "http://localhost:4873/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
+  dependencies:
+    node-fetch "^1.0.1"
+    whatwg-fetch ">=0.10.0"
+
 isstream@~0.1.2:
   version "0.1.2"
   resolved "http://localhost:4873/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
@@ -4772,14 +5193,14 @@ istanbul-lib-hook@^1.1.0:
     append-transform "^0.4.0"
 
 istanbul-lib-instrument@^2.1.0:
-  version "2.2.0"
-  resolved "http://localhost:4873/istanbul-lib-instrument/-/istanbul-lib-instrument-2.2.0.tgz#08091ae49d0b330be2a839dc25c250324c4bedaa"
+  version "2.3.0"
+  resolved "http://localhost:4873/istanbul-lib-instrument/-/istanbul-lib-instrument-2.3.0.tgz#777d3ba7aad2594105e60834efcbe968d11bebbc"
   dependencies:
-    "@babel/generator" "7.0.0-beta.49"
-    "@babel/parser" "7.0.0-beta.49"
-    "@babel/template" "7.0.0-beta.49"
-    "@babel/traverse" "7.0.0-beta.49"
-    "@babel/types" "7.0.0-beta.49"
+    "@babel/generator" "7.0.0-beta.51"
+    "@babel/parser" "7.0.0-beta.51"
+    "@babel/template" "7.0.0-beta.51"
+    "@babel/traverse" "7.0.0-beta.51"
+    "@babel/types" "7.0.0-beta.51"
     istanbul-lib-coverage "^2.0.0"
     semver "^5.5.0"
 
@@ -4976,6 +5397,12 @@ jsprim@^1.2.2:
     extsprintf "1.3.0"
     json-schema "0.2.3"
     verror "1.10.0"
+
+jszip@^2.4.0:
+  version "2.6.1"
+  resolved "http://localhost:4873/jszip/-/jszip-2.6.1.tgz#b88f3a7b2e67a2a048152982c7a3756d9c4828f0"
+  dependencies:
+    pako "~1.0.2"
 
 keyv@3.0.0:
   version "3.0.0"
@@ -5181,7 +5608,7 @@ loader-utils@^0.2.5, loader-utils@~0.2.2:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loader-utils@^1.0.2, loader-utils@^1.0.3, loader-utils@^1.1.0:
+loader-utils@^1.0.0, loader-utils@^1.0.2, loader-utils@^1.0.3, loader-utils@^1.1.0:
   version "1.1.0"
   resolved "http://localhost:4873/loader-utils/-/loader-utils-1.1.0.tgz#c98aef488bcceda2ffb5e2de646d6a754429f5cd"
   dependencies:
@@ -5296,7 +5723,7 @@ longest@^1.0.1:
   version "1.0.1"
   resolved "http://localhost:4873/longest/-/longest-1.0.1.tgz#30a0b2da38f73770e8294a0d22e6625ed77d0097"
 
-loose-envify@^1.0.0:
+loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1:
   version "1.3.1"
   resolved "http://localhost:4873/loose-envify/-/loose-envify-1.3.1.tgz#d1a8ad33fa9ce0e713d65fdd0ac8b748d478c848"
   dependencies:
@@ -5406,14 +5833,14 @@ media-typer@0.3.0:
   resolved "http://localhost:4873/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
 
 mem-fs-editor@^4.0.0:
-  version "4.0.2"
-  resolved "http://localhost:4873/mem-fs-editor/-/mem-fs-editor-4.0.2.tgz#55a79b1e824da631254c4c95ba6366602c77af90"
+  version "4.0.3"
+  resolved "http://localhost:4873/mem-fs-editor/-/mem-fs-editor-4.0.3.tgz#d282a0c4e0d796e9eff9d75661f25f68f389af53"
   dependencies:
     commondir "^1.0.1"
-    deep-extend "^0.5.1"
+    deep-extend "^0.6.0"
     ejs "^2.5.9"
     glob "^7.0.3"
-    globby "^8.0.0"
+    globby "^7.1.1"
     isbinaryfile "^3.0.2"
     mkdirp "^0.5.0"
     multimatch "^2.0.0"
@@ -5737,20 +6164,19 @@ mv@^2.1.1, mv@~2:
     ncp "~2.0.0"
     rimraf "~2.4.0"
 
-nan@2.10.0, nan@^2.0.0, nan@^2.10.0, nan@^2.9.2:
+nan@2.10.0, nan@^2.0.0, nan@^2.10.0, nan@^2.6.2, nan@^2.9.2:
   version "2.10.0"
   resolved "http://localhost:4873/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
 nanomatch@^1.2.9:
-  version "1.2.9"
-  resolved "http://localhost:4873/nanomatch/-/nanomatch-1.2.9.tgz#879f7150cb2dab7a471259066c104eee6e0fa7c2"
+  version "1.2.13"
+  resolved "http://localhost:4873/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
   dependencies:
     arr-diff "^4.0.0"
     array-unique "^0.3.2"
     define-property "^2.0.2"
     extend-shallow "^3.0.2"
     fragment-cache "^0.2.1"
-    is-odd "^2.0.0"
     is-windows "^1.0.2"
     kind-of "^6.0.2"
     object.pick "^1.3.0"
@@ -5791,6 +6217,13 @@ node-abi@^2.0.0:
 node-dir@0.1.8:
   version "0.1.8"
   resolved "http://localhost:4873/node-dir/-/node-dir-0.1.8.tgz#55fb8deb699070707fb67f91a460f0448294c77d"
+
+node-fetch@^1.0.1:
+  version "1.7.3"
+  resolved "http://localhost:4873/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
+  dependencies:
+    encoding "^0.1.11"
+    is-stream "^1.0.1"
 
 node-gyp@^3.6.0:
   version "3.7.0"
@@ -5852,9 +6285,15 @@ node-pre-gyp@^0.10.0:
     semver "^5.3.0"
     tar "^4"
 
+node-pty@0.7.4:
+  version "0.7.4"
+  resolved "http://localhost:4873/node-pty/-/node-pty-0.7.4.tgz#07146b2b40b76e432e57ce6750bda40f0da5c99f"
+  dependencies:
+    nan "^2.6.2"
+
 node-pty@^0.7.0:
-  version "0.7.5"
-  resolved "http://localhost:4873/node-pty/-/node-pty-0.7.5.tgz#dd7fa8df90a5bf7c5f5273ec5aeecabcbfbc921f"
+  version "0.7.6"
+  resolved "http://localhost:4873/node-pty/-/node-pty-0.7.6.tgz#bff6148c9c5836ca7e73c7aaaec067dcbdac2f7b"
   dependencies:
     nan "2.10.0"
 
@@ -6222,7 +6661,7 @@ package-json@^4.0.1:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-pako@~1.0.5:
+pako@~1.0.2, pako@~1.0.5:
   version "1.0.6"
   resolved "http://localhost:4873/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
 
@@ -6692,8 +7131,8 @@ prettier-printer@^1.1.2:
     partial.lenses.validation "^1.0.4"
 
 prettier@^1.5.3:
-  version "1.13.5"
-  resolved "http://localhost:4873/prettier/-/prettier-1.13.5.tgz#7ae2076998c8edce79d63834e9b7b09fead6bfd0"
+  version "1.13.7"
+  resolved "http://localhost:4873/prettier/-/prettier-1.13.7.tgz#850f3b8af784a49a6ea2d2eaa7ed1428a34b7281"
 
 pretty-bytes@^1.0.2:
   version "1.0.4"
@@ -6751,6 +7190,13 @@ promisify-node@^0.3.0:
   dependencies:
     nodegit-promise "~4.0.0"
 
+prop-types@^15.6.0:
+  version "15.6.2"
+  resolved "http://localhost:4873/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
+  dependencies:
+    loose-envify "^1.3.1"
+    object-assign "^4.1.1"
+
 proxy-addr@~2.0.3:
   version "2.0.3"
   resolved "http://localhost:4873/proxy-addr/-/proxy-addr-2.0.3.tgz#355f262505a621646b3130a728eb647e22055341"
@@ -6775,6 +7221,13 @@ public-encrypt@^4.0.0:
     create-hash "^1.1.0"
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
+
+pump@^1.0.0:
+  version "1.0.3"
+  resolved "http://localhost:4873/pump/-/pump-1.0.3.tgz#5dfe8311c33bbf6fc18261f9f34702c47c08a954"
+  dependencies:
+    end-of-stream "^1.1.0"
+    once "^1.3.1"
 
 pump@^2.0.0, pump@^2.0.1:
   version "2.0.1"
@@ -6898,6 +7351,24 @@ rc@^1.0.1, rc@^1.1.2, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-dom@^16.4.1:
+  version "16.4.1"
+  resolved "http://localhost:4873/react-dom/-/react-dom-16.4.1.tgz#7f8b0223b3a5fbe205116c56deb85de32685dad6"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
+
+react@^16.4.1:
+  version "16.4.1"
+  resolved "http://localhost:4873/react/-/react-16.4.1.tgz#de51ba5764b5dbcd1f9079037b862bd26b82fe32"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
+
 read-chunk@^2.1.0:
   version "2.1.0"
   resolved "http://localhost:4873/read-chunk/-/read-chunk-2.1.0.tgz#6a04c0928005ed9d42e1a6ac5600e19cbc7ff655"
@@ -6956,7 +7427,7 @@ read-pkg@^3.0.0:
     normalize-package-data "^2.3.2"
     path-type "^3.0.0"
 
-"readable-stream@1 || 2", readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.4, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.3, readable-stream@^2.3.5, readable-stream@^2.3.6:
+"readable-stream@1 || 2", readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.4, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.0, readable-stream@^2.3.3, readable-stream@^2.3.5, readable-stream@^2.3.6:
   version "2.3.6"
   resolved "http://localhost:4873/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
   dependencies:
@@ -7390,7 +7861,7 @@ sax@^1.2.4, sax@~1.2.1:
   version "1.2.4"
   resolved "http://localhost:4873/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
-schema-utils@^0.4.3, schema-utils@^0.4.4, schema-utils@^0.4.5:
+schema-utils@^0.4.0, schema-utils@^0.4.3, schema-utils@^0.4.4, schema-utils@^0.4.5:
   version "0.4.5"
   resolved "http://localhost:4873/schema-utils/-/schema-utils-0.4.5.tgz#21836f0608aac17b78f9e3e24daff14a5ca13a3e"
   dependencies:
@@ -7466,7 +7937,7 @@ set-value@^2.0.0:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
-setimmediate@^1.0.4:
+setimmediate@^1.0.4, setimmediate@^1.0.5:
   version "1.0.5"
   resolved "http://localhost:4873/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
 
@@ -7534,6 +8005,22 @@ slice-ansi@0.0.4:
 slide@^1.1.5:
   version "1.1.6"
   resolved "http://localhost:4873/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
+
+snabbdom-jsx@^0.4.2:
+  version "0.4.2"
+  resolved "http://localhost:4873/snabbdom-jsx/-/snabbdom-jsx-0.4.2.tgz#e580682d60b4cc1da9898c6a0bacfcd062a0cffc"
+  dependencies:
+    snabbdom "^0.7.0"
+
+snabbdom-virtualize@^0.7.0:
+  version "0.7.0"
+  resolved "http://localhost:4873/snabbdom-virtualize/-/snabbdom-virtualize-0.7.0.tgz#31f683338b66457bded8c1e22cdd8ed438c2a387"
+  dependencies:
+    html-parse-stringify2 "^2"
+
+snabbdom@^0.7.0:
+  version "0.7.1"
+  resolved "http://localhost:4873/snabbdom/-/snabbdom-0.7.1.tgz#c1e9eddfad2c02ebc2cf66aaefb040419d059597"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
@@ -7703,6 +8190,26 @@ split@^1.0.0:
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "http://localhost:4873/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
+
+sprotty@0.4.0-next.188810ab:
+  version "0.4.0-next.188810ab"
+  resolved "http://localhost:4873/sprotty/-/sprotty-0.4.0-next.188810ab.tgz#6f3e45156886be6663e57be8dfd29c2724a2c9f1"
+  dependencies:
+    file-saver "1.3.3"
+    inversify "^4.3.0"
+    snabbdom "^0.7.0"
+    snabbdom-jsx "^0.4.2"
+    snabbdom-virtualize "^0.7.0"
+
+sprotty@latest:
+  version "0.4.0"
+  resolved "http://localhost:4873/sprotty/-/sprotty-0.4.0.tgz#315122d45216e4f0556c00f0d67b2965e85a7ed0"
+  dependencies:
+    file-saver "1.3.3"
+    inversify "^4.3.0"
+    snabbdom "^0.7.0"
+    snabbdom-jsx "^0.4.2"
+    snabbdom-virtualize "^0.7.0"
 
 srcset@^1.0.0:
   version "1.0.0"
@@ -7940,6 +8447,27 @@ tapable@^1.0.0:
   version "1.0.0"
   resolved "http://localhost:4873/tapable/-/tapable-1.0.0.tgz#cbb639d9002eed9c6b5975eb20598d7936f1f9f2"
 
+tar-fs@^1.16.2:
+  version "1.16.3"
+  resolved "http://localhost:4873/tar-fs/-/tar-fs-1.16.3.tgz#966a628841da2c4010406a82167cbd5e0c72d509"
+  dependencies:
+    chownr "^1.0.1"
+    mkdirp "^0.5.1"
+    pump "^1.0.0"
+    tar-stream "^1.1.2"
+
+tar-stream@^1.1.2:
+  version "1.6.1"
+  resolved "http://localhost:4873/tar-stream/-/tar-stream-1.6.1.tgz#f84ef1696269d6223ca48f6e1eeede3f7e81f395"
+  dependencies:
+    bl "^1.0.0"
+    buffer-alloc "^1.1.0"
+    end-of-stream "^1.0.0"
+    fs-constants "^1.0.0"
+    readable-stream "^2.3.0"
+    to-buffer "^1.1.0"
+    xtend "^4.0.0"
+
 tar@^2.0.0, tar@^2.2.1:
   version "2.2.1"
   resolved "http://localhost:4873/tar/-/tar-2.2.1.tgz#8e4d2a256c0e2185c6b18ad694aec968b83cb1d1"
@@ -8017,6 +8545,21 @@ textextensions@2:
   version "2.2.0"
   resolved "http://localhost:4873/textextensions/-/textextensions-2.2.0.tgz#38ac676151285b658654581987a0ce1a4490d286"
 
+theia-sprotty@next:
+  version "0.2.0-next.188810ab"
+  resolved "http://localhost:4873/theia-sprotty/-/theia-sprotty-0.2.0-next.188810ab.tgz#eb5aa9a3d62ac491d967cf3168e20fddf6d4b267"
+  dependencies:
+    "@theia/core" next
+    "@theia/editor" next
+    "@theia/filesystem" next
+    "@theia/languages" next
+    "@theia/monaco" next
+    sprotty "0.4.0-next.188810ab"
+
+throttle-debounce@1.0.1:
+  version "1.0.1"
+  resolved "http://localhost:4873/throttle-debounce/-/throttle-debounce-1.0.1.tgz#dad0fe130f9daf3719fdea33dc36a8e6ba7f30b5"
+
 throttle-debounce@^1.0.1:
   version "1.1.0"
   resolved "http://localhost:4873/throttle-debounce/-/throttle-debounce-1.1.0.tgz#51853da37be68a155cb6e827b3514a3c422e89cd"
@@ -8062,6 +8605,10 @@ tmp@^0.0.33:
 to-arraybuffer@^1.0.0:
   version "1.0.1"
   resolved "http://localhost:4873/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz#7d229b1fcc637e466ca081180836a7aabff83f43"
+
+to-buffer@^1.1.0:
+  version "1.1.1"
+  resolved "http://localhost:4873/to-buffer/-/to-buffer-1.1.1.tgz#493bd48f62d7c43fcded313a03dcadb2e1213a80"
 
 to-fast-properties@^1.0.3:
   version "1.0.3"
@@ -8202,6 +8749,10 @@ typescript@~2.8.3:
   version "2.8.4"
   resolved "http://localhost:4873/typescript/-/typescript-2.8.4.tgz#0b1db68e6bdfb0b767fa2ab642136a35b059b199"
 
+ua-parser-js@^0.7.18:
+  version "0.7.18"
+  resolved "http://localhost:4873/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
+
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.5"
   resolved "http://localhost:4873/uc.micro/-/uc.micro-1.0.5.tgz#0c65f15f815aa08b560a61ce8b4db7ffc3f45376"
@@ -8227,8 +8778,8 @@ uglify-to-browserify@~1.0.0:
   resolved "http://localhost:4873/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz#6e0924d6bda6b5afe349e39a6d632850a0f882b7"
 
 uglifyjs-webpack-plugin@^1.2.4:
-  version "1.2.6"
-  resolved "http://localhost:4873/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.6.tgz#f4bb44f02431e82b301d8d4624330a6a35729381"
+  version "1.2.7"
+  resolved "http://localhost:4873/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.7.tgz#57638dd99c853a1ebfe9d97b42160a8a507f9d00"
   dependencies:
     cacache "^10.0.4"
     find-cache-dir "^1.0.0"
@@ -8388,9 +8939,9 @@ uuid@^2.0.1:
   version "2.0.3"
   resolved "http://localhost:4873/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
 
-uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
-  version "3.2.1"
-  resolved "http://localhost:4873/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
+uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0, uuid@^3.2.1:
+  version "3.3.2"
+  resolved "http://localhost:4873/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
 
 v8-compile-cache@^1.1.2:
   version "1.1.2"
@@ -8461,6 +9012,10 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+void-elements@^2.0.1:
+  version "2.0.1"
+  resolved "http://localhost:4873/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
+
 vscode-base-languageclient@^0.0.1-alpha.5:
   version "0.0.1-alpha.5"
   resolved "http://localhost:4873/vscode-base-languageclient/-/vscode-base-languageclient-0.0.1-alpha.5.tgz#2a908a7bc6fe7d60574c103f669c656354818e7e"
@@ -8491,7 +9046,17 @@ vscode-languageserver@^4.2.1:
     vscode-languageserver-protocol "^3.8.1"
     vscode-uri "^1.0.3"
 
-vscode-ripgrep@^1.0.0:
+vscode-nsfw@^1.0.17:
+  version "1.0.17"
+  resolved "http://localhost:4873/vscode-nsfw/-/vscode-nsfw-1.0.17.tgz#da3820f26aea3a7e95cadc54bd9e5dae3d47e474"
+  dependencies:
+    fs-extra "^0.26.5"
+    lodash.isinteger "^4.0.4"
+    lodash.isundefined "^3.0.1"
+    nan "^2.0.0"
+    promisify-node "^0.3.0"
+
+vscode-ripgrep@^1.0.0, vscode-ripgrep@^1.0.1:
   version "1.0.1"
   resolved "http://localhost:4873/vscode-ripgrep/-/vscode-ripgrep-1.0.1.tgz#eff2f2b2a49921ac0acd3ff8dfecaaeebf0184cf"
 
@@ -8563,8 +9128,8 @@ webpack-sources@^1.0.1, webpack-sources@^1.1.0:
     source-map "~0.6.1"
 
 webpack@^4.0.0:
-  version "4.12.1"
-  resolved "http://localhost:4873/webpack/-/webpack-4.12.1.tgz#9108078c67fdd72c2609cea22af87d7aed2acb08"
+  version "4.14.0"
+  resolved "http://localhost:4873/webpack/-/webpack-4.14.0.tgz#bbcc40dbf9a34129491b431574189d3802972243"
   dependencies:
     "@webassemblyjs/ast" "1.5.12"
     "@webassemblyjs/helper-module-context" "1.5.12"
@@ -8576,7 +9141,7 @@ webpack@^4.0.0:
     ajv "^6.1.0"
     ajv-keywords "^3.1.0"
     chrome-trace-event "^1.0.0"
-    enhanced-resolve "^4.0.0"
+    enhanced-resolve "^4.1.0"
     eslint-scope "^3.7.1"
     json-parse-better-errors "^1.0.2"
     loader-runner "^2.3.0"
@@ -8591,6 +9156,10 @@ webpack@^4.0.0:
     uglifyjs-webpack-plugin "^1.2.4"
     watchpack "^1.5.0"
     webpack-sources "^1.0.1"
+
+whatwg-fetch@>=0.10.0:
+  version "2.0.4"
+  resolved "http://localhost:4873/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 
 whet.extend@~0.9.9:
   version "0.9.9"
@@ -8633,6 +9202,13 @@ worker-farm@^1.5.2:
   resolved "http://localhost:4873/worker-farm/-/worker-farm-1.6.0.tgz#aecc405976fab5a95526180846f0dba288f3a4a0"
   dependencies:
     errno "~0.1.7"
+
+worker-loader@^1.1.1:
+  version "1.1.1"
+  resolved "http://localhost:4873/worker-loader/-/worker-loader-1.1.1.tgz#920d74ddac6816fc635392653ed8b4af1929fd92"
+  dependencies:
+    loader-utils "^1.0.0"
+    schema-utils "^0.4.0"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"
@@ -8713,9 +9289,9 @@ xtend@~2.1.1:
   dependencies:
     object-keys "~0.4.0"
 
-xterm@^3.0.1:
-  version "3.4.1"
-  resolved "http://localhost:4873/xterm/-/xterm-3.4.1.tgz#12452979ea2db3371f8195832d7407abba988980"
+xterm@<3.4.0:
+  version "3.3.0"
+  resolved "http://localhost:4873/xterm/-/xterm-3.3.0.tgz#b09a19fc2cd5decd21112e5c9dab0b61991f6cf3"
 
 y18n@^3.2.1:
   version "3.2.1"
@@ -8757,7 +9333,7 @@ yargs-parser@^9.0.2:
   dependencies:
     camelcase "^4.1.0"
 
-yargs@11.1.0:
+yargs@11.1.0, yargs@^11.0.0:
   version "11.1.0"
   resolved "http://localhost:4873/yargs/-/yargs-11.1.0.tgz#90b869934ed6e871115ea2ff58b03f4724ed2d77"
   dependencies:
@@ -8790,23 +9366,6 @@ yargs@^10.0.3:
     which-module "^2.0.0"
     y18n "^3.2.1"
     yargs-parser "^8.1.0"
-
-yargs@^11.0.0:
-  version "11.0.0"
-  resolved "http://localhost:4873/yargs/-/yargs-11.0.0.tgz#c052931006c5eee74610e5fc0354bedfd08a201b"
-  dependencies:
-    cliui "^4.0.0"
-    decamelize "^1.1.1"
-    find-up "^2.1.0"
-    get-caller-file "^1.0.1"
-    os-locale "^2.0.0"
-    require-directory "^2.1.1"
-    require-main-filename "^1.0.1"
-    set-blocking "^2.0.0"
-    string-width "^2.0.0"
-    which-module "^2.0.0"
-    y18n "^3.2.1"
-    yargs-parser "^9.0.2"
 
 yargs@^7.0.2:
   version "7.1.0"
@@ -8936,3 +9495,10 @@ yeoman-generator@^2.0.3:
 yn@^2.0.0:
   version "2.0.0"
   resolved "http://localhost:4873/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"
+
+zip-dir@^1.0.2:
+  version "1.0.2"
+  resolved "http://localhost:4873/zip-dir/-/zip-dir-1.0.2.tgz#253f907aead62a21acd8721d8b88032b2411c051"
+  dependencies:
+    async "^1.5.2"
+    jszip "^2.4.0"

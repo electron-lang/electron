@@ -12,8 +12,6 @@ export interface IServerOptions {
 
 export class LspServer {
 
-    private initializeParams: lsp.InitializeParams;
-    private initializeResult: lsp.InitializeResult;
     private openedDocumentUris: Map<string, LspDocument> = new Map<string, LspDocument>();
     private logger: Logger;
 
@@ -23,16 +21,15 @@ export class LspServer {
 
     public async initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
         this.logger.log('initialize', params);
-        this.initializeParams = params;
 
-        this.initializeResult = {
+        const initializeResult: lsp.InitializeResult = {
             capabilities: {
                 textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
             }
         };
 
-        this.logger.log('onInitialize result', this.initializeResult);
-        return this.initializeResult;
+        this.logger.log('onInitialize result', initializeResult);
+        return initializeResult;
     }
 
     public requestDiagnostics(uri: string): void {
@@ -41,7 +38,8 @@ export class LspServer {
         if (doc !== undefined) {
             const path = uriToPath(uri)
             const dc = new DiagnosticCollector()
-            const f = new File(dc, path, doc.text).compile()
+            const f = new File(dc, path, doc.text)
+            f.compile()
             const diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
                 .filter((d) => d.path === path)
                 .map(convertDiagnostic)

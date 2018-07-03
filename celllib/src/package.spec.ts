@@ -1,4 +1,3 @@
-import { PortDirection } from './common';
 import { INot } from './digital';
 import { IRes } from './analog';
 
@@ -20,6 +19,7 @@ describe('$not', () => {
                 Y: [3],
             }
         }
+        $not
     });
 });
 
@@ -35,5 +35,6 @@ describe('$res', () => {
                 B: [3],
             }
         }
+        $res
     });
 });

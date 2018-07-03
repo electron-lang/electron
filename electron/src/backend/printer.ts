@@ -1,4 +1,4 @@
-import { IDoc, nest, intersperse, enclose, punctuate, render,
+import { IDoc, nest, intersperse, enclose, render,
          parens, braces, dquotes, line } from 'prettier-printer'
 import * as ir from './ir'
 

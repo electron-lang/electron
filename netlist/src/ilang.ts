@@ -23,7 +23,7 @@ class ILangGenerator extends Generator {
         cellString += super.generateParameters(cell.parameters);
         cellString += super.generateConnections(cell.connections);
         cellString += 'end\n';
-        return '';
+        return cellString;
     }
 
     generateParameter(key: string, value: any): string {

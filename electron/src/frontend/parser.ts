@@ -1,4 +1,4 @@
-import {Lexer, Parser, IToken, ILexingResult, CstNode, TokenType} from 'chevrotain'
+import {Lexer, Parser, IToken, TokenType} from 'chevrotain'
 import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound,
          CloseSquare, Colon, Comma, Comment, Const, BitVector, Declare,
          DesignComment, Dot, Export, False, From, Identifier, Import,

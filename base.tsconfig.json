@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [ "es6", "dom" ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "typeRoots": [ "node_modules/@types", "typings" ]
+  }
+}

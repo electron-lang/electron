@@ -1,6 +1,6 @@
 import * as ast from './ast'
-import { IDiagnostic, DiagnosticPublisher, throwBug,
-    SrcLoc, Pos, ISrcLoc, tokenToSrcLoc, emptySrcLoc } from '../diagnostic'
+import { DiagnosticPublisher, throwBug, SrcLoc, Pos, ISrcLoc,
+         tokenToSrcLoc, emptySrcLoc } from '../diagnostic'
 import { File } from '../file'
 import { parserInstance } from './parser'
 import { SymbolTable, Symbol, ISymbol } from './symbolTable'
@@ -480,12 +480,16 @@ export class Elaborator extends BaseElectronVisitor {
 
         if (ctx.BitVector) {
             const bv = ctx.BitVector[0].image.split("'")
+            const src = tokenToSrcLoc(ctx.BitVector[0])
             const size = parseInt(bv[0])
             let bits: ast.Bit[] = []
             for (let i = 0; i < bv[1].length; i++) {
                 bits.push(bv[1][i])
             }
-            const src = tokenToSrcLoc(ctx.BitVector[0])
+            if (bits.length !== size) {
+                this.logger.error(`Bitvector value ${bv[1]} doesn't have ` +
+                                  `size ${size}.`, src)
+            }
             return ast.BitVector(bits, src)
         }
 
@@ -574,7 +578,7 @@ export class Elaborator extends BaseElectronVisitor {
             return []
         })())
 
-        for (let [ref, _] of conns) {
+        for (let [ref,] of conns) {
             mod.ports.push(ref.ref)
         }
 

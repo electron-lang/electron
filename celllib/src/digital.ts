@@ -1,5 +1,4 @@
-import {IDigitalCell, IDigitalParams, PortDirection,
-        DigitalVector, DigitalValue} from './common';
+import { IDigitalCell, DigitalVector, DigitalValue } from './common';
 
 // https://github.com/YosysHQ/yosys/blob/master/techlibs/common/simlib.v
 
