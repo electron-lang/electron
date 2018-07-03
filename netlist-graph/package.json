@@ -1,0 +1,29 @@
+{
+  "name": "@electron-lang/netlist-graph",
+  "version": "0.0.4",
+  "description": "Netlist viewer for Theia using sprotty and elkjs.",
+  "main": "index.js",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "scripts": {
+    "prepare": "yarn run build",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/netlist-graph-frontend-module",
+      "backend": "lib/node/netlist-graph-backend-module"
+    }
+  ],
+  "dependencies": {
+    "@electron-lang/celllib": "^0.0.3",
+    "@theia/core": "next",
+    "elkjs": "latest",
+    "sprotty": "latest",
+    "theia-sprotty": "next"
+  }
+}
