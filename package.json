@@ -17,8 +17,11 @@
     "browser-app",
     "electron-app"
   ],
+  "resolutions": {
+    "**/devbridge-autocomplete/@types/jquery": "3.3.2",
+    "**/sprotty": "0.4.0"
+  },
   "scripts": {
-    "install": "lerna link",
     "prepare": "lerna run prepare",
     "test": "lerna run test",
     "docs": "lerna run docs",
@@ -28,6 +31,6 @@
     "publish": "lerna publish"
   },
   "devDependencies": {
-    "lerna": "^2.11.0"
+    "lerna": "latest"
   }
 }

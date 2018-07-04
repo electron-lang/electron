@@ -7,7 +7,7 @@ const JSX = {createElement: snabbdom.svg};
 
 export class NetlistModuleNodeView implements IView {
     render(node: Readonly<NetlistModuleNode>, context: RenderingContext): VNode {
-        return <g>
+        return (<g>
             <rect class-sprotty-node={true}
                   class-mouseover={node.hoverFeedback}
                   class-selected={node.selected}
@@ -15,7 +15,7 @@ export class NetlistModuleNodeView implements IView {
                   height={Math.max(node.size.height, 0)}
                 ></rect>
             {context.renderChildren(node)}
-        </g>
+        </g>) as any as VNode
     }
 }
 
