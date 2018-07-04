@@ -455,6 +455,9 @@ export class Elaborator extends BaseElectronVisitor {
                     pinst.src = sym.src
                     expr = elaboratePartialInst(this.logger, this.st, this.tc,
                                                 ast.Ref(mod, sym.src), pinst)
+                } else {
+                    expr = ast.Inst(ast.Ref(ast.Module('not-found', [], sym.src)),
+                                    [], [], pinst.src)
                 }
             } else {
                 expr = ast.Ref(lookupSym(), sym.src)

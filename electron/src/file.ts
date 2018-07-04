@@ -80,6 +80,8 @@ export class File {
         if (!this.cst) return this
         let el = new Elaborator(this.logger, this)
         this.ast = el.visit(this.cst)
+        if (!this.ast) return this
+        this.declarations = extractDeclarations(this.ast)
         return this
     }
 
@@ -111,13 +113,12 @@ export class File {
     }
 
     compile(): File {
-        return this.lex().parse().elaborate().compileAST()
+        return this.lex().parse().elaborate().compileAST().emitJSON()
     }
 
     emitDeclarations(): File {
         this.lex().parse().elaborate()
         if (!this.ast) return this
-        this.declarations = extractDeclarations(this.ast)
         writeFileSync(this.getPath('d.lec'), this.declarations.map(printAST).join('\n'))
         return this
     }
@@ -137,7 +138,7 @@ export class File {
 
     emitJSON(): File {
         if (!this.ir) return this
-        writeFileSync(this.getPath('json'),
+        writeFileSync(this.getPath('lec.json'),
                       JSON.stringify(compileNetlist(this.ir)));
         return this
     }
@@ -148,7 +149,7 @@ export class File {
             return null
         }
         const f = new File(this.dc, fullPath)
-        f.emitDeclarations()
+        f.compile()
         this.imports.push(f)
         return f.declarations
     }
