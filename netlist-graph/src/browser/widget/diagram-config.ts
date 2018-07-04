@@ -1,7 +1,8 @@
 import { inject, injectable, Container } from 'inversify'
 import { StatusBar, StatusBarAlignment } from '@theia/core/lib/browser'
-import { overrideViewerOptions, TYPES } from 'sprotty/lib'
-import { DiagramConfiguration } from 'theia-sprotty/lib'
+import { overrideViewerOptions, TYPES, KeyTool } from 'sprotty/lib'
+import { DiagramConfiguration, TheiaKeyTool } from 'theia-sprotty/lib'
+import { SCHEMATIC_DIAGRAM_TYPE } from './diagram-type'
 import { NetlistGraphModelSource } from '../graph/model-source'
 import { IGraphGenerator } from '../graph/graph-generator'
 import { ElkFactory } from '../graph/graph-layout'
@@ -11,7 +12,7 @@ import elkFactory from '../graph/elk-bundled'
 
 @injectable()
 export class SchematicDiagramConfiguration implements DiagramConfiguration {
-    readonly diagramType: string = 'schematic'
+    readonly diagramType: string = SCHEMATIC_DIAGRAM_TYPE
 
     @inject(StatusBar) protected readonly statusBar!: StatusBar;
 
@@ -20,7 +21,7 @@ export class SchematicDiagramConfiguration implements DiagramConfiguration {
             bind(ElkFactory).toConstantValue(elkFactory)
             rebind(IGraphGenerator).to(NetlistGraphGenerator).inSingletonScope()
         })
-        //container.rebind(KeyTool).to(TheiaKeyTool).inSingletonScope()
+        container.rebind(KeyTool).to(TheiaKeyTool).inSingletonScope()
         overrideViewerOptions(container, {
             baseDiv: widgetId
         })

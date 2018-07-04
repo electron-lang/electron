@@ -30,6 +30,9 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         configureModelElement(context, 'compartment', SCompartment, SCompartmentView)
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView)
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView)
+        if (additionalBindings) {
+            additionalBindings(bind, unbind, isBound, rebind)
+        }
     })
 
     const container = new Container()

@@ -4,6 +4,7 @@ import { OpenerOptions } from '@theia/core/lib/browser'
 import { FileSystem } from '@theia/filesystem/lib/common'
 import { DiagramManagerImpl, DiagramWidget,
          DiagramWidgetFactory } from 'theia-sprotty/lib'
+import { SCHEMATIC_DIAGRAM_TYPE } from './diagram-type'
 import { NetlistGraphModelSource } from '../graph/model-source'
 import { NetlistGraphGenerator } from '../graph/netlist'
 
@@ -14,7 +15,7 @@ export class SchematicDiagramManager extends DiagramManagerImpl {
     private readonly _diagramWidgetFactory!: DiagramWidgetFactory
     @inject(FileSystem) protected readonly fileSystem!: FileSystem
 
-    readonly diagramType: string = 'schematic-diagram'
+    readonly diagramType: string = SCHEMATIC_DIAGRAM_TYPE
 
     iconClass: string = 'fa fa-microchip'
     label: string = 'Schematic'
@@ -28,7 +29,7 @@ export class SchematicDiagramManager extends DiagramManagerImpl {
 
     protected createDiagramWidget(uri: URI): DiagramWidget {
         const widget = super.createDiagramWidget(uri)
-        this.createModel(uri, widget.modelSource as any as NetlistGraphModelSource)
+        this.createModel(uri, widget.modelSource as NetlistGraphModelSource)
         return widget
     }
 

@@ -4,6 +4,7 @@ import { FrontendApplicationContribution,
 import { DiagramConfiguration, DiagramManager, DiagramManagerProvider,
          DiagramWidget, DiagramWidgetFactory,
          DiagramWidgetOptions } from 'theia-sprotty/lib'
+import { SCHEMATIC_DIAGRAM_TYPE } from './widget/diagram-type'
 import { SchematicDiagramConfiguration } from './widget/diagram-config'
 import { SchematicDiagramManager } from './widget/diagram-manager'
 import { SchematicDiagramWidget } from './widget/diagram-widget'
@@ -17,7 +18,7 @@ export default new ContainerModule(bind => {
     bind(SchematicDiagramManager).toSelf().inSingletonScope()
     bind(DiagramManagerProvider).toProvider<DiagramManager>(context => {
         return () => Promise.resolve(context.container.get(SchematicDiagramManager))
-    }).whenTargetNamed('schematic-diagram')
+    }).whenTargetNamed(SCHEMATIC_DIAGRAM_TYPE)
     bind(DiagramWidgetFactory).toFactory<DiagramWidget>(context => {
         return (options: DiagramWidgetOptions) => new SchematicDiagramWidget(options)
     })

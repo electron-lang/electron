@@ -26,8 +26,8 @@
     "test": "lerna run test",
     "docs": "lerna run docs",
     "cov": "lerna run cov",
-    "start-browser-app": "cd browser-app && yarn start ../electron/docs/examples --log-level=debug",
-    "start-electron-app": "cd electron-app && yarn start ../electron/docs/examples --log-level=debug",
+    "start-browser-app": "cd browser-app && yarn start ../electron/docs/examples",
+    "start-electron-app": "cd electron-app && yarn start ../electron/docs/examples",
     "publish": "lerna publish"
   },
   "devDependencies": {
