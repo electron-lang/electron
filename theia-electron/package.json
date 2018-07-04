@@ -13,7 +13,6 @@
   "dependencies": {
     "@electron-lang/electron": "^0.0.4",
     "@electron-lang/language-server": "^0.0.4",
-    "@electron-lang/netlist-graph": "^0.0.4",
     "@theia/core": "next",
     "@theia/editor": "next",
     "@theia/languages": "next",

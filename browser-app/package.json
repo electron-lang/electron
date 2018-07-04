@@ -4,6 +4,7 @@
   "version": "0.0.4",
   "dependencies": {
     "@electron-lang/theia-electron": "^0.0.4",
+    "@electron-lang/netlist-graph": "^0.0.4",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
     "@theia/cpp": "next",
@@ -38,9 +39,10 @@
     "@theia/cli": "next"
   },
   "scripts": {
-    "prepare": "theia build",
-    "start": "theia start",
-    "watch": "theia build --watch"
+    "prepare": "theia build --mode development",
+    "build": "theia build --mode development",
+    "watch": "theia build --mode development --watch",
+    "start": "theia start"
   },
   "theia": {
     "target": "browser"

@@ -4,9 +4,10 @@
   "version": "0.0.4",
   "dependencies": {
     "@electron-lang/theia-electron": "^0.0.4",
+    "@electron-lang/netlist-graph": "^0.0.4",
+    "@theia/bunyan": "next",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
-    "@theia/cpp": "next",
     "@theia/editor": "next",
     "@theia/editorconfig": "next",
     "@theia/extension-manager": "next",
@@ -30,6 +31,7 @@
     "@theia/search-in-workspace": "next",
     "@theia/task": "next",
     "@theia/terminal": "next",
+    "@theia/textmate-grammars": "next",
     "@theia/userstorage": "next",
     "@theia/variable-resolver": "next",
     "@theia/workspace": "next"
@@ -38,9 +40,10 @@
     "@theia/cli": "next"
   },
   "scripts": {
-    "prepare": "theia build",
-    "start": "theia start",
-    "watch": "theia build --watch"
+    "prepare": "theia build --mode development",
+    "build": "theia build --mode development",
+    "watch": "theia build --mode development --watch",
+    "start": "theia start"
   },
   "theia": {
     "target": "electron"

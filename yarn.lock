@@ -279,6 +279,14 @@
     semver "^5.4.1"
     write-json-file "^2.2.0"
 
+"@theia/bunyan@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fbunyan/-/bunyan-0.4.0-next.b9941f63.tgz#ee9c1918ce2b2b8acd3a6fd9736f6e7ca05f8cf9"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@types/bunyan" "^1.8.0"
+    bunyan "^1.8.10"
+
 "@theia/callhierarchy@next":
   version "0.4.0-next.e7eb69fc"
   resolved "http://localhost:4873/@theia%2fcallhierarchy/-/callhierarchy-0.4.0-next.e7eb69fc.tgz#8e1654a19e2e5d11956a4b4f816c9d7979678b1c"
@@ -636,6 +644,23 @@
     mime-types "^2.1.18"
     pdfobject "^2.0.201604172"
 
+"@theia/monaco@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2fmonaco/-/monaco-0.4.0-next.b9941f63.tgz#d62056cfc623edd6ae33a9c4202919bed8424068"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
+    "@theia/editor" "0.4.0-next.b9941f63"
+    "@theia/filesystem" "0.4.0-next.b9941f63"
+    "@theia/languages" "0.4.0-next.b9941f63"
+    "@theia/markers" "0.4.0-next.b9941f63"
+    "@theia/outline-view" "0.4.0-next.b9941f63"
+    "@theia/workspace" "0.4.0-next.b9941f63"
+    monaco-css "^2.0.1"
+    monaco-html "^2.0.2"
+    monaco-languageclient "0.6.3"
+    monaco-textmate "^3.0.0"
+    onigasm "^2.1.0"
+
 "@theia/monaco@0.4.0-next.e7eb69fc", "@theia/monaco@next":
   version "0.4.0-next.e7eb69fc"
   resolved "http://localhost:4873/@theia%2fmonaco/-/monaco-0.4.0-next.e7eb69fc.tgz#fd753c5ce67162a3c9279cad98433d3dfbe458df"
@@ -674,6 +699,12 @@
     "@types/throttle-debounce" "^1.0.0"
     fuzzy "^0.1.3"
     throttle-debounce "^1.0.1"
+
+"@theia/outline-view@0.4.0-next.b9941f63":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2foutline-view/-/outline-view-0.4.0-next.b9941f63.tgz#e07b1e4447b2722e26a3dccdd4add5728441feca"
+  dependencies:
+    "@theia/core" "0.4.0-next.b9941f63"
 
 "@theia/outline-view@0.4.0-next.e7eb69fc":
   version "0.4.0-next.e7eb69fc"
@@ -798,6 +829,12 @@
     "@theia/process" "0.4.0-next.b9941f63"
     "@theia/workspace" "0.4.0-next.b9941f63"
     xterm "<3.4.0"
+
+"@theia/textmate-grammars@next":
+  version "0.4.0-next.b9941f63"
+  resolved "http://localhost:4873/@theia%2ftextmate-grammars/-/textmate-grammars-0.4.0-next.b9941f63.tgz#b4ac0149b65ecddb468d64ec745bcb0a072c21f3"
+  dependencies:
+    "@theia/monaco" "0.4.0-next.b9941f63"
 
 "@theia/userstorage@0.4.0-next.b9941f63", "@theia/userstorage@next":
   version "0.4.0-next.b9941f63"
@@ -3940,6 +3977,10 @@ fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "http://localhost:4873/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
+fast-plist@^0.1.2:
+  version "0.1.2"
+  resolved "http://localhost:4873/fast-plist/-/fast-plist-0.1.2.tgz#a45aff345196006d406ca6cdcd05f69051ef35b8"
+
 fastparse@^1.1.1:
   version "1.1.1"
   resolved "http://localhost:4873/fastparse/-/fastparse-1.1.1.tgz#d1e2643b38a94d7583b479060e6c4affc94071f8"
@@ -6120,6 +6161,12 @@ monaco-languages@^1.0.4:
   version "1.3.1"
   resolved "http://localhost:4873/monaco-languages/-/monaco-languages-1.3.1.tgz#758bfc2b46bd20ef8d58c02512eb3ca2ac76d742"
 
+monaco-textmate@^3.0.0:
+  version "3.0.0"
+  resolved "http://localhost:4873/monaco-textmate/-/monaco-textmate-3.0.0.tgz#abfbce7d7ff000954ae3206e512f325db6e7b8a8"
+  dependencies:
+    fast-plist "^0.1.2"
+
 mount-point@^3.0.0:
   version "3.0.0"
   resolved "http://localhost:4873/mount-point/-/mount-point-3.0.0.tgz#665cb9edebe80d110e658db56c31d0aef51a8f97"
@@ -6525,6 +6572,12 @@ onetime@^2.0.0:
   resolved "http://localhost:4873/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
   dependencies:
     mimic-fn "^1.0.0"
+
+onigasm@^2.1.0:
+  version "2.2.1"
+  resolved "http://localhost:4873/onigasm/-/onigasm-2.2.1.tgz#d56da809d63d3bb25510e8b8e447ffe98e56bebb"
+  dependencies:
+    lru-cache "^4.1.1"
 
 optimist@^0.6.1:
   version "0.6.1"
