@@ -17,7 +17,6 @@ export class ElkGraphLayout implements IModelLayoutEngine {
 
     constructor(@inject(ElkFactory) elkFactory: ElkFactory) {
         this.elk = elkFactory();
-        console.log(this.elk.knownLayoutOptions())
     }
 
     protected graphOptions(sgraph: SGraphSchema): LayoutOptions {
@@ -37,15 +36,11 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             index = new SModelIndex();
             index.add(graph);
         }
-        console.log('graph:', JSON.stringify(graph))
         const elkGraph = this.transformToElk(graph, index) as ElkNode
-        console.log('elk-graph:', JSON.stringify(elkGraph))
         const newGraph = this.elk.layout(elkGraph).then(result => {
-            console.log('elk-graph-result:', JSON.stringify(result))
             this.applyLayout(result, index!)
             return graph
         })
-        console.log('graph-result:', JSON.stringify(newGraph))
         return newGraph
     }
 

@@ -3,7 +3,10 @@ import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
 
 export interface GroupNodeSchema extends SNodeSchema {
     name: string
-    hasTopPins: boolean
+    ntop: number
+    nleft: number
+    nbottom: number
+    nright: number
 }
 
 export function isGroup(element?: SModelElementSchema)
@@ -13,7 +16,10 @@ export function isGroup(element?: SModelElementSchema)
 
 export class GroupNode extends RectangularNode {
     name: string = ''
-    hasTopPins: boolean = false
+    ntop: number = 0
+    nleft: number = 0
+    nbottom: number = 0
+    nright: number = 0
 }
 
 export interface PinPortSchema extends SPortSchema {

@@ -7,14 +7,18 @@ const JSX = {createElement: snabbdom.svg};
 
 export class GroupNodeView implements IView {
     render(node: Readonly<GroupNode>, context: RenderingContext): VNode {
+        const nv = Math.max(node.nleft, node.nright, 1)
+        const nh = Math.max(node.ntop, node.nbottom, 1)
+        const minWidth = nh * 20
+        const minHeight = nv * 20
         return (<g>
-                <text x={0} y={node.hasTopPins ? -23 : -3}>{node.name}</text>
+                <text x={0} y={node.ntop > 0 ? -23 : -3}>{node.name}</text>
                 <rect class-sprotty-node={true}
                 class-mouseover={node.hoverFeedback}
                 class-selected={node.selected}
                 class-body={true}
-                width={Math.max(node.size.width, 20)}
-                height={Math.max(node.size.height, 20)}
+                width={Math.max(node.size.width, minWidth)}
+                height={Math.max(node.size.height, minHeight)}
                 ></rect>
                 {context.renderChildren(node)}
                 </g>) as any as VNode

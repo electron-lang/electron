@@ -130,12 +130,24 @@ export class NetlistGraphGenerator implements IGraphGenerator {
             id: name,
             layout: 'vbox',
             name,
-            hasTopPins: false,
+            ntop: 0,
+            nleft: 0,
+            nbottom: 0,
+            nright: 0,
         }
         groupNode.children = []
         for (let port of ports) {
             if (port.side === 'top') {
-                groupNode.hasTopPins = true
+                groupNode.ntop += 1
+            }
+            if (port.side === 'left') {
+                groupNode.nleft += 1
+            }
+            if (port.side === 'bottom') {
+                groupNode.nbottom += 1
+            }
+            if (port.side === 'right') {
+                groupNode.nright += 1
             }
             groupNode.children.push(<PinPortSchema> {
                 type: `port:${port.side}`,
