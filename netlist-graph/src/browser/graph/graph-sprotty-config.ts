@@ -5,8 +5,8 @@ import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          PolylineEdgeView,
          defaultModule, selectModule, moveModule, boundsModule, fadeModule,
          viewportModule, exportModule, hoverModule, edgeEditModule } from 'sprotty/lib'
-import { GroupNode, PortsNode, PinPort, NetEdge } from './graph-model'
-import { GroupNodeView, PortsNodeView, PinPortView } from './graph-views'
+import { GroupNode, PinPort, NetEdge } from './graph-model'
+import { GroupNodeView, PinPortView } from './graph-views'
 import { IGraphGenerator } from './graph-generator'
 import { NetlistGraphGenerator } from './netlist'
 import { NetlistGraphModelSource } from './model-source'
@@ -24,7 +24,6 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         const context = { bind, unbind, isBound, rebind }
         configureModelElement(context, 'graph', SGraph, SGraphView)
         configureModelElement(context, 'node:group', GroupNode, GroupNodeView)
-        configureModelElement(context, 'node:ports', PortsNode, PortsNodeView)
         configureModelElement(context, 'port:top', PinPort, PinPortView)
         configureModelElement(context, 'port:left', PinPort, PinPortView)
         configureModelElement(context, 'port:bottom', PinPort, PinPortView)

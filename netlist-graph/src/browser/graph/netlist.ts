@@ -1,5 +1,5 @@
 import { injectable } from 'inversify'
-import { SModelIndex, SModelElementSchema, SLabelSchema, SNodeSchema } from 'sprotty/lib'
+import { SModelIndex, SModelElementSchema } from 'sprotty/lib'
 import { IGraphGenerator } from './graph-generator'
 import { GroupNodeSchema, PinPortSchema, NetEdgeSchema } from './graph-model'
 import * as cl from '@electron-lang/celllib'
@@ -128,32 +128,21 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         const groupNode: GroupNodeSchema = {
             type: 'node:group',
             id: name,
+            layout: 'vbox',
             name,
+            hasTopPins: false,
         }
         groupNode.children = []
-        groupNode.children.push(<SLabelSchema> {
-            type: 'label:group:ref',
-            id: `${name}/label`,
-            text: name
-        })
-        const portContainer: SNodeSchema = {
-            type: 'node:ports',
-            id: `${name}/ports`,
-            layout: 'vbox',
-        }
-        groupNode.children.push(portContainer)
-        portContainer.children = []
         for (let port of ports) {
-            portContainer.children.push(<PinPortSchema> {
+            if (port.side === 'top') {
+                groupNode.hasTopPins = true
+            }
+            groupNode.children.push(<PinPortSchema> {
                 type: `port:${port.side}`,
                 id: `${name}:${port.name}/port`,
                 side: port.side,
+                name: port.name,
                 pad: port.pad || '',
-            })
-            portContainer.children.push(<SLabelSchema> {
-                type: 'label:port',
-                id: `${name}:${port.name}/label:port`,
-                text: port.name,
             })
         }
         return groupNode

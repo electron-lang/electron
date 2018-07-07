@@ -1,7 +1,7 @@
 .sprotty {
     background-color: #002b36; /* base03 */
     stroke: #d33682; /* magenta */
-    fill: none;
+    fill: #002b36; /* base03 */
     stroke-linejoin: round;
     stroke-linecap: round;
 }
@@ -12,19 +12,15 @@ text {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
-.group {
-    stroke: none;
-}
-
-.ports {
+.body {
     stroke-width: 2;
 }
 
-.ports.mouseover {
+.body.mouseover {
     stroke: #6c71c4; /* violet */
 }
 
-.ports.selected {
+.body.selected {
     stroke: #859900; /* green */
 }
 
@@ -38,6 +34,14 @@ text {
 
 .pin.selected {
     stroke: #859900; /* green */
+}
+
+.pin-label {
+    text-anchor: start;
+}
+
+.pin-label-left {
+    text-anchor: end;
 }
 
 .pad-label {

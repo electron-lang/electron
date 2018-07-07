@@ -1,8 +1,9 @@
 import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-    RectangularNode, SEdge, SPort, layoutContainerFeature } from 'sprotty/lib'
+         RectangularNode, SEdge, SPort, boundsFeature } from 'sprotty/lib'
 
 export interface GroupNodeSchema extends SNodeSchema {
     name: string
+    hasTopPins: boolean
 }
 
 export function isGroup(element?: SModelElementSchema)
@@ -12,29 +13,7 @@ export function isGroup(element?: SModelElementSchema)
 
 export class GroupNode extends RectangularNode {
     name: string = ''
-
-    hasFeature(feature: symbol): boolean {
-        if (feature === layoutContainerFeature) {
-            return false
-        }
-        return super.hasFeature(feature)
-    }
-}
-
-export interface PortsNodeSchema extends SNodeSchema {}
-
-export function isPorts(element?: SModelElementSchema)
-: element is PortsNodeSchema {
-    return element !== undefined && element.type === 'node:ports'
-}
-
-export class PortsNode extends RectangularNode {
-    hasFeature(feature: symbol): boolean {
-        if (feature === layoutContainerFeature) {
-            return false
-        }
-        return super.hasFeature(feature)
-    }
+    hasTopPins: boolean = false
 }
 
 export interface PinPortSchema extends SPortSchema {
@@ -44,7 +23,16 @@ export interface PinPortSchema extends SPortSchema {
 
 export class PinPort extends SPort {
     side: 'top' | 'left' | 'right' | 'bottom' = 'left'
+    name: string = ''
     pad: string = ''
+
+    hasFeature(feature: symbol): boolean {
+        if (feature === boundsFeature) {
+            return false
+        }
+        return super.hasFeature(feature)
+    }
+
 }
 
 export function isPin(element?: SModelElementSchema)
@@ -64,44 +52,3 @@ export function isNet(element?: SModelElementSchema)
 export class NetEdge extends SEdge {
 
 }
-
-
-
-/*
-export abstract class ChipyNode extends SNode {
-    trace: string | undefined
-    hasFeature(feature: symbol): boolean {
-        return feature === selectFeature || feature === hoverFeedbackFeature
-            || (feature === openFeature && this.trace !== undefined)
-            || feature === boundsFeature
-    }
-}
-
-export class ChipyModule extends ChipyNode implements Expandable {
-    expandable: boolean
-    expanded: boolean
-
-    hasFeature(feature: symbol): boolean {
-        return feature === expandFeature || super.hasFeature(feature)
-    }
-}
-
-export class ChipySymbol extends ChipyNode {}
-
-export class ChipyNet extends SEdge {
-    trace: string | undefined
-}
-
-export abstract class ChipyPort extends SPort {
-    trace: string | undefined
-}
-
-export class TopPort extends ChipyPort {}
-export class LeftPort extends ChipyPort {}
-export class BottomPort extends ChipyPort {}
-export class RightPort extends ChipyPort {}
-export class FixedPort extends ChipyPort {}
-
-export class ChipyModuleLabel extends SLabel {}
-export class ChipyPortLabel extends SLabel {}
-*/

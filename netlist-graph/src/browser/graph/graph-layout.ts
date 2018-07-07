@@ -1,9 +1,10 @@
 import { injectable, inject } from 'inversify';
-import { ELK, ElkNode, ElkGraphElement, ElkEdge, ElkLabel, ElkShape, ElkPort,
+import { ELK, ElkNode, ElkGraphElement, ElkEdge, ElkShape, ElkPort,
          ElkPrimitiveEdge, ElkExtendedEdge, LayoutOptions } from 'elkjs/lib/elk-api';
 import { SGraphSchema, SModelIndex, SModelElementSchema, SNodeSchema,
          SShapeElementSchema, SEdgeSchema, SLabelSchema, SPortSchema, Point,
          IModelLayoutEngine } from 'sprotty/lib';
+import { PinPortSchema } from './graph-model'
 
 export type ElkFactory = () => ELK;
 
@@ -36,13 +37,15 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             index = new SModelIndex();
             index.add(graph);
         }
-        console.log(graph)
+        console.log('graph:', JSON.stringify(graph))
         const elkGraph = this.transformToElk(graph, index) as ElkNode
+        console.log('elk-graph:', JSON.stringify(elkGraph))
         const newGraph = this.elk.layout(elkGraph).then(result => {
+            console.log('elk-graph-result:', JSON.stringify(result))
             this.applyLayout(result, index!)
             return graph
         })
-        console.log(newGraph)
+        console.log('graph-result:', JSON.stringify(newGraph))
         return newGraph
     }
 
@@ -64,33 +67,14 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 const snode = smodel as SNodeSchema;
                 const elkNode: ElkNode = {
                     id: snode.id,
-                }
-                if (snode.children) {
-                    elkNode.labels = snode.children
-                        .filter(c => c.type.startsWith('label'))
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[]
-                    elkNode.children = snode.children
-                        .filter(c => c.type === 'node:ports')
-                        .map(c => this.transformToElk(c, index)) as ElkNode[]
-                }
-                this.transformShape(elkNode, snode);
-                return elkNode;
-            }
-            case 'node:ports': {
-                const snode = smodel as SNodeSchema;
-                const elkNode: ElkNode = {
-                    id: snode.id,
                     layoutOptions: {
                         'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
                     }
                 }
                 if (snode.children) {
                     elkNode.ports = snode.children
-                        .filter(c => c.type.startsWith('port'))
+                        .filter(c => c.type.startsWith('port:'))
                         .map(c => this.transformToElk(c, index)) as ElkPort[]
-                    elkNode.labels = snode.children
-                        .filter(c => c.type.startsWith('label'))
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[]
                 }
                 this.transformShape(elkNode, snode);
                 return elkNode;
@@ -121,27 +105,10 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     }
                 }
                 this.transformShape(elkPort, sport)
+                // Ignore label size
+                elkPort.width = 20;
+                elkPort.height = 20;
                 return elkPort
-            }
-            case 'label:group:ref':
-            case 'label:group:value': {
-                const slabel = smodel as SLabelSchema
-                const elkLabel: ElkLabel = {
-                    id: slabel.id,
-                    text: slabel.text,
-                }
-                this.transformShape(elkLabel, slabel)
-                return elkLabel
-            }
-            case 'label:port':
-            case 'label:port:pad': {
-                const slabel = smodel as SLabelSchema
-                const elkLabel: ElkLabel = {
-                    id: slabel.id,
-                    text: slabel.text,
-                }
-                this.transformShape(elkLabel, slabel)
-                return elkLabel
             }
             default:
                 throw new Error('Type not supported: ' + smodel.type);
@@ -182,6 +149,32 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 const sport = index.getById(elkPort.id);
                 if (sport && sport.type.startsWith('port:')) {
                     this.applyShape(sport as SPortSchema, elkPort)
+                    // correct coordinates
+                    // anchor label correction
+                    // top and bottom x += 10
+                    // left and right y += 10
+                    // anchor left/bottom correction
+                    // left.x += 20 / bottom y -= 20
+                    if (sport.type === 'port:top') {
+                        const spin = sport as PinPortSchema
+                        const pos = spin.position || {x: 0, y: 0}
+                        spin.position = {x: pos.x + 10, y: pos.y }
+                    }
+                    if (sport.type === 'port:left') {
+                        const spin = sport as PinPortSchema
+                        const pos = spin.position || {x: 0, y: 0}
+                        spin.position = {x: pos.x + 20, y: pos.y + 10 }
+                    }
+                    if (sport.type === 'port:bottom') {
+                        const spin = sport as PinPortSchema
+                        const pos = spin.position || {x: 0, y: 0}
+                        spin.position = {x: pos.x + 10, y: pos.y - 20 }
+                    }
+                    if (sport.type === 'port:right') {
+                        const spin = sport as PinPortSchema
+                        const pos = spin.position || {x: 0, y: 0}
+                        spin.position = {x: pos.x, y: pos.y + 10 }
+                    }
                 }
             }
         }

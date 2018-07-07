@@ -4,7 +4,6 @@ import { TYPES, LocalModelSource, ILogger, IActionDispatcher,
          IStateAwareModelProvider, IPopupModelProvider,
          SModelElementSchema } from 'sprotty/lib'
 import { IGraphGenerator } from './graph-generator'
-//import { NetlistModuleNodeSchema, isNode } from './graph-model'
 
 @injectable()
 export class NetlistGraphModelSource extends LocalModelSource {
