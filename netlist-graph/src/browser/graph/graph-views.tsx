@@ -1,23 +1,61 @@
 import { RenderingContext, IView } from 'sprotty/lib'
 import * as snabbdom from 'snabbdom-jsx'
 import { VNode } from 'snabbdom/vnode'
-import { NetlistModuleNode } from './graph-model'
+import { GroupNode, PortsNode, PinPort } from './graph-model'
 
 const JSX = {createElement: snabbdom.svg};
 
-export class NetlistModuleNodeView implements IView {
-    render(node: Readonly<NetlistModuleNode>, context: RenderingContext): VNode {
+export class GroupNodeView implements IView {
+    render(node: Readonly<GroupNode>, context: RenderingContext): VNode {
+        return (<g>
+            <rect class-sprotty-node={true}
+                  class-group={true}
+                  width={Math.max(node.size.width, 0)}
+                  height={Math.max(node.size.height, 0)}
+               ></rect>
+            {context.renderChildren(node)}
+        </g>) as any as VNode
+    }
+}
+
+export class PortsNodeView implements IView {
+    render(node: Readonly<PortsNode>, context: RenderingContext): VNode {
         return (<g>
             <rect class-sprotty-node={true}
                   class-mouseover={node.hoverFeedback}
                   class-selected={node.selected}
-                  width={Math.max(node.size.width, 0)}
-                  height={Math.max(node.size.height, 0)}
+                  class-ports={true}
+                  width={Math.max(node.size.width, 20)}
+                  height={Math.max(node.size.height, 20)}
                 ></rect>
             {context.renderChildren(node)}
         </g>) as any as VNode
     }
 }
+
+export class PinPortView implements IView {
+    render(port: Readonly<PinPort>, context: RenderingContext): VNode {
+        const pinLength = 20
+        const rotate = port.side === 'top' || port.side === 'bottom'
+        return (<g>
+            <g transform={rotate ? `translate(0, ${pinLength}) rotate(-90)` : ''}>
+                <text class-pad-label={true}
+                    x={pinLength/2}
+                    y={0}>{port.pad}</text>
+                <line class-sprotty-port={true}
+                      class-mouseover={port.hoverFeedback}
+                      class-selected={port.selected}
+                      class-pin={true}
+                      x1={pinLength} y1={3}
+                      x2={0} y2={3}
+                  ></line>
+               {context.renderChildren(port)}
+            </g>
+        </g>) as any as VNode
+    }
+}
+
+
 
 /*
 export class SymbolPortView implements IView {

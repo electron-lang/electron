@@ -14,7 +14,7 @@
     "@electron-lang/celllib": "^0.0.3",
     "@theia/core": "next",
     "elkjs": "latest",
-    "sprotty": "latest",
+    "sprotty": "next",
     "theia-sprotty": "next"
   },
   "devDependencies": {

@@ -143,7 +143,7 @@ describe('Elaborator', () => {
             })
 
             it('should elaborate to `@rotate(90) cell a, b`', () => {
-                const widthAttr = ast.Attr('rotate', [
+                const rotateAttr = ast.Attr('rotate', [
                     ast.Integer(90, getLoc('90', Pos(3, 9)))
                 ], getLoc('@rotate', Pos(3, 1)))
 
@@ -151,9 +151,48 @@ describe('Elaborator', () => {
                     ast.Cell('a', ast.Integer(1), getLoc('a', Pos(3, 18))),
                     ast.Cell('b', ast.Integer(1), getLoc('b', Pos(3, 21)))
                 ]
-                cells[0].attrs.push(widthAttr)
-                cells[1].attrs.push(widthAttr)
+                cells[0].attrs.push(rotateAttr)
+                cells[1].attrs.push(rotateAttr)
                 expectAstModule('@rotate(90) cell a, b', cells)
+            })
+
+            it('should elaborate `@left @set_pad("1") analog a`', () => {
+                const leftAttr = ast.Attr('left', [], getLoc('@left', Pos(3, 1)))
+                const setPadAttr = ast.Attr('set_pad', [
+                    ast.String('1', getLoc('"1"', Pos(3, 16)))
+                ], getLoc('@set_pad', Pos(3, 7)))
+                const port = ast.Port('a', 'analog', ast.Integer(1),
+                                      getLoc('a', Pos(3, 28)))
+                port.attrs = [leftAttr, setPadAttr]
+                expectAstModule('@left @set_pad("1") analog a', [port])
+            })
+
+            it('should elaborate `@group("A") { analog a; analog b }`', () => {
+                const groupAttr = ast.Attr('group', [
+                    ast.String('A', getLoc('"A"', Pos(3, 8)))
+                ], getLoc('@group', Pos(3, 1)))
+                const a = ast.Port('a', 'analog', ast.Integer(1),
+                                   getLoc('a', Pos(3, 22)))
+                const b = ast.Port('b', 'analog', ast.Integer(1),
+                                   getLoc('b', Pos(3, 32)))
+                a.attrs = [groupAttr]
+                b.attrs = [groupAttr]
+                expectAstModule('@group("A") { analog a; analog b}', [a, b])
+            })
+
+            it('should elaborate `@group("A") { @left analog a; @right analog b }`', () => {
+                const groupAttr = ast.Attr('group', [
+                    ast.String('A', getLoc('"A"', Pos(3, 8)))
+                ], getLoc('@group', Pos(3, 1)))
+                const leftAttr = ast.Attr('left', [], getLoc('@left', Pos(3, 15)))
+                const rightAttr = ast.Attr('right', [], getLoc('@right', Pos(3, 31)))
+                const a = ast.Port('a', 'analog', ast.Integer(1),
+                                   getLoc('a', Pos(3, 28)))
+                const b = ast.Port('b', 'analog', ast.Integer(1),
+                                   getLoc('b', Pos(3, 45)))
+                a.attrs = [leftAttr, groupAttr]
+                b.attrs = [rightAttr, groupAttr]
+                expectAstModule('@group("A") { @left analog a; @right analog b}', [a, b])
             })
         })
     })

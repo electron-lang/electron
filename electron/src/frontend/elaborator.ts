@@ -600,9 +600,16 @@ export class Elaborator extends BaseElectronVisitor {
         const attrs: ast.IAttr[] =
             ctx.attribute.map((ctx: any) => this.visit(ctx))
 
-        return this.visit(ctx.cellPortDeclaration || ctx.cellStatement)
+        if (ctx.cellPortDeclaration) {
+            return this.visit(ctx.cellPortDeclaration[0])
+                .map((p: PortDecl) => {
+                    p[0].ref.attrs = attrs.concat(p[0].ref.attrs)
+                    return p
+                })
+        }
+        return [].concat.apply([], ctx.cellStatement.map((ctx: any) => this.visit(ctx)))
             .map((p: PortDecl) => {
-                p[0].ref.attrs = attrs
+                p[0].ref.attrs = attrs.concat(p[0].ref.attrs)
                 return p
             })
     }
@@ -646,9 +653,11 @@ export class Elaborator extends BaseElectronVisitor {
             }
 
             const pdecls: PortDecl[] = []
+
             for (let i = 0; i < Math.min(ports.length, exprs.length); i++) {
                 pdecls.push([ports[i], exprs[i]])
             }
+
             return pdecls
         } else {
             const pdecls: PortDecl[] = []

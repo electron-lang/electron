@@ -1,7 +1,8 @@
 import { injectable, inject, optional } from 'inversify'
 import { TYPES, LocalModelSource, ILogger, IActionDispatcher,
          ActionHandlerRegistry, ViewerOptions, IModelLayoutEngine,
-         IStateAwareModelProvider, IPopupModelProvider } from 'sprotty/lib'
+         IStateAwareModelProvider, IPopupModelProvider,
+         SModelElementSchema } from 'sprotty/lib'
 import { IGraphGenerator } from './graph-generator'
 //import { NetlistModuleNodeSchema, isNode } from './graph-model'
 
@@ -32,5 +33,13 @@ export class NetlistGraphModelSource extends LocalModelSource {
             id: 'netlist-graph',
             children: []
         }
+    }
+
+    updateModel(): Promise<void> {
+        const gen = this.graphGenerator;
+        const nodes: SModelElementSchema[] = gen.nodes
+        const edges: SModelElementSchema[] = gen.edges
+        this.currentRoot.children = nodes.concat(edges);
+        return super.updateModel();
     }
 }

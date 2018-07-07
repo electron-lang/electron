@@ -1,10 +1,9 @@
 import { injectable, inject } from 'inversify';
-import { ELK, ElkNode, ElkGraphElement, ElkEdge, ElkLabel, ElkShape,
+import { ELK, ElkNode, ElkGraphElement, ElkEdge, ElkLabel, ElkShape, ElkPort,
          ElkPrimitiveEdge, ElkExtendedEdge, LayoutOptions } from 'elkjs/lib/elk-api';
 import { SGraphSchema, SModelIndex, SModelElementSchema, SNodeSchema,
-         SShapeElementSchema, SEdgeSchema, SLabelSchema, Point,
+         SShapeElementSchema, SEdgeSchema, SLabelSchema, SPortSchema, Point,
          IModelLayoutEngine } from 'sprotty/lib';
-import { isNode } from './graph-model';
 
 export type ElkFactory = () => ELK;
 
@@ -17,6 +16,15 @@ export class ElkGraphLayout implements IModelLayoutEngine {
 
     constructor(@inject(ElkFactory) elkFactory: ElkFactory) {
         this.elk = elkFactory();
+        console.log(this.elk.knownLayoutOptions())
+    }
+
+    protected graphOptions(sgraph: SGraphSchema): LayoutOptions {
+        return {
+            'elk.algorithm': 'layered',
+            'elk.direction': 'DOWN',
+            'elk.edgeRouting': 'POLYLINE',
+        }
     }
 
     layout(graph: SGraphSchema, index?: SModelIndex<SModelElementSchema>)
@@ -28,11 +36,14 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             index = new SModelIndex();
             index.add(graph);
         }
+        console.log(graph)
         const elkGraph = this.transformToElk(graph, index) as ElkNode
-        return this.elk.layout(elkGraph).then(result => {
+        const newGraph = this.elk.layout(elkGraph).then(result => {
             this.applyLayout(result, index!)
             return graph
         })
+        console.log(newGraph)
+        return newGraph
     }
 
     protected transformToElk(smodel: SModelElementSchema,
@@ -45,92 +56,95 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     id: sgraph.id,
                     layoutOptions: this.graphOptions(sgraph),
                     children: sgraph.children
-                        .filter(c => {
-                            return c.type === 'node' &&
-                                this.filterNode(c as SNodeSchema)
-                        })
+                        .filter(c => c.type === 'node:group')
                         .map(c => this.transformToElk(c, index)) as ElkNode[],
-                    edges: sgraph.children
-                        .filter(c => {
-                            return c.type === 'edge' &&
-                                this.filterEdge(c as SEdgeSchema, index)})
-                        .map(c => this.transformToElk(c, index)) as ElkEdge[]
-                };
+                }
             }
-            case 'node': {
+            case 'node:group': {
                 const snode = smodel as SNodeSchema;
-                const elkNode: ElkNode = { id: snode.id };
+                const elkNode: ElkNode = {
+                    id: snode.id,
+                }
                 if (snode.children) {
-                    elkNode.children = snode.children
-                        .filter(c => {
-                            return c.type === 'node' &&
-                                this.filterNode(c as SNodeSchema)
-                        })
-                        .map(c => this.transformToElk(c, index)) as ElkNode[];
-                    elkNode.edges = snode.children
-                        .filter(c => {
-                            return c.type === 'edge' &&
-                                this.filterEdge(c as SEdgeSchema, index)
-                        })
-                        .map(c => this.transformToElk(c, index)) as ElkEdge[];
                     elkNode.labels = snode.children
-                        .filter(c => c.type === 'label')
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[];
+                        .filter(c => c.type.startsWith('label'))
+                        .map(c => this.transformToElk(c, index)) as ElkLabel[]
+                    elkNode.children = snode.children
+                        .filter(c => c.type === 'node:ports')
+                        .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
                 this.transformShape(elkNode, snode);
                 return elkNode;
             }
-            case 'edge': {
-                const sedge = smodel as SEdgeSchema;
-                const elkEdge: ElkPrimitiveEdge = {
-                    id: sedge.id,
-                    source: sedge.sourceId,
-                    target: sedge.targetId
-                };
-                if (sedge.children) {
-                    elkEdge.labels = sedge.children
-                        .filter(c => c.type === 'label')
-                        .map(c => this.transformToElk(c, index)) as ElkLabel[];
+            case 'node:ports': {
+                const snode = smodel as SNodeSchema;
+                const elkNode: ElkNode = {
+                    id: snode.id,
+                    layoutOptions: {
+                        'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
+                    }
                 }
-                const points = sedge.routingPoints;
-                if (points && points.length >= 2) {
-                    elkEdge.sourcePoint = points[0];
-                    elkEdge.bendPoints = points.slice(1, points.length - 1);
-                    elkEdge.targetPoint = points[points.length - 1];
+                if (snode.children) {
+                    elkNode.ports = snode.children
+                        .filter(c => c.type.startsWith('port'))
+                        .map(c => this.transformToElk(c, index)) as ElkPort[]
+                    elkNode.labels = snode.children
+                        .filter(c => c.type.startsWith('label'))
+                        .map(c => this.transformToElk(c, index)) as ElkLabel[]
                 }
-                return elkEdge;
+                this.transformShape(elkNode, snode);
+                return elkNode;
             }
-            case 'label': {
-                const slabel = smodel as SLabelSchema;
-                const elkLabel: ElkLabel = { id: slabel.id, text: slabel.text };
-                this.transformShape(elkLabel, slabel);
-                return elkLabel;
+            case 'port:top':
+            case 'port:left':
+            case 'port:bottom':
+            case 'port:right': {
+                const sport = smodel as SPortSchema
+                const portConstraint = (() => {
+                    switch(sport.type) {
+                        case 'port:top':
+                            return 'NORTH'
+                        case 'port:left':
+                            return 'WEST'
+                        case 'port:bottom':
+                            return 'SOUTH'
+                        case 'port:right':
+                            return 'EAST'
+                        default:
+                            return 'WEST'
+                    }
+                })()
+                const elkPort: ElkPort = {
+                    id: sport.id,
+                    layoutOptions: {
+                        'org.eclipse.elk.port.side': portConstraint,
+                    }
+                }
+                this.transformShape(elkPort, sport)
+                return elkPort
+            }
+            case 'label:group:ref':
+            case 'label:group:value': {
+                const slabel = smodel as SLabelSchema
+                const elkLabel: ElkLabel = {
+                    id: slabel.id,
+                    text: slabel.text,
+                }
+                this.transformShape(elkLabel, slabel)
+                return elkLabel
+            }
+            case 'label:port':
+            case 'label:port:pad': {
+                const slabel = smodel as SLabelSchema
+                const elkLabel: ElkLabel = {
+                    id: slabel.id,
+                    text: slabel.text,
+                }
+                this.transformShape(elkLabel, slabel)
+                return elkLabel
             }
             default:
                 throw new Error('Type not supported: ' + smodel.type);
-        }
-    }
-
-    protected filterNode(node: SNodeSchema): boolean {
-        return true;
-    }
-
-    protected filterEdge(edge: SEdgeSchema,
-                         index: SModelIndex<SModelElementSchema>): boolean {
-        const source = index.getById(edge.sourceId);
-        if (!source || isNode(source) && !this.filterNode(source))
-            return false;
-        const target = index.getById(edge.targetId);
-        if (!target || isNode(target) && !this.filterNode(target))
-            return false;
-        return true;
-    }
-
-    protected graphOptions(sgraph: SGraphSchema): LayoutOptions {
-        return {
-            'elk.algorithm': 'layered',
-            'elk.direction': 'UP',
-            'elk.edgeRouting': 'POLYLINE'
         }
     }
 
@@ -147,7 +161,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
 
     protected applyLayout(elkNode: ElkNode, index: SModelIndex<SModelElementSchema>) {
         const snode = index.getById(elkNode.id);
-        if (snode && snode.type === 'node') {
+        if (snode && snode.type.startsWith('node:')) {
             this.applyShape(snode as SNodeSchema, elkNode);
         }
         if (elkNode.children) {
@@ -158,15 +172,23 @@ export class ElkGraphLayout implements IModelLayoutEngine {
         if (elkNode.edges) {
             for (const elkEdge of elkNode.edges) {
                 const sedge = index.getById(elkEdge.id);
-                if (sedge && sedge.type === 'edge') {
+                if (sedge && sedge.type.startsWith('edge:')) {
                     this.applyEdge(sedge as SEdgeSchema, elkEdge);
+                }
+            }
+        }
+        if (elkNode.ports) {
+            for (const elkPort of elkNode.ports) {
+                const sport = index.getById(elkPort.id);
+                if (sport && sport.type.startsWith('port:')) {
+                    this.applyShape(sport as SPortSchema, elkPort)
                 }
             }
         }
         if (elkNode.labels) {
             for (const elkLabel of elkNode.labels) {
                 const slabel = index.getById(elkLabel.id);
-                if (slabel && slabel.type === 'label') {
+                if (slabel && slabel.type.startsWith('label:')) {
                     this.applyShape(slabel as SLabelSchema, elkLabel);
                 }
             }

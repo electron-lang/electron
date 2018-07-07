@@ -1,31 +1,71 @@
-import { SModelElementSchema, SNodeSchema, SEdgeSchema,
-         RectangularNode, SEdge } from "sprotty/lib"
+import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
+    RectangularNode, SEdge, SPort, layoutContainerFeature } from 'sprotty/lib'
 
-export interface NetlistModuleNodeSchema extends SNodeSchema {
+export interface GroupNodeSchema extends SNodeSchema {
     name: string
 }
 
-export function isNode(element?: SModelElementSchema)
-: element is NetlistModuleNodeSchema {
-    return element !== undefined && element.type === 'node'
+export function isGroup(element?: SModelElementSchema)
+: element is GroupNodeSchema {
+    return element !== undefined && element.type === 'node:group'
 }
 
-export class NetlistModuleNode extends RectangularNode {
+export class GroupNode extends RectangularNode {
     name: string = ''
+
+    hasFeature(feature: symbol): boolean {
+        if (feature === layoutContainerFeature) {
+            return false
+        }
+        return super.hasFeature(feature)
+    }
 }
 
-export interface NetlistNetEdgeSchema extends SEdgeSchema {
+export interface PortsNodeSchema extends SNodeSchema {}
+
+export function isPorts(element?: SModelElementSchema)
+: element is PortsNodeSchema {
+    return element !== undefined && element.type === 'node:ports'
+}
+
+export class PortsNode extends RectangularNode {
+    hasFeature(feature: symbol): boolean {
+        if (feature === layoutContainerFeature) {
+            return false
+        }
+        return super.hasFeature(feature)
+    }
+}
+
+export interface PinPortSchema extends SPortSchema {
+    side: 'top' | 'left' | 'right' | 'bottom'
+    pad: string
+}
+
+export class PinPort extends SPort {
+    side: 'top' | 'left' | 'right' | 'bottom' = 'left'
+    pad: string = ''
+}
+
+export function isPin(element?: SModelElementSchema)
+: element is PinPortSchema {
+    return element !== undefined && element.type === 'port:pin'
+}
+
+export interface NetEdgeSchema extends SEdgeSchema {
     name?: string
 }
 
-export function isEdge(element?: SModelElementSchema)
-: element is NetlistNetEdgeSchema {
-    return element !== undefined && element.type === 'edge'
+export function isNet(element?: SModelElementSchema)
+: element is NetEdgeSchema {
+    return element !== undefined && element.type === 'edge:net'
 }
 
-export class NetlistNetEdge extends SEdge {
+export class NetEdge extends SEdge {
 
 }
+
+
 
 /*
 export abstract class ChipyNode extends SNode {

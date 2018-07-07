@@ -18,8 +18,7 @@
     "electron-app"
   ],
   "resolutions": {
-    "**/devbridge-autocomplete/@types/jquery": "3.3.2",
-    "**/sprotty": "0.4.0"
+    "sprotty": "0.4.0"
   },
   "scripts": {
     "prepare": "lerna run prepare",

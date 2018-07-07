@@ -188,12 +188,26 @@ const ModelAttribute: IAttributeHandler = {
 /* Attributes for PCB generation */
 const SetPadAttribute: IAttributeHandler = {
     validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
-        // TODO
-        return true
+        const message = `@${attr.name} takes at least one param of type String.`
+        let ok = true
+        if (attr.params.length < 1) {
+            logger.error(message, attr.src)
+            ok = false
+        }
+        for (let param of attr.params) {
+            if (param.tag !== 'string') {
+                logger.error(message, param.src)
+                ok = false
+            }
+        }
+        return ok
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return []
+        const pads = attr.params as ast.IString[]
+        return [
+            ir.Attr('pads', pads.map((p) => p.value))
+        ]
     }
 }
 

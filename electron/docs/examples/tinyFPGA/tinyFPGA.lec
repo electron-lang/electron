@@ -17,17 +17,17 @@ module Usb {
     net vbus, dp, dn, gnd
     cell J3 = cell {
         @right {
-            @set_pad(1)
+            @set_pad("1")
             analog VBUS = vbus
-            @set_pad(3)
+            @set_pad("3")
             analog 'D+ = dp
-            @set_pad(2)
+            @set_pad("2")
             analog 'D- = dn
         }
         @bottom {
-            @set_pad(5)
+            @set_pad("5")
             analog GND = gnd
-            @set_pad(6)
+            @set_pad("6")
             analog Shield = gnd
         }
     }
@@ -57,19 +57,19 @@ module Vreg {
     @bom("", "MIC5504-3.3YM5-TR")
     cell U2 = cell {
         @left {
-            @set_pad(1)
+            @set_pad("1")
             analog VIN='+5V
-            @set_pad(3)
+            @set_pad("3")
             analog EN='+5V
         }
         @right {
-            @set_pad(4)
+            @set_pad("4")
             analog NC='+3V3
-            @set_pad(5)
+            @set_pad("5")
             analog VOUT='+3V3
         }
         @bottom
-        @set_pad(2)
+        @set_pad("2")
         analog GND
     }
 
@@ -82,16 +82,16 @@ module Vreg {
     @bom("", "MIC5365-1.2YC5-TR")
     cell U4 = cell {
         @left {
-            @set_pad(1)
+            @set_pad("1")
             analog VIN='+5V
-            @set_pad(3)
+            @set_pad("3")
             analog EN='+5V
         }
         @right
-        @set_pad(5)
+        @set_pad("5")
         analog VOUT='+1V2
         @bottom
-        @set_pad(2)
+        @set_pad("2")
         analog GND
     }
 
@@ -108,13 +108,13 @@ module Clock {
 
     cell U3 = cell {
         @right
-        @set_pad(1)
+        @set_pad("1")
         analog OE='+3V3
         @right
-        @set_pad(3)
+        @set_pad("3")
         analog CLK
         @bottom
-        @set_pad(2)
+        @set_pad("2")
         analog GND
     }
 }
@@ -128,22 +128,22 @@ module Flash {
     @bom("", "AT25SF041-SSHD-B")
     cell U5 = cell {
         @left
-        @set_pad(3)
+        @set_pad("3")
         analog WP
         @right {
-            @set_pad(8)
+            @set_pad("8")
             analog VCC = '+3V3
-            @set_pad(6)
+            @set_pad("6")
             analog SCK
-            @set_pad(5)
+            @set_pad("5")
             analog SDO
-            @set_pad(2)
+            @set_pad("2")
             analog SDI
-            @set_pad(1)
+            @set_pad("1")
             analog SS
         }
         @bottom
-        @set_pad(4)
+        @set_pad("4")
         analog GND
     }
 
@@ -163,7 +163,7 @@ module Headers {
     @bom("", "CONN_01x14")
     cell J1 = cell {
         @left
-        @set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+        //@set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
         analog GND, USB_P, USB_N, CLK, '2B, '221, '224, '3A, '3B,
             '10A, '10B, '24B, '54, '55
     }
@@ -171,7 +171,7 @@ module Headers {
     @bom("", "CONN_01x14")
     cell J2 = cell {
         @right
-        @set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+        //@set_pad(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
         analog '+5V, '+3.3V, '+1V2, '185, '177, '174, '116,
             '141_GBIN2, '148, '119, SS, SCK, SDI, SDO
     }

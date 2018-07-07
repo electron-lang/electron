@@ -5,8 +5,8 @@ import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          PolylineEdgeView,
          defaultModule, selectModule, moveModule, boundsModule, fadeModule,
          viewportModule, exportModule, hoverModule, edgeEditModule } from 'sprotty/lib'
-import { NetlistModuleNode, NetlistNetEdge } from './graph-model'
-import { NetlistModuleNodeView } from './graph-views'
+import { GroupNode, PortsNode, PinPort, NetEdge } from './graph-model'
+import { GroupNodeView, PortsNodeView, PinPortView } from './graph-views'
 import { IGraphGenerator } from './graph-generator'
 import { NetlistGraphGenerator } from './netlist'
 import { NetlistGraphModelSource } from './model-source'
@@ -23,10 +23,18 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope()
         const context = { bind, unbind, isBound, rebind }
         configureModelElement(context, 'graph', SGraph, SGraphView)
-        configureModelElement(context, 'node', NetlistModuleNode, NetlistModuleNodeView)
-        //configureModelElement(context, 'port', SPort, SPortView)
-        configureModelElement(context, 'edge', NetlistNetEdge, PolylineEdgeView)
-        configureModelElement(context, 'label', SLabel, SLabelView)
+        configureModelElement(context, 'node:group', GroupNode, GroupNodeView)
+        configureModelElement(context, 'node:ports', PortsNode, PortsNodeView)
+        configureModelElement(context, 'port:top', PinPort, PinPortView)
+        configureModelElement(context, 'port:left', PinPort, PinPortView)
+        configureModelElement(context, 'port:bottom', PinPort, PinPortView)
+        configureModelElement(context, 'port:right', PinPort, PinPortView)
+        //configureModelElement(context, 'port:fixed', FixedPort, FixedPortView)
+        configureModelElement(context, 'edge:net', NetEdge, PolylineEdgeView)
+        configureModelElement(context, 'label:group:ref', SLabel, SLabelView)
+        configureModelElement(context, 'label:group:value', SLabel, SLabelView)
+        configureModelElement(context, 'label:port', SLabel, SLabelView)
+        configureModelElement(context, 'label:port:pad', SLabel, SLabelView)
         configureModelElement(context, 'compartment', SCompartment, SCompartmentView)
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView)
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView)

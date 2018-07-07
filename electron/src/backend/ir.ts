@@ -114,11 +114,11 @@ export function Module(name: string, attrs: IAttr[], src?: ISrcLoc): IModule {
 export interface IAttr {
     tag: 'attr'
     name: string
-    value: number | string | boolean
+    value: number | string | boolean | string[]
     src: ISrcLoc
 }
 
-export function Attr(name: string, value: boolean | number | string,
+export function Attr(name: string, value: boolean | number | string | string[],
                      src?: ISrcLoc): IAttr {
     return {
         tag: 'attr',

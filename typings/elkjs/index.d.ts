@@ -8,36 +8,36 @@ declare module "elkjs/lib/elk-api" {
         x: number
         y: number
     }
-    
+
     export interface ElkGraphElement {
         id: string
         labels?: ElkLabel[]
         layoutOptions?: LayoutOptions
     }
-    
+
     export interface ElkShape extends ElkGraphElement {
         x?: number
         y?: number
         width?: number
         height?: number
     }
-    
+
     export interface ElkNode extends ElkShape {
         children?: ElkNode[]
         ports?: ElkPort[]
         edges?: ElkEdge[]
     }
-    
+
     export interface ElkPort extends ElkShape { }
-    
+
     export interface ElkLabel extends ElkShape {
         text: string
     }
-    
+
     export interface ElkEdge extends ElkGraphElement {
         junctionPoints?: ElkPoint[]
     }
-    
+
     export interface ElkPrimitiveEdge extends ElkEdge {
         source: string
         sourcePort?: string
@@ -47,13 +47,13 @@ declare module "elkjs/lib/elk-api" {
         targetPoint?: ElkPoint
         bendPoints?: ElkPoint[]
     }
-    
+
     export interface ElkExtendedEdge extends ElkEdge {
         sources: string[]
         targets: string[]
         sections: ElkEdgeSection[]
     }
-    
+
     export interface ElkEdgeSection extends ElkGraphElement {
         startPoint: ElkPoint
         endPoint: ElkPoint
@@ -70,6 +70,10 @@ declare module "elkjs/lib/elk-api" {
 
     export interface ELK {
         layout(graph: ElkNode, args?: ELKLayoutArguments): Promise<ElkNode>;
+        knownLayoutOptions(): any;
+        knownLayoutAlgorithms(): any;
+        knownLayoutCategories(): any;
+        terminateWorker(): void;
     }
 
     export interface ELKConstructorArguments {
