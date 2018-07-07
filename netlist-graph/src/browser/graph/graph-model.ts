@@ -1,5 +1,5 @@
 import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-         RectangularNode, SEdge, SPort, boundsFeature } from 'sprotty/lib'
+         RectangularNode, SEdge, SPort, openFeature } from 'sprotty/lib'
 
 export interface GroupNodeSchema extends SNodeSchema {
     name: string
@@ -20,6 +20,14 @@ export class GroupNode extends RectangularNode {
     nleft: number = 0
     nbottom: number = 0
     nright: number = 0
+
+    hasFeature(feature: symbol): boolean {
+        if (feature === openFeature) {
+            return true
+        }
+        return super.hasFeature(feature)
+    }
+
 }
 
 export interface PinPortSchema extends SPortSchema {
@@ -31,13 +39,6 @@ export class PinPort extends SPort {
     side: 'top' | 'left' | 'right' | 'bottom' = 'left'
     name: string = ''
     pad: string = ''
-
-    hasFeature(feature: symbol): boolean {
-        if (feature === boundsFeature) {
-            return false
-        }
-        return super.hasFeature(feature)
-    }
 
 }
 

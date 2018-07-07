@@ -2,7 +2,7 @@ import { injectable, inject, optional } from 'inversify'
 import { TYPES, LocalModelSource, ILogger, IActionDispatcher,
          ActionHandlerRegistry, ViewerOptions, IModelLayoutEngine,
          IStateAwareModelProvider, IPopupModelProvider,
-         SModelElementSchema } from 'sprotty/lib'
+         Action, OpenAction } from 'sprotty/lib'
 import { IGraphGenerator } from './graph-generator'
 
 @injectable()
@@ -34,11 +34,27 @@ export class NetlistGraphModelSource extends LocalModelSource {
         }
     }
 
+    protected initialize(registry: ActionHandlerRegistry): void {
+        super.initialize(registry);
+
+        registry.register(OpenAction.KIND, this);
+    }
+
     updateModel(): Promise<void> {
-        const gen = this.graphGenerator;
-        const nodes: SModelElementSchema[] = gen.nodes
-        const edges: SModelElementSchema[] = gen.edges
-        this.currentRoot.children = nodes.concat(edges);
+        this.currentRoot.children = this.graphGenerator.elements;
         return super.updateModel();
     }
+
+    handle(action: Action): void {
+        switch (action.kind) {
+            case OpenAction.KIND:
+                this.graphGenerator
+                    .openSchematic((action as OpenAction).elementId);
+                this.updateModel()
+                break;
+            default:
+                super.handle(action);
+        }
+    }
+
 }

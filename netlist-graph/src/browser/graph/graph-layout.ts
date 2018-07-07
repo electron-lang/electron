@@ -50,13 +50,16 @@ export class ElkGraphLayout implements IModelLayoutEngine {
         switch (smodel.type) {
             case 'graph': {
                 const sgraph = smodel as SGraphSchema;
-                return <ElkNode> {
+                const snode = <ElkNode> {
                     id: sgraph.id,
                     layoutOptions: this.graphOptions(sgraph),
-                    children: sgraph.children
-                        .filter(c => c.type === 'node:group')
-                        .map(c => this.transformToElk(c, index)) as ElkNode[],
                 }
+                if (sgraph.children) {
+                    snode.children = sgraph.children
+                        .filter(c => c.type === 'node:group')
+                        .map(c => this.transformToElk(c, index)) as ElkNode[]
+                }
+                return snode
             }
             case 'node:group': {
                 const snode = smodel as SNodeSchema;

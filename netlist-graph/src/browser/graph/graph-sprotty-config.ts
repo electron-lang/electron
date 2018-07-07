@@ -3,8 +3,9 @@ import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          SGraph, SGraphView, HtmlRoot, HtmlRootView, PreRenderedElement,
          PreRenderedView, SLabel, SLabelView, SCompartment, SCompartmentView,
          PolylineEdgeView,
-         defaultModule, selectModule, moveModule, boundsModule, fadeModule,
-         viewportModule, exportModule, hoverModule, edgeEditModule } from 'sprotty/lib'
+         defaultModule, selectModule, moveModule, boundsModule, openModule,
+         viewportModule, exportModule, hoverModule, edgeEditModule,
+         fadeModule } from 'sprotty/lib'
 import { GroupNode, PinPort, NetEdge } from './graph-model'
 import { GroupNodeView, PinPortView } from './graph-views'
 import { IGraphGenerator } from './graph-generator'
@@ -43,8 +44,8 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
     })
 
     const container = new Container()
-    container.load(defaultModule, selectModule, moveModule, boundsModule,
-                   fadeModule, viewportModule, exportModule, hoverModule,
-                   edgeEditModule, netlistGraphModule)
+    container.load(defaultModule, boundsModule, selectModule, hoverModule,
+                   openModule, viewportModule, exportModule, fadeModule,
+                   moveModule, edgeEditModule, netlistGraphModule)
     return container
 }

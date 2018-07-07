@@ -38,7 +38,7 @@ export class SchematicDiagramManager extends DiagramManagerImpl {
         const { content } = await this.fileSystem.resolveContent(uri.toString())
         const netlist = JSON.parse(content)
         const generator = modelSource.graphGenerator as NetlistGraphGenerator
-        generator.addNetlist(netlist)
+        generator.addNetlist(uri.toString(), netlist)
         await modelSource.updateModel()
         //modelSource.center([])
     }
