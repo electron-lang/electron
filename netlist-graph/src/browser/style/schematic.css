@@ -20,3 +20,15 @@ text {
 .selected {
     stroke: #859900; /* green */
 }
+
+svg text {
+    cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+svg text::selection {
+    background: none;
+}

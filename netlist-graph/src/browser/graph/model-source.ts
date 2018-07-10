@@ -4,6 +4,7 @@ import { TYPES, LocalModelSource, ILogger, IActionDispatcher,
          IStateAwareModelProvider, IPopupModelProvider,
          Action, OpenAction } from 'sprotty/lib'
 import { IGraphGenerator } from './graph-generator'
+import { isGroup, isPort } from './graph-model'
 
 @injectable()
 export class NetlistGraphModelSource extends LocalModelSource {
@@ -49,9 +50,11 @@ export class NetlistGraphModelSource extends LocalModelSource {
         switch (action.kind) {
             case OpenAction.KIND:
                 const elemId = (action as OpenAction).elementId
-                const elem = this.graphGenerator.index.getById(elemId) as any
-                if (elem && 'link' in elem) {
-                    this.graphGenerator.openUrn(elem.link)
+                const elem = this.graphGenerator.index.getById(elemId)
+                if (isGroup(elem)) {
+                    this.graphGenerator.open(elem.link)
+                } else if (isPort(elem)) {
+                    this.graphGenerator.close()
                 } else {
                     console.log('No link')
                 }

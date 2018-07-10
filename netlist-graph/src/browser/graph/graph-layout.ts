@@ -5,7 +5,8 @@ import { SGraphSchema, SModelIndex, SModelElementSchema, SNodeSchema,
          SShapeElementSchema, SEdgeSchema, SPortSchema, Point,
          IModelLayoutEngine } from 'sprotty/lib';
 import { isFile, isModule, isSymbol, isSchematic,
-         isGroup, isPin, PinPortSchema } from './graph-model'
+         isGroup, isPin, PinPortSchema, isPort,
+         isCell, isNet } from './graph-model'
 
 export type ElkFactory = () => ELK;
 
@@ -83,6 +84,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => isModule(c) && !c.hidden)
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
+                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:module': {
@@ -95,6 +97,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => (isSymbol(c) || isSchematic(c)) && !c.hidden)
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
+                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:symbol': {
@@ -107,6 +110,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => isGroup(c))
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
+                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:schematic': {
@@ -115,10 +119,17 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     id: snode.id,
                 }
                 if (snode.children) {
+                    elkNode.ports = snode.children
+                        .filter(c => isPort(c))
+                        .map(c => this.transformToElk(c, index)) as ElkPort[]
                     elkNode.children = snode.children
-                        .filter(c => isSchematic(c))
+                        .filter(c => isCell(c))
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
+                    elkNode.edges = snode.children
+                        .filter(c => isNet(c))
+                        .map(c => this.transformToElk(c, index)) as ElkEdge[]
                 }
+                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:group': {
@@ -165,21 +176,41 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 elkPort.height = 20;
                 return elkPort
             }
-            case 'node:port': {
+            case 'port:port': {
+                const sport = smodel as SPortSchema;
+                const elkPort: ElkPort = {
+                    id: sport.id
+                }
+                this.transformShape(elkPort, sport)
+                return elkPort
+            }
+            case 'node:cell': {
                 const snode = smodel as SNodeSchema;
                 const elkNode: ElkNode = {
-                    id: snode.id,
-                    layoutOptions: {
-                        'org.eclipse.elk.portConstraints': 'FIXED_POS',
-                    }
+                    id: snode.id
                 }
                 if (snode.children) {
-                    elkNode.ports = snode.children
-                        .filter(c => c.type === 'port')
-                        .map(c => this.transformToElk(c, index)) as ElkPort[]
+                    elkNode.children = snode.children
+                        .filter(c => isGroup(c))
+                        .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
-                this.transformShape(elkNode, snode);
-                return elkNode;
+                this.transformShape(elkNode, snode)
+                return elkNode
+            }
+            case 'net:edge': {
+                const sedge = smodel as SEdgeSchema;
+                const elkEdge: ElkPrimitiveEdge = {
+                    id: sedge.id,
+                    source: sedge.sourceId,
+                    target: sedge.targetId,
+                }
+                const points = sedge.routingPoints;
+                if (points && points.length >= 2) {
+                    elkEdge.sourcePoint = points[0];
+                    elkEdge.bendPoints = points.slice(1, points.length - 1);
+                    elkEdge.targetPoint = points[points.length - 1];
+                }
+                return elkEdge
             }
             default:
                 throw new Error('Type not supported: ' + smodel.type);
@@ -211,7 +242,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             for (const elkPort of elkNode.ports) {
                 const sport = index.getById(elkPort.id);
                 this.applyShape(sport as SPortSchema, elkPort)
-                if (sport && sport.type === 'port:pin') {
+                if (isPin(sport)) {
                     const spin = sport as PinPortSchema
                     // correct coordinates
                     // anchor label correction
@@ -241,7 +272,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
         if (elkNode.edges) {
             for (const elkEdge of elkNode.edges) {
                 const sedge = index.getById(elkEdge.id);
-                if (sedge && sedge.type.startsWith('edge:')) {
+                if (isNet(sedge)) {
                     this.applyEdge(sedge as SEdgeSchema, elkEdge);
                 }
             }

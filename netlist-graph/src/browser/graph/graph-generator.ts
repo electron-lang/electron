@@ -8,7 +8,8 @@ export interface IGraphGenerator {
 
     addNetlist(uri: string, netlist: cl.INetlist): void
 
-    openUrn(urn: URN): void
+    open(urn: URN): void
+    close(): void
 }
 
 export const IGraphGenerator = Symbol('IGraphGenerator')

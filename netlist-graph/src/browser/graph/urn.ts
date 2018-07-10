@@ -1,5 +1,5 @@
 export type URN = File | Module | Symbol | Schematic |
-    SymGroup | SymPort | Port | Cell | Net
+    SymGroup | SymPort | Port | Cell | CellGroup | CellPort | Net
 
 export interface File {
     tag: 'file'
@@ -46,6 +46,18 @@ export interface Cell {
     cellName: string
 }
 
+export interface CellGroup {
+    tag: 'schematic-cell-group'
+    urn: Cell
+    groupName: string
+}
+
+export interface CellPort {
+    tag: 'schematic-cell-port'
+    urn: Cell
+    portName: string
+}
+
 export interface Net {
     tag: 'schematic-net'
     urn: Schematic
@@ -70,6 +82,10 @@ export function toString(urn: URN): string {
             return toString(urn.urn) + ':' + urn.portName
         case 'schematic-cell':
             return toString(urn.urn) + ':' + urn.cellName
+        case 'schematic-cell-group':
+            return toString(urn.urn) + ':group:' + urn.groupName
+        case 'schematic-cell-port':
+            return toString(urn.urn) + ':port:' + urn.portName
         case 'schematic-net':
             return toString(urn.urn) + ':' + urn.netName
     }
@@ -133,6 +149,22 @@ export function Cell(urn: Schematic, cellName: string): Cell {
         tag: 'schematic-cell',
         urn,
         cellName
+    }
+}
+
+export function CellGroup(urn: Cell, groupName: string): CellGroup {
+    return {
+        tag: 'schematic-cell-group',
+        urn,
+        groupName
+    }
+}
+
+export function CellPort(urn: Cell, portName: string): CellPort {
+    return {
+        tag: 'schematic-cell-port',
+        urn,
+        portName
     }
 }
 

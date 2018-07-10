@@ -5,31 +5,22 @@
 
 .orient90 {
     /* mirror + rotate -90 */
-    transform: translate(-50%, -50%)
-               scaleX(-1)
-               rotate(-90)
-               translate(50%, 50%);
+    transform: rotate(-90deg) scaleX(-1);
 }
 
 .orient180 {
     /* mirror */
-    transform: translate(-50%, -50%)
-               scaleX(-1)
-               translate(50%, 50%);
+    transform: scaleX(-1);
 }
 
 .orient270 {
     /* rotate -90 */
-    transform: translate(-50%, -50%)
-               rotate(-90)
-               translate(50%, 50%);
+    transform: rotate(-90deg);
 }
 
 .orient90 text, .orient180 text {
     /* demirror text */
-    transform: translate(-50%, -50%)
-                        scaleX(-1)
-                        translate(50%, 50%);
+    transform: scaleX(-1);
 }
 
 /* Text classes */

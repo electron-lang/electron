@@ -15,20 +15,26 @@ type Map<T> = {[key: string]: T}
 @injectable()
 export class NetlistGraphGenerator implements IGraphGenerator {
     // lookup table for cell types
-    readonly modules: Map<cl.IModule> = {}
+    private modules: Map<cl.IModule> = {}
+    private symbols: Map<SymbolNodeSchema> = {}
+    private navStack: urn.URN[] = []
 
     readonly index: SModelIndex<SModelElementSchema> = new SModelIndex()
     readonly elements: SModelElementSchema[] = []
 
     addNetlist(uri: string, netlist: cl.INetlist): void {
-        for (let modName in netlist.modules) {
-            this.modules[modName] = netlist.modules[modName]
-        }
         const ufile = urn.File(uri)
+        for (let modName in netlist.modules) {
+            const mod = netlist.modules[modName]
+            this.modules[modName] = mod
+            const sym =
+                this.createSymbol(urn.Symbol(urn.Module(ufile, modName)), mod)
+            this.symbols[modName] = sym
+        }
         const sfile = this.createFile(ufile, netlist)
         this.index.add(sfile)
         this.elements.push(sfile)
-        this.openFile(ufile)
+        this.open(ufile)
     }
 
     private createFile(ufile: urn.File, netlist: cl.INetlist): FileNodeSchema {
@@ -55,7 +61,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
             hidden: true,
         }
         smod.children = []
-        smod.children.push(this.createSymbol(urn.Symbol(umod), mod))
+        smod.children.push(this.symbols[umod.modName])
         smod.children.push(this.createSchematic(urn.Schematic(umod), mod))
         return smod
     }
@@ -76,6 +82,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         for (let cellName in newMod.cells) {
             const cell = newMod.cells[cellName]
             cell.mod = this.modules[cell.type]
+            cell.sym = this.symbols[cell.type]
         }
         return newMod
     }
@@ -91,7 +98,8 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         return sschem
     }
 
-    openUrn(urname: urn.URN): void {
+    open(urname: urn.URN): void {
+        this.navStack.push(urname)
         switch (urname.tag) {
             case 'file':
                 return this.openFile(urname)
@@ -101,6 +109,13 @@ export class NetlistGraphGenerator implements IGraphGenerator {
             case 'schematic-cell':
             case 'schematic-net':
                 return this.openSchematic(urname.urn)
+        }
+    }
+
+    close(): void {
+        if (this.navStack.length > 1) {
+            this.navStack.pop()
+            this.open(this.navStack.pop() as urn.URN)
         }
     }
 

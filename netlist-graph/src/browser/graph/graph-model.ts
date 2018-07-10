@@ -1,5 +1,6 @@
 import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-         RectangularNode, SEdge, SPort, openFeature } from 'sprotty/lib'
+         RectangularNode, RectangularPort, SEdge, SPort,
+         openFeature } from 'sprotty/lib'
 import * as urn from './urn'
 
 export type Orientation = 0 | 90 | 180 | 270
@@ -25,6 +26,7 @@ export function sideToOrientation(side: Side): Orientation {
 /* File Node */
 export interface FileNodeSchema extends SNodeSchema {
     urn: urn.File
+    type: 'node:file'
     hidden: boolean
 }
 
@@ -35,6 +37,7 @@ export function isFile(element?: SModelElementSchema)
 
 export class FileNode extends RectangularNode {
     urn = urn.File('')
+    type = 'node:file'
     hidden = true
 }
 /* File Node */
@@ -42,6 +45,7 @@ export class FileNode extends RectangularNode {
 /* Module Node */
 export interface ModuleNodeSchema extends SNodeSchema {
     urn: urn.Module
+    type: 'node:module'
     hidden: boolean
 }
 
@@ -52,6 +56,7 @@ export function isModule(element?: SModelElementSchema)
 
 export class ModuleNode extends RectangularNode {
     urn = urn.Module(urn.File(''), '')
+    type = 'node:module'
     hidden = true
     state: 'symbol' | 'schematic' = 'symbol'
 }
@@ -60,6 +65,7 @@ export class ModuleNode extends RectangularNode {
 /* Symbol Node */
 export interface SymbolNodeSchema extends SNodeSchema {
     urn: urn.Symbol
+    type: 'node:symbol'
     hidden: boolean
 }
 
@@ -70,6 +76,7 @@ export function isSymbol(element?: SModelElementSchema)
 
 export class SymbolNode extends RectangularNode {
     urn = urn.Symbol(urn.Module(urn.File(''), ''))
+    type = 'node:symbol'
     hidden = true
 }
 /* Symbol Node */
@@ -77,6 +84,7 @@ export class SymbolNode extends RectangularNode {
 /* Schematic Node */
 export interface SchematicNodeSchema extends SNodeSchema {
     urn: urn.Schematic
+    type: 'node:schematic'
     hidden: boolean
 }
 
@@ -87,6 +95,7 @@ export function isSchematic(element?: SModelElementSchema)
 
 export class SchematicNode extends RectangularNode {
     urn = urn.Schematic(urn.Module(urn.File(''), ''))
+    type = 'node:schematic'
     hidden = true
 }
 /* Schematic Node */
@@ -94,6 +103,7 @@ export class SchematicNode extends RectangularNode {
 /* Group Node */
 export interface GroupNodeSchema extends SNodeSchema, ILink {
     urn: urn.SymGroup
+    type: 'node:group'
     ntop: number
     nleft: number
     nbottom: number
@@ -107,6 +117,7 @@ export function isGroup(element?: SModelElementSchema)
 
 export class GroupNode extends RectangularNode {
     urn = urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), '')
+    type = 'node:group'
     ntop: number = 0
     nleft: number = 0
     nbottom: number = 0
@@ -126,12 +137,14 @@ export class GroupNode extends RectangularNode {
 /* Pin Port */
 export interface PinPortSchema extends SPortSchema {
     urn: urn.SymPort
+    type: 'port:pin'
     side: Side
     pad: string
 }
 
 export class PinPort extends SPort {
     urn = urn.SymPort(urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), ''), '')
+    type = 'port:pin'
     side: Side = 'left'
     pad: string = ''
 }
@@ -143,26 +156,54 @@ export function isPin(element?: SModelElementSchema)
 /* Pin Port */
 
 /* Port Node */
-export interface PortNodeSchema extends SNodeSchema, ILink {
+export interface PortPortSchema extends SNodeSchema, ILink {
     urn: urn.Port
+    type: 'port:port'
     orient: Orientation
 }
 
-export class PortNode extends RectangularNode {
+export class PortPort extends RectangularPort {
     urn = urn.Port(urn.Schematic(urn.Module(urn.File(''), '')), '')
+    type = 'port:port'
     orient: Orientation = 0
-    link: urn.URN = urn.File('')
+
+    hasFeature(feature: symbol): boolean {
+        if (feature === openFeature) {
+            return true
+        }
+        return super.hasFeature(feature)
+    }
 }
 
 export function isPort(element?: SModelElementSchema)
-: element is PortNodeSchema {
-    return element !== undefined && element.type === 'node:port'
+: element is PortPortSchema {
+    return element !== undefined && element.type === 'port:port'
 }
 /* Port Node */
 
+/* Cell Node */
+export interface CellNodeSchema extends SNodeSchema {
+    urn: urn.Cell
+    type: 'node:cell'
+    orient: Orientation
+}
+
+export class CellNode extends RectangularNode {
+    urn = urn.Cell(urn.Schematic(urn.Module(urn.File(''), '')), '')
+    type = 'node:cell'
+    orient: Orientation = 0
+}
+
+export function isCell(element?: SModelElementSchema)
+: element is CellNodeSchema {
+    return element !== undefined && element.type === 'node:cell'
+}
+/* Cell Node */
+
 /* Edge Net */
 export interface NetEdgeSchema extends SEdgeSchema {
-    urn: urn.Net
+    type: 'edge:net'
+    label?: string
 }
 
 export function isNet(element?: SModelElementSchema)
@@ -172,5 +213,6 @@ export function isNet(element?: SModelElementSchema)
 
 export class NetEdge extends SEdge {
     urn = urn.Net(urn.Schematic(urn.Module(urn.File(''), '')), '')
+    type = 'edge:net'
 }
 /* Edge Net */

@@ -2,7 +2,7 @@ import * as snabbdom from 'snabbdom-jsx'
 import { VNode } from 'snabbdom/vnode'
 import { RenderingContext, IView } from 'sprotty/lib'
 import { FileNode, ModuleNode, SymbolNode, GroupNode, PinPort,
-         SchematicNode, PortNode } from './graph-model'
+         SchematicNode, PortPort, CellNode } from './graph-model'
 
 const JSX = {createElement: snabbdom.svg};
 
@@ -92,8 +92,19 @@ export class PinPortView implements IView {
     }
 }
 
-export class PortNodeView implements IView {
-    render(port: Readonly<PortNode>, context: RenderingContext): VNode {
+export class CellNodeView implements IView {
+    render(cell: Readonly<CellNode>, context: RenderingContext): VNode {
+        return (<g class-orient0={cell.orient === 0}
+                class-orient90={cell.orient === 90}
+                class-orient180={cell.orient === 180}
+                class-orient270={cell.orient === 270}>
+                {context.renderChildren(cell)}
+               </g>) as any as VNode
+    }
+}
+
+export class PortPortView implements IView {
+    render(port: Readonly<PortPort>, context: RenderingContext): VNode {
         return (<g class-orient0={port.orient === 0}
                 class-orient90={port.orient === 90}
                 class-orient180={port.orient === 180}
