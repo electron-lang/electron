@@ -48,8 +48,13 @@ export class NetlistGraphModelSource extends LocalModelSource {
     handle(action: Action): void {
         switch (action.kind) {
             case OpenAction.KIND:
-                this.graphGenerator
-                    .openSchematic((action as OpenAction).elementId);
+                const elemId = (action as OpenAction).elementId
+                const elem = this.graphGenerator.index.getById(elemId) as any
+                if (elem && 'link' in elem) {
+                    this.graphGenerator.openUrn(elem.link)
+                } else {
+                    console.log('No link')
+                }
                 this.updateModel()
                 break;
             default:

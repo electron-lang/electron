@@ -1,6 +1,29 @@
-export declare module $R(RESISTANCE: Ohm) { analog A, B }
-export declare module $C(CAPACITANCE: Farad) { analog A, B }
+//@skin(
+//    <rect width="40" height="10" />
+//)
+export declare module $R(RESISTANCE: Ohm) {
+    @left //@fixed(0, 5)
+    analog A
+    @right //@fixed(40, 5)
+    analog B
+}
+
+//@skin(
+    //<g>
+    //    <line x1="0" x2="0" y1="0" y2="30" />
+    //    <line x1="0" x2="10" y1="0" y2="30" />
+    //</g>
+//)
+export declare module $C(CAPACITANCE: Farad) {
+    @left //@fixed(0, 15)
+    analog A
+    @right //@fixed(10, 15)
+    analog B
+}
+
+
 export declare module $L(INDUCTANCE: Henry) { analog A, B }
+
 export declare module $D { analog A, K }
 export declare module $M { analog G, D, S }
 export declare module $V(VOLTAGE: Volt) { analog vcc, gnd }

@@ -2,9 +2,9 @@
 //! Rev: v1.1
 
 import $R, $C, $L from "../cells"
-declare module Tp {input A}
-declare module Bead {analog A, B}
-declare module PushBtn {analog A, B}
+module Tp {input A}
+module Bead {analog A, B}
+module PushBtn {analog A, B}
 
 /// USB connection and power filtering
 module Usb {

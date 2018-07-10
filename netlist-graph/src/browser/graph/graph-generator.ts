@@ -1,14 +1,14 @@
-import { SModelElementSchema } from 'sprotty/lib'
+import { SModelElementSchema, SModelIndex } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
+import { URN } from './urn'
 
 export interface IGraphGenerator {
-    elements: SModelElementSchema[]
+    readonly elements: SModelElementSchema[]
+    readonly index: SModelIndex<SModelElementSchema>
 
     addNetlist(uri: string, netlist: cl.INetlist): void
 
-    openSchematic(moduleName: string): void
-
-    openNetlist(file: string): void
+    openUrn(urn: URN): void
 }
 
 export const IGraphGenerator = Symbol('IGraphGenerator')

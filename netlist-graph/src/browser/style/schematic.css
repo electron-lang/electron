@@ -4,6 +4,7 @@
     fill: #002b36; /* base03 */
     stroke-linejoin: round;
     stroke-linecap: round;
+    stroke-width: 2;
 }
 
 text {
@@ -12,38 +13,10 @@ text {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
-.body {
-    stroke-width: 2;
-}
-
-.body.mouseover {
+.mouseover {
     stroke: #6c71c4; /* violet */
 }
 
-.body.selected {
+.selected {
     stroke: #859900; /* green */
-}
-
-.pin {
-    stroke-width: 2;
-}
-
-.pin.mouseover {
-    stroke: #6c71c4; /* violet */
-}
-
-.pin.selected {
-    stroke: #859900; /* green */
-}
-
-.pin-label {
-    text-anchor: start;
-}
-
-.pin-label-left {
-    text-anchor: end;
-}
-
-.pad-label {
-    text-anchor: middle;
 }

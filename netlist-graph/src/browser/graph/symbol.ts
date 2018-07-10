@@ -1,8 +1,29 @@
-import { GroupNodeSchema, PinPortSchema } from './graph-model'
+import { Side, GroupNodeSchema, PinPortSchema } from './graph-model'
+import * as urn from './urn'
 import * as cl from '@electron-lang/celllib'
 
+export function getSideForPort(port: cl.IPort): Side {
+    const info = port.attributes && port.attributes['side'] || port.direction
+    switch(info) {
+        case 'left':
+            return 'left'
+        case 'right':
+            return 'right'
+        case 'top':
+                return 'top'
+        case 'bottom':
+            return 'bottom'
+        case 'input':
+                return 'left'
+        case 'output':
+            return 'right'
+        default:
+            return 'left'
+    }
+}
 
-export function createSymbolsForModule(name: string, mod: cl.IModule): GroupNodeSchema[] {
+export function createSymbolsForModule(usym: urn.Symbol, mod: cl.IModule)
+: GroupNodeSchema[] {
     const builder = new ModuleBuilder()
     for (let pname in mod.ports) {
         builder.addPort(pname, mod.ports[pname])
@@ -10,25 +31,27 @@ export function createSymbolsForModule(name: string, mod: cl.IModule): GroupNode
 
     const groups: GroupNodeSchema[] = []
     for (let group of builder.getGroups()) {
-        const gname = group.name ? `${name}_${group.name}` : name
-        groups.push(createGroup(gname, group.ports))
+        const ugroup = urn.SymGroup(usym, group.name || 'default')
+        groups.push(createGroup(ugroup, group.ports))
     }
     return groups
 }
 
-function createGroup(name: string, ports: IPort[]): GroupNodeSchema {
+function createGroup(ugroup: urn.SymGroup, ports: IPort[]): GroupNodeSchema {
     const groupNode: GroupNodeSchema = {
+        id: urn.toString(ugroup),
         type: 'node:group',
-        id: name,
+        urn: ugroup,
         layout: 'vbox',
-        name,
         ntop: 0,
         nleft: 0,
         nbottom: 0,
         nright: 0,
+        link: urn.Schematic(ugroup.urn.urn)
     }
     groupNode.children = []
     for (let port of ports) {
+        const uport = urn.SymPort(ugroup, port.name)
         if (port.side === 'top') {
             groupNode.ntop += 1
         }
@@ -42,23 +65,21 @@ function createGroup(name: string, ports: IPort[]): GroupNodeSchema {
             groupNode.nright += 1
         }
         groupNode.children.push(<PinPortSchema> {
-            type: `port:${port.side}`,
-            id: `${name}:${port.name}`,
+            id: urn.toString(uport),
+            type: 'port:pin',
+            urn: uport,
             side: port.side,
-            name: port.name,
             pad: port.pad || '',
         })
     }
     return groupNode
 }
 
-type PortSide = 'top' | 'left' | 'right' | 'bottom'
-
 interface IPort extends cl.IPort {
     name: string
     pad?: string
     group?: string
-    side: PortSide
+    side: Side
 }
 
 interface IGroup {
@@ -87,7 +108,7 @@ class ModuleBuilder {
     addPort(name: string, p: cl.IPort) {
         const port = p as IPort
         port.name = name
-        port.side = this.getSideForPort(port)
+        port.side = getSideForPort(port)
 
         if (port.attributes && port.attributes['pads']) {
             port.pad = port.attributes['pads'].join(', ')
@@ -113,25 +134,5 @@ class ModuleBuilder {
         }
 
         return groups
-    }
-
-    protected getSideForPort(port: IPort): PortSide {
-        const info = port.attributes && port.attributes['side'] || port.direction
-        switch(info) {
-            case 'left':
-                return 'left'
-            case 'right':
-                return 'right'
-            case 'top':
-                return 'top'
-            case 'bottom':
-                return 'bottom'
-            case 'input':
-                return 'left'
-            case 'output':
-                return 'right'
-            default:
-                return 'left'
-        }
     }
 }

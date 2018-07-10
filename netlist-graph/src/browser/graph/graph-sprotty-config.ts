@@ -1,13 +1,14 @@
 import { Container, ContainerModule, interfaces } from 'inversify'
 import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          SGraph, SGraphView, HtmlRoot, HtmlRootView, PreRenderedElement,
-         PreRenderedView, SLabel, SLabelView, SCompartment, SCompartmentView,
-         PolylineEdgeView,
+         PreRenderedView, SCompartment, SCompartmentView, PolylineEdgeView,
          defaultModule, selectModule, moveModule, boundsModule, openModule,
          viewportModule, exportModule, hoverModule, edgeEditModule,
          fadeModule } from 'sprotty/lib'
-import { GroupNode, PinPort, NetEdge } from './graph-model'
-import { GroupNodeView, PinPortView } from './graph-views'
+import { FileNode, ModuleNode, SymbolNode, SchematicNode, GroupNode,
+         PinPort, PortNode, NetEdge } from './graph-model'
+import { FileNodeView, ModuleNodeView, SymbolNodeView, SchematicNodeView,
+         GroupNodeView, PinPortView, PortNodeView } from './graph-views'
 import { IGraphGenerator } from './graph-generator'
 import { NetlistGraphGenerator } from './netlist'
 import { NetlistGraphModelSource } from './model-source'
@@ -24,17 +25,14 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope()
         const context = { bind, unbind, isBound, rebind }
         configureModelElement(context, 'graph', SGraph, SGraphView)
+        configureModelElement(context, 'node:file', FileNode, FileNodeView)
+        configureModelElement(context, 'node:module', ModuleNode, ModuleNodeView)
+        configureModelElement(context, 'node:symbol', SymbolNode, SymbolNodeView)
+        configureModelElement(context, 'node:schematic', SchematicNode, SchematicNodeView)
         configureModelElement(context, 'node:group', GroupNode, GroupNodeView)
-        configureModelElement(context, 'port:top', PinPort, PinPortView)
-        configureModelElement(context, 'port:left', PinPort, PinPortView)
-        configureModelElement(context, 'port:bottom', PinPort, PinPortView)
-        configureModelElement(context, 'port:right', PinPort, PinPortView)
-        //configureModelElement(context, 'port:fixed', FixedPort, FixedPortView)
+        configureModelElement(context, 'node:port', PortNode, PortNodeView)
+        configureModelElement(context, 'port:pin', PinPort, PinPortView)
         configureModelElement(context, 'edge:net', NetEdge, PolylineEdgeView)
-        configureModelElement(context, 'label:group:ref', SLabel, SLabelView)
-        configureModelElement(context, 'label:group:value', SLabel, SLabelView)
-        configureModelElement(context, 'label:port', SLabel, SLabelView)
-        configureModelElement(context, 'label:port:pad', SLabel, SLabelView)
         configureModelElement(context, 'compartment', SCompartment, SCompartmentView)
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView)
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView)

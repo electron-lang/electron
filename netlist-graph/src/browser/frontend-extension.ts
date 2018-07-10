@@ -11,6 +11,7 @@ import { SchematicDiagramWidget } from './widget/diagram-widget'
 
 import 'sprotty/css/sprotty.css'
 import 'theia-sprotty/css/theia-sprotty.css'
+import '../../src/browser/style/orientation.css'
 import '../../src/browser/style/schematic.css'
 
 export default new ContainerModule(bind => {
