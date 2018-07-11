@@ -1,6 +1,7 @@
 import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
 
-export type Literal = IInteger | IBitVector | IUnit | IString | IReal | IBool
+export type Literal = IInteger | IBitVector | IUnit | IString | IReal
+    | IBool | IXml
 
 export interface ASTLiteralPattern<T> {
     Integer: (int: IInteger) => T
@@ -9,6 +10,7 @@ export interface ASTLiteralPattern<T> {
     Unit: (u: IUnit) => T
     Real: (r: IReal) => T
     Bool: (b: IBool) => T
+    Xml: (x: IXml) => T
 }
 
 export function matchASTLiteral<T>(p: ASTLiteralPattern<T>): (lit: Literal) => T {
@@ -26,6 +28,8 @@ export function matchASTLiteral<T>(p: ASTLiteralPattern<T>): (lit: Literal) => T
                 return p.Real(lit)
             case 'bool':
                 return p.Bool(lit)
+            case 'xml':
+                return p.Xml(lit)
         }
     }
 }
@@ -147,3 +151,19 @@ export function Bool(value: boolean, src?: ISrcLoc): IBool {
     }
 }
 /* Bool */
+
+/* Xml */
+export interface IXml {
+    tag: 'xml'
+    value: string
+    src: ISrcLoc
+}
+
+export function Xml(value: string, src?: ISrcLoc): IXml {
+    return {
+        tag: 'xml',
+        value,
+        src: src || emptySrcLoc,
+    }
+}
+/* Xml */

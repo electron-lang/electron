@@ -266,3 +266,19 @@ export const Whitespace = createToken({
     group: Lexer.SKIPPED,
     line_breaks: true
 })
+
+// XML fragments
+export const OpenTag = createToken({
+    name: 'OpenTag',
+    pattern: /<[^\/><]+>/,
+})
+
+export const CloseTag = createToken({
+    name: 'CloseTag',
+    pattern: /<\/[^\/><]+>/,
+})
+
+export const Tag = createToken({
+    name: 'Tag',
+    pattern: /<[^\/><]+\/>/
+})

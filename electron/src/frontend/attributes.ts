@@ -33,6 +33,19 @@ function validateParams(logger: DiagnosticPublisher, attr: ast.IAttr,
 }
 
 /* Attributes for Schematic generation */
+const SkinAttribute: IAttributeHandler = {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        let message = `'@${attr.name}' takes one parameter of type Xml\n`
+
+        return validateParams(logger, attr, message, ['xml'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const skin = attr.params[0] as ast.IXml
+        return [ ir.Attr('skin', skin.value, attr.src) ]
+    }
+}
+
 const RotateAttribute: IAttributeHandler = {
     validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         let message = `'@${attr.name}' takes one parameter of type Integer\n` +
@@ -105,6 +118,23 @@ const BottomAttribute: IAttributeHandler = {
 
     compile(attr: ast.IAttr): ir.IAttr[] {
         return [ ir.Attr('side', 'bottom', attr.src) ]
+    }
+}
+
+const FixedAttribute: IAttributeHandler = {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes two params of type Integer.`
+        return validateParams(logger, attr, message, ['integer', 'integer'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const x = attr.params[0] as ast.IInteger
+        const y = attr.params[1] as ast.IInteger
+        return [
+            ir.Attr('side', 'fixed', attr.src),
+            ir.Attr('x', x.value, attr.params[0].src),
+            ir.Attr('y', y.value, attr.params[1].src),
+        ]
     }
 }
 
@@ -246,11 +276,13 @@ const BitstreamAttribute: IAttributeHandler = {
 
 export const allAttributes: {[name: string]: IAttributeHandler} = {
     // Schematic
+    skin: SkinAttribute,
     rotate: RotateAttribute,
     left: LeftAttribute,
     right: RightAttribute,
     top: TopAttribute,
     bottom: BottomAttribute,
+    fixed: FixedAttribute,
     group: GroupAttribute,
     power: PowerAttribute,
     ground: GroundAttribute,

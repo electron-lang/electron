@@ -26,6 +26,7 @@ export class TypeChecker {
             Real: error('Real'),
             Bool: error('Bool'),
             Tuple: error('Tuple'),
+            Xml: error('Xml'),
             Ref: (e) => {
                 switch(e.ref.tag) {
                     case 'const':
@@ -68,6 +69,7 @@ export class TypeChecker {
             Real: error('Real'),
             Bool: error('Bool'),
             Tuple: error('Tuple'),
+            Xml: error('Xml'),
             Ref: (e) => {
                 switch(e.ref.tag) {
                     case 'cell':
@@ -109,6 +111,7 @@ export class TypeChecker {
             Unit: error('Unit'),
             Real: error('Real'),
             Bool: error('Bool'),
+            Xml: error('Xml'),
             Tuple: (e) => true,
             Ref: (e) => {
                 switch(e.ref.tag) {

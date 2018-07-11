@@ -172,7 +172,7 @@ export class ASTCompiler {
         }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
-        const stmts = mod.anonymous ? mod.ports : mod.stmts
+        const stmts = mod.anonymous || mod.declaration ? mod.ports : mod.stmts
         for (let stmt of stmts) {
             matchASTStmt({
                 Module: (mod) => {},
@@ -259,6 +259,7 @@ export class ASTCompiler {
             Unit: u => wrapParam(u.value),
             Real: r => wrapParam(r.value),
             Bool: b => wrapParam(b.value),
+            Xml: x => wrapParam(x.value),
         })(expr)
     }
 

@@ -43,6 +43,7 @@ function emitLiteral(lit: ast.Literal): IDoc {
         String: (str) => ['"', str.value, '"'],
         Real: (r) => r.value.toString(),
         Bool: (b) => b.value.toString(),
+        Xml: (x) => x.value,
     })(lit)
 }
 

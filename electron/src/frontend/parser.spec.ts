@@ -143,4 +143,12 @@ describe('Parser', () => {
         //parseStatement('with a.b { @bom("") c; @bom("") d;}')
         parseStatement('@group { analog A, B }')
     })
+
+    it('should parse xml', () => {
+        const parseXml = (text: string) => {
+            parseRule(text, () => { parser.xml() })
+        }
+        parseXml('<open><rect width="10" height="10"/></close>')
+        parseXml('<open></close>')
+    })
 })

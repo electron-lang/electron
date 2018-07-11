@@ -519,6 +519,10 @@ export class Elaborator extends BaseElectronVisitor {
             return ast.Bool(false, tokenToSrcLoc(ctx.False[0]))
         }
 
+        if (ctx.xml) {
+            return this.visit(ctx.xml[0])
+        }
+
         /* istanbul ignore next */
         throwBug('literal')
         /* istanbul ignore next */
@@ -743,4 +747,17 @@ export class Elaborator extends BaseElectronVisitor {
         }
     }
 
+    xml(ctx: any): ast.IXml {
+        if (ctx.Tag) {
+            return ast.Xml(ctx.Tag[0].image, tokenToSrcLoc(ctx.Tag[0]))
+        }
+        const bodyStr = ctx.xml ? ctx.xml.map((ctx: any) => {
+            return this.visit(ctx).value
+        }).join('') : ''
+        const str = ctx.OpenTag[0].image + bodyStr + ctx.CloseTag[0].image
+        const openSrc = tokenToSrcLoc(ctx.OpenTag[0])
+        const closeSrc = tokenToSrcLoc(ctx.CloseTag[0])
+        return ast.Xml(str, SrcLoc(Pos(openSrc.startLine, openSrc.startColumn),
+                                   Pos(closeSrc.endLine, closeSrc.endColumn)))
+    }
 }

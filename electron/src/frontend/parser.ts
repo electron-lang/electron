@@ -1,10 +1,10 @@
 import {Lexer, Parser, IToken, TokenType} from 'chevrotain'
 import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound,
-         CloseSquare, Colon, Comma, Comment, Const, BitVector, Declare,
+         CloseSquare, CloseTag, Colon, Comma, Comment, Const, BitVector, Declare,
          DesignComment, Dot, Export, False, From, Identifier, Import,
          Inout, Input, Integer, Minus, Module, ModuleComment, Net, OpenCurly,
-         OpenRound, OpenSquare, Output, Plus, Real, Semicolon, ShiftLeft,
-         ShiftRight, Star, String, True, Unit, With, Whitespace } from './tokens'
+         OpenRound, OpenSquare, OpenTag, Output, Plus, Real, Semicolon, ShiftLeft,
+         ShiftRight, Star, String, Tag, True, Unit, With, Whitespace } from './tokens'
 
 export const allTokens = [
     // Whitespace
@@ -57,6 +57,10 @@ export const allTokens = [
     ModuleComment,
     DesignComment,
     Comment,
+    // XML
+    Tag,
+    OpenTag,
+    CloseTag,
 ]
 
 export let tokenScopes: {[idx: number]: string} = {}
@@ -71,6 +75,7 @@ setScope(Cell, 'keyword')
 setScope(CloseCurly, 'delimiter')
 setScope(CloseRound, 'delimiter')
 setScope(CloseSquare, 'delimiter')
+setScope(CloseTag, 'string')
 setScope(Colon, 'delimiter')
 setScope(Comma, 'delimiter')
 setScope(Comment, 'comment')
@@ -93,6 +98,7 @@ setScope(Net, 'keyword')
 setScope(OpenCurly, 'delimiter')
 setScope(OpenRound, 'delimiter')
 setScope(OpenSquare, 'delimiter')
+setScope(OpenTag, 'string')
 setScope(Output, 'keyword')
 setScope(Plus, 'operator')
 setScope(Real, 'number')
@@ -101,6 +107,7 @@ setScope(ShiftLeft, 'operator')
 setScope(ShiftRight, 'operator')
 setScope(Star, 'operator')
 setScope(String, 'string')
+setScope(Tag, 'string')
 setScope(True, 'keyword')
 setScope(Unit, 'number')
 setScope(With, 'keyword')
@@ -325,6 +332,7 @@ class ElectronParser extends Parser {
             { ALT: () => this.CONSUME(Real) },
             { ALT: () => this.CONSUME(True) },
             { ALT: () => this.CONSUME(False) },
+            { ALT: () => this.SUBRULE(this.xml) },
         ])
     })
 
@@ -432,6 +440,16 @@ class ElectronParser extends Parser {
         this.OPTION1(() => this.CONSUME(Comma))
     })
 
+    public xml = this.RULE('xml', () => {
+        this.OR([
+            { ALT: () => this.CONSUME(Tag) },
+            { ALT: () => {
+                this.CONSUME(OpenTag)
+                this.MANY(() => this.SUBRULE(this.xml))
+                this.CONSUME(CloseTag)
+            }}
+        ])
+    })
 }
 
 export const parserInstance = new ElectronParser([])

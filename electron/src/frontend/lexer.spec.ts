@@ -84,4 +84,10 @@ describe('Lexer', () => {
         expectLabel('{', 'OpenCurly')
         expectLabel('}', 'CloseCurly')
     })
+
+    it('should lex xml', () => {
+        expectLabel('<open-tag>', 'OpenTag')
+        expectLabel('</close-tag>', 'CloseTag')
+        expectLabel('<auto-closing-tag/>', 'Tag')
+    })
 })

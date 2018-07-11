@@ -1,23 +1,23 @@
-//@skin(
-//    <rect width="40" height="10" />
-//)
-export declare module $R(RESISTANCE: Ohm) {
-    @left //@fixed(0, 5)
+@skin(
+    <rect width="40" height="10" />
+)
+export module $R(RESISTANCE: Ohm) {
+    @left @fixed(0, 5)
     analog A
-    @right //@fixed(40, 5)
+    @right @fixed(40, 5)
     analog B
 }
 
-//@skin(
-    //<g>
-    //    <line x1="0" x2="0" y1="0" y2="30" />
-    //    <line x1="0" x2="10" y1="0" y2="30" />
-    //</g>
-//)
-export declare module $C(CAPACITANCE: Farad) {
-    @left //@fixed(0, 15)
+@skin(
+    <g>
+        <line x1="0" x2="0" y1="0" y2="30" />
+        <line x1="0" x2="10" y1="0" y2="30" />
+    </g>
+)
+export module $C(CAPACITANCE: Farad) {
+    @left @fixed(0, 15)
     analog A
-    @right //@fixed(10, 15)
+    @right @fixed(10, 15)
     analog B
 }
 
