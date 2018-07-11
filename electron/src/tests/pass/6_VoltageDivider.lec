@@ -1,0 +1,23 @@
+import $R from "../../../docs/examples/cells"
+
+/// module VoltageDivider {
+///   @side("left")
+///   analog vin = (0)
+///   @side("right")
+///   analog vout = (1)
+///   @side("bottom")
+///   analog gnd = (2)
+///   @rotate("90")
+///   cell r1 = $R(RESISTANCE=10000) {A=(0), B=(1)}
+///   @rotate("90")
+///   cell r2 = $R(RESISTANCE=20000) {A=(1), B=(2)}
+/// }
+export module VoltageDivider {
+    @left analog vin
+    @right analog vout
+    @bottom analog gnd
+    @rotate(90)
+    cell r1 = $R(10k) {A=vin, B=vout}
+    @rotate(90)
+    cell r2 = $R(20k) {A=vout, B=gnd}
+}

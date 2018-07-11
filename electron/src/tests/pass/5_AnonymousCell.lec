@@ -16,13 +16,16 @@
 ///   @side("left")
 ///   analog in2 = (6)
 ///   @group("B")
+///   @side("left")
+///   analog in3 = (7)
+///   @group("B")
 ///   @pads(("6"))
 ///   @side("right")
-///   analog out2 = (7)
+///   analog out2 = (8)
 ///   @group("B")
 ///   @pads(("7"))
-///   @side("bottom")
-///   analog gnd2 = (8)
+///   @side("top")
+///   analog vcc = (9)
 /// }
 /// module Pcb {
 ///   net in = (0)
@@ -30,7 +33,7 @@
 ///   net gnd = (2)
 ///   @man("NXP")
 ///   @mpn("7805")
-///   cell u1 = u1$mod() {in=(0), out=(1), gnd=(2), in2=(0), out2=(1), gnd2=(2)}
+///   cell u1 = u1$mod() {in=(0), out=(1), gnd=(2), in2=(0), in3=(0), out2=(1), vcc=(2)}
 /// }
 module Pcb {
     net in, out, gnd

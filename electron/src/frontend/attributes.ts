@@ -131,9 +131,8 @@ const FixedAttribute: IAttributeHandler = {
         const x = attr.params[0] as ast.IInteger
         const y = attr.params[1] as ast.IInteger
         return [
-            ir.Attr('side', 'fixed', attr.src),
-            ir.Attr('x', x.value, attr.params[0].src),
-            ir.Attr('y', y.value, attr.params[1].src),
+            ir.Attr('port_x', x.value, attr.params[0].src),
+            ir.Attr('port_y', y.value, attr.params[1].src),
         ]
     }
 }

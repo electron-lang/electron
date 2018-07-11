@@ -1,0 +1,14 @@
+import VoltageDivider from "./6_VoltageDivider"
+
+/// module TwoVoltageDividers {
+///   net vin = (7)
+///   net vout = (8)
+///   net gnd = (9)
+///   cell vd1 = VoltageDivider() {vin=(7), vout=(8), gnd=(9)}
+///   cell vd2 = VoltageDivider() {vin=(7), vout=(8), gnd=(9)}
+/// }
+module TwoVoltageDividers {
+    net vin, vout, gnd
+    cell vd1 = VoltageDivider {*}
+    cell vd2 = VoltageDivider {*}
+}
