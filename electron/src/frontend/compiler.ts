@@ -127,7 +127,7 @@ export class ASTCompiler {
     compile(mods: ast.IModule[]): ir.IModule[] {
         this.mods = []
         for (let mod of mods) {
-            if (mod.params.length === 0 && !mod.declaration) {
+            if (mod.params.length === 0) {
                 this.mods.push(this.compileModule(mod, []))
             }
         }
@@ -169,6 +169,9 @@ export class ASTCompiler {
         const irmod = ir.Module(mod.name, compileAttrs(mod.attrs), mod.src)
         for (let param of params) {
             this.st.define(Symbol(param.name, param.src), wrapParam(param.value))
+        }
+        if (mod.declaration) {
+            irmod.attrs.push(ir.Attr('declare', true))
         }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
@@ -217,12 +220,8 @@ export class ASTCompiler {
                     const c1 = lhs.val[i].ref
                     const c2 = rhs.val[i].ref
 
-                    if (typeof c2.module !== 'string') {
-                        if (c2.module.name === '') {
-                            c2.module.name = c1.name + '$mod'
-                        } else {
-                            c2.module.name = c1.name + '$' + c2.module.name
-                        }
+                    if (typeof c2.module !== 'string' && c2.module.name === '') {
+                        c2.module.name = c1.name + '$mod'
                     }
 
                     lhs.val[i].ref = ir.Cell(c1.name, c2.module, c2.params,
@@ -295,10 +294,10 @@ export class ASTCompiler {
         }
 
         const ircellmod = (() => {
+            this.mods.push(irmod)
             if (inst.mod.ref.declaration) {
                 return inst.mod.ref.name
             }
-            this.mods.push(irmod)
             return irmod
         })()
 

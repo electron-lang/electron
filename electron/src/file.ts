@@ -86,7 +86,7 @@ export class File {
     }
 
     compileAST(): File {
-        if (!this.ast) return this
+        if (!this.ast || this.logger.hasErrors) return this
         const cmp = new ASTCompiler(this.logger)
         this.ir = cmp.compile(this.ast)
         return this
@@ -139,7 +139,7 @@ export class File {
     emitJSON(): File {
         if (!this.ir) return this
         writeFileSync(this.getPath('lec.json'),
-                      JSON.stringify(compileNetlist(this.ir)));
+                      JSON.stringify(compileNetlist(this.ir), null, 2));
         return this
     }
 

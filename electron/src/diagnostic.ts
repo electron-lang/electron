@@ -50,10 +50,16 @@ export interface IDiagnosticConsumer {
 }
 
 export class DiagnosticPublisher {
+    private errors = false
+
     constructor(private consumer: IDiagnosticConsumer,
                 private path: string,
                 private lines: string[]) {
 
+    }
+
+    get hasErrors(): boolean {
+        return this.errors
     }
 
     getPath(): string {
@@ -61,6 +67,7 @@ export class DiagnosticPublisher {
     }
 
     error(message: string, src: ISrcLoc | undefined) {
+        this.errors = true
         this.consumer.consume({
             message,
             severity: 'error',
