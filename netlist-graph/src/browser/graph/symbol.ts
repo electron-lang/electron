@@ -1,3 +1,4 @@
+import { PreRenderedElementSchema } from 'sprotty/lib'
 import { Side, GroupNodeSchema, PinPortSchema } from './graph-model'
 import * as urn from './urn'
 import * as cl from '@electron-lang/celllib'
@@ -29,15 +30,17 @@ export function createSymbolsForModule(usym: urn.Symbol, mod: cl.IModule)
         builder.addPort(pname, mod.ports[pname])
     }
 
+    const skin = mod.attributes ? mod.attributes['skin'] : undefined
+
     const groups: GroupNodeSchema[] = []
     for (let group of builder.getGroups()) {
         const ugroup = urn.SymGroup(usym, group.name || 'default')
-        groups.push(createGroup(ugroup, group.ports))
+        groups.push(createGroup(ugroup, group.ports, skin))
     }
     return groups
 }
 
-function createGroup(ugroup: urn.SymGroup, ports: IPort[]): GroupNodeSchema {
+function createGroup(ugroup: urn.SymGroup, ports: IPort[], skin?: string): GroupNodeSchema {
     const groupNode: GroupNodeSchema = {
         id: urn.toString(ugroup),
         type: 'node:group',
@@ -47,9 +50,16 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[]): GroupNodeSchema {
         nleft: 0,
         nbottom: 0,
         nright: 0,
+        skin: !!skin,
         link: urn.Schematic(ugroup.urn.urn)
     }
     groupNode.children = []
+    if (skin) {
+        groupNode.children.push(<PreRenderedElementSchema> {
+            type: 'pre-rendered',
+            code: skin,
+        })
+    }
     for (let port of ports) {
         const uport = urn.SymPort(ugroup, port.name)
         if (port.side === 'top') {
@@ -64,13 +74,23 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[]): GroupNodeSchema {
         if (port.side === 'right') {
             groupNode.nright += 1
         }
-        groupNode.children.push(<PinPortSchema> {
+        const pin = <PinPortSchema> {
             id: urn.toString(uport),
             type: 'port:pin',
             urn: uport,
             side: port.side,
             pad: port.pad || '',
-        })
+            fixed: !!skin,
+        }
+        if (port.attributes
+            && typeof port.attributes['port_x'] === 'number'
+            && typeof port.attributes['port_y'] === 'number') {
+            pin.position = {
+                x: port.attributes['port_x'],
+                y: port.attributes['port_y']
+            }
+        }
+        groupNode.children.push(pin)
     }
     return groupNode
 }

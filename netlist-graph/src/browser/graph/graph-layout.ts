@@ -5,8 +5,8 @@ import { SGraphSchema, SModelIndex, SModelElementSchema, SNodeSchema,
          SShapeElementSchema, SEdgeSchema, SPortSchema, Point,
          IModelLayoutEngine } from 'sprotty/lib';
 import { isFile, isModule, isSymbol, isSchematic,
-         isGroup, isPin, PinPortSchema, isPort,
-         isCell, isNet } from './graph-model'
+         isGroup, isPin, GroupNodeSchema, PinPortSchema,
+         isPort, isCell, isNet } from './graph-model'
 
 export type ElkFactory = () => ELK;
 
@@ -133,11 +133,12 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 return elkNode
             }
             case 'node:group': {
-                const snode = smodel as SNodeSchema;
+                const snode = smodel as GroupNodeSchema;
                 const elkNode: ElkNode = {
                     id: snode.id,
                     layoutOptions: {
-                        'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
+                        'org.eclipse.elk.portConstraints':
+                        snode.skin ? 'FIXED_POS' : 'FIXED_SIDE',
                     }
                 }
                 if (snode.children) {
@@ -166,14 +167,17 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 })()
                 const elkPort: ElkPort = {
                     id: sport.id,
-                    layoutOptions: {
-                        'org.eclipse.elk.port.side': portConstraint,
-                    }
                 }
                 this.transformShape(elkPort, sport)
-                // Ignore label size
-                elkPort.width = 20;
-                elkPort.height = 20;
+
+                if (!sport.fixed) {
+                    elkPort.layoutOptions = {
+                        'org.eclipse.elk.port.side': portConstraint,
+                    }
+                    // Ignore label size
+                    elkPort.width = 20;
+                    elkPort.height = 20;
+                }
                 return elkPort
             }
             case 'port:port': {
@@ -242,17 +246,17 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             for (const elkPort of elkNode.ports) {
                 const sport = index.getById(elkPort.id);
                 this.applyShape(sport as SPortSchema, elkPort)
-                if (isPin(sport)) {
+                if (isPin(sport) && !sport.fixed) {
                     const spin = sport as PinPortSchema
                     // correct coordinates
                     // anchor label correction
                     // top and bottom x += 10
                     // left and right y += 10
                     // anchor left/bottom correction
-                    // left.x += 20 / bottom y -= 20
+                    // left.x += 20 / top y -= 20
                     if (spin.side === 'top') {
                         const pos = spin.position || {x: 0, y: 0}
-                        spin.position = {x: pos.x + 10, y: pos.y }
+                        spin.position = {x: pos.x + 10, y: pos.y + 20 }
                     }
                     if (spin.side === 'left') {
                         const pos = spin.position || {x: 0, y: 0}
@@ -260,7 +264,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     }
                     if (spin.side === 'bottom') {
                         const pos = spin.position || {x: 0, y: 0}
-                        spin.position = {x: pos.x + 10, y: pos.y - 20 }
+                        spin.position = {x: pos.x + 10, y: pos.y }
                     }
                     if (spin.side === 'right') {
                         const pos = spin.position || {x: 0, y: 0}

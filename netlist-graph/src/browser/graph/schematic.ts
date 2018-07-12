@@ -2,7 +2,7 @@ import { SModelElementSchema } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
 import * as urn from './urn'
 import { PortPortSchema, CellNodeSchema, SymbolNodeSchema, NetEdgeSchema,
-         sideToOrientation, Side } from './graph-model'
+         sideToOrientation, Side, isPin } from './graph-model'
 import { getSideForPort } from './symbol'
 
 export interface ICell extends cl.ICell {
@@ -49,11 +49,12 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
     for (let cellName in mod.cells) {
         const cell = mod.cells[cellName]
         const ucell = urn.Cell(uschem, cellName)
+        const orient = cell.attributes && cell.attributes.rotate || 0
         const scell = <CellNodeSchema> {
             id: urn.toString(ucell),
             type: 'node:cell',
             urn: ucell,
-            orient: 0,
+            orient,
         }
         if (!cell.sym) continue
         const ssym = JSON.parse(JSON.stringify(cell.sym))
@@ -62,13 +63,15 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
             const ugroup = urn.CellGroup(ucell, group.urn.groupName)
             group.id = urn.toString(ugroup)
             for (let pin of group.children || []) {
-                const portName = pin.urn.portName
-                const uport = urn.CellPort(ucell, portName)
-                pin.id = urn.toString(uport)
+                if (isPin(pin)) {
+                    const portName = pin.urn.portName
+                    const uport = urn.CellPort(ucell, portName)
+                    pin.id = urn.toString(uport)
 
-                if (group.urn.portName in cell.connections) {
-                    const bv = cell.connections[portName]
-                    addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)
+                    if (group.urn.portName in cell.connections) {
+                        const bv = cell.connections[portName]
+                        addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)
+                    }
                 }
             }
         }
@@ -88,7 +91,7 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
 function addBv(nets: Nets, bv: cl.Vector, u: urn.URN | string, side: Side | null) {
     for (let bit of bv) {
         if (typeof bit === 'number') {
-            console.log(bit, JSON.stringify(nets[bit.toString()]))
+            //console.log(bit, JSON.stringify(nets[bit.toString()]))
             const conns: Net = nets[bit.toString()]
                 || {drivers: [], riders: [], laterals: []}
             if (typeof u === 'string') {
@@ -103,7 +106,7 @@ function addBv(nets: Nets, bv: cl.Vector, u: urn.URN | string, side: Side | null
                 }
             }
             nets[bit] = conns
-            console.log(bit, JSON.stringify(nets[bit.toString()]))
+            //console.log(bit, JSON.stringify(nets[bit.toString()]))
         }
     }
 }

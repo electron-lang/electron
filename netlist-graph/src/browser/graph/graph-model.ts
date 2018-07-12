@@ -108,6 +108,7 @@ export interface GroupNodeSchema extends SNodeSchema, ILink {
     nleft: number
     nbottom: number
     nright: number
+    skin: boolean
 }
 
 export function isGroup(element?: SModelElementSchema)
@@ -122,6 +123,7 @@ export class GroupNode extends RectangularNode {
     nleft: number = 0
     nbottom: number = 0
     nright: number = 0
+    skin: boolean = false
     link: urn.URN = urn.File('')
 
     hasFeature(feature: symbol): boolean {
@@ -140,13 +142,15 @@ export interface PinPortSchema extends SPortSchema {
     type: 'port:pin'
     side: Side
     pad: string
+    fixed: boolean
 }
 
 export class PinPort extends SPort {
     urn = urn.SymPort(urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), ''), '')
     type = 'port:pin'
     side: Side = 'left'
-    pad: string = ''
+    pad = ''
+    fixed = false
 }
 
 export function isPin(element?: SModelElementSchema)

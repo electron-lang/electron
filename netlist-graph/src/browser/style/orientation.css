@@ -24,25 +24,25 @@
 }
 
 /* Text classes */
-text.aleft {
+.aleft text {
     text-anchor: start;
 }
 
-text.aright {
+.aright text {
     text-anchor: end;
 }
 
-text.acenter {
+.acenter text {
     text-anchor: middle;
 }
 
 /* Oriented text classes */
-.orient90 text.aleft,
-.orient180 text.aleft {
+.orient90 .aleft text,
+.orient180 .aleft text {
     text-anchor: end;
 }
 
-.orient90 text.aright,
-.orient180 text.aright {
+.orient90 .aright text,
+.orient180 .aright text {
     text-anchor: start;
 }

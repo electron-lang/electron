@@ -72,7 +72,7 @@ const RotateAttribute: IAttributeHandler = {
     compile(attr: ast.IAttr): ir.IAttr[] {
         const angle = attr.params[0] as ast.IInteger
         return [
-            ir.Attr('rotate', angle.value.toString(), attr.src)
+            ir.Attr('rotate', angle.value, attr.src)
         ]
     }
 }
