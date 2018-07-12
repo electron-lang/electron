@@ -1,6 +1,16 @@
+/// @declare(true)
+/// module $R {
+///   analog A = (4)
+///   analog B = (5)
+/// }
+/// @declare(true)
+/// module $R {
+///   analog A = (6)
+///   analog B = (7)
+/// }
 declare module $R(VALUE: Ohm) {
-    analog A
-    analog B
+  analog A
+  analog B
 }
 
 /// module CellVector {
@@ -10,8 +20,8 @@ declare module $R(VALUE: Ohm) {
 ///   cell rx$1 = $R(VALUE=10000) {A=(1), B=(3)}
 /// }
 module CellVector {
-    analog[2] a, b
-    cell[2] rx
-    rx[0] = $R(10k) {A=a[0], B=b[0]}
-    rx[1] = $R(10k) {A=a[1], B=b[1]}
+  analog[2] a, b
+  cell[2] rx
+  rx[0] = $R(10k) {A=a[0], B=b[0]}
+  rx[1] = $R(10k) {A=a[1], B=b[1]}
 }

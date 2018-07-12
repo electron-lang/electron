@@ -1,14 +1,32 @@
 import VoltageDivider from "./6_VoltageDivider"
 
+/// @declare(true)
+/// module VoltageDivider {
+///   @side("left")
+///   analog vin = (27)
+///   @side("right")
+///   analog vout = (28)
+///   @side("bottom")
+///   analog gnd = (29)
+/// }
+/// @declare(true)
+/// module VoltageDivider {
+///   @side("left")
+///   analog vin = (30)
+///   @side("right")
+///   analog vout = (31)
+///   @side("bottom")
+///   analog gnd = (32)
+/// }
 /// module TwoVoltageDividers {
-///   net vin = (7)
-///   net vout = (8)
-///   net gnd = (9)
-///   cell vd1 = VoltageDivider() {vin=(7), vout=(8), gnd=(9)}
-///   cell vd2 = VoltageDivider() {vin=(7), vout=(8), gnd=(9)}
+///   net vin = (24)
+///   net vout = (25)
+///   net gnd = (26)
+///   cell vd1 = VoltageDivider() {vin=(24), vout=(25), gnd=(26)}
+///   cell vd2 = VoltageDivider() {vin=(24), vout=(25), gnd=(26)}
 /// }
 module TwoVoltageDividers {
-    net vin, vout, gnd
-    cell vd1 = VoltageDivider {*}
-    cell vd2 = VoltageDivider {*}
+  net vin, vout, gnd
+  cell vd1 = VoltageDivider {*}
+  cell vd2 = VoltageDivider {*}
 }

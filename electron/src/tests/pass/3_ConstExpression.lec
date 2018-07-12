@@ -1,36 +1,42 @@
+/// @declare(true)
+/// module $and {
+///   input[2] A = (10, 11)
+///   input[2] B = (12, 13)
+///   output Y = (14)
+/// }
 declare module $and(A_WIDTH: Integer, B_WIDTH: Integer) {
-    input[A_WIDTH] A
-    input[B_WIDTH] B
-    output Y
+  input[A_WIDTH] A
+  input[B_WIDTH] B
+  output Y
 }
 
-/// module and$AND {
+/// module AND {
 ///   input[2] A = (5, 6)
 ///   input[2] B = (7, 8)
 ///   output Y = (9)
 ///   cell and1 = $and(A_WIDTH=2, B_WIDTH=2) {A=(5, 6), B=(7, 8), Y=(9)}
 /// }
 module AND(WIDTH: Integer) {
-    const AND_WIDTH = WIDTH + 1
-    input[AND_WIDTH] A, B
-    output Y
-    cell and1 = $and(
-        A_WIDTH=AND_WIDTH,
-        B_WIDTH=AND_WIDTH,
-    ) {
-        A, B, Y
-    }
+  const AND_WIDTH = WIDTH + 1
+  input[AND_WIDTH] A, B
+  output Y
+  cell and1 = $and(
+    A_WIDTH=AND_WIDTH,
+    B_WIDTH=AND_WIDTH,
+  ) {
+    A, B, Y
+  }
 }
 
 /// module Test {
 ///   net[2] A = (0, 1)
 ///   net[2] B = (2, 3)
 ///   net Y = (4)
-///   cell and = and$AND(WIDTH=1) {A=(0, 1), B=(2, 3), Y=(4)}
+///   cell and = AND(WIDTH=1) {A=(0, 1), B=(2, 3), Y=(4)}
 /// }
 module Test {
-    const WIDTH = 1
-    net[WIDTH + 1] A, B
-    net Y
-    cell and = AND(WIDTH) {*}
+  const WIDTH = 1
+  net[WIDTH + 1] A, B
+  net Y
+  cell and = AND(WIDTH) {*}
 }

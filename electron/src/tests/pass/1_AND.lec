@@ -1,7 +1,13 @@
+/// @declare(true)
+/// module $and {
+///   input[2] A = (6, 7)
+///   input[3] B = (8, 9, 10)
+///   output Y = (11)
+/// }
 declare module $and(A_WIDTH: Integer, B_WIDTH: Integer) {
-    input[A_WIDTH] A
-    input[B_WIDTH] B
-    output Y
+  input[A_WIDTH] A
+  input[B_WIDTH] B
+  output Y
 }
 
 /// module AND {
@@ -11,8 +17,8 @@ declare module $and(A_WIDTH: Integer, B_WIDTH: Integer) {
 ///   cell and1 = $and(A_WIDTH=2, B_WIDTH=3) {A=(0, 1), B=(2, 3, 4), Y=(5)}
 /// }
 module AND {
-    input[2] a
-    input[3] b
-    output y
-    cell and1 = $and(A_WIDTH=2, B_WIDTH=3) {A=a, B=b, Y=y}
+  input[2] a
+  input[3] b
+  output y
+  cell and1 = $and(A_WIDTH=2, B_WIDTH=3) {A=a, B=b, Y=y}
 }

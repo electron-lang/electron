@@ -1,23 +1,47 @@
 import $R from "../../../docs/examples/cells"
 
+/// @skin("<g><rect width="40" height="10"></rect></g>")
+/// @declare(true)
+/// module $R {
+///   @side("left")
+///   @port_x(0)
+///   @port_y(5)
+///   analog A = (20)
+///   @side("right")
+///   @port_x(40)
+///   @port_y(5)
+///   analog B = (21)
+/// }
+/// @skin("<g><rect width="40" height="10"></rect></g>")
+/// @declare(true)
+/// module $R {
+///   @side("left")
+///   @port_x(0)
+///   @port_y(5)
+///   analog A = (22)
+///   @side("right")
+///   @port_x(40)
+///   @port_y(5)
+///   analog B = (23)
+/// }
 /// module VoltageDivider {
 ///   @side("left")
-///   analog vin = (0)
+///   analog vin = (17)
 ///   @side("right")
-///   analog vout = (1)
+///   analog vout = (18)
 ///   @side("bottom")
-///   analog gnd = (2)
-///   @rotate("90")
-///   cell r1 = $R(RESISTANCE=10000) {A=(0), B=(1)}
-///   @rotate("90")
-///   cell r2 = $R(RESISTANCE=20000) {A=(1), B=(2)}
+///   analog gnd = (19)
+///   @rotate(90)
+///   cell r1 = $R(RESISTANCE=10000) {A=(17), B=(18)}
+///   @rotate(90)
+///   cell r2 = $R(RESISTANCE=20000) {A=(18), B=(19)}
 /// }
 export module VoltageDivider {
-    @left analog vin
-    @right analog vout
-    @bottom analog gnd
-    @rotate(90)
-    cell r1 = $R(10k) {A=vin, B=vout}
-    @rotate(90)
-    cell r2 = $R(20k) {A=vout, B=gnd}
+  @left analog vin
+  @right analog vout
+  @bottom analog gnd
+  @rotate(90)
+  cell r1 = $R(10k) {A=vin, B=vout}
+  @rotate(90)
+  cell r2 = $R(20k) {A=vout, B=gnd}
 }

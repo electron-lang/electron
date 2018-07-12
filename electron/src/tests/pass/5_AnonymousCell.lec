@@ -36,32 +36,32 @@
 ///   cell u1 = u1$mod() {in=(0), out=(1), gnd=(2), in2=(0), in3=(0), out2=(1), vcc=(2)}
 /// }
 module Pcb {
-    net in, out, gnd
-    @bom("NXP", "7805")
-    cell u1 = cell {
-        @group("A") {
-            @set_pad("1")
-            @left
-            analog in
-            @set_pad("2")
-            @right
-            analog out
-            @set_pad("4")
-            @bottom
-            analog gnd
-        }
-        @group("B") {
-            @set_pad("3")
-            @left
-            analog in2=in
-            @left
-            analog in3=in
-            @set_pad("6")
-            @right
-            analog out2=out
-            @set_pad("7")
-            @top
-            analog vcc=gnd
-        }
+  net in, out, gnd
+  @bom("NXP", "7805")
+  cell u1 = cell {
+    @group("A") {
+      @set_pad("1")
+      @left
+      analog in
+      @set_pad("2")
+      @right
+      analog out
+      @set_pad("4")
+      @bottom
+      analog gnd
     }
+    @group("B") {
+      @set_pad("3")
+      @left
+      analog in2=in
+      @left
+      analog in3=in
+      @set_pad("6")
+      @right
+      analog out2=out
+      @set_pad("7")
+      @top
+      analog vcc=gnd
+    }
+  }
 }

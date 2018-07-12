@@ -1,6 +1,11 @@
+/// @declare(true)
+/// module $R {
+///   analog A = (2)
+///   analog B = (3)
+/// }
 declare module $R(VALUE: Ohm) {
-    analog A
-    analog B
+  analog A
+  analog B
 }
 
 /// module R {
@@ -9,6 +14,6 @@ declare module $R(VALUE: Ohm) {
 ///   cell r1 = $R(VALUE=10000) {A=(0), B=(1)}
 /// }
 module R {
-    analog a, b
-    cell r1 = $R(10k) { A=a, B=b }
+  analog a, b
+  cell r1 = $R(10k) { A=a, B=b }
 }
