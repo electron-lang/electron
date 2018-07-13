@@ -185,21 +185,8 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 const elkNode: ElkNode = {
                     id: snode.id,
                 }
-                if (snode.children) {
-                    elkNode.ports = snode.children
-                        .filter(c => c.type === 'port:port')
-                        .map(c => this.transformToElk(c, index)) as ElkNode[]
-                }
                 this.transformShape(elkNode, snode);
                 return elkNode
-            }
-            case 'port:port': {
-                const sport = smodel as SPortSchema;
-                const elkPort: ElkPort = {
-                    id: sport.id
-                }
-                this.transformShape(elkPort, sport)
-                return elkPort
             }
             case 'node:cell': {
                 const snode = smodel as SNodeSchema;
@@ -222,6 +209,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     target: sedge.targetId,
                 }
                 const points = sedge.routingPoints;
+                console.log('edge routing points: ', JSON.stringify(points))
                 if (points && points.length >= 2) {
                     elkEdge.sourcePoint = points[0];
                     elkEdge.bendPoints = points.slice(1, points.length - 1);

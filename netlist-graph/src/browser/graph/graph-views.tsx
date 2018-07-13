@@ -1,6 +1,6 @@
 import * as snabbdom from 'snabbdom-jsx'
 import { VNode } from 'snabbdom/vnode'
-import { RenderingContext, IView, SPort } from 'sprotty/lib'
+import { RenderingContext, IView } from 'sprotty/lib'
 import { FileNode, ModuleNode, SymbolNode, GroupNode, PinPort,
     SchematicNode, PortNode, CellNode, sideToOrientation } from './graph-model'
 
@@ -131,11 +131,5 @@ export class PortNodeView extends OrientationAware implements IView {
                        {context.renderChildren(port)}
                        </g>) as any as VNode
         return this.renderContainer(port.orient, vnode)
-    }
-}
-
-export class PortPortView implements IView {
-    render(port: Readonly<SPort>, context: RenderingContext): VNode {
-        return (<g></g>) as any as VNode
     }
 }

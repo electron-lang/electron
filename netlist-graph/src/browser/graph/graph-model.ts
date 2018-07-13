@@ -1,6 +1,6 @@
 import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-         RectangularNode, SEdge, SPort,
-         openFeature } from 'sprotty/lib'
+         RectangularNode, SEdge, SPort, openFeature,
+         Point, add } from 'sprotty/lib'
 import * as urn from './urn'
 
 export type Orientation = 0 | 90 | 180 | 270
@@ -151,6 +151,24 @@ export class PinPort extends SPort {
     side: Side = 'left'
     pad = ''
     fixed = false
+
+    getAnchor(referencePoint: Point, offset?: number): Point {
+        const anchor = {x: this.bounds.x, y: this.bounds.y}
+        const sideOffset = {x: 0, y: 0}
+            /*(() => {
+            switch(this.orient) {
+                case 0:
+                    return {x: 30, y: 10}
+                case 90:
+                    return {x: -10, y: 30}
+                case 180:
+                    return {x: -30, y: 10}
+                case 270:
+                    return {x: 10, y: -30}
+            }
+        })()*/
+        return add(anchor, sideOffset)
+    }
 }
 
 export function isPin(element?: SModelElementSchema)
@@ -176,6 +194,23 @@ export class PortNode extends RectangularNode {
             return true
         }
         return super.hasFeature(feature)
+    }
+
+    getAnchor(referencePoint: Point, offset?: number): Point {
+        const anchor = {x: this.bounds.x, y: this.bounds.y}
+        const orientOffset = (() => {
+            switch(this.orient) {
+                case 0:
+                    return {x: 30, y: 10}
+                case 90:
+                    return {x: -10, y: 30}
+                case 180:
+                    return {x: -30, y: 10}
+                case 270:
+                    return {x: 10, y: -30}
+            }
+        })()
+        return add(anchor, orientOffset)
     }
 }
 
