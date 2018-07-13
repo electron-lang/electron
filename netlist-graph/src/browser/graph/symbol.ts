@@ -50,6 +50,7 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[], skin?: string): Group
         nleft: 0,
         nbottom: 0,
         nright: 0,
+        orient: 0,
         skin: !!skin,
         link: urn.Schematic(ugroup.urn.urn)
     }

@@ -72,7 +72,8 @@ export class GroupNodeView extends OrientationAware implements IView {
         if (node.urn.groupName !== 'default') {
             name + '_' + node.urn.groupName
         }
-        return (<g>
+        return this.renderContainer(node.orient, (
+                <g>
 
                 <g transform={`translate(0, ${node.ntop > 0 ? -23 : -3})`}>
                 {this.renderText(name, 'left')}
@@ -82,7 +83,7 @@ export class GroupNodeView extends OrientationAware implements IView {
 
                 {context.renderChildren(node)}
 
-                </g>) as any as VNode
+                </g>) as any as VNode)
     }
 }
 
@@ -113,9 +114,9 @@ export class PinPortView extends OrientationAware implements IView {
 
 }
 
-export class CellNodeView extends OrientationAware implements IView {
+export class CellNodeView implements IView {
     render(cell: Readonly<CellNode>, context: RenderingContext): VNode {
-        return this.renderContainer(cell.orient, context.renderChildren(cell))
+        return (<g>{context.renderChildren(cell)}</g>) as any as VNode
     }
 }
 

@@ -109,6 +109,7 @@ export interface GroupNodeSchema extends SNodeSchema, ILink {
     nbottom: number
     nright: number
     skin: boolean
+    orient: Orientation
 }
 
 export function isGroup(element?: SModelElementSchema)
@@ -124,6 +125,7 @@ export class GroupNode extends RectangularNode {
     nbottom: number = 0
     nright: number = 0
     skin: boolean = false
+    orient: Orientation = 0
     link: urn.URN = urn.File('')
 
     hasFeature(feature: symbol): boolean {
@@ -224,13 +226,11 @@ export function isPort(element?: SModelElementSchema)
 export interface CellNodeSchema extends SNodeSchema {
     urn: urn.Cell
     type: 'node:cell'
-    orient: Orientation
 }
 
 export class CellNode extends RectangularNode {
     urn = urn.Cell(urn.Schematic(urn.Module(urn.File(''), '')), '')
     type = 'node:cell'
-    orient: Orientation = 0
 }
 
 export function isCell(element?: SModelElementSchema)

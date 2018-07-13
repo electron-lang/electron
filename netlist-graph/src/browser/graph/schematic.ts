@@ -54,7 +54,6 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
             id: urn.toString(ucell),
             type: 'node:cell',
             urn: ucell,
-            orient,
         }
         if (!cell.sym) continue
         const ssym = JSON.parse(JSON.stringify(cell.sym))
@@ -62,6 +61,7 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
         for (let group of ssym.children) {
             const ugroup = urn.CellGroup(ucell, group.urn.groupName)
             group.id = urn.toString(ugroup)
+            group.orient = orient
             for (let pin of group.children || []) {
                 if (isPin(pin)) {
                     const portName = pin.urn.portName
