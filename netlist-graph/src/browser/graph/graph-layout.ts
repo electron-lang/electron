@@ -12,12 +12,9 @@ export type ElkFactory = () => ELK;
 
 export const ElkFactory = Symbol('ElkFactory');
 
-const DEBUG = false
-function debugPrint(thing: any) {
-    if (DEBUG) {
-        console.log(JSON.stringify(thing, null, 2))
-    }
-}
+/*function debugPrint(thing: any) {
+    console.log(JSON.stringify(thing, null, 2))
+}*/
 
 @injectable()
 export class ElkGraphLayout implements IModelLayoutEngine {
@@ -45,15 +42,15 @@ export class ElkGraphLayout implements IModelLayoutEngine {
             index = new SModelIndex();
             index.add(graph);
         }
-        debugPrint(graph)
+        //debugPrint(graph)
         const elkGraph = this.transformToElk(graph, index) as ElkNode
-        debugPrint(elkGraph)
+        //debugPrint(elkGraph)
         const newGraph = this.elk.layout(elkGraph).then(result => {
-            debugPrint(result)
+            //debugPrint(result)
             this.applyLayout(result, index!)
+            //debugPrint(graph)
             return graph
         })
-        debugPrint(newGraph)
         return newGraph
     }
 
@@ -63,16 +60,13 @@ export class ElkGraphLayout implements IModelLayoutEngine {
         switch (smodel.type) {
             case 'graph': {
                 const sgraph = smodel as SGraphSchema;
-                const elkNode = <ElkNode> {
+                return <ElkNode> {
                     id: sgraph.id,
                     layoutOptions: this.graphOptions(sgraph),
-                }
-                if (sgraph.children) {
-                    elkNode.children = sgraph.children
+                    children: sgraph.children
                         .filter(c => isFile(c) && !c.hidden)
-                        .map(c => this.transformToElk(c, index)) as ElkNode[]
+                        .map(c => this.transformToElk(c, index)) as ElkNode[],
                 }
-                return elkNode
             }
             case 'node:file': {
                 const snode = smodel as SNodeSchema;
@@ -84,7 +78,6 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => isModule(c) && !c.hidden)
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
-                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:module': {
@@ -97,7 +90,6 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => (isSymbol(c) || isSchematic(c)) && !c.hidden)
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
-                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:symbol': {
@@ -110,7 +102,6 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                         .filter(c => isGroup(c))
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
                 }
-                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:schematic': {
@@ -119,17 +110,24 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                     id: snode.id,
                 }
                 if (snode.children) {
-                    elkNode.ports = snode.children
-                        .filter(c => isPort(c))
-                        .map(c => this.transformToElk(c, index)) as ElkPort[]
                     elkNode.children = snode.children
-                        .filter(c => isCell(c))
+                        .filter(c => isPort(c))
                         .map(c => this.transformToElk(c, index)) as ElkNode[]
+
+                    for (let cell of snode.children.filter(c => isCell(c))) {
+                        const snode = cell as SNodeSchema
+                        if (snode.children) {
+                            elkNode.children = elkNode.children.concat(
+                                snode.children
+                                    .filter(c => isGroup(c))
+                                    .map(c => this.transformToElk(c, index)) as ElkNode[])
+                        }
+                    }
+
                     elkNode.edges = snode.children
                         .filter(c => isNet(c))
                         .map(c => this.transformToElk(c, index)) as ElkEdge[]
                 }
-                this.transformShape(elkNode, snode);
                 return elkNode
             }
             case 'node:group': {
@@ -188,28 +186,29 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 this.transformShape(elkNode, snode);
                 return elkNode
             }
-            case 'node:cell': {
-                const snode = smodel as SNodeSchema;
-                const elkNode: ElkNode = {
-                    id: snode.id
-                }
-                if (snode.children) {
-                    elkNode.children = snode.children
-                        .filter(c => isGroup(c))
-                        .map(c => this.transformToElk(c, index)) as ElkNode[]
-                }
-                this.transformShape(elkNode, snode)
-                return elkNode
-            }
             case 'edge:net': {
                 const sedge = smodel as SEdgeSchema;
+                const source = index.getById(sedge.sourceId)
+                const target = index.getById(sedge.targetId)
                 const elkEdge: ElkPrimitiveEdge = {
                     id: sedge.id,
-                    source: sedge.sourceId,
-                    target: sedge.targetId,
+                    layoutOptions: {
+                        'org.eclipse.elk.layered.priority.direction': 10
+                    }
+                } as any as ElkPrimitiveEdge
+                if (source && isPort(source)) {
+                    elkEdge.source = sedge.sourceId
+                } else if (source && isPin(source)) {
+                    elkEdge.source = source.groupId as string
+                    elkEdge.sourcePort = sedge.sourceId
+                }
+                if (target && isPort(target)) {
+                    elkEdge.target = sedge.targetId
+                } else if (target && isPin(target)) {
+                    elkEdge.target = target.groupId as string
+                    elkEdge.targetPort = sedge.targetId
                 }
                 const points = sedge.routingPoints;
-                console.log('edge routing points: ', JSON.stringify(points))
                 if (points && points.length >= 2) {
                     elkEdge.sourcePoint = points[0];
                     elkEdge.bendPoints = points.slice(1, points.length - 1);

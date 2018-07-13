@@ -7,6 +7,10 @@
     stroke-width: 2;
 }
 
+.sprotty-edge {
+    fill: none;
+}
+
 text {
     fill: #657b83; /* base00 */
     stroke: none;

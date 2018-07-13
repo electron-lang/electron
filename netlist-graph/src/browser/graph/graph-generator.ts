@@ -1,11 +1,9 @@
-import { SModelElementSchema, SModelIndex,
-         SNodeSchema, SEdgeSchema } from 'sprotty/lib'
+import { SModelElementSchema, SModelIndex } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
 import { URN } from './urn'
 
 export interface IGraphGenerator {
-    readonly nodes: SNodeSchema[]
-    readonly edges: SEdgeSchema[]
+    readonly elements: SModelElementSchema[]
     readonly index: SModelIndex<SModelElementSchema>
 
     addNetlist(uri: string, netlist: cl.INetlist): void

@@ -1,6 +1,5 @@
 import { injectable } from 'inversify'
-import { SModelElementSchema, SModelIndex,
-         SNodeSchema, SEdgeSchema } from 'sprotty/lib'
+import { SModelElementSchema, SModelIndex } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
 import { IGraphGenerator } from './graph-generator'
 import { FileNodeSchema, isFile,
@@ -21,8 +20,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
     private navStack: urn.URN[] = []
 
     readonly index: SModelIndex<SModelElementSchema> = new SModelIndex()
-    readonly nodes: SNodeSchema[] = []
-    readonly edges: SEdgeSchema[] = []
+    readonly elements: SModelElementSchema[] = []
 
     addNetlist(uri: string, netlist: cl.INetlist): void {
         const ufile = urn.File(uri)
@@ -35,7 +33,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         }
         const sfile = this.createFile(ufile, netlist)
         this.index.add(sfile)
-        this.nodes.push(sfile)
+        this.elements.push(sfile)
         this.open(ufile)
     }
 
@@ -92,15 +90,12 @@ export class NetlistGraphGenerator implements IGraphGenerator {
     private createSchematic(uschem: urn.Schematic, mod: cl.IModule): SchematicNodeSchema {
         const [nodes, edges] =
             createSchematicForModule(uschem, this.resolveModule(mod))
-        for (let edge of edges) {
-            this.edges.push(edge)
-        }
         const sschem = <SchematicNodeSchema> {
             id: urn.toString(uschem),
             type: 'node:schematic',
             urn: uschem,
             hidden: true,
-            children: nodes,
+            children: nodes.concat(edges),
         }
         return sschem
     }

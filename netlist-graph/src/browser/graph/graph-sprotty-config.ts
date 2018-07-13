@@ -1,7 +1,8 @@
 import { Container, ContainerModule, interfaces } from 'inversify'
 import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          SGraph, SGraphView, HtmlRoot, HtmlRootView, PreRenderedElement,
-         PreRenderedView, SCompartment, SCompartmentView, PolylineEdgeView,
+         PreRenderedView, SCompartment, SCompartmentView,
+         PolylineEdgeView, SLabel, SLabelView,
          defaultModule, selectModule, moveModule, boundsModule, openModule,
          viewportModule, exportModule, hoverModule, edgeEditModule,
          fadeModule } from 'sprotty/lib'
@@ -35,6 +36,7 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         configureModelElement(context, 'node:port', PortNode, PortNodeView)
         configureModelElement(context, 'port:pin', PinPort, PinPortView)
         configureModelElement(context, 'edge:net', NetEdge, PolylineEdgeView)
+        configureModelElement(context, 'label', SLabel, SLabelView);
         configureModelElement(context, 'compartment', SCompartment, SCompartmentView)
         configureModelElement(context, 'html', HtmlRoot, HtmlRootView)
         configureModelElement(context, 'pre-rendered', PreRenderedElement, PreRenderedView)

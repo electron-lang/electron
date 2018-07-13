@@ -67,6 +67,7 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
                     const portName = pin.urn.portName
                     const uport = urn.CellPort(ucell, portName)
                     pin.id = urn.toString(uport)
+                    pin.groupId = group.id
                     if (pin.urn.portName in cell.connections) {
                         const bv = cell.connections[portName]
                         addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)

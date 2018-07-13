@@ -1,6 +1,6 @@
-import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-         RectangularNode, SEdge, SPort, openFeature,
-         Point, add } from 'sprotty/lib'
+import { SModelElementSchema, SNodeSchema, RectangularNode,
+         SPortSchema, SPort, SEdgeSchema, SEdge,
+         openFeature, Point, add } from 'sprotty/lib'
 import * as urn from './urn'
 
 export type Orientation = 0 | 90 | 180 | 270
@@ -23,6 +23,19 @@ export function sideToOrientation(side: Side): Orientation {
     }
 }
 
+function computeOrientOffset(orient: Orientation, point: Point): Point {
+    switch(orient) {
+        case 0:
+            return {x: point.x, y: point.y}
+        case 90:
+            return {x: point.y, y: point.x}
+        case 180:
+            return {x: -point.x, y: point.y}
+        case 270:
+            return {x: point.y, y: -point.x}
+    }
+}
+
 /* File Node */
 export interface FileNodeSchema extends SNodeSchema {
     urn: urn.File
@@ -36,7 +49,6 @@ export function isFile(element?: SModelElementSchema)
 }
 
 export class FileNode extends RectangularNode {
-    urn = urn.File('')
     type = 'node:file'
     hidden = true
 }
@@ -55,10 +67,8 @@ export function isModule(element?: SModelElementSchema)
 }
 
 export class ModuleNode extends RectangularNode {
-    urn = urn.Module(urn.File(''), '')
     type = 'node:module'
     hidden = true
-    state: 'symbol' | 'schematic' = 'symbol'
 }
 /* Module Node */
 
@@ -75,7 +85,6 @@ export function isSymbol(element?: SModelElementSchema)
 }
 
 export class SymbolNode extends RectangularNode {
-    urn = urn.Symbol(urn.Module(urn.File(''), ''))
     type = 'node:symbol'
     hidden = true
 }
@@ -94,7 +103,6 @@ export function isSchematic(element?: SModelElementSchema)
 }
 
 export class SchematicNode extends RectangularNode {
-    urn = urn.Schematic(urn.Module(urn.File(''), ''))
     type = 'node:schematic'
     hidden = true
 }
@@ -126,7 +134,6 @@ export class GroupNode extends RectangularNode {
     nright: number = 0
     skin: boolean = false
     orient: Orientation = 0
-    link: urn.URN = urn.File('')
 
     hasFeature(feature: symbol): boolean {
         if (feature === openFeature) {
@@ -145,6 +152,7 @@ export interface PinPortSchema extends SPortSchema {
     side: Side
     pad: string
     fixed: boolean
+    groupId?: string
 }
 
 export class PinPort extends SPort {
@@ -156,20 +164,21 @@ export class PinPort extends SPort {
 
     getAnchor(referencePoint: Point, offset?: number): Point {
         const anchor = {x: this.bounds.x, y: this.bounds.y}
-        const sideOffset = {x: 0, y: 0}
-            /*(() => {
-            switch(this.orient) {
-                case 0:
-                    return {x: 30, y: 10}
-                case 90:
-                    return {x: -10, y: 30}
-                case 180:
-                    return {x: -30, y: 10}
-                case 270:
-                    return {x: 10, y: -30}
+        const sideOffset = (() => {
+            switch(this.side) {
+                case 'top':
+                    return {x: 0, y: 20}
+                case 'left':
+                    return {x: -20, y: 0}
+                case 'bottom':
+                    return {x: 0, y: -20}
+                case 'right':
+                    return {x: 20, y: 0}
             }
-        })()*/
-        return add(anchor, sideOffset)
+        })()
+        const newAnchor = add(anchor, sideOffset)
+        const groupNode = this.parent as GroupNode
+        return computeOrientOffset(groupNode.orient, newAnchor)
     }
 }
 
@@ -199,20 +208,8 @@ export class PortNode extends RectangularNode {
     }
 
     getAnchor(referencePoint: Point, offset?: number): Point {
-        const anchor = {x: this.bounds.x, y: this.bounds.y}
-        const orientOffset = (() => {
-            switch(this.orient) {
-                case 0:
-                    return {x: 30, y: 10}
-                case 90:
-                    return {x: -10, y: 30}
-                case 180:
-                    return {x: -30, y: 10}
-                case 270:
-                    return {x: 10, y: -30}
-            }
-        })()
-        return add(anchor, orientOffset)
+        const orientOffset = computeOrientOffset(this.orient, {x: 30, y: 10})
+        return add({x: this.bounds.x, y: this.bounds.y}, orientOffset)
     }
 }
 
@@ -229,7 +226,6 @@ export interface CellNodeSchema extends SNodeSchema {
 }
 
 export class CellNode extends RectangularNode {
-    urn = urn.Cell(urn.Schematic(urn.Module(urn.File(''), '')), '')
     type = 'node:cell'
 }
 
@@ -251,7 +247,6 @@ export function isNet(element?: SModelElementSchema)
 }
 
 export class NetEdge extends SEdge {
-    urn = urn.Net(urn.Schematic(urn.Module(urn.File(''), '')), '')
     type = 'edge:net'
 }
 /* Edge Net */

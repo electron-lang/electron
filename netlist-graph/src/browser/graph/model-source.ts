@@ -42,8 +42,7 @@ export class NetlistGraphModelSource extends LocalModelSource {
     }
 
     updateModel(): Promise<void> {
-        this.currentRoot.children = this.graphGenerator.nodes
-            .concat(this.graphGenerator.edges) ;
+        this.currentRoot.children = this.graphGenerator.elements
         return super.updateModel();
     }
 
