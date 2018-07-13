@@ -1,7 +1,7 @@
-import { SModelElementSchema } from 'sprotty/lib'
+import { SNodeSchema, SEdgeSchema, SPortSchema } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
 import * as urn from './urn'
-import { PortPortSchema, CellNodeSchema, SymbolNodeSchema, NetEdgeSchema,
+import { PortNodeSchema, CellNodeSchema, SymbolNodeSchema, NetEdgeSchema,
          sideToOrientation, Side, isPin } from './graph-model'
 import { getSideForPort } from './symbol'
 
@@ -28,21 +28,27 @@ interface Net {
 type Nets = {[n: string]: Net}
 
 export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
-: SModelElementSchema[] {
-    const elements: SModelElementSchema[] = []
+: [SNodeSchema[], SEdgeSchema[]] {
+    const nodes: SNodeSchema[] = []
     const nets: Nets = {}
 
     for (let portName in mod.ports) {
         const port = mod.ports[portName]
         const side = getSideForPort(port)
         const uport = urn.Port(uschem, portName)
-        const node = <PortPortSchema> {
-            id: urn.toString(uport),
-            type: 'port:port',
+        const node = <PortNodeSchema> {
+            type: 'node:port',
             urn: uport,
             orient: sideToOrientation(side),
+            children: [
+                    <SPortSchema> {
+                        id: urn.toString(uport),
+                        type: 'port:port',
+                        position: {x: 30, y: 10},
+                    }
+            ]
         }
-        elements.push(node)
+        nodes.push(node)
         addBv(nets, port.bits, uport, side)
     }
 
@@ -67,15 +73,14 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
                     const portName = pin.urn.portName
                     const uport = urn.CellPort(ucell, portName)
                     pin.id = urn.toString(uport)
-
-                    if (group.urn.portName in cell.connections) {
+                    if (pin.urn.portName in cell.connections) {
                         const bv = cell.connections[portName]
                         addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)
                     }
                 }
             }
         }
-        elements.push(scell)
+        nodes.push(scell)
     }
 
     for (let netName in mod.netnames) {
@@ -85,13 +90,12 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
 
     const edges = createEdges(nets)
 
-    return elements.concat(edges)
+    return [nodes, edges]
 }
 
 function addBv(nets: Nets, bv: cl.Vector, u: urn.URN | string, side: Side | null) {
     for (let bit of bv) {
         if (typeof bit === 'number') {
-            //console.log(bit, JSON.stringify(nets[bit.toString()]))
             const conns: Net = nets[bit.toString()]
                 || {drivers: [], riders: [], laterals: []}
             if (typeof u === 'string') {
@@ -106,7 +110,6 @@ function addBv(nets: Nets, bv: cl.Vector, u: urn.URN | string, side: Side | null
                 }
             }
             nets[bit] = conns
-            //console.log(bit, JSON.stringify(nets[bit.toString()]))
         }
     }
 }
@@ -116,7 +119,7 @@ function createEdges(nets: Nets): NetEdgeSchema[] {
     for (let netid in nets) {
         const net = nets[netid]
         // at least one driver and at least one rider and no laterals
-        if (net.drivers.length > 0 && net.laterals.length > 0 && net.laterals.length === 0) {
+        if (net.drivers.length > 0 && net.riders.length > 0 && net.laterals.length === 0) {
             edges = edges
                 .concat(route(net.drivers, net.riders))
         // at least one driver or rider and at least one lateral
@@ -127,15 +130,17 @@ function createEdges(nets: Nets): NetEdgeSchema[] {
         // at least two drivers and no riders
         } else if (net.drivers.length > 1 && net.riders.length === 0) {
             // TODO
-            edges = edges.concat(route([net.laterals[0]], net.laterals.slice(1)))
+            edges = edges.concat(route([net.drivers[0]], net.drivers.slice(1)))
         // at least two riders and no drivers
         } else if (net.drivers.length === 0 && net.riders.length > 1) {
             // TODO
-            edges = edges.concat(route([net.laterals[0]], net.laterals.slice(1)))
+            edges = edges.concat(route([net.riders[0]], net.riders.slice(1)))
         // at least two laterals and no driver or riders
         } else if (net.laterals.length > 1) {
             // TODO
             edges = edges.concat(route([net.laterals[0]], net.laterals.slice(1)))
+        } else {
+            // console.log(net)
         }
     }
     return edges
@@ -143,6 +148,11 @@ function createEdges(nets: Nets): NetEdgeSchema[] {
 
 function route(us1: string[], us2: string[]): NetEdgeSchema[] {
     const edges: NetEdgeSchema[] = []
+
+    if (us1.length < 1 || us2.length < 1) {
+        return edges
+    }
+
     for (let u1 of us1) {
         for (let u2 of us2) {
             edges.push(<NetEdgeSchema> {

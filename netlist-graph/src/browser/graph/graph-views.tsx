@@ -1,8 +1,8 @@
 import * as snabbdom from 'snabbdom-jsx'
 import { VNode } from 'snabbdom/vnode'
-import { RenderingContext, IView } from 'sprotty/lib'
+import { RenderingContext, IView, SPort } from 'sprotty/lib'
 import { FileNode, ModuleNode, SymbolNode, GroupNode, PinPort,
-    SchematicNode, PortPort, CellNode, sideToOrientation } from './graph-model'
+    SchematicNode, PortNode, CellNode, sideToOrientation } from './graph-model'
 
 const JSX = {createElement: snabbdom.svg};
 
@@ -61,10 +61,7 @@ export class GroupNodeView extends OrientationAware implements IView {
         const nh = Math.max(node.ntop, node.nbottom, 1)
         const minWidth = nh * 20
         const minHeight = nv * 20
-        return (<rect class-sprotty-node={true}
-                class-mouseover={node.hoverFeedback}
-                class-selected={node.selected}
-                class-body={true}
+        return (<rect
                 width={Math.max(node.size.width, minWidth)}
                 height={Math.max(node.size.height, minHeight)}
                 ></rect>) as any as VNode
@@ -100,16 +97,15 @@ export class PinPortView extends OrientationAware implements IView {
         const pinLength = 20
         const orient = sideToOrientation(port.side)
         const vnode = (<g>
-                       <line class-sprotty-port={true}
-                       class-mouseover={port.hoverFeedback}
-                       class-selected={port.selected}
-                       x1={0} y1={0} x2={-pinLength} y2={0}></line>
+
+                       <line x1={0} y1={0} x2={-pinLength} y2={0}></line>
 
                        <g transform={`translate(${-pinLength / 2}, -3)`}>
                        {this.renderText(port.pad, 'center')}
                        </g>
 
                        {port.fixed ? '' : this.renderGeneric(port, context)}
+
                        </g>) as any as VNode
 
             return this.renderContainer(orient, vnode)
@@ -123,18 +119,23 @@ export class CellNodeView extends OrientationAware implements IView {
     }
 }
 
-export class PortPortView extends OrientationAware implements IView {
-    render(port: Readonly<PortPort>, context: RenderingContext): VNode {
+export class PortNodeView extends OrientationAware implements IView {
+    render(port: Readonly<PortNode>, context: RenderingContext): VNode {
         const vnode = (<g>
                        <g transform={'translate(0, -3)'}>
                        {this.renderText(port.urn.portName, 'left')}
                        </g>
 
-                       <path class-sprotty-node={true}
-                       class-mouseover={port.hoverFeedback}
-                       class-selected={port.selected}
-                       d="M0,0 V20 H15 L30,10 15,0 Z"/>
+                       <path d="M0,0 V20 H15 L30,10 15,0 Z"/>
+
+                       {context.renderChildren(port)}
                        </g>) as any as VNode
         return this.renderContainer(port.orient, vnode)
+    }
+}
+
+export class PortPortView implements IView {
+    render(port: Readonly<SPort>, context: RenderingContext): VNode {
+        return (<g></g>) as any as VNode
     }
 }

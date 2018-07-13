@@ -180,6 +180,19 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 }
                 return elkPort
             }
+            case 'node:port': {
+                const snode = smodel as SNodeSchema;
+                const elkNode: ElkNode = {
+                    id: snode.id,
+                }
+                if (snode.children) {
+                    elkNode.ports = snode.children
+                        .filter(c => c.type === 'port:port')
+                        .map(c => this.transformToElk(c, index)) as ElkNode[]
+                }
+                this.transformShape(elkNode, snode);
+                return elkNode
+            }
             case 'port:port': {
                 const sport = smodel as SPortSchema;
                 const elkPort: ElkPort = {
@@ -201,7 +214,7 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 this.transformShape(elkNode, snode)
                 return elkNode
             }
-            case 'net:edge': {
+            case 'edge:net': {
                 const sedge = smodel as SEdgeSchema;
                 const elkEdge: ElkPrimitiveEdge = {
                     id: sedge.id,

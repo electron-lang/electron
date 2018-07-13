@@ -1,15 +1,15 @@
 import { Container, ContainerModule, interfaces } from 'inversify'
 import { TYPES, ConsoleLogger, LogLevel, SGraphFactory, configureModelElement,
          SGraph, SGraphView, HtmlRoot, HtmlRootView, PreRenderedElement,
-         PreRenderedView, SCompartment, SCompartmentView, PolylineEdgeView,
+         PreRenderedView, SCompartment, SCompartmentView, PolylineEdgeView, SPort,
          defaultModule, selectModule, moveModule, boundsModule, openModule,
          viewportModule, exportModule, hoverModule, edgeEditModule,
          fadeModule } from 'sprotty/lib'
 import { FileNode, ModuleNode, SymbolNode, SchematicNode, GroupNode,
-         PinPort, PortPort, CellNode, NetEdge } from './graph-model'
+         PinPort, PortNode, CellNode, NetEdge } from './graph-model'
 import { FileNodeView, ModuleNodeView, SymbolNodeView, SchematicNodeView,
          GroupNodeView, PinPortView, CellNodeView,
-         PortPortView } from './graph-views'
+         PortNodeView, PortPortView } from './graph-views'
 import { IGraphGenerator } from './graph-generator'
 import { NetlistGraphGenerator } from './netlist'
 import { NetlistGraphModelSource } from './model-source'
@@ -32,7 +32,8 @@ export default (additionalBindings?: interfaces.ContainerModuleCallBack) => {
         configureModelElement(context, 'node:schematic', SchematicNode, SchematicNodeView)
         configureModelElement(context, 'node:group', GroupNode, GroupNodeView)
         configureModelElement(context, 'node:cell', CellNode, CellNodeView)
-        configureModelElement(context, 'port:port', PortPort, PortPortView)
+        configureModelElement(context, 'node:port', PortNode, PortNodeView)
+        configureModelElement(context, 'port:port', SPort, PortPortView)
         configureModelElement(context, 'port:pin', PinPort, PinPortView)
         configureModelElement(context, 'edge:net', NetEdge, PolylineEdgeView)
         configureModelElement(context, 'compartment', SCompartment, SCompartmentView)

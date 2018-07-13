@@ -1,5 +1,5 @@
 import { SModelElementSchema, SNodeSchema, SPortSchema, SEdgeSchema,
-         RectangularNode, RectangularPort, SEdge, SPort,
+         RectangularNode, SEdge, SPort,
          openFeature } from 'sprotty/lib'
 import * as urn from './urn'
 
@@ -160,15 +160,15 @@ export function isPin(element?: SModelElementSchema)
 /* Pin Port */
 
 /* Port Node */
-export interface PortPortSchema extends SNodeSchema, ILink {
+export interface PortNodeSchema extends SNodeSchema, ILink {
     urn: urn.Port
-    type: 'port:port'
+    type: 'node:port'
     orient: Orientation
 }
 
-export class PortPort extends RectangularPort {
+export class PortNode extends RectangularNode {
     urn = urn.Port(urn.Schematic(urn.Module(urn.File(''), '')), '')
-    type = 'port:port'
+    type = 'node:port'
     orient: Orientation = 0
 
     hasFeature(feature: symbol): boolean {
@@ -180,8 +180,8 @@ export class PortPort extends RectangularPort {
 }
 
 export function isPort(element?: SModelElementSchema)
-: element is PortPortSchema {
-    return element !== undefined && element.type === 'port:port'
+: element is PortNodeSchema {
+    return element !== undefined && element.type === 'node:port'
 }
 /* Port Node */
 
