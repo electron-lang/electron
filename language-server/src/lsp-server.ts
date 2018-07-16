@@ -28,7 +28,7 @@ export class LspServer {
                 textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
                 completionProvider: {
                     resolveProvider: false,
-                    triggerCharacters: [],
+                    triggerCharacters: ["'", '@'],
                 }
             }
         };
@@ -106,7 +106,7 @@ export class LspServer {
         }
     }
 
-    public async completion(params: lsp.TextDocumentPositionParams)
+    public async completion(params: lsp.CompletionParams)
     : Promise<lsp.CompletionList> {
         this.logger.info('completion', params)
 
