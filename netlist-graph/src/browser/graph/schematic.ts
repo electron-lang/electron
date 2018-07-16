@@ -1,4 +1,4 @@
-import { SNodeSchema, SEdgeSchema } from 'sprotty/lib'
+import { SNodeSchema, SEdgeSchema, SPortSchema } from 'sprotty/lib'
 import * as cl from '@electron-lang/celllib'
 import * as urn from './urn'
 import { PortNodeSchema, CellNodeSchema, SymbolNodeSchema, NetEdgeSchema,
@@ -41,6 +41,13 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
             type: 'node:port',
             urn: uport,
             orient: sideToOrientation(side),
+            children: [
+                    <SPortSchema> {
+                        id: urn.toString(uport) + ':port',
+                        type: 'port:port',
+                        position: {x: 30, y: 10},
+                    }
+            ]
         }
         nodes.push(node)
         addBv(nets, port.bits, uport, side)

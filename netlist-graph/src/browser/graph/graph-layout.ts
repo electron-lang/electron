@@ -183,8 +183,24 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 const elkNode: ElkNode = {
                     id: snode.id,
                 }
+                if (snode.children) {
+                    elkNode.ports = snode.children
+                        .filter((c) => c.type === 'port:port')
+                        .map((c) => this.transformToElk(c, index))
+                }
                 this.transformShape(elkNode, snode);
                 return elkNode
+            }
+            case 'port:port': {
+                const sport = smodel as SPortSchema;
+                const elkPort: ElkPort = {
+                    id: sport.id,
+                    layoutOptions: {
+                        'org.eclipse.elk.portConstraints': 'FIXED_POS'
+                    }
+                }
+                this.transformShape(elkPort, sport)
+                return elkPort
             }
             case 'edge:net': {
                 const sedge = smodel as SEdgeSchema;
@@ -198,12 +214,14 @@ export class ElkGraphLayout implements IModelLayoutEngine {
                 } as any as ElkPrimitiveEdge
                 if (source && isPort(source)) {
                     elkEdge.source = sedge.sourceId
+                    elkEdge.sourcePort = sedge.sourceId + ':port'
                 } else if (source && isPin(source)) {
                     elkEdge.source = source.groupId as string
                     elkEdge.sourcePort = sedge.sourceId
                 }
                 if (target && isPort(target)) {
                     elkEdge.target = sedge.targetId
+                    elkEdge.targetPort = sedge.targetId + ':port'
                 } else if (target && isPin(target)) {
                     elkEdge.target = target.groupId as string
                     elkEdge.targetPort = sedge.targetId
