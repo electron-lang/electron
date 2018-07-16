@@ -1,5 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 import { File, DiagnosticCollector } from '@electron-lang/electron';
+import { getContentAssistSuggestions } from '@electron-lang/electron';
 import { Logger, PrefixingLogger } from './logger';
 import { LspClient } from './lsp-client';
 import { uriToPath, convertDiagnostic } from './protocol-translation';
@@ -20,34 +21,20 @@ export class LspServer {
     }
 
     public async initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
-        this.logger.log('initialize', params);
+        this.logger.error('initialize', params);
 
         const initializeResult: lsp.InitializeResult = {
             capabilities: {
                 textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
+                completionProvider: {
+                    resolveProvider: false,
+                    triggerCharacters: [],
+                }
             }
         };
 
-        this.logger.log('onInitialize result', initializeResult);
+        this.logger.error('onInitialize result', initializeResult);
         return initializeResult;
-    }
-
-    public requestDiagnostics(uri: string): void {
-        // compile with electron
-        let doc = this.openedDocumentUris.get(uri)
-        if (doc !== undefined) {
-            const path = uriToPath(uri)
-            const dc = new DiagnosticCollector()
-            const f = new File(dc, path, doc.text)
-            f.compile()
-            const diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
-                .filter((d) => d.path === path)
-                .map(convertDiagnostic)
-            this.options.lspClient.publishDiagnostics({
-                uri,
-                diagnostics,
-            })
-        }
     }
 
     public didOpenTextDocument(params: lsp.DidOpenTextDocumentParams): void {
@@ -99,5 +86,45 @@ export class LspServer {
 
     public didSaveTextDocument(params: lsp.DidChangeTextDocumentParams): void {
         // do nothing
+    }
+
+    public requestDiagnostics(uri: string): void {
+        // compile with electron
+        const doc = this.openedDocumentUris.get(uri)
+        if (doc !== undefined) {
+            const path = uriToPath(uri)
+            const dc = new DiagnosticCollector()
+            const f = new File(dc, path, doc.text)
+            f.compile()
+            const diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
+                .filter((d) => d.path === path)
+                .map(convertDiagnostic)
+            this.options.lspClient.publishDiagnostics({
+                uri,
+                diagnostics,
+            })
+        }
+    }
+
+    public async completion(params: lsp.TextDocumentPositionParams)
+    : Promise<lsp.CompletionList> {
+        this.logger.error('completion', params)
+
+        const doc = this.openedDocumentUris.get(params.textDocument.uri)
+        if (doc !== undefined) {
+            const line = doc.lineAt(params.position.line).text
+            const suggestions = getContentAssistSuggestions(line, [])
+            const completionItems = suggestions.map((str) => {
+                return {
+                    label: str,
+                }
+            })
+            return {
+                isIncomplete: false,
+                items: completionItems,
+            }
+        }
+
+        return {isIncomplete: true, items: []}
     }
 }

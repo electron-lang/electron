@@ -24,5 +24,7 @@ export function createLspConnection(options: IServerOptions): lsp.IConnection {
     connection.onDidCloseTextDocument(server.didCloseTextDocument.bind(server));
     connection.onDidChangeTextDocument(server.didChangeTextDocument.bind(server));
 
+    connection.onCompletion(server.completion.bind(server))
+
     return connection;
 }

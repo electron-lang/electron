@@ -1,0 +1,1 @@
+export { getContentAssistSuggestions } from './suggest'

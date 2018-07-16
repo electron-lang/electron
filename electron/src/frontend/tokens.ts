@@ -12,11 +12,17 @@ export const Attribute = createToken({
 })
 
 // Keywords
+export const Keyword = createToken({
+    name: 'Keyword',
+    pattern: Lexer.NA,
+})
+
 export const Import = createToken({
     name: 'Import',
     pattern: /import/,
     longer_alt: Identifier,
     label: 'import',
+    categories: Keyword,
 })
 
 export const Export = createToken({
@@ -24,6 +30,7 @@ export const Export = createToken({
     pattern: /export/,
     longer_alt: Identifier,
     label: 'export',
+    categories: Keyword,
 })
 
 export const From = createToken({
@@ -31,6 +38,7 @@ export const From = createToken({
     pattern: /from/,
     longer_alt: Identifier,
     label: 'from',
+    categories: Keyword,
 })
 
 export const Declare = createToken({
@@ -38,6 +46,7 @@ export const Declare = createToken({
     pattern: /declare/,
     longer_alt: Identifier,
     label: 'declare',
+    categories: Keyword,
 })
 
 export const Module = createToken({
@@ -45,6 +54,7 @@ export const Module = createToken({
     pattern: /module/,
     longer_alt: Identifier,
     label: 'module',
+    categories: Keyword,
 })
 
 export const Input = createToken({
@@ -52,6 +62,7 @@ export const Input = createToken({
     pattern: /input/,
     longer_alt: Identifier,
     label: 'input',
+    categories: Keyword,
 })
 
 export const Output = createToken({
@@ -59,6 +70,7 @@ export const Output = createToken({
     pattern: /output/,
     longer_alt: Identifier,
     label: 'output',
+    categories: Keyword,
 })
 
 export const Inout = createToken({
@@ -66,6 +78,7 @@ export const Inout = createToken({
     pattern: /inout/,
     longer_alt: Identifier,
     label: 'inout',
+    categories: Keyword,
 })
 
 export const Analog = createToken({
@@ -73,6 +86,7 @@ export const Analog = createToken({
     pattern: /analog/,
     longer_alt: Identifier,
     label: 'analog',
+    categories: Keyword,
 })
 
 export const Net = createToken({
@@ -80,6 +94,7 @@ export const Net = createToken({
     pattern: /net/,
     longer_alt: Identifier,
     label: 'net',
+    categories: Keyword,
 })
 
 export const Cell = createToken({
@@ -87,6 +102,7 @@ export const Cell = createToken({
     pattern: /cell/,
     longer_alt: Identifier,
     label: 'cell',
+    categories: Keyword,
 })
 
 export const Const = createToken({
@@ -94,6 +110,7 @@ export const Const = createToken({
     pattern: /const/,
     longer_alt: Identifier,
     label: 'const',
+    categories: Keyword,
 })
 
 export const True = createToken({
@@ -101,6 +118,7 @@ export const True = createToken({
     pattern: /true/,
     longer_alt: Identifier,
     label: 'true',
+    categories: Keyword,
 })
 
 export const False = createToken({
@@ -108,6 +126,7 @@ export const False = createToken({
     pattern: /false/,
     longer_alt: Identifier,
     label: 'false',
+    categories: Keyword,
 })
 
 export const With = createToken({
@@ -115,6 +134,7 @@ export const With = createToken({
     pattern: /with/,
     longer_alt: Identifier,
     label: 'with',
+    categories: Keyword,
 })
 
 // Operators

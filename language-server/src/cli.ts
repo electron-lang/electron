@@ -18,7 +18,7 @@ if (program.logLevel) {
     logLevel = parseInt(program.logLevel, 10);
     if (logLevel && (logLevel < 1 || logLevel > 4)) {
         console.error('Invalid `--log-level ' + logLevel +
-                      '`. Falling back to `info` level.');
+                      '`. Falling back to `warn` level.');
         logLevel = lsp.MessageType.Warning;
     }
 }
