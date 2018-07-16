@@ -114,9 +114,23 @@ export class LspServer {
         if (doc !== undefined) {
             const line = doc.lineAt(params.position.line).text
             const suggestions = getContentAssistSuggestions(line, [])
-            const completionItems = suggestions.map((str) => {
+            const startColumn = params.position.character - suggestions.startsWith.length
+            const completionItems = suggestions.suggestions.map((str) => {
                 return {
                     label: str,
+                    textEdit: {
+                        range: {
+                            start: {
+                                line: params.position.line,
+                                character: startColumn,
+                            },
+                            end: {
+                                line: params.position.line,
+                                character: params.position.character,
+                            }
+                        },
+                        newText: str,
+                    }
                 }
             })
             return {
