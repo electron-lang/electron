@@ -1,0 +1,99 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "electron",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#identifiers"
+    },
+    {
+      "include": "#attributes"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#constants"
+    },
+    {
+      "include": "#xml"
+    }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.electron",
+          "match": "\\b(import|export|from|declare|module|input|output|inout|analog|net|cell|const|true|false|with)\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.electron",
+          "match": "[a-zA-Z$]\\w*|'[^\\(\\)\\[\\]{},:\\s]+"
+        }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "name": "meta.preprocessor.electron",
+          "match": "@\\w*"
+        }
+      ]
+    },
+    "comments": {
+      "name": "comment",
+      "begin": "//",
+      "end": "\n"
+    },
+    "strings": {
+      "name": "string.quoted.double.electron",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.electron",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "constants": {
+      "name": "constant.numeric.electron",
+      "patterns": [
+        {
+          "name": "constant.numeric.unit.electron",
+          "match": "(0|[1-9]\\d*)(\\.[0-9]+)?[GMKkmunpf]?[a-zA-Z]*"
+        },
+        {
+          "name": "constant.numeric.bitvector.electron",
+          "match": "[1-9]\\d*'[01xz]+"
+        },
+        {
+          "name": "constant.numeric.real.electron",
+          "match": "[-]?(0|[1-9]\\d*)(\\.[0-9]+)?([eE][+-]?[0-9]+)"
+        },
+        {
+          "name": "constant.numeric.integer.electron",
+          "match": "0|[1-9]\\d*"
+        }
+      ]
+    },
+    "xml": {
+      "patterns": [
+        {
+          "name": "string.xml.electron",
+          "match": "<[^><]+>"
+        }
+      ]
+    }
+  },
+  "scopeName": "electron"
+}

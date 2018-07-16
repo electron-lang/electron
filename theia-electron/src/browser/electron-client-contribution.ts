@@ -19,6 +19,6 @@ export class ElectronClientContribution extends BaseLanguageClientContribution {
     }
 
     protected get globPatterns() {
-        return ['**/*.rkt', '**/*.scrbl'];
+        return ['**/*.lec'];
     }
 }

@@ -10,6 +10,11 @@
     "build": "tsc",
     "watch": "tsc -w"
   },
+  "files": [
+    "data",
+    "lib",
+    "src"
+  ],
   "dependencies": {
     "@electron-lang/electron": "^0.0.4",
     "@electron-lang/language-server": "^0.0.4",
