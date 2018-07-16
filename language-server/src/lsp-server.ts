@@ -21,7 +21,7 @@ export class LspServer {
     }
 
     public async initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
-        this.logger.error('initialize', params);
+        this.logger.info('initialize', params);
 
         const initializeResult: lsp.InitializeResult = {
             capabilities: {
@@ -33,7 +33,7 @@ export class LspServer {
             }
         };
 
-        this.logger.error('onInitialize result', initializeResult);
+        this.logger.info('onInitialize result', initializeResult);
         return initializeResult;
     }
 
@@ -71,7 +71,7 @@ export class LspServer {
     public didChangeTextDocument(params: lsp.DidChangeTextDocumentParams): void {
         const path = uriToPath(params.textDocument.uri)
 
-        this.logger.log('onDidCloseTextDocument', params, path);
+        this.logger.log('onDidChangeTextDocument', params, path);
         const document = this.openedDocumentUris.get(params.textDocument.uri);
         if (!document) {
             this.logger.error('Received change on non-opened document ' +
@@ -108,7 +108,7 @@ export class LspServer {
 
     public async completion(params: lsp.TextDocumentPositionParams)
     : Promise<lsp.CompletionList> {
-        this.logger.error('completion', params)
+        this.logger.info('completion', params)
 
         const doc = this.openedDocumentUris.get(params.textDocument.uri)
         if (doc !== undefined) {
