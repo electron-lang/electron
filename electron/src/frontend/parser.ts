@@ -1,4 +1,4 @@
-import {Lexer, Parser, IToken, TokenType} from 'chevrotain'
+import { Lexer, Parser, IToken } from 'chevrotain'
 import { Analog, Assign, Attribute, Cell, CloseCurly, CloseRound,
          CloseSquare, CloseTag, Colon, Comma, Comment, Const, BitVector, Declare,
          DesignComment, Dot, Export, False, From, Identifier, Import,
@@ -62,56 +62,6 @@ export const allTokens = [
     OpenTag,
     CloseTag,
 ]
-
-export let tokenScopes: {[idx: number]: string} = {}
-function setScope(token: TokenType, scope: string) {
-    tokenScopes[token.tokenTypeIdx || 0] = scope
-}
-setScope(Analog, 'keyword')
-setScope(Assign, 'operator')
-setScope(Attribute, 'string')
-setScope(BitVector, 'number')
-setScope(Cell, 'keyword')
-setScope(CloseCurly, 'delimiter')
-setScope(CloseRound, 'delimiter')
-setScope(CloseSquare, 'delimiter')
-setScope(CloseTag, 'string')
-setScope(Colon, 'delimiter')
-setScope(Comma, 'delimiter')
-setScope(Comment, 'comment')
-setScope(Const, 'keyword')
-setScope(Declare, 'keyword')
-setScope(DesignComment, 'comment.doc')
-setScope(Dot, 'delimiter')
-setScope(Export, 'keyword')
-setScope(False, 'keyword')
-setScope(From, 'keyword')
-setScope(Identifier, 'identifier')
-setScope(Import, 'keyword')
-setScope(Inout, 'keyword')
-setScope(Input, 'keyword')
-setScope(Integer, 'number')
-setScope(Minus, 'operator')
-setScope(Module, 'keyword')
-setScope(ModuleComment, 'comment.doc')
-setScope(Net, 'keyword')
-setScope(OpenCurly, 'delimiter')
-setScope(OpenRound, 'delimiter')
-setScope(OpenSquare, 'delimiter')
-setScope(OpenTag, 'string')
-setScope(Output, 'keyword')
-setScope(Plus, 'operator')
-setScope(Real, 'number')
-setScope(Semicolon, 'delimiter')
-setScope(ShiftLeft, 'operator')
-setScope(ShiftRight, 'operator')
-setScope(Star, 'operator')
-setScope(String, 'string')
-setScope(Tag, 'string')
-setScope(True, 'keyword')
-setScope(Unit, 'number')
-setScope(With, 'keyword')
-setScope(Whitespace, 'whitespace')
 
 export const lexerInstance = new Lexer(allTokens)
 
