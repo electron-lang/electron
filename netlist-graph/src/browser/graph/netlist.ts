@@ -77,7 +77,10 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         }
         smod.children = []
         smod.children.push(this.symbols[umod.modName])
-        smod.children.push(this.createSchematic(urn.Schematic(umod), mod))
+        const schematic = this.createSchematic(urn.Schematic(umod), mod)
+        if (schematic) {
+            smod.children.push(schematic)
+        }
         return smod
     }
 
@@ -102,9 +105,13 @@ export class NetlistGraphGenerator implements IGraphGenerator {
         return newMod
     }
 
-    private createSchematic(uschem: urn.Schematic, mod: cl.IModule): SchematicNodeSchema {
+    private createSchematic(uschem: urn.Schematic, mod: cl.IModule)
+    : SchematicNodeSchema | undefined {
+        const imod = this.resolveModule(mod)
+        if (imod.attributes && imod.attributes.declare) return
+
         const [nodes, edges] =
-            createSchematicForModule(uschem, this.resolveModule(mod))
+            createSchematicForModule(uschem, imod)
         const sschem = <SchematicNodeSchema> {
             id: urn.toString(uschem),
             type: 'node:schematic',
@@ -116,6 +123,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
     }
 
     open(urname: urn.URN): void {
+        if (!this.index.getById(urn.toString(urname))) return
         this.navStack.push(urname)
         switch (urname.tag) {
             case 'file':

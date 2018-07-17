@@ -1,3 +1,4 @@
+/// @declare(true)
 /// module u1$mod {
 ///   @group("A")
 ///   @pads(("1"))

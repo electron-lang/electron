@@ -1,0 +1,12 @@
+//import a from "file"
+
+export declare module A {
+  @left analog a;
+  @right analog b;
+  @bottom analog gnd;
+}
+
+module Test {
+  @rotate(90)
+  cell c = A() {}
+}

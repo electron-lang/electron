@@ -30,7 +30,7 @@ export function createSymbolsForModule(usym: urn.Symbol, mod: cl.IModule)
         builder.addPort(pname, mod.ports[pname])
     }
 
-    const skin = mod.attributes ? mod.attributes['skin'] : undefined
+    const skin = mod.attributes && mod.attributes.skin
 
     const groups: GroupNodeSchema[] = []
     for (let group of builder.getGroups()) {

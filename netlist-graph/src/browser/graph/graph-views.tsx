@@ -67,16 +67,24 @@ export class GroupNodeView extends OrientationAware implements IView {
                 ></rect>) as any as VNode
     }
 
-    render(node: Readonly<GroupNode>, context: RenderingContext): VNode {
-        let name = node.urn.urn.urn.modName
-        if (node.urn.groupName !== 'default') {
-            name + '_' + node.urn.groupName
+    getLabel(node: Readonly<GroupNode>): string {
+        if (node.urn.tag === 'schematic-cell-group') {
+            return node.urn.urn.cellName
+        } else {
+            let name = node.urn.urn.urn.modName
+            if (node.urn.groupName !== 'default') {
+                return name + '_' + node.urn.groupName
+            }
+            return name
         }
+    }
+
+    render(node: Readonly<GroupNode>, context: RenderingContext): VNode {
         return this.renderContainer(node.orient, (
                 <g>
 
                 <g transform={`translate(0, ${node.ntop > 0 ? -23 : -3})`}>
-                {this.renderText(name, 'left')}
+                {this.renderText(this.getLabel(node), 'left')}
                 </g>
 
                 {!node.skin ? this.renderGeneric(node, context) : ''}

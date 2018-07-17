@@ -576,6 +576,7 @@ export class Elaborator extends BaseElectronVisitor {
 
     anonymousCell(ctx: any): ast.IInst {
         let mod = ast.Module(undefined, [])
+        mod.declaration = true
         mod.src = tokenToSrcLoc(ctx.Cell[0])
 
         const conns = [].concat.apply([], (() => {

@@ -122,7 +122,7 @@ export class SchematicNode extends RectangularNode {
 
 /* Group Node */
 export interface GroupNodeSchema extends SNodeSchema, ILink {
-    urn: urn.SymGroup
+    urn: urn.SymGroup | urn.CellGroup
     type: 'node:group'
     ntop: number
     nleft: number
@@ -138,7 +138,8 @@ export function isGroup(element?: SModelElementSchema)
 }
 
 export class GroupNode extends RectangularNode {
-    urn = urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), '')
+    urn: urn.SymGroup | urn.CellGroup =
+        urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), '')
     type = 'node:group'
     ntop: number = 0
     nleft: number = 0

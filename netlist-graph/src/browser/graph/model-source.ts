@@ -73,13 +73,25 @@ export class NetlistGraphModelSource extends LocalModelSource {
                 } else if (isPin(elem)) {
                     this.trace(elem.urn.urn.urn.urn.urn.uri, elem.trace)
                 } else if (isGroup(elem)) {
-                    const mod = this.graphGenerator.index
-                        .getById(urn.toString(elem.urn.urn.urn))
-                    if (isModule(mod)) {
-                        this.trace(mod.urn.urn.uri, mod.trace)
-                    } else if (isCell(mod)) {
-                        this.trace(mod.urn.urn.urn.urn.uri, mod.trace)
+                    if (elem.urn.tag === 'schematic-cell-group') {
+                        const cell = this.graphGenerator.index
+                            .getById(urn.toString(elem.urn.urn))
+                        if (isCell(cell)) {
+                            this.trace(cell.urn.urn.urn.urn.uri, cell.trace)
+                        } else {
+                            console.log(elemId)
+                        }
+                    } else if (elem.urn.tag === 'symbol-group') {
+                        const mod = this.graphGenerator.index
+                            .getById(urn.toString(elem.urn.urn.urn))
+                        if (isModule(mod)) {
+                            this.trace(mod.urn.urn.uri, mod.trace)
+                        } else {
+                            console.log(elemId)
+                        }
                     }
+                } else {
+                    console.log(elemId)
                 }
                 break;
             }

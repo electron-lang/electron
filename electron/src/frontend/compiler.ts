@@ -295,7 +295,7 @@ export class ASTCompiler {
 
         const ircellmod = (() => {
             this.mods.push(irmod)
-            if (inst.mod.ref.declaration) {
+            if (inst.mod.ref.declaration && !inst.mod.ref.anonymous) {
                 return inst.mod.ref.name
             }
             return irmod

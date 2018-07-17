@@ -70,6 +70,7 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
         for (let group of ssym.children) {
             const ugroup = urn.CellGroup(ucell, group.urn.groupName)
             group.id = urn.toString(ugroup)
+            group.urn = ugroup
             group.orient = orient
             for (let pin of group.children || []) {
                 if (isPin(pin)) {
