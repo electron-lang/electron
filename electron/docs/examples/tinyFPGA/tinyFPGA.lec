@@ -2,19 +2,22 @@
 //! Rev: v1.1
 
 import $R, $C, $L from "../cells"
-module Tp {input A}
-module Bead {analog A, B}
-module PushBtn {analog A, B}
+declare module Tp {input A}
+declare module Bead {analog A, B}
+declare module PushBtn {analog A, B}
 
 /// USB connection and power filtering
 module Usb {
   analog '+5V, '+3V3, GND, USB_P, USB_N
 
-  @bom("", "")
+  @bom("TDK", "C1608X5R0J106M080AB")
+  // 10uF Ceramic Capacitor, 6.3V, X5R, 20%
   @rotate(90)
   cell C17 = $C(10uF) {A='+5V, B=GND}
 
   net vbus, dp, dn, gnd
+  @bom("FCI", "10118192-0001LF")
+  // USB Micro Connector
   cell J3 = cell {
     @right {
       @set_pad(1)
@@ -32,15 +35,19 @@ module Usb {
     }
   }
 
-  @bom("", "")
+  @bom("Murata", "BLM18PG300SN1D")
+  // Ferrite Bead, 30ohm@100MHz impedance
+  // 50mOhm DC resistance
   @rotate(90)
   cell L1 = Bead() {A='+5V, B=vbus}
 
-  @bom("", "")
+  @bom("Bourns", "CR0402-FX-1501GLF")
+  // 1.5k resistor, 1% tolerance, 1/10 watt
   @rotate(90)
   cell R1 = $R(1.5k) {A='+3V3, B=dp}
 
-  @bom("", "")
+  @bom("Panasonic", "ERJ-2RKF68ROX")
+  // 68ohm resistor, 1% tolerance, 1/10 watt
   cell R2, R3 = $R(68ohm) {A=dp, B=USB_P}, $R(68ohm) {A=dn, B=USB_N}
 }
 
@@ -49,10 +56,13 @@ module Vreg {
   analog '+5V, '+3V3, '+1V2
   analog GND
 
-  @bom("", "")
+  @bom("Murata", "GRM155R61A105KE15D")
+  // 1uF Ceramic Capacitor, 10V, X7R, 10%
+  // package: 0402
   cell C1 = $C(1uF) {A='+5V, B=GND}
 
-  @bom("", "MIC5504-3.3YM5-TR")
+  @bom("Microchip", "MIC5504-3.3YM5-TR")
+  // 3.3V LDO
   cell U2 = cell {
     @left {
       @set_pad(1)
@@ -71,13 +81,18 @@ module Vreg {
     analog GND
   }
 
-  @bom("", "")
+  @bom("Murata", "GRM155R61A105KE15D")
+  // 1uF Ceramic Capacitor, 10V, X7R, 10%
+  // package: 0402
   cell C4 = $C(1uF) {A='+3V3, B=GND}
 
-  @bom("", "")
+  @bom("Murata", "GRM155R61A105KE15D")
+  // 1uF Ceramic Capacitor, 10V, X7R, 10%
+  // package: 0402
   cell C2 = $C(1uF) {A='+3V3, B=GND}
 
-  @bom("", "MIC5365-1.2YC5-TR")
+  @bom("Microchip", "MIC5365-1.2YC5-TR")
+  // 1.2V LDO
   cell U4 = cell {
     @left {
       @set_pad(1)
@@ -93,7 +108,9 @@ module Vreg {
     analog GND
   }
 
-  @bom("", "")
+  @bom("Murata", "GRM155R61A105KE15D")
+  // 1uF Ceramic Capacitor, 10V, X7R, 10%
+  // package: 0402
   cell C3 = $C(1uF) {A='+1V2, B=GND}
 }
 
@@ -101,9 +118,15 @@ module Vreg {
 module Clock {
   analog '+3V3, GND, CLK
 
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   @rotate(90)
   cell C5 = $C(100nF) {A='+3V3, B=GND}
 
+  @bom("Microchip", "DSC6001CI2A-016.0000T")
+  // 16MHz Clock
+  // alt-part: DSC6001CI2A-016.0000
+  // package: CDFN3225-4LD-PL-1
   cell U3 = cell {
     @right
     @set_pad(1)
@@ -123,7 +146,9 @@ module Flash {
   analog SCK, SDO, SDI, SS
   net WP
 
-  @bom("", "AT25SF041-SSHD-B")
+  @bom("Adesto Technologies", "AT25SF041-SSHD-B")
+  // 4MBit SPI Flash
+  // SOIC-8 3.9x4.9mm Pitch1.27mm
   cell U5 = cell {
     @left
     @set_pad(3)
@@ -146,7 +171,11 @@ module Flash {
   }
 
   cell TP1 = Tp() {A=WP}
+  @bom("Vishay", "CRCW040210K0FKED")
+  // 10k resistor, 1% tolerance, 1/16 watt
   cell R7 = $R(10k) {A=WP, B=GND}
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C8 = $C(100nF) {A='+3V3, B=GND}
 }
 
@@ -159,6 +188,7 @@ module Headers {
     SS, SCK, SDI, SDO
 
   @bom("", "CONN_01x14")
+  // TODO: mpn
   cell J1 = cell {
     @left {
       @set_pad(1)
@@ -193,6 +223,7 @@ module Headers {
   }
 
   @bom("", "CONN_01x14")
+  // TODO: mpn
   cell J2 = cell {
     @right {
       @set_pad(1)
@@ -232,24 +263,46 @@ module FpgaPower {
   analog '+1V2, '+3V3, GND
   analog VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3
 
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C9 = $C(100nF) {A=VCCIO_0, B=GND}
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C10 = $C(100nF) {A=VCCIO_1, B=GND}
 
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C16 = $C(100nF) {A=VCCIO_2, B=GND}
-  cell C5 = $C(10nF) {A=VCCIO_2, B=GND}
+  @bom("Wurth Electronics", "885012105050")
+  // 10nF Ceramic Capacitor, 25V, X7R, 10%
+  cell C15 = $C(10nF) {A=VCCIO_2, B=GND}
 
+  @bom("Wurth Electronics", "885012105050")
+  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C14 = $C(10nF) {A=VCCIO_3, B=GND}
 
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C11 = $C(100nF) {A=VCC, B=GND}
+  @bom("Wurth Electronics", "885012105050")
+  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C12 = $C(10nF) {A=VCC, B=GND}
+  @bom("Wurth Electronics", "885012105050")
+  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C13 = $C(10nF) {A=VCC, B=GND}
 }
 
 /// FPGA PLL decoupling capacitors
 module FpgaPLL {
   analog '1V2, VCCPLL0, GNDPLL0
+  @bom("KOA", "RK73H1ETTP1000F")
+  // 100ohm resistor, 1% tolerance, 1/10 watt
   cell R4 = $R(100ohm) {A='1V2, B=VCCPLL0}
+  @bom("TDK", "C1608X5R0J106M080AB")
+  // 10uF Ceramic Capacitor, 6.3V, X5R, 20%
   cell C6 = $C(10uF) {A=VCCPLL0, B=GNDPLL0}
+  @bom("Wurth Electronics", "885012105018")
+  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C7 = $C(100nF) {A=VCCPLL0, B=GNDPLL0}
 }
 
@@ -257,14 +310,18 @@ module FpgaPLL {
 module FpgaReset {
   analog '+3.3V, GND, CRESET_B
 
-  cell R6 = $R(0ohm) {A='+3.3V, B=CRESET_B}
+  @bom("Vishay", "CRCW040210K0FKED")
+  // 10k resistor, 1% tolerance, 1/16 watt
+  cell R6 = $R(10k) {A='+3.3V, B=CRESET_B}
   cell TP2 = Tp() {A=CRESET_B}
+  @bom("C&K Components", "PTS810 SJM 250 SMTR LFS")
+  // Reset/Program Button
   cell SW1 = cell {analog A=GND; analog B=CRESET_B}
 }
 
-@bom("Lattice", "")
+@bom("Lattice Semiconductor", "ICE40LP8K-CM81")
 @fpga("ice40-lp8k-cm81")
-module ICE40_LP8K_CM81 {
+declare module ICE40_LP8K_CM81 {
   @group("A") {
     @set_pad("C7")
     analog VPP_FAST
@@ -433,10 +490,12 @@ export module TinyFPGA {
   cell fpga_pll = FpgaPLL() {*}
   cell fpga_reset = FpgaReset() {*}
 
+  @bom("Vishay", "CRCW040210K0FKED")
+  // 10k resistor, 1% tolerance, 1/16 watt
   cell R5 = $R(10k) {A='+3V3, B=SS}
 
   net VPP_FAST, CDONE, '81_GBIN5
-  cell fpga = ICE40_LP8K_CM81() {
+  cell U1 = ICE40_LP8K_CM81() {
     VPP_FAST
     VPP_2V5='+3V3
     CDONE
