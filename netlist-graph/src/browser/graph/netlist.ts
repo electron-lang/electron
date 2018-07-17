@@ -32,9 +32,23 @@ export class NetlistGraphGenerator implements IGraphGenerator {
             this.symbols[modName] = sym
         }
         const sfile = this.createFile(ufile, netlist)
-        this.index.add(sfile)
-        this.elements.push(sfile)
-        this.open(ufile)
+        this.updateFile(sfile)
+    }
+
+    protected updateFile(file: FileNodeSchema): void {
+        for (let i = 0; i < this.elements.length; i++) {
+            const elem = this.elements[i]
+            if (isFile(elem) && elem.urn.uri === file.urn.uri) {
+                this.index.remove(elem)
+                this.elements[i] = file
+                this.index.add(file)
+                this.open(file.urn)
+                return
+            }
+        }
+        this.index.add(file)
+        this.elements.push(file)
+        this.open(file.urn)
     }
 
     private createFile(ufile: urn.File, netlist: cl.INetlist): FileNodeSchema {

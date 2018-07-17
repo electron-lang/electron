@@ -13,6 +13,7 @@
   "dependencies": {
     "@electron-lang/celllib": "^0.0.3",
     "@theia/core": "next",
+    "@theia/filesystem": "next",
     "elkjs": "latest",
     "sprotty": "next",
     "theia-sprotty": "next"
