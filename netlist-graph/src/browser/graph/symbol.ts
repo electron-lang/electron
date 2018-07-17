@@ -82,6 +82,7 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[], skin?: string): Group
             side: port.side,
             pad: port.pad || '',
             fixed: !!skin,
+            trace: port.attributes && port.attributes.src,
         }
         if (port.attributes
             && typeof port.attributes['port_x'] === 'number'

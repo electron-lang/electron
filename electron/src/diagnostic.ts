@@ -26,6 +26,7 @@ export interface ISrcLoc {
     startColumn: number,
     endLine: number,
     endColumn: number,
+    file?: string,
 }
 
 export function SrcLoc(start: IPos, end: IPos): ISrcLoc {

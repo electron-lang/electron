@@ -73,6 +73,7 @@ export class NetlistGraphGenerator implements IGraphGenerator {
             type: 'node:module',
             urn: umod,
             hidden: true,
+            trace: mod.attributes && mod.attributes.src
         }
         smod.children = []
         smod.children.push(this.symbols[umod.modName])

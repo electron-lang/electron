@@ -24,7 +24,6 @@ export class SchematicDiagramManager extends DiagramManagerImpl {
     @inject(FileSystemWatcher)
     protected readonly watcher!: FileSystemWatcher
 
-
     readonly diagramType: string = SCHEMATIC_DIAGRAM_TYPE
 
     iconClass: string = 'fa fa-microchip'

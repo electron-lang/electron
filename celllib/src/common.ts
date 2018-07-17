@@ -8,7 +8,7 @@ export interface IModules {
 }
 
 export interface IModule {
-    attributes: IAttrs
+    attributes?: IAttrs
     ports: IPorts
     cells: ICells
     netnames: INets

@@ -10,6 +10,17 @@ export interface ILink {
     link: urn.URN
 }
 
+export interface SrcLoc {
+    startLine: number,
+    startColumn: number,
+    endLine: number,
+    endColumn: number,
+}
+
+export interface Traceable {
+    trace?: SrcLoc
+}
+
 export function sideToOrientation(side: Side): Orientation {
     switch(side) {
         case 'top':
@@ -55,7 +66,7 @@ export class FileNode extends RectangularNode {
 /* File Node */
 
 /* Module Node */
-export interface ModuleNodeSchema extends SNodeSchema {
+export interface ModuleNodeSchema extends SNodeSchema, Traceable {
     urn: urn.Module
     type: 'node:module'
     hidden: boolean
@@ -66,9 +77,10 @@ export function isModule(element?: SModelElementSchema)
     return element !== undefined && element.type === 'node:module'
 }
 
-export class ModuleNode extends RectangularNode {
+export class ModuleNode extends RectangularNode implements Traceable {
     type = 'node:module'
     hidden = true
+    trace = undefined
 }
 /* Module Node */
 
@@ -146,7 +158,7 @@ export class GroupNode extends RectangularNode {
 /* Group Node */
 
 /* Pin Port */
-export interface PinPortSchema extends SPortSchema {
+export interface PinPortSchema extends SPortSchema, Traceable {
     urn: urn.SymPort
     type: 'port:pin'
     side: Side
@@ -155,12 +167,13 @@ export interface PinPortSchema extends SPortSchema {
     groupId?: string
 }
 
-export class PinPort extends SPort {
+export class PinPort extends SPort implements Traceable {
     urn = urn.SymPort(urn.SymGroup(urn.Symbol(urn.Module(urn.File(''), '')), ''), '')
     type = 'port:pin'
     side: Side = 'left'
     pad = ''
     fixed = false
+    trace = undefined
 
     getAnchor(referencePoint: Point, offset?: number): Point {
         const anchor = {x: this.bounds.x, y: this.bounds.y}
@@ -189,16 +202,17 @@ export function isPin(element?: SModelElementSchema)
 /* Pin Port */
 
 /* Port Node */
-export interface PortNodeSchema extends SNodeSchema, ILink {
+export interface PortNodeSchema extends SNodeSchema, Traceable, ILink {
     urn: urn.Port
     type: 'node:port'
     orient: Orientation
 }
 
-export class PortNode extends RectangularNode {
+export class PortNode extends RectangularNode implements Traceable {
     urn = urn.Port(urn.Schematic(urn.Module(urn.File(''), '')), '')
     type = 'node:port'
     orient: Orientation = 0
+    trace = undefined
 
     hasFeature(feature: symbol): boolean {
         if (feature === openFeature) {
@@ -220,13 +234,14 @@ export function isPort(element?: SModelElementSchema)
 /* Port Node */
 
 /* Cell Node */
-export interface CellNodeSchema extends SNodeSchema {
+export interface CellNodeSchema extends SNodeSchema, Traceable {
     urn: urn.Cell
     type: 'node:cell'
 }
 
-export class CellNode extends RectangularNode {
+export class CellNode extends RectangularNode implements Traceable {
     type = 'node:cell'
+    trace = undefined
 }
 
 export function isCell(element?: SModelElementSchema)

@@ -9,13 +9,15 @@ export function compileNetlist(mods: ir.IModule[]): cl.INetlist {
     return { modules }
 }
 
-function compileModule(mod: ir.IModule): cl.IModule {
-    return {
-        attributes: compileAttrs(mod.attrs),
-        ports: compilePorts(mod.ports),
-        cells: compileCells(mod.cells),
-        netnames: compileNets(mod.nets),
+function compileModule(m: ir.IModule): cl.IModule {
+    const mod: cl.IModule = {
+        ports: compilePorts(m.ports),
+        cells: compileCells(m.cells),
+        netnames: compileNets(m.nets),
     }
+    mod.attributes = compileAttrs(m.attrs)
+    mod.attributes.src = m.src
+    return mod
 }
 
 function compileAttrs(attrs: ir.IAttr[]): cl.IAttrs {
@@ -29,11 +31,13 @@ function compileAttrs(attrs: ir.IAttr[]): cl.IAttrs {
 function compilePorts(ps: ir.IPort[]): cl.IPorts {
     const ports: cl.IPorts = {}
     for (let p of ps) {
-        ports[p.name] = {
-            attributes: compileAttrs(p.attrs),
+        const port: cl.IPort = {
             direction: p.ty,
             bits: compileSigs(p.value),
         }
+        port.attributes = compileAttrs(p.attrs)
+        port.attributes.src = p.src
+        ports[p.name] = port
     }
     return ports
 }
@@ -41,12 +45,14 @@ function compilePorts(ps: ir.IPort[]): cl.IPorts {
 function compileCells(cs: ir.ICell[]): cl.ICells {
     const cells: cl.ICells = {}
     for (let c of cs) {
-        cells[c.name] = {
+        const cell: cl.ICell = {
             type: typeof c.module === 'string' ? c.module : c.module.name,
-            attributes: compileAttrs(c.attrs),
             parameters: compileParams(c.params),
             connections: compileAssigns(c.assigns),
         }
+        cell.attributes = compileAttrs(c.attrs)
+        cell.attributes.src = c.src
+        cells[c.name] = cell
     }
     return cells
 }
@@ -54,11 +60,13 @@ function compileCells(cs: ir.ICell[]): cl.ICells {
 function compileNets(ns: ir.INet[]): cl.INets {
     const nets: cl.INets = {}
     for (let n of ns) {
-        nets[n.name] = {
-            attributes: compileAttrs(n.attrs),
+        const net: cl.INet = {
             hide_name: 0,
             bits: compileSigs(n.value),
         }
+        net.attributes = compileAttrs(n.attrs)
+        net.attributes.src = n.src
+        nets[n.name] = net
     }
     return nets
 }

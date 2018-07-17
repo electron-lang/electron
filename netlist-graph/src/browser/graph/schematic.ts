@@ -47,7 +47,8 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
                         type: 'port:port',
                         position: {x: 30, y: 10},
                     }
-            ]
+            ],
+            trace: port.attributes && port.attributes.src
         }
         nodes.push(node)
         addBv(nets, port.bits, uport, side)
@@ -61,6 +62,7 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
             id: urn.toString(ucell),
             type: 'node:cell',
             urn: ucell,
+            trace: cell.attributes && cell.attributes.src
         }
         if (!cell.sym) continue
         const ssym = JSON.parse(JSON.stringify(cell.sym))

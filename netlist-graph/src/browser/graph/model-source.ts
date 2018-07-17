@@ -2,14 +2,17 @@ import { injectable, inject, optional } from 'inversify'
 import { TYPES, LocalModelSource, ILogger, IActionDispatcher,
          ActionHandlerRegistry, ViewerOptions, IModelLayoutEngine,
          IStateAwareModelProvider, IPopupModelProvider,
-         Action, OpenAction } from 'sprotty/lib'
+         Action, OpenAction, SelectAction, SelectCommand } from 'sprotty/lib'
+import { OpenInTextEditorMessage } from '../widget/diagram-config'
 import { IGraphGenerator } from './graph-generator'
-import { isGroup, isPort } from './graph-model'
+import { isGroup, isPort, isPin, isModule, isCell, SrcLoc } from './graph-model'
+import * as urn from './urn'
 
 @injectable()
 export class NetlistGraphModelSource extends LocalModelSource {
 
     loadIndicator: (loadStatus: boolean) => void = () => {}
+    openInTextEditor: (message: OpenInTextEditorMessage) => void = () => {}
 
     constructor(@inject(TYPES.IActionDispatcher)
                 actionDispatcher: IActionDispatcher,
@@ -39,6 +42,7 @@ export class NetlistGraphModelSource extends LocalModelSource {
         super.initialize(registry);
 
         registry.register(OpenAction.KIND, this);
+        registry.register(SelectCommand.KIND, this);
     }
 
     updateModel(): Promise<void> {
@@ -48,7 +52,7 @@ export class NetlistGraphModelSource extends LocalModelSource {
 
     handle(action: Action): void {
         switch (action.kind) {
-            case OpenAction.KIND:
+            case OpenAction.KIND: {
                 const elemId = (action as OpenAction).elementId
                 const elem = this.graphGenerator.index.getById(elemId)
                 if (isGroup(elem)) {
@@ -60,9 +64,49 @@ export class NetlistGraphModelSource extends LocalModelSource {
                 }
                 this.updateModel()
                 break;
+            }
+            case SelectCommand.KIND: {
+                const elemId = (action as SelectAction).selectedElementsIDs[0]
+                const elem = this.graphGenerator.index.getById(elemId)
+                if (isPort(elem)) {
+                    this.trace(elem.urn.urn.urn.urn.uri, elem.trace)
+                } else if (isPin(elem)) {
+                    this.trace(elem.urn.urn.urn.urn.urn.uri, elem.trace)
+                } else if (isGroup(elem)) {
+                    const mod = this.graphGenerator.index
+                        .getById(urn.toString(elem.urn.urn.urn))
+                    if (isModule(mod)) {
+                        this.trace(mod.urn.urn.uri, mod.trace)
+                    } else if (isCell(mod)) {
+                        this.trace(mod.urn.urn.urn.urn.uri, mod.trace)
+                    }
+                }
+                break;
+            }
             default:
                 super.handle(action);
         }
+    }
+
+    trace(uri: string, src: SrcLoc | undefined): void {
+        if (!src) return
+
+        this.openInTextEditor({
+            location: {
+                uri: uri.split('.').slice(0, -1).join('.'),
+                range: {
+                    start: {
+                        line: src.startLine - 1,
+                        character: src.startColumn - 1,
+                    },
+                    end: {
+                        line: src.endLine - 1,
+                        character: src.endColumn,
+                    }
+                }
+            },
+            forceOpen: false
+        })
     }
 
 }
