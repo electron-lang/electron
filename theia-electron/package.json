@@ -18,7 +18,7 @@
   "dependencies": {
     "@electron-lang/electron": "^0.0.4",
     "@electron-lang/language-server": "^0.0.4",
-    "@theia/core": "next",
+    "@electron-lang/netlist-graph": "^0.0.4",
     "@theia/editor": "next",
     "@theia/languages": "next",
     "@theia/monaco": "next"
@@ -28,8 +28,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/electron-frontend-module",
-      "backend": "lib/node/electron-backend-module"
+      "frontend": "lib/browser/frontend-extension",
+      "backend": "lib/node/backend-extension"
     }
   ]
 }
