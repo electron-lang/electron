@@ -7,6 +7,7 @@ import { ELECTRON_LANGUAGE_ID, ELECTRON_LANGUAGE_NAME } from '../common';
 export class ElectronGrammarContribution implements LanguageGrammarDefinitionContribution {
 
     readonly config: monaco.languages.LanguageConfiguration = {
+        wordPattern: /@?[a-zA-Z$]\w*|'[^\(\)\[\]{},:\s]+/,
         brackets: [['(', ')'], ['{', '}'], ['[', ']']],
         autoClosingPairs: [
             { open: '(', close: ')' },
