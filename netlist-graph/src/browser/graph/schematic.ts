@@ -78,9 +78,14 @@ export function createSchematicForModule(uschem: urn.Schematic, mod: IModule)
                     const uport = urn.CellPort(ucell, portName)
                     pin.id = urn.toString(uport)
                     pin.groupId = group.id
-                    if (pin.urn.portName in cell.connections) {
-                        const bv = cell.connections[portName]
-                        addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)
+                    if (pin.padPin > 0) {
+                        pin.id += ':' + pin.padPin.toString()
+                    } else {
+                        // TODO connect padPins
+                        if (pin.urn.portName in cell.connections) {
+                            const bv = cell.connections[portName]
+                            addBv(nets, bv, urn.CellPort(ucell, portName), pin.side)
+                        }
                     }
                 }
             }
@@ -106,12 +111,13 @@ function addBv(nets: Nets, bv: cl.Vector, u: urn.URN | string, side: Side | null
             if (typeof u === 'string') {
                 conns.netname = u
             } else {
+                const id = urn.toString(u)
                 if (side === 'left') {
-                    conns.drivers.push(urn.toString(u))
+                    conns.drivers.push(id)
                 } else if (side === 'right') {
-                    conns.riders.push(urn.toString(u))
+                    conns.riders.push(id)
                 } else {
-                    conns.laterals.push(urn.toString(u))
+                    conns.laterals.push(id)
                 }
             }
             nets[bit] = conns

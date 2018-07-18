@@ -34,7 +34,7 @@ export function createSymbolsForModule(usym: urn.Symbol, mod: cl.IModule)
 
     const groups: GroupNodeSchema[] = []
     for (let group of builder.getGroups()) {
-        const ugroup = urn.SymGroup(usym, group.name || 'default')
+        const ugroup = urn.SymGroup(usym, group.name)
         groups.push(createGroup(ugroup, group.ports, skin))
     }
     return groups
@@ -80,9 +80,10 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[], skin?: string): Group
             type: 'port:pin',
             urn: uport,
             side: port.side,
-            pad: port.pad || '',
+            pad: port.pads[0] || '',
             fixed: !!skin,
             trace: port.attributes && port.attributes.src,
+            padPin: 0,
         }
         if (port.attributes
             && typeof port.attributes['port_x'] === 'number'
@@ -93,34 +94,40 @@ function createGroup(ugroup: urn.SymGroup, ports: IPort[], skin?: string): Group
             }
         }
         groupNode.children.push(pin)
+
+        if (port.pads.length > 1) {
+            for (let i = 1; i < port.pads.length; i++) {
+                const padPin: PinPortSchema = JSON.parse(JSON.stringify(pin))
+                padPin.id += ':' + i.toString()
+                padPin.pad = port.pads[i]
+                padPin.padPin = i
+                groupNode.children.push(padPin)
+            }
+        }
     }
     return groupNode
 }
 
 interface IPort extends cl.IPort {
     name: string
-    pad?: string
-    group?: string
+    pads: string[]
+    group: string
     side: Side
 }
 
 interface IGroup {
-    name?: string
+    name: string
     ports: IPort[]
 }
 
-function Group(name?: string): IGroup {
+function Group(name: string): IGroup {
     return { name, ports: [] }
 }
 
 class ModuleBuilder {
-    private defaultGroup: IGroup = Group()
     private groups: {[key: string]: IGroup} = {}
 
-    getGroup(name?: string): IGroup {
-        if (!name) {
-            return this.defaultGroup
-        }
+    getGroup(name: string): IGroup {
         if (!(name in this.groups)) {
             this.groups[name] = Group(name)
         }
@@ -132,13 +139,8 @@ class ModuleBuilder {
         port.name = name
         port.side = getSideForPort(port)
 
-        if (port.attributes && port.attributes['pads']) {
-            port.pad = port.attributes['pads'].join(', ')
-        }
-
-        if (port.attributes && port.attributes['group']) {
-            port.group = port.attributes['group']
-        }
+        port.pads = port.attributes && port.attributes['pads'] || []
+        port.group = port.attributes && port.attributes['group'] || 'default'
 
         const group = this.getGroup(port.group)
         group.ports.push(port)
@@ -149,10 +151,6 @@ class ModuleBuilder {
 
         for (let gname in this.groups) {
             groups.push(this.groups[gname])
-        }
-
-        if (groups.length < 1) {
-            groups.push(this.defaultGroup)
         }
 
         return groups

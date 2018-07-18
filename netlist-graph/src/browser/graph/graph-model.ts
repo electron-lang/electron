@@ -166,6 +166,7 @@ export interface PinPortSchema extends SPortSchema, Traceable {
     pad: string
     fixed: boolean
     groupId?: string
+    padPin: number
 }
 
 export class PinPort extends SPort implements Traceable {
@@ -175,6 +176,7 @@ export class PinPort extends SPort implements Traceable {
     pad = ''
     fixed = false
     trace = undefined
+    padPin = 0
 
     getAnchor(referencePoint: Point, offset?: number): Point {
         const anchor = {x: this.bounds.x, y: this.bounds.y}
