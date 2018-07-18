@@ -1,7 +1,6 @@
 .sprotty {
-    background-color: #002b36; /* base03 */
-    stroke: #d33682; /* magenta */
-    fill: #002b36; /* base03 */
+    stroke: var(--theia-accent-color2);
+    fill: var(--theia-accent-color3);
     stroke-linejoin: round;
     stroke-linecap: round;
     stroke-width: 2;
@@ -12,17 +11,17 @@
 }
 
 text {
-    fill: #657b83; /* base00 */
+    fill: var(--theia-ui-font-color1);
     stroke: none;
     font-family: "Lucida Console", Monaco, monospace;
 }
 
-.mouseover {
-    stroke: #6c71c4; /* violet */
-}
+/*.mouseover {
+    stroke: #6c71c4;  violet
+}*/
 
 .selected {
-    stroke: #859900; /* green */
+    stroke: var(--theia-accent-color0);
 }
 
 svg text {
