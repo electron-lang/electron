@@ -12,9 +12,7 @@
     "test": "yarn run utest && yarn run ctest",
     "utest": "mocha -r ts-node/register 'src/**/*.spec.ts'",
     "ctest": "mocha -r ts-node/register 'src/tests/run_tests.ts'",
-    "cov": "nyc yarn run test",
-    "docs": "yarn run railroad",
-    "railroad": "ts-node docs/railroad.ts"
+    "cov": "nyc yarn run test"
   },
   "bin": {
     "electron": "./lib/cli.js"
