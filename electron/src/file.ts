@@ -143,11 +143,29 @@ export class File {
         return this
     }
 
-    importFile(path: string): ast.IModule[] | null {
-        const fullPath = resolve(dirname(this.path) + '/' + path + '.lec')
-        if (!existsSync(fullPath)) {
-            return null
+    resolvePackage(path: string): string | null {
+        if (!path.startsWith('.')) {
+            const pkg = '/node_modules/' + path + '.lec'
+            let dir = this.path
+            while (dir !== '/') {
+                dir = dirname(dir)
+                const fullPath = resolve(dir + pkg)
+                if (existsSync(fullPath)) {
+                    return fullPath
+                }
+            }
+        } else {
+            const fullPath = resolve(dirname(this.path) + '/' + path + '.lec')
+            if (existsSync(fullPath)) {
+                return fullPath
+            }
         }
+        return null
+    }
+
+    importFile(pkg: string): ast.IModule[] | null {
+        const fullPath = this.resolvePackage(pkg)
+        if (!fullPath) return null
         const f = new File(this.dc, fullPath)
         f.compile()
         this.imports.push(f)

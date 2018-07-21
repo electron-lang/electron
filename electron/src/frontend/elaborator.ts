@@ -128,16 +128,11 @@ export class Elaborator extends BaseElectronVisitor {
         const str = ctx.String[0].image
         const pkg = str.substring(1, str.length - 1)
 
-        if (!pkg.startsWith('.')) {
-            // TODO resolve external modules from packages
-            this.logger.warn('Package resolution unsupported', tokenToSrcLoc(pkg))
-            return
-        }
-
         const modules = this.file.importFile(pkg)
 
         if (!modules) {
-            this.logger.error(`File '${pkg}' not found.`, tokenToSrcLoc(pkg))
+            this.logger.error(`File '${pkg}' not found.`,
+                              tokenToSrcLoc(ctx.String[0]))
             return
         }
 

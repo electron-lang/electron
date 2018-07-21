@@ -1,4 +1,4 @@
-import $R from "../../../docs/examples/cells"
+import $R from "electron_lec/src/cells"
 
 /// @skin("<g><rect width="40" height="10"></rect></g>")
 /// @declare(true)
