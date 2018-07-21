@@ -17,6 +17,7 @@
     "browser-app",
     "electron-app",
     "electron-library",
+    "website",
     "examples/electron",
     "examples/tinyFPGA",
     "examples/dac",
