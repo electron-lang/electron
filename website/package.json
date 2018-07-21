@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "prepare": "yarn build",
     "examples": "docusaurus-examples",
     "start": "docusaurus-start",
     "build": "yarn run railroad && docusaurus-build",
