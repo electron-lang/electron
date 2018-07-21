@@ -15,7 +15,12 @@
     "netlist-graph",
     "theia-electron",
     "browser-app",
-    "electron-app"
+    "electron-app",
+    "electron-library",
+    "examples/electron",
+    "examples/tinyFPGA",
+    "examples/dac",
+    "examples/dacImpl"
   ],
   "resolutions": {
     "sprotty": "0.4.0"

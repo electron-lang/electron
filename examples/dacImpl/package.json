@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "dacImpl_lec",
+  "version": "1.0.0",
+  "description": "PCB implementation of dac$lec",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.4"
+  },
+  "dependencies": {
+    "tinyFPGA_lec": "^1.0.0",
+    "dac_lec": "^1.0.0"
+  },
+  "scripts": {
+    "prepare": "lecc compile src/dacImpl.lec"
+  }
+}

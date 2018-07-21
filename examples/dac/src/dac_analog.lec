@@ -1,4 +1,4 @@
-import $R, $C, $L, $D, $M from "../cells"
+import $R, $C, $L, $D, $M from "electron_lec/src/cells"
 
 /// First order lowpass filter
 module RCFilter(R: Ohm, C: Farad) {

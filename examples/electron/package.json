@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "electron_lec",
+  "version": "1.0.0",
+  "description": "Electron cell library",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.4"
+  },
+  "scripts": {
+    "prepare": "lecc compile src/cells.lec"
+  }
+}

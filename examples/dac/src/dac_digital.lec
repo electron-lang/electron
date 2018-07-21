@@ -1,4 +1,4 @@
-import $add, $dff, $mux, $not from "../cells"
+import $add, $dff, $mux, $not from "electron_lec/src/cells"
 
 module Add(WIDTH: Integer) {
     input[WIDTH] A, B

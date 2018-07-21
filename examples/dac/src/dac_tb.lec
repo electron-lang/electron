@@ -1,4 +1,4 @@
-import $V, $C, Clock from "../cells"
+import $V, $C, Clock from "electron_lec/src/cells"
 import DAC from "./dac"
 
 declare module Sawtooth(WIDTH: Integer) { output data }
@@ -7,11 +7,11 @@ export module DACTestbench {
     // Add a clock
     net clk
     cell clk_gen = Clock(FREQ=16MHz) { clk }
-    
+
     // IO power
     net vccio, gnd
     cell VccIo = $V(3.3V) { vcc=vccio, gnd=gnd }
-    
+
     // Driver supply rails
     net vdd, vss
     cell Vdd = $V(100V) { vcc=vdd, gnd }
@@ -19,7 +19,7 @@ export module DACTestbench {
 
     // Sawtooth input generator
     net data
-    cell InputGen = Sawtooth(WIDTH=8) { data } 
+    cell InputGen = Sawtooth(WIDTH=8) { data }
 
     // DAC instance
     net out

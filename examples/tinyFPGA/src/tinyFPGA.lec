@@ -1,7 +1,7 @@
 //! TinyFPGA Bx
 //! Rev: v1.1
 
-import $R, $C, $L from "../cells"
+import $R, $C, $L from "electron_lec/src/cells"
 declare module Tp {input A}
 declare module Bead {analog A, B}
 declare module PushBtn {analog A, B}

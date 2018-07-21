@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "tinyFPGA_lec",
+  "version": "1.0.0",
+  "description": "TinyFPGA electron port",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.4"
+  },
+  "dependencies": {
+    "electron_lec": "^1.0.0"
+  },
+  "scripts": {
+    "prepare": "lecc compile src/tinyFPGA.lec"
+  }
+}

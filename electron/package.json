@@ -15,7 +15,7 @@
     "cov": "nyc yarn run test"
   },
   "bin": {
-    "electron": "./lib/cli.js"
+    "lecc": "./lib/cli.js"
   },
   "nyc": {
     "extension": [

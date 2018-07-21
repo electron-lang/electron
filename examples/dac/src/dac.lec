@@ -1,4 +1,4 @@
-import $dac from "../cells"
+import $dac from "electron_lec/src/cells"
 import DACDigital from "./dac_digital"
 import DACAnalog from "./dac_analog"
 
