@@ -10,6 +10,8 @@
     "@electron-lang/electron": "^0.0.4"
   },
   "scripts": {
-    "prepare": "lecc compile src/cells.lec"
+    "prepare": "yarn build && yarn docs",
+    "build": "lecc compile src/cells.lec",
+    "docs": "lecc docs src/cells.lec ./docs"
   }
 }

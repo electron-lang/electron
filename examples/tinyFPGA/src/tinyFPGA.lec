@@ -1,6 +1,3 @@
-//! TinyFPGA Bx
-//! Rev: v1.1
-
 import $R, $C, $L from "electron_lec/src/cells"
 declare module Tp {input A}
 declare module Bead {analog A, B}
@@ -474,6 +471,8 @@ declare module ICE40_LP8K_CM81 {
   }
 }
 
+/// TinyFPGA Bx
+/// Rev: v1.1
 export module TinyFPGA {
   net '+5V, vbus, '+3V3, GND, USB_P, USB_N
   net dp, dn, gnd, '+1V2, CLK, SCK, SDO, SDI, SS

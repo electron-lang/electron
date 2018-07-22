@@ -13,6 +13,8 @@
     "electron_lec": "^1.0.0"
   },
   "scripts": {
-    "prepare": "lecc compile src/tinyFPGA.lec"
+    "prepare": "yarn build && yarn docs",
+    "build": "lecc compile src/tinyFPGA.lec",
+    "docs": "lecc docs src/tinyFPGA.lec ./docs"
   }
 }
