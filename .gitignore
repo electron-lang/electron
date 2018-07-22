@@ -5,8 +5,8 @@ lib/
 coverage/
 browser-app/*
 !browser-app/package.json
-electron-app/*
-!electron-app/package.json
+desktop-app/*
+!desktop-app/package.json
 
 website/translated_docs
 website/build/

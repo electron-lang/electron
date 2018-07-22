@@ -12,11 +12,11 @@
     "netlist",
     "celllib",
     "language-server",
-    "netlist-graph",
+    "schematic-diagram",
+    "schematic-cli",
     "theia-electron",
     "browser-app",
-    "electron-app",
-    "electron-library",
+    "desktop-app",
     "website",
     "examples/electron",
     "examples/tinyFPGA",
@@ -33,6 +33,7 @@
     "publish": "lerna publish"
   },
   "devDependencies": {
-    "lerna": "latest"
+    "lerna": "latest",
+    "markdown-magic": "^0.1.25"
   }
 }

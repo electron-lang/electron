@@ -18,7 +18,7 @@
   "dependencies": {
     "@electron-lang/electron": "^0.0.4",
     "@electron-lang/language-server": "^0.0.4",
-    "@electron-lang/netlist-graph": "^0.0.4",
+    "@electron-lang/schematic-diagram": "^0.0.4",
     "@theia/editor": "next",
     "@theia/languages": "next",
     "@theia/monaco": "next"

@@ -1,5 +1,5 @@
 {
-  "name": "@electron-lang/netlist-graph",
+  "name": "@electron-lang/schematic-diagram",
   "version": "0.0.4",
   "description": "Netlist viewer for Theia using sprotty and elkjs.",
   "repository": "https://github.com/electron-lang/electron",

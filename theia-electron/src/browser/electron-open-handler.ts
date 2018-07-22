@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import URI from '@theia/core/lib/common/uri'
 import { OpenHandler, OpenerOptions } from '@theia/core/lib/browser'
 import { EditorManager } from '@theia/editor/lib/browser'
-import { SchematicDiagramManager } from '@electron-lang/netlist-graph/lib/browser'
+import { SchematicDiagramManager } from '@electron-lang/schematic-diagram/lib/browser'
 
 @injectable()
 export class ElectronOpenHandler implements OpenHandler {

@@ -4,7 +4,6 @@
   "version": "0.0.4",
   "dependencies": {
     "@electron-lang/theia-electron": "^0.0.4",
-    "@electron-lang/netlist-graph": "^0.0.4",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
     "@theia/editor": "next",

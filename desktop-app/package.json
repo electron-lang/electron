@@ -1,10 +1,9 @@
 {
   "private": true,
-  "name": "electron-app",
+  "name": "desktop-app",
   "version": "0.0.4",
   "dependencies": {
     "@electron-lang/theia-electron": "^0.0.4",
-    "@electron-lang/netlist-graph": "^0.0.4",
     "@theia/bunyan": "next",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
