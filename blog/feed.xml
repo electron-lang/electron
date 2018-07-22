@@ -2,21 +2,21 @@
 <rss version="2.0">
     <channel>
         <title>Electron Lang Blog</title>
-        <link>https://electron-lang.org/electron/blog</link>
+        <link>https://electron-lang.org/blog</link>
         <description>The best place to stay up-to-date with the latest Electron Lang news and events.</description>
         <lastBuildDate>Wed, 01 Aug 2018 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
             <title>Electron Lang Blog</title>
-            <url>https://electron-lang.org/electron/img/electron.svg</url>
-            <link>https://electron-lang.org/electron/blog</link>
+            <url>https://electron-lang.org/img/electron.svg</url>
+            <link>https://electron-lang.org/blog</link>
         </image>
         <copyright>Copyright © 2018 electron-lang.org</copyright>
         <item>
             <title><![CDATA[Electron pcb-alpha released!]]></title>
-            <link>https://electron-lang.org/electron/blog/2018/08/01/electron-pcb-alpha.html</link>
-            <guid>https://electron-lang.org/electron/blog/2018/08/01/electron-pcb-alpha.html</guid>
+            <link>https://electron-lang.org/blog/2018/08/01/electron-pcb-alpha.html</link>
+            <guid>https://electron-lang.org/blog/2018/08/01/electron-pcb-alpha.html</guid>
             <pubDate>Wed, 01 Aug 2018 06:00:00 GMT</pubDate>
             <description><![CDATA[<p>Changelog:</p>
 <ul>
