@@ -1,4 +1,4 @@
-# Electron
+# Electron [![Build Status](https://travis-ci.org/electron-lang/electron.svg?branch=master)](https://travis-ci.org/electron-lang/electron) [![Gitter](https://badges.gitter.im/electron-lang/electron.svg)](https://gitter.im/electron-lang/electron)
 
 Electron is a mixed signal netlist language that exports to kicad, spice and
 verilog. It builds on Theia IDE and sprotty to provide modern tool support.
