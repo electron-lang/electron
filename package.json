@@ -27,13 +27,15 @@
     "sprotty": "0.4.0"
   },
   "scripts": {
-    "prepare": "lerna run prepare",
+    "prepare": "lerna run prepare && yarn run docs",
+    "docs": "node magic-readme.js",
     "test": "lerna run test",
     "cov": "lerna run cov",
     "publish": "lerna publish"
   },
   "devDependencies": {
     "lerna": "latest",
-    "markdown-magic": "^0.1.25"
+    "markdown-magic": "^0.1.25",
+    "markdown-magic-subpackage-list": "^1.1.1"
   }
 }
