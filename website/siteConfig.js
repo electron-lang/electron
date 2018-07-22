@@ -15,7 +15,7 @@ const siteConfig = {
   title: 'Electron Lang',
   tagline: 'A mixed signal netlist language',
   url: 'https://electron-lang.org',
-  baseUrl: '/electron/',
+  baseUrl: '/',
 
   projectName: 'electron',
   organizationName: 'electron-lang',
