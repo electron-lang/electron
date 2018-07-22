@@ -21,6 +21,12 @@ program.command('compile <file>')
         }
     })
 
+program.command('docs <file> [dir]')
+    .action((path, dir, options) => {
+        const file = new File(new DiagnosticLogger(), path)
+        file.compile().emitDocs(dir)
+    })
+
 program.parse(process.argv)
 
 if (!process.argv.slice(2).length) {

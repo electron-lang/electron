@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs'
-import { dirname, resolve } from 'path'
+import { dirname, basename, resolve } from 'path'
 import { IToken } from 'chevrotain'
 import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
 import * as ast from './frontend/ast'
@@ -123,9 +123,13 @@ export class File {
         return this
     }
 
-    emitDocs(): File {
+    emitDocs(dir?: string): File {
         if (!this.ast) return this
-        writeFileSync(this.getPath('md'), generateDocs(this.ast))
+        let path = this.getPath('md')
+        if (dir) {
+            path = resolve(dir + '/' + basename(path))
+        }
+        writeFileSync(path, generateDocs(this.ast))
         return this
     }
 
