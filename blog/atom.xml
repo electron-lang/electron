@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://electron-lang.org/electron/blog</id>
+    <title>Electron Lang Blog</title>
+    <updated>2018-08-01T06:00:00Z</updated>
+    <generator>Feed for Node.js</generator>
+    <link rel="alternate" href="https://electron-lang.org/electron/blog"/>
+    <subtitle>The best place to stay up-to-date with the latest Electron Lang news and events.</subtitle>
+    <logo>https://electron-lang.org/electron/img/electron.svg</logo>
+    <rights>Copyright © 2018 electron-lang.org</rights>
+    <entry>
+        <title type="html"><![CDATA[Electron pcb-alpha released!]]></title>
+        <id>https://electron-lang.org/electron/blog/2018/08/01/electron-pcb-alpha.html</id>
+        <link href="https://electron-lang.org/electron/blog/2018/08/01/electron-pcb-alpha.html">
+        </link>
+        <updated>2018-08-01T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>Changelog:</p>
+<ul>
+<li>Adds support for Kicad netlist export.</li>
+<li>electron-lang.org website is online.</li>
+<li>Extensive documentation.</li>
+<li>Prebuilt electron-ide available for download.</li>
+</ul>
+]]></summary>
+        <author>
+            <name>David Craven</name>
+            <uri>http://twitter.com/dvc94ch</uri>
+        </author>
+    </entry>
+</feed>

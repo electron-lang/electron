@@ -1,0 +1,1561 @@
+
+<!-- This is a generated file -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    background-color: hsl(30, 20%, 95%)
+  }
+</style>
+
+
+<link rel='stylesheet' href='https://unpkg.com/chevrotain@3.7.1/diagrams/diagrams.css'>
+
+<script src='https://unpkg.com/chevrotain@3.7.1/diagrams/vendor/railroad-diagrams.js'></script>
+<script src='https://unpkg.com/chevrotain@3.7.1/diagrams/src/diagrams_builder.js'></script>
+<script src='https://unpkg.com/chevrotain@3.7.1/diagrams/src/diagrams_behavior.js'></script>
+<script src='https://unpkg.com/chevrotain@3.7.1/diagrams/src/main.js'></script>
+
+<div id="diagrams" align="center"></div>    
+
+<script>
+    window.serializedGrammar = [
+  {
+    "type": "Rule",
+    "name": "design",
+    "orgText": "function () {\n            _this.MANY({\n                DEF: function () { return _this.CONSUME(tokens_1.DesignComment); }\n            });\n            _this.MANY1({\n                DEF: function () { return _this.SUBRULE(_this.moduleImport); }\n            });\n            _this.MANY2({\n                DEF: function () { return _this.SUBRULE(_this.moduleDeclaration); }\n            });\n        }",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "DesignComment",
+            "label": "DesignComment",
+            "idx": 0,
+            "pattern": "\\/\\/!.+"
+          }
+        ]
+      },
+      {
+        "type": "Repetition",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "moduleImport",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Repetition",
+        "idx": 2,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "moduleDeclaration",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "moduleImport",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Import);\n            _this.SUBRULE(_this.identifiers);\n            _this.CONSUME(tokens_1.From);\n            _this.CONSUME(tokens_1.String);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Import",
+        "label": "import",
+        "idx": 0,
+        "pattern": "import"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifiers",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "From",
+        "label": "from",
+        "idx": 0,
+        "pattern": "from"
+      },
+      {
+        "type": "Terminal",
+        "name": "String",
+        "label": "String",
+        "idx": 0,
+        "pattern": "\"[^\"]*\""
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "moduleDeclaration",
+    "orgText": "function () {\n            _this.MANY1(function () { return _this.CONSUME(tokens_1.ModuleComment); });\n            _this.MANY2(function () { return _this.SUBRULE(_this.attribute); });\n            _this.OPTION(function () { _this.CONSUME(tokens_1.Export); });\n            _this.OPTION1(function () { _this.CONSUME(tokens_1.Declare); });\n            _this.CONSUME(tokens_1.Module);\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION2(function () { return _this.SUBRULE(_this.parameterDeclarationList); });\n            _this.SUBRULE(_this.statements);\n        }",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "ModuleComment",
+            "label": "ModuleComment",
+            "idx": 0,
+            "pattern": "\\/\\/\\/.+"
+          }
+        ]
+      },
+      {
+        "type": "Repetition",
+        "idx": 2,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "attribute",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Export",
+            "label": "export",
+            "idx": 0,
+            "pattern": "export"
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Declare",
+            "label": "declare",
+            "idx": 0,
+            "pattern": "declare"
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "Module",
+        "label": "module",
+        "idx": 0,
+        "pattern": "module"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 2,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "parameterDeclarationList",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "statements",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "identifiers",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { _this.SUBRULE(_this.identifier); }\n            });\n        }",
+    "definition": [
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": ",",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "identifier",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "identifier",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Identifier);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Identifier",
+        "label": "Identifier",
+        "idx": 0,
+        "pattern": "[a-zA-Z$]\\w*|'[^\\(\\)\\[\\]{},:\\s]+"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "attribute",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Attribute);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.OpenRound);\n                _this.MANY_SEP({\n                    SEP: tokens_1.Comma,\n                    DEF: function () { return _this.SUBRULE(_this.attributeParameter); }\n                });\n                _this.CONSUME(tokens_1.CloseRound);\n            });\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Attribute",
+        "label": "Attribute",
+        "idx": 0,
+        "pattern": "@\\w*"
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "OpenRound",
+            "label": "(",
+            "idx": 0,
+            "pattern": "\\("
+          },
+          {
+            "type": "RepetitionWithSeparator",
+            "idx": 0,
+            "separator": {
+              "type": "Terminal",
+              "name": "Comma",
+              "label": ",",
+              "idx": 1,
+              "pattern": ","
+            },
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "attributeParameter",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Terminal",
+            "name": "CloseRound",
+            "label": ")",
+            "idx": 0,
+            "pattern": "\\)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "attributeParameter",
+    "orgText": "function () {\n            _this.OR([\n                {\n                    ALT: function () {\n                        _this.SUBRULE(_this.identifier);\n                        _this.OPTION(function () { return _this.SUBRULE(_this.moduleInstantiation); });\n                    }\n                },\n                { ALT: function () { return _this.SUBRULE(_this.literal); } },\n            ]);\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "identifier",
+                "idx": 0
+              },
+              {
+                "type": "Option",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "moduleInstantiation",
+                    "idx": 0
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "literal",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameterDeclarationList",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenRound);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.parameterDeclaration); }\n            });\n            _this.CONSUME(tokens_1.CloseRound);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenRound",
+        "label": "(",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "parameterDeclaration",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseRound",
+        "label": ")",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameterDeclaration",
+    "orgText": "function () {\n            _this.SUBRULE(_this.identifier);\n            _this.CONSUME(tokens_1.Colon);\n            _this.SUBRULE1(_this.identifier);\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "Colon",
+        "label": ":",
+        "idx": 0,
+        "pattern": ":"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 1
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": ",",
+            "idx": 0,
+            "pattern": ","
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameterList",
+    "orgText": "function () {\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.OpenRound);\n                _this.MANY({\n                    DEF: function () { return _this.SUBRULE(_this.parameter); },\n                });\n                _this.CONSUME(tokens_1.CloseRound);\n            });\n        }",
+    "definition": [
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "OpenRound",
+            "label": "(",
+            "idx": 0,
+            "pattern": "\\("
+          },
+          {
+            "type": "Repetition",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "parameter",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Terminal",
+            "name": "CloseRound",
+            "label": ")",
+            "idx": 0,
+            "pattern": "\\)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "parameter",
+    "orgText": "function () {\n            _this.SUBRULE(_this.expression);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE1(_this.expression);\n            });\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "expression",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "=",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 1
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": ",",
+            "idx": 0,
+            "pattern": ","
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "statements",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.statement); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "{",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "statement",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "}",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "statement",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.attributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n                //{ ALT: () => this.SUBRULE(this.withStatement) },\n                { ALT: function () { return _this.SUBRULE(_this.assignStatement); } },\n            ]);\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "attributeStatement",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "declaration",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "assignStatement",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Semicolon",
+            "label": ";",
+            "idx": 0,
+            "pattern": ";"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "attributeStatement",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE({\n                DEF: function () { return _this.SUBRULE(_this.attribute); }\n            });\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.statements); } },\n                { ALT: function () { return _this.SUBRULE(_this.declaration); } },\n            ]);\n        }",
+    "definition": [
+      {
+        "type": "RepetitionMandatory",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "attribute",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "statements",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "declaration",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "assignStatement",
+    "orgText": "function () {\n            _this.SUBRULE(_this.expressions);\n            _this.CONSUME(tokens_1.Assign);\n            _this.SUBRULE1(_this.expressions);\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "expressions",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "Assign",
+        "label": "=",
+        "idx": 0,
+        "pattern": "="
+      },
+      {
+        "type": "NonTerminal",
+        "name": "expressions",
+        "idx": 1
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "declaration",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Net); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Input); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Output); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Inout); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Analog); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Cell); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Const); } },\n            ]);\n            _this.SUBRULE(_this.width);\n            _this.SUBRULE(_this.identifiers);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expressions);\n            });\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Net",
+                "label": "net",
+                "idx": 0,
+                "pattern": "net"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Input",
+                "label": "input",
+                "idx": 0,
+                "pattern": "input"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Output",
+                "label": "output",
+                "idx": 0,
+                "pattern": "output"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Inout",
+                "label": "inout",
+                "idx": 0,
+                "pattern": "inout"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Analog",
+                "label": "analog",
+                "idx": 0,
+                "pattern": "analog"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Cell",
+                "label": "cell",
+                "idx": 0,
+                "pattern": "cell"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Const",
+                "label": "const",
+                "idx": 0,
+                "pattern": "const"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "width",
+        "idx": 0
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifiers",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "=",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expressions",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "width",
+    "orgText": "function () {\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.OpenSquare);\n                _this.SUBRULE(_this.expression);\n                _this.CONSUME(tokens_1.CloseSquare);\n            });\n        }",
+    "definition": [
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "OpenSquare",
+            "label": "[",
+            "idx": 0,
+            "pattern": "\\["
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          },
+          {
+            "type": "Terminal",
+            "name": "CloseSquare",
+            "label": "]",
+            "idx": 0,
+            "pattern": "]"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "expression",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.literal); } },\n                { ALT: function () { return _this.SUBRULE(_this.tupleExpression); } },\n                { ALT: function () { return _this.SUBRULE(_this.anonymousCell); } },\n                { ALT: function () {\n                        _this.SUBRULE1(_this.identifier);\n                        _this.OPTION1(function () {\n                            _this.OR1([\n                                { ALT: function () { return _this.SUBRULE(_this.referenceExpression); } },\n                                { ALT: function () { return _this.SUBRULE(_this.moduleInstantiation); } },\n                            ]);\n                        });\n                    } },\n            ]);\n            _this.OPTION(function () { return _this.SUBRULE(_this.binaryOp); });\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "literal",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "tupleExpression",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "anonymousCell",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "identifier",
+                "idx": 1
+              },
+              {
+                "type": "Option",
+                "idx": 1,
+                "definition": [
+                  {
+                    "type": "Alternation",
+                    "idx": 1,
+                    "definition": [
+                      {
+                        "type": "Flat",
+                        "definition": [
+                          {
+                            "type": "NonTerminal",
+                            "name": "referenceExpression",
+                            "idx": 0
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Flat",
+                        "definition": [
+                          {
+                            "type": "NonTerminal",
+                            "name": "moduleInstantiation",
+                            "idx": 0
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "binaryOp",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "literal",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Integer); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.BitVector); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Unit); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.String); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Real); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.True); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.False); } },\n                { ALT: function () { return _this.SUBRULE(_this.xml); } },\n            ]);\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Integer",
+                "label": "Integer",
+                "idx": 0,
+                "pattern": "0|[1-9]\\d*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "BitVector",
+                "label": "BitVector",
+                "idx": 0,
+                "pattern": "[1-9]\\d*'[01xz]+"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Unit",
+                "label": "Unit",
+                "idx": 0,
+                "pattern": "(0|[1-9]\\d*)(\\.[0-9]+)?[GMKkmunpf]?[a-zA-Z]*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"[^\"]*\""
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Real",
+                "label": "Real",
+                "idx": 0,
+                "pattern": "[-]?(0|[1-9]\\d*)(\\.[0-9]+)?([eE][+-]?[0-9]+)"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "True",
+                "label": "true",
+                "idx": 0,
+                "pattern": "true"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "False",
+                "label": "false",
+                "idx": 0,
+                "pattern": "false"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "xml",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "expressions",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE_SEP({\n                SEP: tokens_1.Comma,\n                DEF: function () { return _this.SUBRULE(_this.expression); }\n            });\n        }",
+    "definition": [
+      {
+        "type": "RepetitionMandatoryWithSeparator",
+        "idx": 0,
+        "separator": {
+          "type": "Terminal",
+          "name": "Comma",
+          "label": ",",
+          "idx": 1,
+          "pattern": ","
+        },
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "binaryOp",
+    "orgText": "function () {\n            // TODO proper precedence parsing\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Plus); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Minus); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Star); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.ShiftLeft); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.ShiftRight); } },\n            ]);\n            _this.SUBRULE(_this.expression);\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Plus",
+                "label": "+",
+                "idx": 0,
+                "pattern": "\\+"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Minus",
+                "label": "-",
+                "idx": 0,
+                "pattern": "-"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Star",
+                "label": "*",
+                "idx": 0,
+                "pattern": "\\*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "ShiftLeft",
+                "label": "<<",
+                "idx": 0,
+                "pattern": "<<"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "ShiftRight",
+                "label": ">>",
+                "idx": 0,
+                "pattern": ">>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "expression",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "tupleExpression",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenRound);\n            _this.SUBRULE(_this.expressions);\n            _this.CONSUME(tokens_1.CloseRound);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenRound",
+        "label": "(",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "NonTerminal",
+        "name": "expressions",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseRound",
+        "label": ")",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceExpression",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenSquare);\n            _this.SUBRULE(_this.expression);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Colon);\n                _this.SUBRULE1(_this.expression);\n            });\n            _this.CONSUME(tokens_1.CloseSquare);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenSquare",
+        "label": "[",
+        "idx": 0,
+        "pattern": "\\["
+      },
+      {
+        "type": "NonTerminal",
+        "name": "expression",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Colon",
+            "label": ":",
+            "idx": 0,
+            "pattern": ":"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 1
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseSquare",
+        "label": "]",
+        "idx": 0,
+        "pattern": "]"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "anonymousCell",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.Cell);\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { return _this.SUBRULE(_this.cellStatement); }\n            });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Cell",
+        "label": "cell",
+        "idx": 0,
+        "pattern": "cell"
+      },
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "{",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "cellStatement",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "}",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "cellStatement",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.SUBRULE(_this.cellAttributeStatement); } },\n                { ALT: function () { return _this.SUBRULE(_this.cellPortDeclaration); } },\n            ]);\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Semicolon); });\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "cellAttributeStatement",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "cellPortDeclaration",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Semicolon",
+            "label": ";",
+            "idx": 0,
+            "pattern": ";"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "cellAttributeStatement",
+    "orgText": "function () {\n            _this.AT_LEAST_ONE({ DEF: function () { return _this.SUBRULE(_this.attribute); } });\n            _this.OR([\n                { ALT: function () {\n                        _this.CONSUME(tokens_1.OpenCurly);\n                        _this.MANY({\n                            DEF: function () { return _this.SUBRULE(_this.cellStatement); }\n                        });\n                        _this.CONSUME(tokens_1.CloseCurly);\n                    } },\n                { ALT: function () { return _this.SUBRULE1(_this.cellPortDeclaration); } }\n            ]);\n        }",
+    "definition": [
+      {
+        "type": "RepetitionMandatory",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "attribute",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "OpenCurly",
+                "label": "{",
+                "idx": 0,
+                "pattern": "{"
+              },
+              {
+                "type": "Repetition",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "cellStatement",
+                    "idx": 0
+                  }
+                ]
+              },
+              {
+                "type": "Terminal",
+                "name": "CloseCurly",
+                "label": "}",
+                "idx": 0,
+                "pattern": "}"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "cellPortDeclaration",
+                "idx": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "cellPortDeclaration",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Input); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Output); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Inout); } },\n                { ALT: function () { return _this.CONSUME(tokens_1.Analog); } },\n            ]);\n            _this.SUBRULE(_this.width);\n            _this.SUBRULE(_this.identifiers);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expressions);\n            });\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Input",
+                "label": "input",
+                "idx": 0,
+                "pattern": "input"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Output",
+                "label": "output",
+                "idx": 0,
+                "pattern": "output"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Inout",
+                "label": "inout",
+                "idx": 0,
+                "pattern": "inout"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Analog",
+                "label": "analog",
+                "idx": 0,
+                "pattern": "analog"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "width",
+        "idx": 0
+      },
+      {
+        "type": "NonTerminal",
+        "name": "identifiers",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "=",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expressions",
+            "idx": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "moduleInstantiation",
+    "orgText": "function () {\n            _this.SUBRULE(_this.parameterList);\n            _this.SUBRULE(_this.dictionary);\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "parameterList",
+        "idx": 0
+      },
+      {
+        "type": "NonTerminal",
+        "name": "dictionary",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "dictionary",
+    "orgText": "function () {\n            _this.CONSUME(tokens_1.OpenCurly);\n            _this.MANY({\n                DEF: function () { _this.SUBRULE(_this.dictionaryEntry); }\n            });\n            _this.OPTION(function () { return _this.CONSUME(tokens_1.Star); });\n            _this.CONSUME(tokens_1.CloseCurly);\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenCurly",
+        "label": "{",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "dictionaryEntry",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Star",
+            "label": "*",
+            "idx": 0,
+            "pattern": "\\*"
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurly",
+        "label": "}",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "dictionaryEntry",
+    "orgText": "function () {\n            _this.SUBRULE(_this.identifier);\n            _this.OPTION(function () {\n                _this.CONSUME(tokens_1.Assign);\n                _this.SUBRULE(_this.expression);\n            });\n            _this.OPTION1(function () { return _this.CONSUME(tokens_1.Comma); });\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "identifier",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Assign",
+            "label": "=",
+            "idx": 0,
+            "pattern": "="
+          },
+          {
+            "type": "NonTerminal",
+            "name": "expression",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 1,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": ",",
+            "idx": 0,
+            "pattern": ","
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "xml",
+    "orgText": "function () {\n            _this.OR([\n                { ALT: function () { return _this.CONSUME(tokens_1.Tag); } },\n                { ALT: function () {\n                        _this.CONSUME(tokens_1.OpenTag);\n                        _this.MANY(function () { return _this.SUBRULE(_this.xml); });\n                        _this.CONSUME(tokens_1.CloseTag);\n                    } }\n            ]);\n        }",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Tag",
+                "label": "Tag",
+                "idx": 0,
+                "pattern": "<[^\\/><]+\\/>"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "OpenTag",
+                "label": "OpenTag",
+                "idx": 0,
+                "pattern": "<[^\\/><]+>"
+              },
+              {
+                "type": "Repetition",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "xml",
+                    "idx": 0
+                  }
+                ]
+              },
+              {
+                "type": "Terminal",
+                "name": "CloseTag",
+                "label": "CloseTag",
+                "idx": 0,
+                "pattern": "<\\/[^\\/><]+>"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+</script>
+
+<script>
+    var diagramsDiv = document.getElementById("diagrams");
+    main.drawDiagramsFromSerializedGrammar(serializedGrammar, diagramsDiv);
+</script>
