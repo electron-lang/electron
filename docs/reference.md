@@ -215,4 +215,4 @@ Used for generating a BOM.
 @param triple: String - FPGA target triple `ARCH-FAMILY-PACKAGE`.
 
 ## Railroad diagram
-[Railroad](/electron/railroad_diagram.html)
+[Railroad](/railroad_diagram.html)
