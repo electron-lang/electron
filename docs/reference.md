@@ -31,9 +31,13 @@ module Test {
 ```
 
 ### Parameters
-A module takes an optional list of parameters.
+A module takes an optional list of parameters. Parameters can be used in
+constant expressions or to configure built-in cells.
 
 ```
+module Test(width: Integer) {
+  output[width] a;
+}
 ```
 
 ### export
@@ -56,17 +60,52 @@ elements.
 A module contains a list of statements.
 
 ### Constant declaration
+Net and port widths can be parameterized over a constant. A constant expression
+can be assigned to a constant.
+
+```
+const a = 1;
+```
 
 ### Cell declaration
+Cells are module instantiations. Cell expressions can be assigned to cells.
+
+```
+cell r1 = $R(10k) {};
+```
 
 ### Net declaration
+Nets interconnect cells within a module.
+
+```
+net a[width];
+```
 
 ### Port declaration
+Ports specify the interface of a module. A port has a type which is
+one of `analog`, `input`, `output`, `inout`. Inputs and outputs
+have a value of `1`, `0` or `x`. Inouts can additionally have a value
+of `z`. All other ports are `analog` ports.
+
+```
+analog a[width];
+```
 
 ### Assignment
+TODO: Not needed for pcb design.
 
 ## Expressions
 ### Constant expression
+There are currently five operators that can be used in constant expressions.
+`+`, `-`, `*`, `<<`, `>>`. Operators currently don't have a precedence and are
+applied from left to right.
+
+```
+module A(width: Integer) {
+  output out[width];
+  cell register = $dff(WIDTH=width + 1) {};
+}
+```
 
 ### Signal expression
 
