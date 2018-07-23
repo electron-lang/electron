@@ -7,9 +7,5 @@ cache:
   yarn: true
   directories:
   - node_modules
-install:
-- curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.7.0
-- export PATH=$(yarn global bin):$PATH
 script:
-- yarn
-- yarn test
+- (yarn || true) && yarn && yarn test
