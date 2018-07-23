@@ -8,15 +8,13 @@ cache:
   directories:
   - node_modules
 script:
+- printf "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}\n" >> ~/.npmrc
 - (yarn || true) && yarn && yarn test
 - test $TRAVIS_BRANCH = "master" &&
     git config --global user.name "${GH_NAME}" &&
     git config --global user.email "${GH_EMAIL}" &&
     echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc &&
     cd website && GIT_USER="${GH_NAME}" yarn run publish-gh-pages
-before_deploy:
-- printf "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}\n" >> ~/.npmrc
-- yarn
 deploy:
   provider: script
   script: yarn publish:next
