@@ -19,7 +19,7 @@ before_deploy:
 - yarn
 deploy:
   provider: script
-  script: yarn run publish:next
+  script: yarn publish:next
   on:
     branch: master
     skip_cleanup: true
