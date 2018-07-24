@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "electron_lec",
-  "version": "1.0.0",
+  "name": "@lec/electron",
+  "version": "0.0.1",
   "description": "Electron cell library",
   "repository": "https://github.com/electron-lang/electron",
   "author": "David Craven <david@craven.ch>",

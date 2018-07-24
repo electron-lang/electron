@@ -5,6 +5,8 @@ verilog. It builds on Theia IDE and sprotty to provide modern tool support.
 
 ![Screenshot of Electron IDE](https://user-images.githubusercontent.com/741807/42879918-9b64c1d2-8a92-11e8-8e4d-a99b43b570b7.png)
 
+## Getting started
+
 ## Repository structure
 <!-- AUTO-GENERATED-CONTENT:START (SUBPACKAGELIST:dir=.&verbose=true) -->
 * [browser-app](browser-app) - Theia Electron IDE for browser

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "dac_lec",
+  "name": "@lec/dac",
   "version": "1.0.0",
   "description": "Delta Sigma Modulator implementation in electron",
   "repository": "https://github.com/electron-lang/electron",
@@ -11,7 +11,7 @@
     "docsify-cli": "^4.2.1"
   },
   "dependencies": {
-    "electron_lec": "^1.0.0"
+    "@lec/electron": "^1.0.0"
   },
   "scripts": {
     "prepare": "yarn build && yarn docs",

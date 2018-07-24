@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "dacImpl_lec",
+  "name": "@lec/dacImpl",
   "version": "1.0.0",
-  "description": "PCB implementation of dac$lec",
+  "description": "PCB implementation of @lec/dac",
   "repository": "https://github.com/electron-lang/electron",
   "author": "David Craven <david@craven.ch>",
   "license": "ISC",
@@ -11,8 +11,8 @@
     "docsify-cli": "^4.2.1"
   },
   "dependencies": {
-    "tinyFPGA_lec": "^1.0.0",
-    "dac_lec": "^1.0.0"
+    "@lec/tinyFPGA": "^1.0.0",
+    "@lec/dac": "^1.0.0"
   },
   "scripts": {
     "prepare": "yarn build && yarn docs",
