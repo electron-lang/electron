@@ -1,92 +1,127 @@
+import * as fs from 'fs'
 import * as cl from '@electron-lang/celllib'
 import * as ir from './ir'
+import { IBackend } from './index'
+import { ISrcLoc } from '../diagnostic'
 
-export function compileNetlist(mods: ir.IModule[]): cl.INetlist {
-    const modules: cl.IModules = {}
-    for (let mod of mods) {
-        modules[mod.name] = compileModule(mod)
+export class JsonBackend implements IBackend {
+    constructor(readonly declared: boolean,
+                readonly allowBoolean: boolean,
+                readonly emitSrcLoc: boolean) {
     }
-    return { modules }
-}
 
-function compileModule(m: ir.IModule): cl.IModule {
-    const mod: cl.IModule = {
-        ports: compilePorts(m.ports),
-        cells: compileCells(m.cells),
-        netnames: compileNets(m.nets),
+    emit(mods: ir.IModule[], outputPath: string): void {
+        const json = JSON.stringify(this.compileNetlist(mods), null, 2)
+        fs.writeFileSync(outputPath, json)
     }
-    mod.attributes = compileAttrs(m.attrs)
-    mod.attributes.src = m.src
-    return mod
-}
 
-function compileAttrs(attrs: ir.IAttr[]): cl.IAttrs {
-    const attributes: cl.IAttrs = {}
-    for (let attr of attrs) {
-        attributes[attr.name] = attr.value
-    }
-    return attributes
-}
-
-function compilePorts(ps: ir.IPort[]): cl.IPorts {
-    const ports: cl.IPorts = {}
-    for (let p of ps) {
-        const port: cl.IPort = {
-            direction: p.ty,
-            bits: compileSigs(p.value),
+    compileNetlist(mods: ir.IModule[]): cl.INetlist {
+        const modules: cl.IModules = {}
+        for (let mod of mods) {
+            // Skip declared modules
+            if (!this.declared) {
+                if (mod.attrs.find((attr) => attr.name === 'declare' &&
+                                   attr.value === true)) {
+                    continue
+                }
+            }
+            modules[mod.name] = this.compileModule(mod)
         }
-        port.attributes = compileAttrs(p.attrs)
-        port.attributes.src = p.src
-        ports[p.name] = port
+        return { modules }
     }
-    return ports
-}
 
-function compileCells(cs: ir.ICell[]): cl.ICells {
-    const cells: cl.ICells = {}
-    for (let c of cs) {
-        const cell: cl.ICell = {
-            type: typeof c.module === 'string' ? c.module : c.module.name,
-            parameters: compileParams(c.params),
-            connections: compileAssigns(c.assigns),
+    compileModule(m: ir.IModule): cl.IModule {
+        const mod: cl.IModule = {
+            ports: this.compilePorts(m.ports),
+            cells: this.compileCells(m.cells),
+            netnames: this.compileNets(m.nets),
         }
-        cell.attributes = compileAttrs(c.attrs)
-        cell.attributes.src = c.src
-        cells[c.name] = cell
+        mod.attributes = this.compileAttrs(m.attrs)
+        this.compileSrcLoc(mod.attributes, m.src)
+        return mod
     }
-    return cells
-}
 
-function compileNets(ns: ir.INet[]): cl.INets {
-    const nets: cl.INets = {}
-    for (let n of ns) {
-        const net: cl.INet = {
-            hide_name: 0,
-            bits: compileSigs(n.value),
+    compileAttrs(attrs: ir.IAttr[]): cl.IAttrs {
+        const attributes: cl.IAttrs = {}
+        for (let attr of attrs) {
+            attributes[attr.name] = this.compileValue(attr.value)
         }
-        net.attributes = compileAttrs(n.attrs)
-        net.attributes.src = n.src
-        nets[n.name] = net
+        return attributes
     }
-    return nets
-}
 
-function compileParams(params: ir.IParam[]): cl.IParams {
-    const parameters: cl.IParams = {}
-    for (let param of params) {
-        parameters[param.name] = param.value
+    compilePorts(ps: ir.IPort[]): cl.IPorts {
+        const ports: cl.IPorts = {}
+        for (let p of ps) {
+            const port: cl.IPort = {
+                direction: p.ty,
+                bits: this.compileSigs(p.value),
+            }
+            port.attributes = this.compileAttrs(p.attrs)
+            this.compileSrcLoc(port.attributes, p.src)
+            ports[p.name] = port
+        }
+        return ports
     }
-    return parameters
-}
 
-function compileAssigns(assigns: ir.IAssign[]): cl.IConnections {
-    const connections: cl.IConnections = {}
-    for (let assign of assigns) {
-        connections[assign.lhs.ref.name] = compileSigs(assign.rhs)
+    compileCells(cs: ir.ICell[]): cl.ICells {
+        const cells: cl.ICells = {}
+        for (let c of cs) {
+            const cell: cl.ICell = {
+                type: typeof c.module === 'string' ? c.module : c.module.name,
+                parameters: this.compileParams(c.params),
+                connections: this.compileAssigns(c.assigns),
+            }
+            cell.attributes = this.compileAttrs(c.attrs)
+            this.compileSrcLoc(cell.attributes, c.src)
+            cells[c.name] = cell
+        }
+        return cells
     }
-    return connections
-}
 
-function compileSigs(sigs: ir.ISig[]): cl.Vector {
-    return sigs.map((sig) => sig.value)
+    compileNets(ns: ir.INet[]): cl.INets {
+        const nets: cl.INets = {}
+        for (let n of ns) {
+            const net: cl.INet = {
+                hide_name: 0,
+                bits: this.compileSigs(n.value),
+            }
+            net.attributes = this.compileAttrs(n.attrs)
+            this.compileSrcLoc(net.attributes, n.src)
+            nets[n.name] = net
+        }
+        return nets
+    }
+
+    compileParams(params: ir.IParam[]): cl.IParams {
+        const parameters: cl.IParams = {}
+        for (let param of params) {
+            parameters[param.name] = this.compileValue(param.value)
+        }
+        return parameters
+    }
+
+    compileAssigns(assigns: ir.IAssign[]): cl.IConnections {
+        const connections: cl.IConnections = {}
+        for (let assign of assigns) {
+            connections[assign.lhs.ref.name] = this.compileSigs(assign.rhs)
+        }
+        return connections
+    }
+
+    compileSigs(sigs: ir.ISig[]): cl.Vector {
+        return sigs.map((sig) => sig.value)
+    }
+
+    compileSrcLoc(attrs: cl.IAttrs, src: ISrcLoc) {
+        if (this.emitSrcLoc) {
+            attrs.src = src
+        }
+    }
+
+    compileValue(value: any): any {
+        if (!this.allowBoolean && typeof value === 'boolean') {
+            return value ? 1 : 0
+        }
+        return value
+    }
 }

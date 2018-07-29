@@ -9,11 +9,9 @@
   "private": true,
   "workspaces": [
     "electron",
-    "netlist",
     "celllib",
     "language-server",
     "schematic-diagram",
-    "schematic-cli",
     "theia-electron",
     "browser-app",
     "desktop-app",

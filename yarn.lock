@@ -657,17 +657,9 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/handlebars@^4.0.38":
-  version "4.0.38"
-  resolved "https://registry.npmjs.org/@types/handlebars/-/handlebars-4.0.38.tgz#d0ebec1934c0bba97f99a0cb703fe2ef8c4a662f"
-
 "@types/highlight.js@^9.12.2":
   version "9.12.3"
   resolved "https://registry.npmjs.org/@types/highlight.js/-/highlight.js-9.12.3.tgz#b672cfaac25cbbc634a0fd92c515f66faa18dbca"
-
-"@types/json5@^0.0.29":
-  version "0.0.29"
-  resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
 
 "@types/lodash.debounce@4.0.3":
   version "4.0.3"
@@ -711,7 +703,7 @@
   version "5.2.4"
   resolved "https://registry.npmjs.org/@types/mocha/-/mocha-5.2.4.tgz#2f8fbdf95c69ebf82150a7864864010f186745bf"
 
-"@types/node@*", "@types/node@^10.3.2", "@types/node@^10.3.3":
+"@types/node@*", "@types/node@^10.3.3":
   version "10.5.2"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.5.2.tgz#f19f05314d5421fe37e74153254201a7bf00a707"
 
@@ -746,10 +738,6 @@
   resolved "https://registry.npmjs.org/@types/react/-/react-16.4.6.tgz#5024957c6bcef4f02823accf5974faba2e54fada"
   dependencies:
     csstype "^2.2.0"
-
-"@types/readline-sync@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.npmjs.org/@types/readline-sync/-/readline-sync-1.4.3.tgz#eac55a39d5a349912062c9e5216cd550c07fd9c8"
 
 "@types/request@^2.0.3":
   version "2.47.1"
@@ -4829,7 +4817,7 @@ glob-to-regexp@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.3.0.tgz#8c5a1494d2066c570cc3bfe4496175acc4d502ab"
 
-glob@7.1.2, glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.0.6, glob@^7.1.2, glob@~7.1.1, glob@~7.1.2:
+glob@7.1.2, glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.0.6, glob@^7.1.2, glob@~7.1.1:
   version "7.1.2"
   resolved "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz#c19c9df9a028702d678612384a6552404c636d15"
   dependencies:
@@ -6118,12 +6106,6 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.npmjs.org/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
-json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/json5/-/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
-  dependencies:
-    minimist "^1.2.0"
-
 jsonc-parser@^1.0.1:
   version "1.0.3"
   resolved "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-1.0.3.tgz#1d53d7160e401a783dbceabaad82473f80e6ad7e"
@@ -6153,10 +6135,6 @@ jsonify@~0.0.0:
 jsonparse@^1.2.0:
   version "1.3.1"
   resolved "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
-
-jsonschema@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
 
 jsprim@^1.2.2:
   version "1.4.1"
@@ -6293,6 +6271,13 @@ less@^2.7.2:
     promise "^7.1.1"
     request "2.81.0"
     source-map "^0.5.3"
+
+libyosys@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.npmjs.org/libyosys/-/libyosys-0.0.8.tgz#c46ad4af578298027456883e4ea6a2232c163b2e"
+  dependencies:
+    node-addon-api "^1.4.0"
+    prebuildify-load "git+https://git@github.com/dvc94ch/prebuildify-load.git"
 
 linkify-it@^2.0.0:
   version "2.0.3"
@@ -7166,6 +7151,10 @@ node-abi@^2.0.0:
   resolved "https://registry.npmjs.org/node-abi/-/node-abi-2.4.3.tgz#43666b7b17e57863e572409edbb82115ac7af28b"
   dependencies:
     semver "^5.4.1"
+
+node-addon-api@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/node-addon-api/-/node-addon-api-1.4.0.tgz#4c43e4c1ed8fbf3176ce71003f352329adad87eb"
 
 node-dir@0.1.8:
   version "0.1.8"
@@ -8127,6 +8116,10 @@ postcss@^6.0.1, postcss@^6.0.14:
     source-map "^0.6.1"
     supports-color "^5.4.0"
 
+"prebuildify-load@git+https://git@github.com/dvc94ch/prebuildify-load.git":
+  version "1.0.1"
+  resolved "git+https://git@github.com/dvc94ch/prebuildify-load.git#9e66f7d2a1768a6b8efde53aa5fd3940d0adda23"
+
 prepend-http@^1.0.0, prepend-http@^1.0.1:
   version "1.0.4"
   resolved "https://registry.npmjs.org/prepend-http/-/prepend-http-1.0.4.tgz#d4f4562b0ce3696e41ac52d0e002e57a635dc6dc"
@@ -8551,10 +8544,6 @@ readdirp@^2.0.0:
     minimatch "^3.0.2"
     readable-stream "^2.0.2"
     set-immediate-shim "^1.0.1"
-
-readline-sync@^1.4.9:
-  version "1.4.9"
-  resolved "https://registry.npmjs.org/readline-sync/-/readline-sync-1.4.9.tgz#3eda8e65f23cd2a17e61301b1f0003396af5ecda"
 
 recast@^0.11.17:
   version "0.11.23"
@@ -10069,22 +10058,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript-json-schema@^0.24.1:
-  version "0.24.1"
-  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.24.1.tgz#fb3db89f4d22abae86c4d170e5416315d72e0c27"
-  dependencies:
-    glob "~7.1.2"
-    json-stable-stringify "^1.0.1"
-    typescript "~2.8.3"
-    yargs "^11.0.0"
-
 typescript@^2.9.1, typescript@^2.9.2, typescript@latest:
   version "2.9.2"
   resolved "https://registry.npmjs.org/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
-
-typescript@~2.8.3:
-  version "2.8.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-2.8.4.tgz#0b1db68e6bdfb0b767fa2ab642136a35b059b199"
 
 ua-parser-js@^0.7.18:
   version "0.7.18"

@@ -27,6 +27,26 @@ program.command('docs <file> [dir]')
         file.compile().emitDocs(dir)
     })
 
+program.command('verilog <file> [dir]')
+  .action((path, dir, options) => {
+    const file = new File(new DiagnosticLogger(), path)
+    file.compile().emitVerilog();
+  })
+
+program.command('blif <file> [dir]')
+  .action((path, dir, options) => {
+    const file = new File(new DiagnosticLogger(), path)
+    file.compile().emitBlif();
+  })
+
+program.command('kicad-netlist <file> [dir]')
+  .action((path, dir, options) => {
+    const file = new File(new DiagnosticLogger(), path)
+    file.compile().emitKicadNetlist();
+  })
+
+program.version(require('../package.json').version)
+
 program.parse(process.argv)
 
 if (!process.argv.slice(2).length) {

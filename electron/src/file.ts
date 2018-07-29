@@ -9,7 +9,7 @@ import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
 import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
-import { compileNetlist } from './backend/json'
+import { JsonBackend, YosysBackend, KicadNetlistBackend } from './backend'
 import { generateDocs } from './docs'
 
 export class File {
@@ -142,8 +142,29 @@ export class File {
 
     emitJSON(): File {
         if (!this.ir) return this
-        writeFileSync(this.getPath('lec.json'),
-                      JSON.stringify(compileNetlist(this.ir), null, 2));
+        const jsonBackend = new JsonBackend(true, true, true)
+        jsonBackend.emit(this.ir, this.getPath('lec.json'))
+        return this
+    }
+
+    emitVerilog(): File {
+        if (!this.ir) return this
+        const yosysBackend = new YosysBackend(this.getPath('yosys.json'), 'verilog')
+        yosysBackend.emit(this.ir, this.getPath('lec.v'))
+        return this
+    }
+
+    emitBlif(): File {
+        if (!this.ir) return this
+        const yosysBackend = new YosysBackend(this.getPath('yosys.json'), 'blif')
+        yosysBackend.emit(this.ir, this.getPath('lec.blif'))
+        return this
+    }
+
+    emitKicadNetlist(): File {
+        if (!this.ir) return this
+        const netlistBackend = new KicadNetlistBackend('A', 'filename')
+        netlistBackend.emit(this.ir, this.getPath('lec.net'))
         return this
     }
 

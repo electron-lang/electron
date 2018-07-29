@@ -12,7 +12,6 @@ verilog. It builds on Theia IDE and sprotty to provide modern tool support.
 * [desktop-app](desktop-app) - Theia Electron IDE for desktop
 * [@electron-lang/electron](electron) - Electron compiler
 * [@electron-lang/language-server](language-server) - Electron Language Server
-* [@electron-lang/netlist](netlist) - Extended yosys netlist format utility
 * [@electron-lang/schematic-diagram](schematic-diagram) - Netlist viewer for Theia using sprotty and elkjs.
 * [@electron-lang/theia-electron](theia-electron) - Theia Electron Extension
 * [@electron-lang/website](website) - Electron website
