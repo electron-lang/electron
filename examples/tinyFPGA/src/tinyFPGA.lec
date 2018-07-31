@@ -7,14 +7,17 @@ declare module PushBtn {analog A, B}
 module Usb {
   analog '+5V, '+3V3, GND, USB_P, USB_N
 
-  @bom("TDK", "C1608X5R0J106M080AB")
-  // 10uF Ceramic Capacitor, 6.3V, X5R, 20%
   @rotate(90)
+  @value("10uF 20% X5R 6.3V")
+  @footprint("Capacitors_SMD:C_0603")
+  @bom("TDK", "C1608X5R0J106M080AB")
   cell C17 = $C(10uF) {A='+5V, B=GND}
 
   net vbus, dp, dn, gnd
+
+  @value("USB_OTG")
+  @footprint("Connectors:USB_Micro-B")
   @bom("FCI", "10118192-0001LF")
-  // USB Micro Connector
   cell J3 = cell {
     @right {
       @set_pad(1)
@@ -32,19 +35,23 @@ module Usb {
     }
   }
 
-  @bom("Murata", "BLM18PG300SN1D")
   // Ferrite Bead, 30ohm@100MHz impedance
   // 50mOhm DC resistance
   @rotate(90)
-  cell L1 = Bead() {A='+5V, B=vbus}
+  @value("Bead")
+  @footprint("Inductors_SMD:L_0603")
+  @bom("Murata", "BLM18PG300SN1D")
+  cell L1 = Bead {A='+5V, B=vbus}
 
-  @bom("Bourns", "CR0402-FX-1501GLF")
-  // 1.5k resistor, 1% tolerance, 1/10 watt
   @rotate(90)
+  @value("1.5K 1% 1/10W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  @bom("Bourns", "CR0402-FX-1501GLF")
   cell R1 = $R(1.5k) {A='+3V3, B=dp}
 
+  @value("68ohm 1% 1/10W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Panasonic", "ERJ-2RKF68ROX")
-  // 68ohm resistor, 1% tolerance, 1/10 watt
   cell R2, R3 = $R(68ohm) {A=dp, B=USB_P}, $R(68ohm) {A=dn, B=USB_N}
 }
 
@@ -53,13 +60,15 @@ module Vreg {
   analog '+5V, '+3V3, '+1V2
   analog GND
 
+  @value("1uF 10% X7R 10V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Murata", "GRM155R61A105KE15D")
-  // 1uF Ceramic Capacitor, 10V, X7R, 10%
-  // package: 0402
   cell C1 = $C(1uF) {A='+5V, B=GND}
 
-  @bom("Microchip", "MIC5504-3.3YM5-TR")
   // 3.3V LDO
+  @value("MIC5504-3.3YM5-TR")
+  @footprint("tinyfpga:SC-70-C5")
+  @bom("Microchip", "MIC5504-3.3YM5-TR")
   cell U2 = cell {
     @left {
       @set_pad(1)
@@ -78,18 +87,20 @@ module Vreg {
     analog GND
   }
 
+  @value("1uF 10% X7R 10V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Murata", "GRM155R61A105KE15D")
-  // 1uF Ceramic Capacitor, 10V, X7R, 10%
-  // package: 0402
   cell C4 = $C(1uF) {A='+3V3, B=GND}
 
+  @value("1uF 10% X7R 10V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Murata", "GRM155R61A105KE15D")
-  // 1uF Ceramic Capacitor, 10V, X7R, 10%
-  // package: 0402
   cell C2 = $C(1uF) {A='+3V3, B=GND}
 
-  @bom("Microchip", "MIC5365-1.2YC5-TR")
   // 1.2V LDO
+  @value("MIC5365-1.2YC5-TR")
+  @footprint("tinyfpga:SC-70-C5")
+  @bom("Microchip", "MIC5365-1.2YC5-TR")
   cell U4 = cell {
     @left {
       @set_pad(1)
@@ -105,9 +116,9 @@ module Vreg {
     analog GND
   }
 
+  @value("1uF 10% X7R 10V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Murata", "GRM155R61A105KE15D")
-  // 1uF Ceramic Capacitor, 10V, X7R, 10%
-  // package: 0402
   cell C3 = $C(1uF) {A='+1V2, B=GND}
 }
 
@@ -115,15 +126,18 @@ module Vreg {
 module Clock {
   analog '+3V3, GND, CLK
 
-  @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   @rotate(90)
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
+  @bom("Wurth Electronics", "885012105018")
   cell C5 = $C(100nF) {A='+3V3, B=GND}
 
-  @bom("Microchip", "DSC6001CI2A-016.0000T")
   // 16MHz Clock
   // alt-part: DSC6001CI2A-016.0000
   // package: CDFN3225-4LD-PL-1
+  @value("DSC6001CI2A-016.0000T")
+  @footprint("tinyfpga:CDFN3225-4LD-PL-1")
+  @bom("Microchip", "DSC6001CI2A-016.0000T")
   cell U3 = cell {
     @right
     @set_pad(1)
@@ -143,9 +157,11 @@ module Flash {
   analog SCK, SDO, SDI, SS
   net WP
 
-  @bom("Adesto Technologies", "AT25SF041-SSHD-B")
   // 4MBit SPI Flash
   // SOIC-8 3.9x4.9mm Pitch1.27mm
+  @value("AT25SF041-SSHD-B")
+  @footprint("Housings_SOIC:SOIC-8-1EP_3.9x4.9mm_Pitch1.27mm")
+  @bom("Adesto Technologies", "AT25SF041-SSHD-B")
   cell U5 = cell {
     @left
     @set_pad(3)
@@ -167,12 +183,18 @@ module Flash {
     analog GND
   }
 
-  cell TP1 = Tp() {A=WP}
+  @value("TEST")
+  @footprint("Measurement_Points:Measurement_Point_Round-SMD-Pad_Small")
+  cell TP1 = Tp {A=WP}
+
+  @value("10K 1% 1/16W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Vishay", "CRCW040210K0FKED")
-  // 10k resistor, 1% tolerance, 1/16 watt
   cell R7 = $R(10k) {A=WP, B=GND}
+
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C8 = $C(100nF) {A='+3V3, B=GND}
 }
 
@@ -184,8 +206,8 @@ module Headers {
   analog '185, '177, '174, '116, '141_GBIN2, '148, '119,
     SS, SCK, SDI, SDO
 
-  @bom("", "CONN_01x14")
-  // TODO: mpn
+  @value("CONN_01X14")
+  @footprint("Pin_Headers:Pin_Header_Straight_1x14_Pitch2.54mm")
   cell J1 = cell {
     @left {
       @set_pad(1)
@@ -219,8 +241,8 @@ module Headers {
     }
   }
 
-  @bom("", "CONN_01x14")
-  // TODO: mpn
+  @value("CONN_01X14")
+  @footprint("Pin_Headers:Pin_Header_Straight_1x14_Pitch2.54mm")
   cell J2 = cell {
     @right {
       @set_pad(1)
@@ -260,46 +282,64 @@ module FpgaPower {
   analog '+1V2, '+3V3, GND
   analog VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3
 
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C9 = $C(100nF) {A=VCCIO_0, B=GND}
+
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C10 = $C(100nF) {A=VCCIO_1, B=GND}
 
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C16 = $C(100nF) {A=VCCIO_2, B=GND}
+
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C15 = $C(10nF) {A=VCCIO_2, B=GND}
 
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C14 = $C(10nF) {A=VCCIO_3, B=GND}
 
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C11 = $C(100nF) {A=VCC, B=GND}
+
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C12 = $C(10nF) {A=VCC, B=GND}
+
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  // 10nF Ceramic Capacitor, 25V, X7R, 10%
   cell C13 = $C(10nF) {A=VCC, B=GND}
 }
 
 /// FPGA PLL decoupling capacitors
 module FpgaPLL {
   analog '1V2, VCCPLL0, GNDPLL0
+
+  @value("100ohm 1% 1/10W")
+  @footprint("Resistors_SMD:R0402_NoSilk")
   @bom("KOA", "RK73H1ETTP1000F")
-  // 100ohm resistor, 1% tolerance, 1/10 watt
   cell R4 = $R(100ohm) {A='1V2, B=VCCPLL0}
+
+  @value("10uF 20% X5R 6.3V")
+  @footprint("Capacitors_SMD:C_0603_NoSilk")
   @bom("TDK", "C1608X5R0J106M080AB")
-  // 10uF Ceramic Capacitor, 6.3V, X5R, 20%
   cell C6 = $C(10uF) {A=VCCPLL0, B=GNDPLL0}
+
+  @value("100nF 10% X5R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  // 100nF Ceramic Capacitor, 25V, X5R, 10%
   cell C7 = $C(100nF) {A=VCCPLL0, B=GNDPLL0}
 }
 
@@ -307,17 +347,26 @@ module FpgaPLL {
 module FpgaReset {
   analog '+3.3V, GND, CRESET_B
 
+  @value("10K 1% 1/16W")
+  @footprint("Resistors_SMD:R_0402")
   @bom("Vishay", "CRCW040210K0FKED")
-  // 10k resistor, 1% tolerance, 1/16 watt
   cell R6 = $R(10k) {A='+3.3V, B=CRESET_B}
-  cell TP2 = Tp() {A=CRESET_B}
-  @bom("C&K Components", "PTS810 SJM 250 SMTR LFS")
+
+  @value("TEST")
+  @footprint("Measurement_Points:Measurement_Point_Round-SMD-Pad_Small")
+  cell TP2 = Tp {A=CRESET_B}
+
   // Reset/Program Button
+  @value("SW_Push")
+  @footprint("tinyfpga:PTS_810_SMT_Switch")
+  @bom("C&K Components", "PTS810 SJM 250 SMTR LFS")
   cell SW1 = cell {analog A=GND; analog B=CRESET_B}
 }
 
 @bom("Lattice Semiconductor", "ICE40LP8K-CM81")
 @fpga("ice40-lp8k-cm81")
+@value("iCE40-LP8K-CM81")
+@footprint("tinyfpga:CM81")
 declare module ICE40_LP8K_CM81 {
   @group("A") {
     @set_pad("C7")
@@ -480,21 +529,22 @@ export module TinyFPGA {
   net '10A, '10B, '24B, '114, '174, '116, '119, '148, '141_GBIN2
   net VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3, VCCPLL0, GNDPLL0
   net CRESET_B, '1V2
-  cell usb = Usb() {*}
-  cell vreg = Vreg() {*}
-  cell clock = Clock() {*}
-  cell flash = Flash() {*}
-  cell headers = Headers() {*}
-  cell fpga_power = FpgaPower() {*}
-  cell fpga_pll = FpgaPLL() {*}
-  cell fpga_reset = FpgaReset() {*}
+  cell usb = Usb {*}
+  cell vreg = Vreg {*}
+  cell clock = Clock {*}
+  cell flash = Flash {*}
+  cell headers = Headers {*}
+  cell fpga_power = FpgaPower {*}
+  cell fpga_pll = FpgaPLL {*}
+  cell fpga_reset = FpgaReset {*}
 
+  @value("10K 1% 1/16W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Vishay", "CRCW040210K0FKED")
-  // 10k resistor, 1% tolerance, 1/16 watt
   cell R5 = $R(10k) {A='+3V3, B=SS}
 
   net VPP_FAST, CDONE, '81_GBIN5
-  cell U1 = ICE40_LP8K_CM81() {
+  cell U1 = ICE40_LP8K_CM81 {
     VPP_FAST
     VPP_2V5='+3V3
     CDONE
@@ -527,13 +577,9 @@ export module TinyFPGA {
     IOL_14B=GND
     IOL_22A='+1V2
     IOL_24B='24B
-    //IOL_26A='26A
-    //IOL_24A='24A
-    //IOL_26B='26B
     IOR_116='116
     IOR_120='+3V3
     IOR_148='148
-    //IOR_115='115
     IOR_117='141_GBIN2
     IOR_141_GBIN2='141_GBIN2
     IOR_119='119
@@ -560,7 +606,6 @@ export module TinyFPGA {
     IOT_170='+3V3
     IOT_198_GBIN0=CLK
     IOT_197_GBIN1=CLK
-    //IOT_212='212
     IOT_214=GND
   }
 }
