@@ -148,14 +148,14 @@ export function Param(name: string, value: number | string | boolean | Bit[],
 export interface ICell {
     tag: 'cell'
     name: string
-    module: IModule | string
+    module: IModule
     attrs: IAttr[]
     params: IParam[]
     assigns: IAssign[]
     src: ISrcLoc
 }
 
-export function Cell(name: string, mod: IModule | string, params: IParam[],
+export function Cell(name: string, mod: IModule, params: IParam[],
                      assigns: IAssign[], attrs: IAttr[], src?: ISrcLoc): ICell {
     return {
         tag: 'cell',

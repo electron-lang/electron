@@ -220,7 +220,7 @@ export class ASTCompiler {
                     const c1 = lhs.val[i].ref
                     const c2 = rhs.val[i].ref
 
-                    if (typeof c2.module !== 'string' && c2.module.name === '') {
+                    if (c2.module.name === '') {
                         c2.module.name = c1.name + '$mod'
                     }
 
@@ -293,15 +293,9 @@ export class ASTCompiler {
             }
         }
 
-        const ircellmod = (() => {
-            this.mods.push(irmod)
-            if (inst.mod.ref.declaration && !inst.mod.ref.anonymous) {
-                return inst.mod.ref.name
-            }
-            return irmod
-        })()
+        this.mods.push(irmod)
 
-        const ircell = ir.Cell('', ircellmod, params, assigns, [], inst.src)
+        const ircell = ir.Cell('', irmod, params, assigns, [], inst.src)
 
         return wrapCell([ir.Ref(ircell, 0)])
     }

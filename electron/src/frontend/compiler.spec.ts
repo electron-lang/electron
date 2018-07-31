@@ -126,12 +126,13 @@ describe('AST Compiler', () => {
             ir.Port('A', 'analog', [ ir.Sig() ], []),
             ir.Port('B', 'analog', [ ir.Sig() ], [])
         ]
+        i$R.attrs.push(ir.Attr('declare', true))
         const iR = ir.Module('R', [])
         const sa = ir.Sig()
         const sb = ir.Sig()
         const ia = ir.Port('a', 'analog', [sa], [])
         const ib = ir.Port('b', 'analog', [sb], [])
-        const ir1 = ir.Cell('r1', '$R', [ir.Param('RES', 10e3)], [
+        const ir1 = ir.Cell('r1', i$R, [ir.Param('RES', 10e3)], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [sa]),
             ir.Assign(ir.Ref(i$R.ports[1], 0), [sb]),
         ], [])
@@ -174,6 +175,7 @@ describe('AST Compiler', () => {
             ir.Port('B', 'input', [ ir.Sig(), ir.Sig(), ir.Sig() ], []),
             ir.Port('Y', 'output', [ ir.Sig() ], []),
         ]
+        i$and.attrs.push(ir.Attr('declare', true))
         const iAND = ir.Module('AND', [])
         const sa = [ ir.Sig(), ir.Sig() ]
         const sb = [ ir.Sig(), ir.Sig(), ir.Sig() ]
@@ -181,7 +183,7 @@ describe('AST Compiler', () => {
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', '$and', [
+        const iand1 = ir.Cell('and1', i$and, [
             ir.Param('A_WIDTH', 2),
             ir.Param('B_WIDTH', 3),
         ], [
@@ -231,18 +233,20 @@ describe('AST Compiler', () => {
             ir.Port('A', 'analog', [ ir.Sig() ], []),
             ir.Port('B', 'analog', [ ir.Sig() ], [])
         ]
+        i$R.attrs.push(ir.Attr('declare', true))
+
         const iResArray = ir.Module('ResArray', [])
         const sa = [ ir.Sig(), ir.Sig() ]
         const sb = [ ir.Sig(), ir.Sig() ]
         const ia = ir.Port('a', 'analog', sa, [])
         const ib = ir.Port('b', 'analog', sb, [])
-        const ir1 = ir.Cell('rx$0', '$R', [
+        const ir1 = ir.Cell('rx$0', i$R, [
             ir.Param('RES', 10e3),
         ], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[0] ]),
             ir.Assign(ir.Ref(i$R.ports[1], 0), [ sb[0] ]),
         ], [])
-        const ir2 = ir.Cell('rx$1', '$R', [
+        const ir2 = ir.Cell('rx$1', i$R, [
             ir.Param('RES', 10e3),
         ], [
             ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[1] ]),
@@ -292,6 +296,8 @@ describe('AST Compiler', () => {
             ir.Port('B', 'input', [ ir.Sig(), ir.Sig(), ir.Sig() ], []),
             ir.Port('Y', 'output', [ ir.Sig() ], []),
         ]
+        i$and.attrs.push(ir.Attr('declare', true))
+
         const iAND = ir.Module('AND', [])
         const sa = [ ir.Sig(), ir.Sig(), ir.Sig() ]
         const sb = [ ir.Sig(), ir.Sig(), ir.Sig() ]
@@ -299,7 +305,7 @@ describe('AST Compiler', () => {
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', '$and', [
+        const iand1 = ir.Cell('and1', i$and, [
             ir.Param('A_WIDTH', 3),
             ir.Param('B_WIDTH', 3),
         ], [

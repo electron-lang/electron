@@ -67,7 +67,7 @@ export class JsonBackend implements IBackend {
         const cells: cl.ICells = {}
         for (let c of cs) {
             const cell: cl.ICell = {
-                type: typeof c.module === 'string' ? c.module : c.module.name,
+                type: c.module.name,
                 parameters: this.compileParams(c.params),
                 connections: this.compileAssigns(c.assigns),
             }

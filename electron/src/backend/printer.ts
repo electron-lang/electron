@@ -38,8 +38,7 @@ class Printer implements IPrint<ir.IR> {
                 return [param.name, '=', this.printValue(param.value)]
             },
             Cell: (cell) => {
-                const mod: string = typeof cell.module === 'string' ? cell.module
-                    : cell.module.name
+                const mod = cell.module.name
                 return [
                     this.printList(cell.attrs),
                     'cell', ' ', cell.name, ' = ', mod,
