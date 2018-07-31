@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { IBackend } from './index'
 import * as ir from './ir'
 
-export class KicadNetlistBackend implements IBackend {
+export class KicadBackend implements IBackend {
     protected netlist: string = ''
 
     constructor(readonly version: string,

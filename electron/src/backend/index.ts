@@ -6,4 +6,5 @@ export interface IBackend {
 
 export { JsonBackend } from './json'
 export { YosysBackend } from './yosys'
-export { KicadNetlistBackend } from './kicad-netlist'
+export { KicadBackend } from './kicad'
+export { BomBackend } from './bom'

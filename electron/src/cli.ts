@@ -39,10 +39,16 @@ program.command('blif <file> [dir]')
     file.compile().emitBlif();
   })
 
-program.command('kicad-netlist <file> [dir]')
+program.command('kicad <file> [dir]')
   .action((path, dir, options) => {
     const file = new File(new DiagnosticLogger(), path)
-    file.compile().emitKicadNetlist();
+    file.compile().emitKicad();
+  })
+
+program.command('bom <file> [dir]')
+  .action((path, dir, options) => {
+    const file = new File(new DiagnosticLogger(), path)
+    file.compile().emitBom();
   })
 
 program.version(require('../package.json').version)

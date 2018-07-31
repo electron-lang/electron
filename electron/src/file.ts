@@ -9,7 +9,7 @@ import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
 import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
-import { JsonBackend, YosysBackend, KicadNetlistBackend } from './backend'
+import { JsonBackend, YosysBackend, KicadBackend, BomBackend } from './backend'
 import { generateDocs } from './docs'
 
 export class File {
@@ -161,10 +161,17 @@ export class File {
         return this
     }
 
-    emitKicadNetlist(): File {
+    emitKicad(): File {
         if (!this.ir) return this
-        const netlistBackend = new KicadNetlistBackend('A', 'filename')
-        netlistBackend.emit(this.ir, this.getPath('lec.net'))
+        const kicadBackend = new KicadBackend('A', 'filename')
+        kicadBackend.emit(this.ir, this.getPath('lec.net'))
+        return this
+    }
+
+    emitBom(): File {
+        if (!this.ir) return this
+        const bomBackend = new BomBackend()
+        bomBackend.emit(this.ir, this.getPath('lec.tsv'))
         return this
     }
 
