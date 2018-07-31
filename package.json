@@ -34,7 +34,7 @@
     "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --exact --canary=next --npm-tag=next --force-publish --skip-git --yes"
   },
   "devDependencies": {
-    "lerna": "latest",
+    "lerna": "^3.0.0-rc.0",
     "markdown-magic": "^0.1.25",
     "markdown-magic-subpackage-list": "^1.1.1"
   }
