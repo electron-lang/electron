@@ -7,7 +7,8 @@
   "author": "David Craven <david@craven.ch>",
   "license": "ISC",
   "devDependencies": {
-    "@electron-lang/electron": "^0.0.4"
+    "@electron-lang/electron": "^0.0.4",
+    "docsify-cli": "^4.2.1"
   },
   "dependencies": {
     "electron_lec": "^1.0.0"
@@ -17,6 +18,7 @@
     "build": "lecc compile src/tinyFPGA.lec",
     "kicad": "lecc kicad src/tinyFPGA.lec",
     "bom": "lecc bom src/tinyFPGA.lec",
-    "docs": "lecc docs src/tinyFPGA.lec ./docs"
+    "docs": "lecc docs src/tinyFPGA.lec ./docs",
+    "serve": "docsify serve ./docs"
   }
 }
