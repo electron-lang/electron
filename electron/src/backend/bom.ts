@@ -49,17 +49,33 @@ export class BomBackend implements IBackend {
 
     getCellNetlistInfo(cell: ir.ICell): NetlistInfo {
         const info = new NetlistInfo(cell.name)
-        for (let attr of cell.attrs) {
+
+        // get default info from module
+        for (let attr of cell.module.attrs) {
             if (attr.name === 'man') {
                 info.man = attr.value as string
             } else if (attr.name === 'mpn') {
-                info.man = attr.value as string
+                info.mpn = attr.value as string
             } else if (attr.name === 'value') {
                 info.value = attr.value as string
             }
         }
-        // get info from module
-        // for (let attr of cell.module)
+
+        // get overriden info from cell
+        for (let attr of cell.attrs) {
+            if (attr.name === 'man') {
+                info.man = attr.value as string
+            } else if (attr.name === 'mpn') {
+                info.mpn = attr.value as string
+            } else if (attr.name === 'value') {
+                info.value = attr.value as string
+            }
+        }
+
+        if (!info.isComplete()) {
+            this.processModule(cell.module)
+        }
+
         return info
     }
 
