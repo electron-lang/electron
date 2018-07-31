@@ -328,12 +328,12 @@ module FpgaPLL {
   analog '1V2, VCCPLL0, GNDPLL0
 
   @value("100ohm 1% 1/10W")
-  @footprint("Resistors_SMD:R0402_NoSilk")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("KOA", "RK73H1ETTP1000F")
   cell R4 = $R(100ohm) {A='1V2, B=VCCPLL0}
 
   @value("10uF 20% X5R 6.3V")
-  @footprint("Capacitors_SMD:C_0603_NoSilk")
+  @footprint("Capacitors_SMD:C_0603")
   @bom("TDK", "C1608X5R0J106M080AB")
   cell C6 = $C(10uF) {A=VCCPLL0, B=GNDPLL0}
 

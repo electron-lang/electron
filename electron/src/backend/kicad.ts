@@ -2,6 +2,27 @@ import * as fs from 'fs'
 import { IBackend } from './index'
 import * as ir from './ir'
 
+class NetlistInfo {
+    value: string | undefined = undefined
+    footprint: string | undefined = undefined
+
+    constructor(readonly ref: string) {
+
+    }
+
+    isComplete(): boolean {
+        return !!this.footprint
+    }
+
+    component(): string {
+        return (
+            `    (comp (ref ${this.ref})\n` +
+            `      (value "${this.value}")\n` +
+            `      (footprint ${this.footprint}))\n`
+        )
+    }
+}
+
 export class KicadBackend implements IBackend {
     protected netlist: string = ''
 
@@ -20,25 +41,40 @@ export class KicadBackend implements IBackend {
         return require('../../package.json').version
     }
 
-    emitComponent(mod: ir.IModule): void {
-        let declared = false
-        let value = ''
-        let footprint = ''
+    getCellNetlistInfo(cell: ir.ICell): NetlistInfo {
+        const info = new NetlistInfo(cell.name)
 
-        for (let attr of mod.attrs) {
-            if (attr.name === 'declare' && attr.value === true) {
-                declared = true
-            } else if (attr.name === 'value') {
-                value = attr.value as string
+        // get default info from module
+        for (let attr of cell.module.attrs) {
+            if (attr.name === 'value') {
+                info.value = attr.value as string
             } else if (attr.name === 'footprint') {
-                footprint = attr.value as string
+                info.footprint = attr.value as string
             }
         }
 
-        if (!declared) {
-            this.netlist += `    (comp (ref ${mod.name})\n`
-            this.netlist += `      (value ${value})\n`
-            this.netlist += `      (footprint ${footprint})\n`
+        // get overriden info from cell
+        for (let attr of cell.attrs) {
+            if (attr.name === 'value') {
+                info.value = attr.value as string
+            } else if (attr.name === 'footprint') {
+                info.footprint = attr.value as string
+            }
+        }
+
+        if (!info.isComplete()) {
+            this.processModule(cell.module)
+        }
+
+        return info
+    }
+
+    processModule(mod: ir.IModule): void {
+        for (let cell of mod.cells) {
+            const info = this.getCellNetlistInfo(cell)
+            if (info.isComplete()) {
+                this.netlist += info.component()
+            }
         }
     }
 
@@ -54,7 +90,7 @@ export class KicadBackend implements IBackend {
         this.netlist += `    (tool "electron (${this.getVersion()})"))\n`
         this.netlist += `  (components\n`
         for (let mod of mods) {
-            this.emitComponent(mod)
+            this.processModule(mod)
         }
         this.emitClose()
         this.netlist += `  (nets\n`
