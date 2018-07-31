@@ -215,6 +215,34 @@ const ModelAttribute: IAttributeHandler = {
 }
 
 /* Attributes for PCB generation */
+const FootprintAttribute: IAttributeHandler = {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes one param of type String.`
+        return validateParams(logger, attr, message, ['string'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const fp = attr.params[0] as ast.IString
+        return [
+            ir.Attr('footprint', fp.value, attr.src)
+        ]
+    }
+}
+
+const ValueAttribute: IAttributeHandler = {
+    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes one param of type String.`
+        return validateParams(logger, attr, message, ['string'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const value = attr.params[0] as ast.IString
+        return [
+            ir.Attr('value', value.value, attr.src)
+        ]
+    }
+}
+
 const SetPadAttribute: IAttributeHandler = {
     validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes at least one param of type ` +
@@ -293,6 +321,8 @@ export const allAttributes: {[name: string]: IAttributeHandler} = {
     // Simulation
     model: ModelAttribute,
     // PCB
+    footprint: FootprintAttribute,
+    value: ValueAttribute,
     set_pad: SetPadAttribute,
     // Bitstream
     fpga: FpgaAttribute,
