@@ -2,6 +2,8 @@
 import { Command } from 'commander';
 import { File } from './index';
 import { DiagnosticLogger } from './diagnostic'
+import { printDesignAST } from './frontend/printer'
+import { printDesignIR } from './backend/printer'
 
 const program = new Command('electron')
     .version(require('../package.json').version, '-v, --version')
@@ -14,10 +16,16 @@ program.command('compile <file>')
         const file = new File(new DiagnosticLogger(), path)
         file.compile().emitJSON()
         if (options.dumpAst) {
-            file.dumpAst()
+            const ast = file.getAst()
+            if (ast) {
+                console.log(printDesignAST(ast))
+            }
         }
         if (options.dumpIr) {
-            file.dumpIR()
+            const ir = file.getIR()
+            if (ir) {
+                console.log(printDesignIR(ir))
+            }
         }
     })
 

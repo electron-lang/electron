@@ -10,6 +10,10 @@ export function printIR(ir: ir.IR): string {
     return render(80, printerInstance.print(ir))
 }
 
+export function printDesignIR(ir: ir.IModule[]): string {
+    return ir.map((mod) => printIR(mod)).join('\n') + '\n'
+}
+
 class Printer implements IPrint<ir.IR> {
     print(elem: ir.IR): IDoc {
         return ir.matchIR({

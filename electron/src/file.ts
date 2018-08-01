@@ -9,7 +9,7 @@ import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
 import { HierarchyPass } from './passes'
 import * as ir from './backend/ir'
-import { printIR } from './backend/printer'
+import { printDesignIR } from './backend/printer'
 import { JsonBackend, YosysBackend, KicadBackend, BomBackend } from './backend'
 import { generateDocs } from './docs'
 
@@ -97,20 +97,8 @@ export class File {
         return this.ast
     }
 
-    dumpAst(): void {
-        if (this.ast) {
-            for (let mod of this.ast) {
-                console.log(printAST(mod))
-            }
-        }
-    }
-
-    dumpIR(): void {
-        if (this.ir) {
-            for (let mod of this.ir) {
-                console.log(printIR(mod))
-            }
-        }
+    getIR() {
+        return this.ir
     }
 
     compile(): File {
@@ -136,8 +124,7 @@ export class File {
 
     emitIR(): File {
         if (!this.ir) return this
-        writeFileSync(this.getPath('ir'),
-                      this.ir.map((mod) => printIR(mod)).join('\n') + '\n')
+        writeFileSync(this.getPath('ir'), printDesignIR(this.ir))
         return this
     }
 

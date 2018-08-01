@@ -10,6 +10,10 @@ export function printAST(a: ast.Ast): string {
     return render(80, emit(a))
 }
 
+export function printDesignAST(ast: ast.IModule[]): string {
+    return ast.map((mod) => printAST(mod)).join('\n') + '\n'
+}
+
 function emit(a: ast.Ast): IDoc {
     switch(a.tag) {
         case 'module':

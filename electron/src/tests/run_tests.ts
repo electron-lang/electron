@@ -1,9 +1,10 @@
-import { readdirSync, readFileSync } from 'fs'
+import { readdirSync } from 'fs'
 import { expect } from 'chai'
 import { DiagnosticTrace } from '../diagnostic'
 import { File } from '../file'
 import { IModule } from '../frontend/ast'
 import { _resetSigCounter } from '../backend/ir'
+import { printDesignIR } from '../backend/printer'
 
 const tr = new DiagnosticTrace()
 
@@ -24,12 +25,13 @@ describe('Compiler: PASS tests', () => {
         it('should compile ' + f, () => {
             _resetSigCounter()
             const file = new File(tr, __dirname + '/pass/' + f)
-            file.compile().emitIR()
-
-            const ir = readFileSync(file.getPath('ir')).toString()
+            let ir = file.compile().getIR()
+            if (!ir) {
+                throw new Error('IR is undefined')
+            }
             const md = getDocComments(file.getAst() || [])
             try {
-                expect(ir).to.equal(md)
+                expect(printDesignIR(ir)).to.equal(md)
             } catch(e) {
                 console.log(ir)
                 throw e
