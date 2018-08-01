@@ -32,16 +32,32 @@ import $R from "electron_lec/src/cells"
 ///   @side("bottom")
 ///   analog gnd = (19)
 ///   @rotate(90)
+///   @value("10K")
+///   @footprint("Resistors_SMD:R_0402_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0402FR-0710KL")
 ///   cell r1 = $R(RESISTANCE=10000) {A=(17), B=(18)}
 ///   @rotate(90)
-///   cell r2 = $R(RESISTANCE=20000) {A=(18), B=(19)}
+///   @value("22K")
+///   @footprint("Resistors_SMD:R_0603_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0603FR-0722KL")
+///   cell r2 = $R(RESISTANCE=22000) {A=(18), B=(19)}
 /// }
 export module VoltageDivider {
   @left analog vin
   @right analog vout
   @bottom analog gnd
+
   @rotate(90)
+  @value("10K")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  @bom("Yageo", "RC0402FR-0710KL")
   cell r1 = $R(10k) {A=vin, B=vout}
+
   @rotate(90)
-  cell r2 = $R(20k) {A=vout, B=gnd}
+  @value("22K")
+  @footprint("Resistors_SMD:R_0603_NoSilk")
+  @bom("Yageo", "RC0603FR-0722KL")
+  cell r2 = $R(22k) {A=vout, B=gnd}
 }
