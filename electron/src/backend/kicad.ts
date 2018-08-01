@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { IBackend } from './index'
 import * as ir from './ir'
 
-class NetlistInfo {
+class Component {
     value: string | undefined = undefined
     footprint: string | undefined = undefined
 
@@ -23,8 +23,38 @@ class NetlistInfo {
     }
 }
 
+class Node {
+    constructor(readonly ref: string, readonly pin: string) {
+
+    }
+
+    node(): string {
+        return `      (node (ref ${this.ref}) (pin ${this.pin}))`
+    }
+}
+
+class Net {
+    readonly nodes: Node[] = []
+
+    constructor(readonly name: string) {
+
+    }
+
+    addNode(node: Node): void {
+        this.nodes.push(node)
+    }
+
+    net(code: number): string {
+        return (
+            `    (net (code ${code}) (name "${this.name}")\n` +
+            `${this.nodes.map((n) => n.node()).join('\n')})\n`
+        )
+    }
+}
+
 export class KicadBackend implements IBackend {
     protected netlist: string = ''
+    protected nets: {[n: number]: Net} = {}
 
     constructor(readonly version: string,
                 readonly source: string) {
@@ -41,8 +71,8 @@ export class KicadBackend implements IBackend {
         return require('../../package.json').version
     }
 
-    getCellNetlistInfo(cell: ir.ICell): NetlistInfo {
-        const info = new NetlistInfo(cell.name)
+    cellAsComponent(cell: ir.ICell): Component {
+        const info = new Component(cell.name)
 
         // get default info from module
         for (let attr of cell.module.attrs) {
@@ -71,7 +101,7 @@ export class KicadBackend implements IBackend {
 
     processModule(mod: ir.IModule): void {
         for (let cell of mod.cells) {
-            const info = this.getCellNetlistInfo(cell)
+            const info = this.cellAsComponent(cell)
             if (info.isComplete()) {
                 this.netlist += info.component()
             }
@@ -88,16 +118,20 @@ export class KicadBackend implements IBackend {
         this.netlist += `    (source "${this.source}")\n`
         this.netlist += `    (date "${this.getDate()}")\n`
         this.netlist += `    (tool "electron (${this.getVersion()})"))\n`
+
         this.netlist += `  (components\n`
         for (let mod of mods) {
             this.processModule(mod)
         }
         this.emitClose()
+
         this.netlist += `  (nets\n`
-        // emitNets
-        // (net (code 0) (name "VI")
-        //  (node (ref R1) (pin 1)))
+        let i = 0
+        for (let net in this.nets) {
+            this.netlist += this.nets[net].net(i++)
+        }
         this.emitClose()
+
         this.emitClose()
 
         fs.writeFileSync(outputPath, this.netlist)

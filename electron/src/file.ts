@@ -7,6 +7,7 @@ import { lexerInstance, parserInstance } from './frontend/parser'
 import { Elaborator } from './frontend/elaborator'
 import { ASTCompiler } from './frontend/compiler'
 import { printAST } from './frontend/printer'
+import { HierarchyPass } from './passes'
 import * as ir from './backend/ir'
 import { printIR } from './backend/printer'
 import { JsonBackend, YosysBackend, KicadBackend, BomBackend } from './backend'
@@ -163,8 +164,9 @@ export class File {
 
     emitKicad(): File {
         if (!this.ir) return this
+        const hierarchy = new HierarchyPass()
         const kicadBackend = new KicadBackend('A', 'filename')
-        kicadBackend.emit(this.ir, this.getPath('lec.net'))
+        kicadBackend.emit(hierarchy.transform(this.ir), this.getPath('lec.net'))
         return this
     }
 
