@@ -1,6 +1,7 @@
 import * as ast from './ast'
 import * as ir from '../backend/ir'
-import { DiagnosticPublisher } from '../diagnostic'
+import { FileInfo } from '../file'
+import { Logger } from '../diagnostic'
 import { SymbolTable, Symbol } from './symbolTable'
 import { matchASTStmt, matchASTExpr } from './ast'
 import { allAttributes } from './attributes'
@@ -39,7 +40,7 @@ function wrapParam(val: number | string | boolean | ir.Bit[]): IParamWrapper | I
         const bits = val as ir.Bit[]
         return {
             tag: 'sigs',
-            val: bits.map((bit) => ir.Sig(bit))
+            val: bits.map((bit) => ir.Sig.create(bit))
         }
     } else {
         const param = val as number | string | boolean
@@ -117,11 +118,14 @@ function compileAttrs(attrs: ast.IAttr[]): ir.IAttr[] {
 }
 
 export class ASTCompiler {
-    private st: SymbolTable<WrappedValue>;
+    protected logger: Logger
+    private st: SymbolTable<WrappedValue>
     private mods: ir.IModule[] = []
 
-    constructor(private logger: DiagnosticPublisher) {
-        this.st = new SymbolTable(logger)
+    constructor(readonly info: FileInfo) {
+        this.logger = info.logger
+        this.st = new SymbolTable(info)
+        ir.Sig.resetCounter()
     }
 
     compile(mods: ast.IModule[]): ir.IModule[] {
@@ -139,7 +143,7 @@ export class ASTCompiler {
         const sigs = (() => {
             let sigs: ir.ISig[] = []
             for (let i = 0; i < width; i++) {
-                sigs.push(ir.Sig())
+                sigs.push(ir.Sig.create())
             }
             return sigs
         })()
@@ -332,12 +336,12 @@ export class ASTCompiler {
             return wrapCell(newSigs as ir.IRef<ir.ICell>[])
         } else {
             console.log(val)
-            return wrapSig([ ir.Sig() ])
+            return wrapSig([ ir.Sig.create() ])
         }
     }
 
     evalBitVector(bv: ast.IBitVector): WrappedValue {
-        return wrapSig(bv.value.map((bit) => ir.Sig(bit)))
+        return wrapSig(bv.value.map((bit) => ir.Sig.create(bit)))
     }
 
     evalBinOp(op: ast.IBinOp): WrappedValue {

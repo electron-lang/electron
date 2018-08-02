@@ -1,4 +1,5 @@
-import { DiagnosticPublisher, ISrcLoc, emptySrcLoc } from '../diagnostic'
+import { FileInfo } from '../file'
+import { Logger, ISrcLoc, SrcLoc } from '../diagnostic'
 
 interface ISymbolTable<Declarable> {
     [key: string]: IScope<Declarable>
@@ -19,15 +20,18 @@ export interface ISymbol {
 }
 
 export function Symbol(id: string, src?: ISrcLoc): ISymbol {
-    return { id, src: src || emptySrcLoc }
+    return { id, src: src || SrcLoc.empty() }
 }
 
 export class SymbolTable<Declarable> {
+    protected logger: Logger
     private scopes: ISymbolTable<Declarable> = {}
     private currScope: IScope<Declarable> = {}
     private scopeStack: IScope<Declarable>[] = []
 
-    constructor(private logger: DiagnosticPublisher) {}
+    constructor(info: FileInfo) {
+        this.logger = info.logger
+    }
 
     enterScope(scope?: string) {
         this.scopeStack.push(this.currScope)

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "prepare": "yarn build && yarn docs",
-    "build": "lecc compile src/cells.lec",
-    "docs": "lecc docs src/cells.lec ./docs"
+    "build": "lecc build",
+    "docs": "lecc docs"
   }
 }

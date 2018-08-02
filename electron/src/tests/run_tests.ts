@@ -1,16 +1,11 @@
-import { readdirSync } from 'fs'
+import * as path from 'path'
 import { expect } from 'chai'
+import { CrateFactory } from '../crate'
 import { DiagnosticTrace } from '../diagnostic'
-import { File } from '../file'
 import { IModule } from '../frontend/ast'
-import { _resetSigCounter } from '../backend/ir'
 import { printDesignIR } from '../backend/printer'
 
 const tr = new DiagnosticTrace()
-
-const files = readdirSync(__dirname + '/pass').filter((f) => {
-    return !f.endsWith('.d.lec') && f.endsWith('.lec')
-})
 
 function getDocComments(mods: IModule[]): string {
     let doc = ''
@@ -21,25 +16,19 @@ function getDocComments(mods: IModule[]): string {
 }
 
 describe('Compiler: PASS tests', () => {
-    for (let f of files) {
-        it('should compile ' + f, () => {
-            _resetSigCounter()
-            const file = new File(tr, __dirname + '/pass/' + f)
-            let ir = file.compile().getIR()
-            if (!ir) {
+    const crate = CrateFactory.create(tr, path.join(__dirname, 'pass'))
+    for (let file of crate.files) {
+        it('should compile ' + file.path, () => {
+            if (!file.ir) {
                 throw new Error('IR is undefined')
             }
-            const md = getDocComments(file.getAst() || [])
+            const md = getDocComments(file.ast || [])
             try {
-                expect(printDesignIR(ir)).to.equal(md)
+                expect(printDesignIR(file.ir)).to.equal(md)
             } catch(e) {
-                console.log(ir)
+                console.log(file.ir)
                 throw e
             }
         })
     }
-})
-
-describe('Compiler: FAIL tests', () => {
-
 })

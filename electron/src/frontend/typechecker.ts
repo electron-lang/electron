@@ -1,11 +1,14 @@
+import { FileInfo } from '../file'
+import { Logger } from '../diagnostic';
 import * as ast from './ast'
 import { matchASTExpr } from './ast';
-import { DiagnosticPublisher, throwBug } from '../diagnostic'
 import { allTypeHandlers } from './parameters'
 
 export class TypeChecker {
+    protected logger: Logger
 
-    constructor(private logger: DiagnosticPublisher) {
+    constructor(file: FileInfo) {
+        this.logger = file.logger
     }
 
     typeError(expr: ast.Expr, expect: string, found: string): boolean {
@@ -177,7 +180,7 @@ export class TypeChecker {
                     return this.checkIsCell(assign.rhs)
                 case 'module':
                 case 'param':
-                    throwBug('checkAssign')
+                    this.logger.bug('checkAssign')
             }
         }
     }

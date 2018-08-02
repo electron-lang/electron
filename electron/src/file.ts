@@ -1,197 +1,196 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs'
-import { dirname, basename, resolve } from 'path'
-import { IToken } from 'chevrotain'
-import { IDiagnosticConsumer, DiagnosticPublisher } from './diagnostic'
-import * as ast from './frontend/ast'
-import { lexerInstance, parserInstance } from './frontend/parser'
-import { Elaborator } from './frontend/elaborator'
-import { ASTCompiler } from './frontend/compiler'
-import { printAST } from './frontend/printer'
+import * as fs from 'fs'
+import * as path from 'path'
+import { Crate } from './crate'
+import { Logger, ISrcLoc } from './diagnostic'
+import { IToken, ast, lexerInstance, parserInstance, Elaborator,
+         ASTCompiler } from './frontend'
 import { HierarchyPass } from './passes'
-import * as ir from './backend/ir'
-import { printDesignIR } from './backend/printer'
-import { JsonBackend, YosysBackend, KicadBackend, BomBackend } from './backend'
+import { ir, JsonBackend, YosysBackend, KicadBackend,
+         BomBackend } from './backend'
 import { generateDocs } from './docs'
 
+export interface FileInfo {
+    readonly file: string
+    readonly logger: Logger
+}
+
 export class File {
-    private logger: DiagnosticPublisher
-    private imports: File[] = []
-    private declarations: ast.IModule[] = []
-    private path: string
-    private text: string
-    private lines: string[]
-    private tokens: IToken[] | undefined
-    private cst: any
-    private ast: ast.IModule[] | undefined
-    private ir: ir.IModule[] | undefined
+    readonly path: string
+    readonly logger: Logger
 
-    constructor(private dc: IDiagnosticConsumer, path: string, text?: string) {
-        this.path = resolve(path)
-        if (text) {
-            this.text = text
-        } else {
-            this.text = readFileSync(path).toString()
+    protected _outputPath: string | undefined
+    protected _docsPath: string | undefined
+    protected _text: string | undefined
+    protected _lines: string[] | undefined
+    protected _tokens: IToken[] | undefined
+    protected _cst: any | undefined
+    protected _ast: ast.IModule[] | undefined
+    protected _ir: ir.IModule[] | undefined
+    protected _declarations: ast.IModule[] | undefined
+
+    constructor(readonly info: FileInfo, readonly crate: Crate) {
+        this.path = info.file
+        this.logger = info.logger
+    }
+
+    setText(text: string): void {
+        this.invalidate()
+        this._text = text
+    }
+
+    invalidate(): void {
+        this._text = undefined
+        this._lines = undefined
+        this._tokens = undefined
+        this._cst = undefined
+        this._ast = undefined
+        this._ir = undefined
+        this._declarations = undefined
+    }
+
+    get text(): string {
+        if (!this._text) {
+            this._text = fs.readFileSync(this.path).toString()
         }
-        this.lines = this.text.split('\n')
-        this.logger = dc.toPublisher(this.path, this.lines)
+        return this._text
     }
 
-    getPath(ext?: string): string {
-        if (!ext) return this.path
-        const pl = this.path.split('.')
-        pl.pop()
-        pl.push(ext)
-        return pl.join('.')
-    }
-
-    lex(): File {
-        const lexingResult = lexerInstance.tokenize(this.text)
-        this.tokens = lexingResult.tokens
-        for (let err of lexingResult.errors) {
-            this.logger.error(err.message, {
-                startLine: err.line,
-                startColumn: err.column,
-                endLine: err.line,
-                endColumn: err.column + err.length,
-            })
+    getLines(src: ISrcLoc) {
+        if (!this._lines) {
+            this._lines = this.text.split('\n')
         }
-        return this
+        return this._lines.slice(src.startLine - 1, src.endLine)
     }
 
-    parse(): File {
-        if (!this.tokens) return this
-        parserInstance.input = this.tokens
-        this.cst = parserInstance.design()
-        for (let err of parserInstance.errors) {
-            let lastToken = err.token
-            if (err.resyncedTokens.length > 0) {
-                lastToken = err.resyncedTokens[err.resyncedTokens.length - 1]
+    get tokens(): IToken[] {
+        if (!this._tokens) {
+            const lexingResult = lexerInstance.tokenize(this.text)
+            this._tokens = lexingResult.tokens
+            for (let err of lexingResult.errors) {
+                this.logger.error(err.message, {
+                    startLine: err.line,
+                    startColumn: err.column,
+                    endLine: err.line,
+                    endColumn: err.column + err.length,
+                    file: this.path,
+                })
             }
-            this.logger.error(err.message, {
-                startLine: err.token.startLine || 0,
-                startColumn: err.token.startColumn || 0,
-                endLine: lastToken.endLine || 0,
-                endColumn: lastToken.endColumn || 0,
-            })
         }
-        return this
+        return this._tokens
     }
 
-    elaborate(): File {
-        if (!this.cst) return this
-        let el = new Elaborator(this.logger, this)
-        this.ast = el.visit(this.cst)
-        if (!this.ast) return this
-        this.declarations = extractDeclarations(this.ast)
-        return this
+    get cst(): any {
+        if (!this._cst) {
+            parserInstance.input = this.tokens
+            this._cst = parserInstance.design()
+            for (let err of parserInstance.errors) {
+                let lastToken = err.token
+                if (err.resyncedTokens.length > 0) {
+                    lastToken = err.resyncedTokens[err.resyncedTokens.length - 1]
+                }
+                this.logger.error(err.message, {
+                    startLine: err.token.startLine || 0,
+                    startColumn: err.token.startColumn || 0,
+                    endLine: lastToken.endLine || 0,
+                    endColumn: lastToken.endColumn || 0,
+                    file: this.path
+                })
+            }
+        }
+        return this._cst
     }
 
-    compileAST(): File {
-        if (!this.ast || this.logger.hasErrors) return this
-        const cmp = new ASTCompiler(this.logger)
-        this.ir = cmp.compile(this.ast)
-        return this
+    get ast(): ast.IModule[] {
+        if (!this._ast) {
+            let el = new Elaborator(this.info, this.crate)
+            this._ast = el.visit(this.cst)
+        }
+        return this._ast || []
     }
 
-    getAst() {
-        return this.ast
+    get declarations(): ast.IModule[] {
+        if (!this._declarations) {
+            this._declarations = extractDeclarations(this.ast)
+        }
+        return this._declarations || []
     }
 
-    getIR() {
-        return this.ir
+    get ir(): ir.IModule[] {
+        if (!this._ir) {
+            const cmp = new ASTCompiler(this.info)
+            this._ir = cmp.compile(this.ast)
+        }
+        return this._ir || []
+    }
+
+    private resolvePath(dir: string) {
+        const relpath = path.relative(this.crate.crateInfo.srcDir, this.path)
+        const abspath = path.resolve(dir, relpath)
+        return abspath
+    }
+
+    get outputPath(): string {
+        if (!this._outputPath) {
+            this._outputPath = this.resolvePath(this.crate.crateInfo.buildDir)
+        }
+        return this._outputPath
+    }
+
+    get docsPath(): string {
+        if (!this._docsPath) {
+            this._docsPath = this.resolvePath(this.crate.crateInfo.docsDir)
+        }
+        return this._docsPath
     }
 
     compile(): File {
-        return this.lex().parse().elaborate().compileAST().emitJSON()
+        return this.emitJSON()
     }
 
-    emitDeclarations(): File {
-        this.lex().parse().elaborate()
+    emitDocs(): File {
         if (!this.ast) return this
-        writeFileSync(this.getPath('d.lec'), this.declarations.map(printAST).join('\n'))
-        return this
-    }
-
-    emitDocs(dir?: string): File {
-        if (!this.ast) return this
-        let path = this.getPath('md')
-        if (dir) {
-            path = resolve(dir + '/' + basename(path))
-        }
-        writeFileSync(path, generateDocs(this.ast))
-        return this
-    }
-
-    emitIR(): File {
-        if (!this.ir) return this
-        writeFileSync(this.getPath('ir'), printDesignIR(this.ir))
+        const file = this.docsPath + '.md'
+        fs.writeFileSync(file, generateDocs(this.ast))
         return this
     }
 
     emitJSON(): File {
         if (!this.ir) return this
         const jsonBackend = new JsonBackend(true, true, true)
-        jsonBackend.emit(this.ir, this.getPath('lec.json'))
+        const file = this.outputPath + '.json'
+        jsonBackend.emit(this.ir, file)
         return this
     }
 
     emitVerilog(): File {
         if (!this.ir) return this
-        const yosysBackend = new YosysBackend(this.getPath('yosys.json'), 'verilog')
-        yosysBackend.emit(this.ir, this.getPath('lec.v'))
-        return this
-    }
-
-    emitBlif(): File {
-        if (!this.ir) return this
-        const yosysBackend = new YosysBackend(this.getPath('yosys.json'), 'blif')
-        yosysBackend.emit(this.ir, this.getPath('lec.blif'))
+        const yosys = this.outputPath + '.yosys.json'
+        const verilog = this.outputPath + '.v'
+        const yosysBackend = new YosysBackend(yosys, 'verilog')
+        yosysBackend.emit(this.ir, verilog)
         return this
     }
 
     emitKicad(): File {
         if (!this.ir) return this
         const hierarchy = new HierarchyPass()
-        const kicadBackend = new KicadBackend('A', 'filename')
-        kicadBackend.emit(hierarchy.transform(this.ir), this.getPath('lec.net'))
+        const file = this.outputPath + '.net'
+        const kicadBackend = new KicadBackend(
+            this.crate.crateInfo.version,
+            this.path
+        )
+        kicadBackend.emit(hierarchy.transform(this.ir), file)
         return this
     }
 
     emitBom(): File {
         if (!this.ir) return this
+        const file = this.outputPath + '.tsv'
         const bomBackend = new BomBackend()
-        bomBackend.emit(this.ir, this.getPath('lec.tsv'))
+        bomBackend.emit(this.ir, file)
         return this
     }
 
-    resolvePackage(path: string): string | null {
-        if (!path.startsWith('.')) {
-            const pkg = '/node_modules/' + path + '.lec'
-            let dir = this.path
-            while (dir !== '/') {
-                dir = dirname(dir)
-                const fullPath = resolve(dir + pkg)
-                if (existsSync(fullPath)) {
-                    return fullPath
-                }
-            }
-        } else {
-            const fullPath = resolve(dirname(this.path) + '/' + path + '.lec')
-            if (existsSync(fullPath)) {
-                return fullPath
-            }
-        }
-        return null
-    }
-
-    importFile(pkg: string): ast.IModule[] | null {
-        const fullPath = this.resolvePackage(pkg)
-        if (!fullPath) return null
-        const f = new File(this.dc, fullPath)
-        f.compile()
-        this.imports.push(f)
-        return f.declarations
-    }
 }
 
 function extractDeclarations(mods: ast.IModule[]): ast.IModule[] {

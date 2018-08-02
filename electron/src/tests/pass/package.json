@@ -1,0 +1,8 @@
+{
+  "name": "pass",
+  "version": "1.0.0",
+  "electronOptions": {
+    "srcDir": ".",
+    "buildDir": "."
+  }
+}

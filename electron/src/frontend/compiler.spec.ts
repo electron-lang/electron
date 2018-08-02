@@ -3,7 +3,7 @@ import * as ast from './ast'
 import * as ir from '../backend/ir'
 import { ASTCompiler } from './compiler'
 import { printIR } from '../backend/printer'
-import { DiagnosticCollector, SrcLoc, Pos } from '../diagnostic'
+import { DiagnosticCollector, Logger, SrcLoc } from '../diagnostic'
 
 function transformSigs(mod1: ir.IModule, mod2: ir.IModule) {
     for (let p1 of mod1.ports) {
@@ -66,9 +66,15 @@ function transformSigs(mod1: ir.IModule, mod2: ir.IModule) {
 
 type equalType = {equal: (ir: ir.IModule) => void}
 type expectIRType = {to: equalType, with: (params: ir.IParam[]) => {to: equalType}}
+
+const file = 'compiler.spec.ts'
+const dc = new DiagnosticCollector()
+const comp = new ASTCompiler({
+    file: file,
+    logger: new Logger(dc)
+})
+
 function expectIR(ast: ast.IModule): expectIRType {
-    const dc = new DiagnosticCollector()
-    const comp = new ASTCompiler(dc.toPublisher('compiler.spec.ts', []))
     const equal = (params: ir.IParam[]) => {
         return {
             equal: (ir: ir.IModule) => {
@@ -98,8 +104,8 @@ function expectIR(ast: ast.IModule): expectIRType {
 
 describe('AST Compiler', () => {
     it('should compile an empty module', () => {
-        expectIR(ast.Module('MODULE', [], SrcLoc(Pos(2, 4), Pos(2, 10))))
-            .to.equal(ir.Module('MODULE', [], SrcLoc(Pos(2, 4), Pos(2, 10))))
+        expectIR(ast.Module('MODULE', [], new SrcLoc(file, [2, 4, 2, 10])))
+            .to.equal(ir.Module('MODULE', [], new SrcLoc(file, [2, 4, 2, 10])))
     })
 
     it('should compile a module with a cell', () => {
@@ -123,13 +129,13 @@ describe('AST Compiler', () => {
 
         const i$R = ir.Module('$R', [])
         i$R.ports = [
-            ir.Port('A', 'analog', [ ir.Sig() ], []),
-            ir.Port('B', 'analog', [ ir.Sig() ], [])
+            ir.Port('A', 'analog', [ ir.Sig.create() ], []),
+            ir.Port('B', 'analog', [ ir.Sig.create() ], [])
         ]
         i$R.attrs.push(ir.Attr('declare', true))
         const iR = ir.Module('R', [])
-        const sa = ir.Sig()
-        const sb = ir.Sig()
+        const sa = ir.Sig.create()
+        const sb = ir.Sig.create()
         const ia = ir.Port('a', 'analog', [sa], [])
         const ib = ir.Port('b', 'analog', [sb], [])
         const ir1 = ir.Cell('r1', i$R, [ir.Param('RES', 10e3)], [
@@ -171,15 +177,15 @@ describe('AST Compiler', () => {
 
         const i$and = ir.Module('$and', [])
         i$and.ports = [
-            ir.Port('A', 'input', [ ir.Sig(), ir.Sig() ], []),
-            ir.Port('B', 'input', [ ir.Sig(), ir.Sig(), ir.Sig() ], []),
-            ir.Port('Y', 'output', [ ir.Sig() ], []),
+            ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create() ], []),
+            ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
+            ir.Port('Y', 'output', [ ir.Sig.create() ], []),
         ]
         i$and.attrs.push(ir.Attr('declare', true))
         const iAND = ir.Module('AND', [])
-        const sa = [ ir.Sig(), ir.Sig() ]
-        const sb = [ ir.Sig(), ir.Sig(), ir.Sig() ]
-        const sy = [ ir.Sig() ]
+        const sa = [ ir.Sig.create(), ir.Sig.create() ]
+        const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
+        const sy = [ ir.Sig.create() ]
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])
@@ -230,14 +236,14 @@ describe('AST Compiler', () => {
 
         const i$R = ir.Module('$R', [])
         i$R.ports = [
-            ir.Port('A', 'analog', [ ir.Sig() ], []),
-            ir.Port('B', 'analog', [ ir.Sig() ], [])
+            ir.Port('A', 'analog', [ ir.Sig.create() ], []),
+            ir.Port('B', 'analog', [ ir.Sig.create() ], [])
         ]
         i$R.attrs.push(ir.Attr('declare', true))
 
         const iResArray = ir.Module('ResArray', [])
-        const sa = [ ir.Sig(), ir.Sig() ]
-        const sb = [ ir.Sig(), ir.Sig() ]
+        const sa = [ ir.Sig.create(), ir.Sig.create() ]
+        const sb = [ ir.Sig.create(), ir.Sig.create() ]
         const ia = ir.Port('a', 'analog', sa, [])
         const ib = ir.Port('b', 'analog', sb, [])
         const ir1 = ir.Cell('rx$0', i$R, [
@@ -292,16 +298,16 @@ describe('AST Compiler', () => {
 
         const i$and = ir.Module('$and', [])
         i$and.ports = [
-            ir.Port('A', 'input', [ ir.Sig(), ir.Sig(), ir.Sig() ], []),
-            ir.Port('B', 'input', [ ir.Sig(), ir.Sig(), ir.Sig() ], []),
-            ir.Port('Y', 'output', [ ir.Sig() ], []),
+            ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
+            ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
+            ir.Port('Y', 'output', [ ir.Sig.create() ], []),
         ]
         i$and.attrs.push(ir.Attr('declare', true))
 
         const iAND = ir.Module('AND', [])
-        const sa = [ ir.Sig(), ir.Sig(), ir.Sig() ]
-        const sb = [ ir.Sig(), ir.Sig(), ir.Sig() ]
-        const sy = [ ir.Sig() ]
+        const sa = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
+        const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
+        const sy = [ ir.Sig.create() ]
         const ia = ir.Port('a', 'input', sa, [])
         const ib = ir.Port('b', 'input', sb, [])
         const iy = ir.Port('y', 'output', sy, [])

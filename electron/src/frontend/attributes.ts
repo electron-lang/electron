@@ -1,13 +1,13 @@
 import * as ast from './ast'
-import { DiagnosticPublisher } from '../diagnostic'
+import { Logger } from '../diagnostic'
 import * as ir from '../backend/ir'
 
 export interface IAttributeHandler {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean
+    validate(logger: Logger, attr: ast.IAttr): boolean
     compile(attr: ast.IAttr): ir.IAttr[]
 }
 
-function validateParams(logger: DiagnosticPublisher, attr: ast.IAttr,
+function validateParams(logger: Logger, attr: ast.IAttr,
                             message: string, tys: string[]): boolean {
     let ok = true
     // No params and not enough parameters
@@ -34,7 +34,7 @@ function validateParams(logger: DiagnosticPublisher, attr: ast.IAttr,
 
 /* Attributes for Schematic generation */
 const SkinAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         let message = `'@${attr.name}' takes one parameter of type Xml\n`
 
         return validateParams(logger, attr, message, ['xml'])
@@ -47,7 +47,7 @@ const SkinAttribute: IAttributeHandler = {
 }
 
 const RotateAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         let message = `'@${attr.name}' takes one parameter of type Integer\n` +
             ` - allowed values are 0, 90, 180, 270`
 
@@ -78,7 +78,7 @@ const RotateAttribute: IAttributeHandler = {
 }
 
 const LeftAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -89,7 +89,7 @@ const LeftAttribute: IAttributeHandler = {
 }
 
 const RightAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -100,7 +100,7 @@ const RightAttribute: IAttributeHandler = {
 }
 
 const TopAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -111,7 +111,7 @@ const TopAttribute: IAttributeHandler = {
 }
 
 const BottomAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -122,7 +122,7 @@ const BottomAttribute: IAttributeHandler = {
 }
 
 const FixedAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes two params of type Integer.`
         return validateParams(logger, attr, message, ['integer', 'integer'])
     },
@@ -138,7 +138,7 @@ const FixedAttribute: IAttributeHandler = {
 }
 
 const GroupAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes one parameter of type String.`
         return validateParams(logger, attr, message, ['string'])
     },
@@ -150,7 +150,7 @@ const GroupAttribute: IAttributeHandler = {
 }
 
 const PowerAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -161,7 +161,7 @@ const PowerAttribute: IAttributeHandler = {
 }
 
 const GroundAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -173,7 +173,7 @@ const GroundAttribute: IAttributeHandler = {
 
 /* Attributes for RTL */
 const ClockAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes no params.`
         return validateParams(logger, attr, message, [])
     },
@@ -186,7 +186,7 @@ const ClockAttribute: IAttributeHandler = {
 
 /* Attributes for BOM generation */
 const BomAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes two params of type String.`
         return validateParams(logger, attr, message,
                               ['string', 'string'])
@@ -204,7 +204,7 @@ const BomAttribute: IAttributeHandler = {
 
 /* Attributes for Simulation */
 const ModelAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         // TODO
         return true
     },
@@ -216,7 +216,7 @@ const ModelAttribute: IAttributeHandler = {
 
 /* Attributes for PCB generation */
 const FootprintAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes one param of type String.`
         return validateParams(logger, attr, message, ['string'])
     },
@@ -230,7 +230,7 @@ const FootprintAttribute: IAttributeHandler = {
 }
 
 const ValueAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes one param of type String.`
         return validateParams(logger, attr, message, ['string'])
     },
@@ -244,7 +244,7 @@ const ValueAttribute: IAttributeHandler = {
 }
 
 const SetPadAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes at least one param of type ` +
             `String or Integer.`
         let ok = true
@@ -271,7 +271,7 @@ const SetPadAttribute: IAttributeHandler = {
 
 /* Attributes for FPGA bitstream generation */
 const FpgaAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes a target triple ARCH-FAMILY-PACKAGE.`
         if (!validateParams(logger, attr, message, ['string'])) {
             return false
@@ -292,7 +292,7 @@ const FpgaAttribute: IAttributeHandler = {
 }
 
 const BitstreamAttribute: IAttributeHandler = {
-    validate(logger: DiagnosticPublisher, attr: ast.IAttr): boolean {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
         // TODO
         return true
     },

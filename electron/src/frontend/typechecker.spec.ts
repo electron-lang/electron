@@ -1,10 +1,13 @@
 import { expect } from 'chai'
-import * as ast from './ast'
+import { DiagnosticCollector, Logger } from '../diagnostic'
 import { TypeChecker } from './typechecker'
-import { DiagnosticCollector } from '../diagnostic';
+import * as ast from './ast'
 
 const dc = new DiagnosticCollector()
-const tc = new TypeChecker(dc.toPublisher('typechecker.spec.ts', []))
+const tc = new TypeChecker({
+    logger: new Logger(dc),
+    file: 'typechecker.spec.ts'
+})
 
 function expectFail() {
     const diags = dc.getDiagnostics()

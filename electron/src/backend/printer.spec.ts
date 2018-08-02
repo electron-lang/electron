@@ -5,21 +5,21 @@ import { printIR as print } from './printer'
 
 describe('IR Printer', () => {
     it('should print nets', () => {
-        expect(print(ir.Net('a', [ ir.Sig() ], []))).to.equal('net a = (0)')
-        expect(print(ir.Net('a', [ ir.Sig(), ir.Sig() ], [])))
+        expect(print(ir.Net('a', [ ir.Sig.create() ], []))).to.equal('net a = (0)')
+        expect(print(ir.Net('a', [ ir.Sig.create(), ir.Sig.create() ], [])))
             .to.equal('net[2] a = (1, 2)')
     })
 
     it('should print ports', () => {
-        expect(print(ir.Port('a', 'input', [ ir.Sig() ], [])))
+        expect(print(ir.Port('a', 'input', [ ir.Sig.create() ], [])))
             .to.equal('input a = (3)')
-        expect(print(ir.Port('a', 'output', [ ir.Sig() ], [])))
+        expect(print(ir.Port('a', 'output', [ ir.Sig.create() ], [])))
             .to.equal('output a = (4)')
-        expect(print(ir.Port('a', 'inout', [ ir.Sig() ], [])))
+        expect(print(ir.Port('a', 'inout', [ ir.Sig.create() ], [])))
             .to.equal('inout a = (5)')
-        expect(print(ir.Port('a', 'analog', [ ir.Sig() ], [])))
+        expect(print(ir.Port('a', 'analog', [ ir.Sig.create() ], [])))
             .to.equal('analog a = (6)')
-        expect(print(ir.Port('b', 'input', [ ir.Sig(), ir.Sig() ], [])))
+        expect(print(ir.Port('b', 'input', [ ir.Sig.create(), ir.Sig.create() ], [])))
             .to.equal('input[2] b = (7, 8)')
     })
 
@@ -48,7 +48,7 @@ describe('IR Printer', () => {
         $R.ports = [ A, B ]
 
         const mod = ir.Module('top', [])
-        const sigs: ir.ISig[] = [ ir.Sig(), ir.Sig(), ir.Sig() ]
+        const sigs: ir.ISig[] = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
 
         const a = ir.Port('a', 'analog', [ sigs[0] ], [])
 

@@ -1,7 +1,8 @@
-import { IModule } from './ir'
+import * as ir from './ir'
+export { ir }
 
 export interface IBackend {
-    emit(mods: IModule[], outputPath: string): void;
+    emit(mods: ir.IModule[], outputPath: string): void;
 }
 
 export { JsonBackend } from './json'

@@ -1,4 +1,4 @@
-import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
+import { ISrcLoc, SrcLoc } from '../../diagnostic'
 import { Expr } from './expression'
 
 export interface IAttr {
@@ -13,6 +13,6 @@ export function Attr(name: string, params: Expr[], src?: ISrcLoc): IAttr {
         tag: 'attr',
         name,
         params,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }

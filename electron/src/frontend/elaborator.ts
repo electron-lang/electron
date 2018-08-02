@@ -1,7 +1,7 @@
 import * as ast from './ast'
-import { DiagnosticPublisher, throwBug, SrcLoc, Pos, ISrcLoc,
-         tokenToSrcLoc, emptySrcLoc } from '../diagnostic'
-import { File } from '../file'
+import { Crate } from '../crate'
+import { FileInfo } from '../file'
+import { Logger, SrcLoc, ISrcLoc } from '../diagnostic'
 import { parserInstance } from './parser'
 import { SymbolTable, Symbol, ISymbol } from './symbolTable'
 import { allAttributes } from './attributes'
@@ -26,7 +26,7 @@ interface PartialInst extends Dict {
     src: ISrcLoc
 }
 
-function elaboratePartialInst(logger: DiagnosticPublisher,
+function elaboratePartialInst(logger: Logger,
                               st: SymbolTable<ast.Decl>,
                               tc: TypeChecker,
                               ref: ast.IRef<ast.IModule>,
@@ -96,17 +96,22 @@ function elaboratePartialInst(logger: DiagnosticPublisher,
 }
 
 export class Elaborator extends BaseElectronVisitor {
+    protected logger: Logger
+    protected file: string
+
     private paramCounter: number = 0
     private modst: SymbolTable<ast.IModule>;
     private st: SymbolTable<ast.Decl>;
     private tc: TypeChecker;
 
-    constructor(private logger: DiagnosticPublisher, private file: File) {
+    constructor(info: FileInfo, readonly crate?: Crate) {
         super()
         this.validateVisitor()
-        this.modst = new SymbolTable(logger)
-        this.st = new SymbolTable(logger)
-        this.tc = new TypeChecker(logger)
+        this.file = info.file
+        this.logger = info.logger
+        this.modst = new SymbolTable(info)
+        this.st = new SymbolTable(info)
+        this.tc = new TypeChecker(info)
     }
 
     design(ctx: any): ast.IModule[] {
@@ -128,13 +133,20 @@ export class Elaborator extends BaseElectronVisitor {
         const str = ctx.String[0].image
         const pkg = str.substring(1, str.length - 1)
 
-        const modules = this.file.importFile(pkg)
-
-        if (!modules) {
-            this.logger.error(`File '${pkg}' not found.`,
-                              tokenToSrcLoc(ctx.String[0]))
+        if (!this.crate) {
+            this.logger.bug('Crate not passed to constructor')
             return
         }
+
+        const file = this.crate.resolveImport(this.file, pkg)
+
+        if (!file) {
+            this.logger.error(`File '${pkg}' not found.`,
+                              SrcLoc.fromToken(this.file, ctx.String[0]))
+            return
+        }
+
+        const modules = file.declarations
 
         for (let ident of this.visit(ctx.identifiers[0])) {
             let found = false
@@ -207,7 +219,7 @@ export class Elaborator extends BaseElectronVisitor {
 
     identifier(ctx: any): ISymbol {
         const text = ctx.Identifier[0].image
-        const src = tokenToSrcLoc(ctx.Identifier[0])
+        const src = SrcLoc.fromToken(this.file, ctx.Identifier[0])
         if (text.startsWith("'")) {
             return Symbol(text.substring(1), src)
         }
@@ -217,7 +229,7 @@ export class Elaborator extends BaseElectronVisitor {
     // Attributes
     attribute(ctx: any): ast.IAttr {
         const name = ctx.Attribute[0].image.substring(1)
-        const src = tokenToSrcLoc(ctx.Attribute[0])
+        const src = SrcLoc.fromToken(this.file, ctx.Attribute[0])
         const params: ast.Expr[] = (() => {
             if (ctx.attributeParameter) {
                 return ctx.attributeParameter.map((ctx: any) => this.visit(ctx))
@@ -324,7 +336,7 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         /* istanbul ignore next */
-        throwBug('attributeStatement')
+        this.logger.bug('attributeStatement')
         /* istanbul ignore next */
         return []
     }
@@ -334,12 +346,13 @@ export class Elaborator extends BaseElectronVisitor {
 
         const rhs = this.visit(ctx.expressions[1])
         if(lhs.length != rhs.length) {
-            this.logger.error('Unbalanced assignment', {
-                startLine: lhs[0].src.startLine,
-                startColumn: lhs[0].src.startColumn,
-                endLine: rhs[rhs.length - 1].src.endLine,
-                endColumn: rhs[rhs.length - 1].src.endColumn,
-            })
+            const src = new SrcLoc(this.file, [
+                lhs[0].src.startLine,
+                lhs[0].src.startColumn,
+                rhs[rhs.length - 1].src.endLine,
+                rhs[rhs.length - 1].src.endColumn,
+            ])
+            this.logger.error('Unbalanced assignment', src)
         }
 
         let assigns: ast.IAssign[] = []
@@ -386,12 +399,13 @@ export class Elaborator extends BaseElectronVisitor {
         if (ctx.expressions) {
             const exprs = this.visit(ctx.expressions[0])
             if (ids.length != exprs.length) {
-                this.logger.error('Unbalanced assignment', {
-                        startLine: ids[0].src.startLine,
-                        startColumn: ids[0].src.startColumn,
-                        endLine: exprs[exprs.length - 1].src.endLine,
-                        endColumn: exprs[exprs.length - 1].src.endColumn,
-                })
+                const src = new SrcLoc(this.file, [
+                    ids[0].src.startLine,
+                    ids[0].src.startColumn,
+                    exprs[exprs.length - 1].src.endLine,
+                    exprs[exprs.length - 1].src.endColumn,
+                ])
+                this.logger.error('Unbalanced assignment', src)
             }
 
             for (let i = 0; i < Math.min(ids.length, exprs.length); i++) {
@@ -459,7 +473,7 @@ export class Elaborator extends BaseElectronVisitor {
             }
         } else {
             /* istanbul ignore next */
-            throwBug('expression')
+            this.logger.bug('expression')
         }
 
         if (ctx.binaryOp) {
@@ -473,12 +487,12 @@ export class Elaborator extends BaseElectronVisitor {
     literal(ctx: any): ast.Literal {
         if (ctx.Integer) {
             return ast.Integer(parseInt(ctx.Integer[0].image),
-                               tokenToSrcLoc(ctx.Integer[0]))
+                               SrcLoc.fromToken(this.file, ctx.Integer[0]))
         }
 
         if (ctx.BitVector) {
             const bv = ctx.BitVector[0].image.split("'")
-            const src = tokenToSrcLoc(ctx.BitVector[0])
+            const src = SrcLoc.fromToken(this.file, ctx.BitVector[0])
             const size = parseInt(bv[0])
             let bits: ast.Bit[] = []
             for (let i = 0; i < bv[1].length; i++) {
@@ -492,26 +506,27 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         if (ctx.Unit) {
-            return ast.Unit(ctx.Unit[0].image, tokenToSrcLoc(ctx.Unit[0]))
+            return ast.Unit(ctx.Unit[0].image,
+                            SrcLoc.fromToken(this.file, ctx.Unit[0]))
         }
 
         if (ctx.String) {
             const val = ctx.String[0].image
-            const src = tokenToSrcLoc(ctx.String[0])
+            const src = SrcLoc.fromToken(this.file, ctx.String[0])
             return ast.String(val.substring(1, val.length - 1), src)
         }
 
         if (ctx.Real) {
             return ast.Real(parseFloat(ctx.Real[0].image),
-                            tokenToSrcLoc(ctx.Real[0]))
+                            SrcLoc.fromToken(this.file, ctx.Real[0]))
         }
 
         if (ctx.True) {
-            return ast.Bool(true, tokenToSrcLoc(ctx.True[0]))
+            return ast.Bool(true, SrcLoc.fromToken(this.file, ctx.True[0]))
         }
 
         if (ctx.False) {
-            return ast.Bool(false, tokenToSrcLoc(ctx.False[0]))
+            return ast.Bool(false, SrcLoc.fromToken(this.file, ctx.False[0]))
         }
 
         if (ctx.xml) {
@@ -519,7 +534,7 @@ export class Elaborator extends BaseElectronVisitor {
         }
 
         /* istanbul ignore next */
-        throwBug('literal')
+        this.logger.bug('literal')
         /* istanbul ignore next */
         return ast.Bool(true)
     }
@@ -538,7 +553,7 @@ export class Elaborator extends BaseElectronVisitor {
               return '>>'
           } else {
               /* istanbul ignore next */
-              throwBug('binaryOp')
+              this.logger.bug('binaryOp')
               /* istanbul ignore next */
               return '+'
           }
@@ -547,11 +562,13 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     tupleExpression(ctx: any): ast.ITuple {
-        return ast.Tuple(this.visit(ctx.expressions[0]),
-                         SrcLoc(Pos(ctx.OpenRound[0].startLine,
-                                    ctx.OpenRound[0].startColumn),
-                                Pos(ctx.CloseRound[0].endLine,
-                                    ctx.CloseRound[0].endColumn)))
+        const src = new SrcLoc(this.file, [
+            ctx.OpenRound[0].startLine,
+            ctx.OpenRound[0].startColumn,
+            ctx.CloseRound[0].endLine,
+            ctx.CloseRound[0].endColumn,
+        ])
+        return ast.Tuple(this.visit(ctx.expressions[0]), src)
     }
 
     referenceExpression(ctx: any): [ast.Expr, ast.Expr, ISrcLoc] {
@@ -563,16 +580,19 @@ export class Elaborator extends BaseElectronVisitor {
             this.tc.checkIsInteger(end)
         }
 
-        return [ start, end, SrcLoc(Pos(ctx.OpenSquare[0].startLine,
-                                        ctx.OpenSquare[0].endColumn),
-                                    Pos(ctx.CloseSquare[0].endLine,
-                                        ctx.CloseSquare[0].endColumn)) ]
+        const src = new SrcLoc(this.file, [
+            ctx.OpenSquare[0].startLine,
+            ctx.OpenSquare[0].endColumn,
+            ctx.CloseSquare[0].endLine,
+            ctx.CloseSquare[0].endColumn,
+        ])
+        return [ start, end, src ]
     }
 
     anonymousCell(ctx: any): ast.IInst {
         let mod = ast.Module(undefined, [])
         mod.declaration = true
-        mod.src = tokenToSrcLoc(ctx.Cell[0])
+        mod.src = SrcLoc.fromToken(this.file, ctx.Cell[0])
 
         const conns = [].concat.apply([], (() => {
             if (ctx.cellStatement) {
@@ -629,7 +649,7 @@ export class Elaborator extends BaseElectronVisitor {
                 return 'inout'
             }
             /* istanbul ignore next */
-            throwBug('anonymousCellDeclaration')
+            this.logger.bug('anonymousCellDeclaration')
             /* istanbul ignore next */
             return 'analog'
         })()
@@ -644,12 +664,13 @@ export class Elaborator extends BaseElectronVisitor {
             const exprs = this.visit(ctx.expressions[0])
 
             if (ports.length != exprs.length) {
-                this.logger.error('Unbalanced assignment', {
-                        startLine: ports[0].src.startLine,
-                        startColumn: ports[0].src.startColumn,
-                        endLine: exprs[exprs.length - 1].src.endLine,
-                        endColumn: exprs[exprs.length - 1].src.endColumn,
-                })
+                const src = new SrcLoc(this.file, [
+                    ports[0].src.startLine,
+                    ports[0].src.startColumn,
+                    exprs[exprs.length - 1].src.endLine,
+                    exprs[exprs.length - 1].src.endColumn,
+                ])
+                this.logger.error('Unbalanced assignment', src)
             }
 
             const pdecls: PortDecl[] = []
@@ -680,7 +701,7 @@ export class Elaborator extends BaseElectronVisitor {
             params,
             star: dict.star, starSrc: dict.starSrc,
             conns: dict.conns,
-            src: emptySrcLoc,
+            src: SrcLoc.empty(this.file),
         }
     }
 
@@ -713,12 +734,12 @@ export class Elaborator extends BaseElectronVisitor {
 
     dictionary(ctx: any): Dict {
         let star = false
-        let starSrc = emptySrcLoc
+        let starSrc = SrcLoc.empty(this.file)
         let conns: [ISymbol, ast.Expr][] = []
 
         if (ctx.Star) {
             star = true
-            starSrc = tokenToSrcLoc(ctx.Star[0])
+            starSrc = SrcLoc.fromToken(this.file, ctx.Star[0])
         }
 
         if (ctx.dictionaryEntry) {
@@ -745,15 +766,20 @@ export class Elaborator extends BaseElectronVisitor {
 
     xml(ctx: any): ast.IXml {
         if (ctx.Tag) {
-            return ast.Xml(ctx.Tag[0].image, tokenToSrcLoc(ctx.Tag[0]))
+            return ast.Xml(ctx.Tag[0].image, SrcLoc.fromToken(this.file, ctx.Tag[0]))
         }
         const bodyStr = ctx.xml ? ctx.xml.map((ctx: any) => {
             return this.visit(ctx).value
         }).join('') : ''
         const str = ctx.OpenTag[0].image + bodyStr + ctx.CloseTag[0].image
-        const openSrc = tokenToSrcLoc(ctx.OpenTag[0])
-        const closeSrc = tokenToSrcLoc(ctx.CloseTag[0])
-        return ast.Xml(str, SrcLoc(Pos(openSrc.startLine, openSrc.startColumn),
-                                   Pos(closeSrc.endLine, closeSrc.endColumn)))
+        const openSrc = SrcLoc.fromToken(this.file, ctx.OpenTag[0])
+        const closeSrc = SrcLoc.fromToken(this.file, ctx.CloseTag[0])
+        const src = new SrcLoc(this.file, [
+            openSrc.startLine,
+            openSrc.startColumn,
+            closeSrc.endLine,
+            closeSrc.endColumn,
+        ])
+        return ast.Xml(str, src)
     }
 }

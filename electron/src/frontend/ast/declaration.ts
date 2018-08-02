@@ -1,4 +1,4 @@
-import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
+import { ISrcLoc, SrcLoc } from '../../diagnostic'
 import { IAttr } from './attribute'
 import { Integer } from './literal'
 import { Expr } from './expression'
@@ -49,8 +49,8 @@ export function Param(name: string, ty: string,
         tag: 'param',
         name,
         ty,
-        src: src || emptySrcLoc,
-        tySrc: tySrc || emptySrcLoc,
+        src: src || SrcLoc.empty(),
+        tySrc: tySrc || SrcLoc.empty(),
     }
 }
 /* Parameter */
@@ -66,7 +66,7 @@ export function Const(name: string, src?: ISrcLoc): IConst {
     return {
         tag: 'const',
         name,
-        src: src || emptySrcLoc
+        src: src || SrcLoc.empty()
     }
 }
 /* Integer Constant */
@@ -91,7 +91,7 @@ export function Port(name: string, ty: PortType, width?: Expr,
         name,
         ty,
         width: width || Integer(1),
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Port */
@@ -111,7 +111,7 @@ export function Net(name: string, width?: Expr, src?: ISrcLoc): INet {
         attrs: [],
         name,
         width: width || Integer(1),
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Net */
@@ -131,7 +131,7 @@ export function Cell(name: string, width?: Expr, src?: ISrcLoc): ICell {
         attrs: [],
         name,
         width: width || Integer(1),
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Cell */
@@ -161,7 +161,7 @@ export function Module(name: string | undefined, stmts: Stmt[],
         declaration: false,
         anonymous: name === undefined,
         name: name || '',
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
         ports: [],
         params: [],
         stmts: [],

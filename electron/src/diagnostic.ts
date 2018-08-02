@@ -1,110 +1,99 @@
 import chalk from 'chalk'
 import { IToken } from 'chevrotain'
-
-export interface IDiagnostic {
-    message: string,
-    src: ISrcLoc,
-    severity: 'error' | 'warn' | 'info',
-    path: string
-    context: string[]
-}
-
-export interface IPos {
-    line: number,
-    column: number,
-}
-
-export function Pos(line: number, column: number): IPos {
-    return {
-        line,
-        column,
-    }
-}
+import { Crate } from './crate'
 
 export interface ISrcLoc {
     startLine: number,
     startColumn: number,
     endLine: number,
     endColumn: number,
-    file?: string,
+    file: string,
 }
 
-export function SrcLoc(start: IPos, end: IPos): ISrcLoc {
-    return {
-        startLine: start.line,
-        startColumn: start.column,
-        endLine: end.line,
-        endColumn: end.column,
+export class SrcLoc implements ISrcLoc {
+    readonly startLine: number
+    readonly startColumn: number
+    readonly endLine: number
+    readonly endColumn: number
+
+    constructor(readonly file: string, loc: [number, number, number, number]) {
+        this.startLine = loc[0]
+        this.startColumn = loc[1]
+        this.endLine = loc[2]
+        this.endColumn = loc[3]
+    }
+
+    static fromToken(file: string, token: IToken) {
+        return new SrcLoc(file, [
+            token.startLine || 0,
+            token.startColumn || 0,
+            token.endLine || 0,
+            token.endColumn || 0,
+        ])
+    }
+
+    static empty(file?: string) {
+        return new SrcLoc(file || 'unknown', [0, 0, 0, 0])
     }
 }
 
-export const emptySrcLoc: ISrcLoc = SrcLoc(Pos(0, 0), Pos(0, 0))
-
-export function tokenToSrcLoc(token: IToken): ISrcLoc {
-    return SrcLoc(Pos(token.startLine || 0, token.startColumn || 0),
-                  Pos(token.endLine || 0, token.endColumn || 0))
+export interface IDiagnostic {
+    message: string,
+    src: ISrcLoc,
+    severity: 'error' | 'warn' | 'info',
 }
 
 export interface IDiagnosticConsumer {
+    setCrate: (crate: Crate) => void
     consume: (diag: IDiagnostic) => void
-    toPublisher: (path: string, lines: string[]) => DiagnosticPublisher
 }
 
-export class DiagnosticPublisher {
+export class Logger {
     private errors = false
 
-    constructor(private consumer: IDiagnosticConsumer,
-                private path: string,
-                private lines: string[]) {
-
-    }
+    constructor(protected consumer: IDiagnosticConsumer) {}
 
     get hasErrors(): boolean {
         return this.errors
     }
 
-    getPath(): string {
-        return this.path
-    }
-
-    error(message: string, src: ISrcLoc | undefined) {
+    error(message: string, src: ISrcLoc) {
         this.errors = true
         this.consumer.consume({
             message,
             severity: 'error',
-            src: src || emptySrcLoc,
-            path: this.path,
-            context: [ this.lines[(src || emptySrcLoc).startLine - 1] ],
+            src: src,
         })
     }
 
-    warn(message: string, src: ISrcLoc | undefined) {
+    warn(message: string, src: ISrcLoc) {
         this.consumer.consume({
             message,
             severity: 'warn',
-            src: src || emptySrcLoc,
-            path: this.path,
-            context: [ this.lines[(src || emptySrcLoc).startLine - 1] ],
+            src: src,
         })
     }
 
-    info(message: string, src: ISrcLoc | undefined) {
+    info(message: string, src: ISrcLoc) {
         this.consumer.consume({
             message,
             severity: 'info',
-            src: src || emptySrcLoc,
-            path: this.path,
-            context: [ this.lines[(src || emptySrcLoc).startLine - 1] ],
+            src: src,
         })
+    }
+
+    bug(message: string) {
+        const errorMessage =
+            `BUG: ${message}\n` +
+            'Please report the bug at https://github.com/electron-lang/electron'
+        throw new Error(errorMessage)
     }
 }
 
 export class DiagnosticCollector implements IDiagnosticConsumer {
     private diagnostics: IDiagnostic[] = []
 
-    toPublisher(path: string, lines: string[]): DiagnosticPublisher {
-        return new DiagnosticPublisher(this, path, lines)
-    }
+    setCrate(crate: Crate): void {}
 
     consume(diag: IDiagnostic) {
         this.diagnostics.push(diag)
@@ -120,28 +109,27 @@ export class DiagnosticCollector implements IDiagnosticConsumer {
 }
 
 export class DiagnosticTrace implements IDiagnosticConsumer {
-    toPublisher(path: string, lines: string[]): DiagnosticPublisher {
-        return new DiagnosticPublisher(this, path, lines)
-    }
+    setCrate(crate: Crate): void {}
 
     consume(diag: IDiagnostic) {
         throw new Error(diag.message)
     }
-
-    getDiagnostics(): IDiagnostic[] {
-        return []
-    }
-
-    reset() {}
 }
 
 export class DiagnosticLogger implements IDiagnosticConsumer {
-    toPublisher(path: string, lines: string[]): DiagnosticPublisher {
-        return new DiagnosticPublisher(this, path, lines)
+    protected crate: Crate | undefined = undefined
+
+    setCrate(crate: Crate): void {
+        this.crate = crate
+    }
+
+    getContext(src: ISrcLoc): string[] {
+        if (!this.crate) return []
+        return this.crate.getFile(src.file).getLines(src)
     }
 
     consume(diag: IDiagnostic) {
-        const file = chalk.magenta(diag.path)
+        const file = chalk.magenta(diag.src.file)
         const lineNumber = diag.src.startLine.toString()
         {
             const line = chalk.cyan(lineNumber)
@@ -162,13 +150,7 @@ export class DiagnosticLogger implements IDiagnosticConsumer {
 
         const line = chalk.black(chalk.bgWhite(lineNumber))
         const indent = chalk.bgWhite(' '.repeat(lineNumber.length))
-        const lineMessage = `${line}\t${diag.context[0]}\n${indent}\n\n`
+        const lineMessage = `${line}\t${context}\n${indent}\n\n`
         console.error(lineMessage)
     }
-}
-
-export function throwBug(rule: string): void {
-    throw new Error('Programming Error: Parser/Elaborator missmatch ' +
-                    `at rule '${rule}'.\n` +
-                    'Please report the bug at https://github.com/electron-lang/electron')
 }

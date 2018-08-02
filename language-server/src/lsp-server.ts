@@ -1,5 +1,5 @@
 import * as lsp from 'vscode-languageserver';
-import { File, DiagnosticCollector } from '@electron-lang/electron';
+import { CrateFactory, Crate, DiagnosticCollector } from '@electron-lang/electron';
 import { getContentAssistSuggestions } from '@electron-lang/electron';
 import { Logger, PrefixingLogger } from './logger';
 import { LspClient } from './lsp-client';
@@ -15,9 +15,13 @@ export class LspServer {
 
     private openedDocumentUris: Map<string, LspDocument> = new Map<string, LspDocument>();
     private logger: Logger;
+    private crate: Crate;
+    private diagnosticCollector: DiagnosticCollector;
 
     constructor(private options: IServerOptions) {
         this.logger = new PrefixingLogger(options.logger, '[lspserver]')
+        this.diagnosticCollector = new DiagnosticCollector()
+        this.crate = CrateFactory.create(this.diagnosticCollector)
     }
 
     public async initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
@@ -93,11 +97,11 @@ export class LspServer {
         const doc = this.openedDocumentUris.get(uri)
         if (doc !== undefined) {
             const path = uriToPath(uri)
-            const dc = new DiagnosticCollector()
-            const f = new File(dc, path, doc.text)
-            f.compile()
-            const diagnostics: lsp.Diagnostic[] = dc.getDiagnostics()
-                .filter((d) => d.path === path)
+            this.diagnosticCollector.reset()
+            this.crate.getFile(path).compile()
+            const diagnostics: lsp.Diagnostic[] =
+                this.diagnosticCollector.getDiagnostics()
+                .filter((d) => d.src.file === path)
                 .map(convertDiagnostic)
             this.options.lspClient.publishDiagnostics({
                 uri,

@@ -1,4 +1,4 @@
-import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
+import { ISrcLoc, SrcLoc } from '../../diagnostic'
 import { Literal, ASTLiteralPattern, matchASTLiteral } from './literal'
 import { Decl, IModule, IParam, IPort } from './declaration'
 
@@ -42,7 +42,7 @@ export function Ref<T>(ref: T, src?: ISrcLoc): IRef<T> {
     return {
         tag: 'ref',
         ref,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Reference */
@@ -58,7 +58,7 @@ export function Tuple(exprs: Expr[], src?: ISrcLoc): ITuple {
     return {
         tag: 'tuple',
         exprs,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Tuple */
@@ -79,7 +79,7 @@ export function Range(expr: Expr, start: Expr, end?: Expr,
         expr,
         start,
         end: end || start,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Indexing */
@@ -100,7 +100,7 @@ export function BinOp(op: BinOp, lhs: Expr, rhs: Expr, src?: ISrcLoc): IBinOp {
         op,
         lhs,
         rhs,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Operators */
@@ -123,7 +123,7 @@ export function Inst(mod: IRef<IModule>,
         mod,
         params,
         conns,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Instances */

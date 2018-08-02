@@ -6,11 +6,11 @@ import $R from "electron_lec/src/cells"
 ///   @side("left")
 ///   @port_x(0)
 ///   @port_y(5)
-///   analog A = (20)
+///   analog A = (3)
 ///   @side("right")
 ///   @port_x(40)
 ///   @port_y(5)
-///   analog B = (21)
+///   analog B = (4)
 /// }
 /// @skin("<g><rect width="40" height="10"></rect></g>")
 /// @declare(true)
@@ -18,31 +18,31 @@ import $R from "electron_lec/src/cells"
 ///   @side("left")
 ///   @port_x(0)
 ///   @port_y(5)
-///   analog A = (22)
+///   analog A = (5)
 ///   @side("right")
 ///   @port_x(40)
 ///   @port_y(5)
-///   analog B = (23)
+///   analog B = (6)
 /// }
 /// module VoltageDivider {
 ///   @side("left")
-///   analog vin = (17)
+///   analog vin = (0)
 ///   @side("right")
-///   analog vout = (18)
+///   analog vout = (1)
 ///   @side("bottom")
-///   analog gnd = (19)
+///   analog gnd = (2)
 ///   @rotate(90)
 ///   @value("10K")
 ///   @footprint("Resistors_SMD:R_0402_NoSilk")
 ///   @man("Yageo")
 ///   @mpn("RC0402FR-0710KL")
-///   cell r1 = $R(RESISTANCE=10000) {A=(17), B=(18)}
+///   cell r1 = $R(RESISTANCE=10000) {A=(0), B=(1)}
 ///   @rotate(90)
 ///   @value("22K")
 ///   @footprint("Resistors_SMD:R_0603_NoSilk")
 ///   @man("Yageo")
 ///   @mpn("RC0603FR-0722KL")
-///   cell r2 = $R(RESISTANCE=22000) {A=(18), B=(19)}
+///   cell r2 = $R(RESISTANCE=22000) {A=(1), B=(2)}
 /// }
 export module VoltageDivider {
   @left analog vin

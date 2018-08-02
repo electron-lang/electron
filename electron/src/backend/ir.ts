@@ -1,4 +1,4 @@
-import { ISrcLoc, emptySrcLoc } from '../diagnostic'
+import { ISrcLoc, SrcLoc } from '../diagnostic'
 
 export type IR = IModule | IAttr | IParam | ICell | IPort | INet | IAssign
 
@@ -72,21 +72,25 @@ export interface ISig {
     value: Bit | number
 }
 
-let sigCounter = 0
-export function Sig(value?: Bit): ISig {
-    if (typeof value === 'undefined') {
+export class Sig {
+    protected static sigCounter = 0
+
+    static create(value?: Bit): ISig {
+        if (typeof value === 'undefined') {
+            return {
+                tag: 'sig',
+                value: Sig.sigCounter++,
+            }
+        }
         return {
             tag: 'sig',
-            value: sigCounter++,
+            value,
         }
     }
-    return {
-        tag: 'sig',
-        value,
+
+    static resetCounter(): void {
+        Sig.sigCounter = 0
     }
-}
-export function _resetSigCounter() {
-    sigCounter = 0
 }
 
 export interface IModule {
@@ -107,7 +111,7 @@ export function Module(name: string, attrs: IAttr[], src?: ISrcLoc): IModule {
         ports: [],
         nets: [],
         cells: [],
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -124,7 +128,7 @@ export function Attr(name: string, value: boolean | number | string | string[],
         tag: 'attr',
         name,
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -141,7 +145,7 @@ export function Param(name: string, value: number | string | boolean | Bit[],
         tag: 'param',
         name,
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -164,7 +168,7 @@ export function Cell(name: string, mod: IModule, params: IParam[],
         attrs,
         params,
         assigns,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -187,7 +191,7 @@ export function Port(name: string, ty: PortType, value: ISig[],
         ty,
         name,
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -206,7 +210,7 @@ export function Net(name: string, value: ISig[], attrs: IAttr[],
         attrs,
         name,
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 
@@ -222,6 +226,6 @@ export function Assign(lhs: IRef<IPort>, rhs: ISig[], src?: ISrcLoc): IAssign {
         tag: 'assign',
         lhs,
         rhs,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }

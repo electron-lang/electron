@@ -60,9 +60,9 @@ describe('HierarchyPass', () => {
         const c = ir.Module('c', [])
         const mods = [a, b, c]
 
-        const a_p1 = ir.Port('a_p1', 'analog', [ir.Sig()], [])
-        const b_p1 = ir.Port('b_p1', 'analog', [ir.Sig()], [])
-        const c_p1 = ir.Port('c_p1', 'analog', [ir.Sig()], [])
+        const a_p1 = ir.Port('a_p1', 'analog', [ir.Sig.create()], [])
+        const b_p1 = ir.Port('b_p1', 'analog', [ir.Sig.create()], [])
+        const c_p1 = ir.Port('c_p1', 'analog', [ir.Sig.create()], [])
 
         a.ports.push(a_p1)
         b.ports.push(b_p1)

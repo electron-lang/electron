@@ -1,12 +1,14 @@
 import { expect } from 'chai'
 import * as ast from './ast'
-import { DiagnosticCollector } from '../diagnostic'
+import { DiagnosticCollector, Logger } from '../diagnostic'
 import { Symbol, SymbolTable } from './symbolTable'
 
 describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
-    const st = new SymbolTable<ast.IPort>(
-        dc.toPublisher('symbolTable.spec.ts', []))
+    const st = new SymbolTable<ast.IPort>({
+        logger: new Logger(dc),
+        file: 'symbolTable.spec.ts',
+    })
 
     const a = ast.Port('a', 'output')
     const b = ast.Port('b', 'output')

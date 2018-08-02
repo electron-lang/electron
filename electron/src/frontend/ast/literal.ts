@@ -1,4 +1,4 @@
-import { ISrcLoc, emptySrcLoc } from '../../diagnostic'
+import { ISrcLoc, SrcLoc } from '../../diagnostic'
 
 export type Literal = IInteger | IBitVector | IUnit | IString | IReal
     | IBool | IXml
@@ -45,7 +45,7 @@ export function Integer(value: number, src?: ISrcLoc): IInteger {
     return {
         tag: 'integer',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Integer */
@@ -62,7 +62,7 @@ export function BitVector(value: Bit[], src?: ISrcLoc): IBitVector {
     return {
         tag: 'bv',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* BitVector */
@@ -99,7 +99,7 @@ export function Unit(unit: string, src?: ISrcLoc): IUnit {
         value,
         unit: parts[3],
         orig: unit,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Unit */
@@ -115,7 +115,7 @@ export function String(value: string, src?: ISrcLoc): IString {
     return {
         tag: 'string',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* String */
@@ -131,7 +131,7 @@ export function Real(value: number, src?: ISrcLoc): IReal {
     return {
         tag: 'real',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Real */
@@ -147,7 +147,7 @@ export function Bool(value: boolean, src?: ISrcLoc): IBool {
     return {
         tag: 'bool',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Bool */
@@ -163,7 +163,7 @@ export function Xml(value: string, src?: ISrcLoc): IXml {
     return {
         tag: 'xml',
         value,
-        src: src || emptySrcLoc,
+        src: src || SrcLoc.empty(),
     }
 }
 /* Xml */
