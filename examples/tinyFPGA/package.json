@@ -14,8 +14,10 @@
     "electron_lec": "^1.0.0"
   },
   "scripts": {
-    "prepare": "yarn build && yarn docs",
+    "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
     "build": "lecc build",
+    "kicad": "lecc kicad",
+    "bom": "lecc bom",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"
   }

@@ -1,2 +1,2 @@
 * [tinyFPGA](README.md)
-* [reference](tinyFPGA.md)
+* [reference](tinyFPGA.lec.md)

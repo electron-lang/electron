@@ -7,11 +7,13 @@
   "author": "David Craven <david@craven.ch>",
   "license": "ISC",
   "devDependencies": {
-    "@electron-lang/electron": "^0.0.4"
+    "@electron-lang/electron": "^0.0.4",
+    "docsify-cli": "^4.2.1"
   },
   "scripts": {
     "prepare": "yarn build && yarn docs",
     "build": "lecc build",
-    "docs": "lecc docs"
+    "docs": "lecc docs",
+    "serve": "docsify serve ./docs"
   }
 }
