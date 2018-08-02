@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { CrateFactory, Crate, DiagnosticLogger } from '.';
+import { Crate, DiagnosticLogger } from '.';
 
 function getCrate(): Crate {
-    return CrateFactory.create(new DiagnosticLogger())
+    return Crate.create(new DiagnosticLogger())
 }
 
 const program = new Command('electron')

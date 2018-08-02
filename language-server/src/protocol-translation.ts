@@ -5,7 +5,7 @@ import { IDiagnostic } from '@electron-lang/electron'
 export function uriToPath(stringUri: string): string {
     const uri = URI.parse(stringUri);
     if (uri.scheme !== 'file') {
-        throw new Error(`The Typescript Language Server only supports ` +
+        throw new Error(`The Electron Language Server only supports ` +
                         `file-scheme URIs. Received "${stringUri}"`)
     }
     return uri.fsPath;

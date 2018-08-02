@@ -117,28 +117,41 @@ export class File {
 
     get ir(): ir.IModule[] {
         if (!this._ir) {
-            const cmp = new ASTCompiler(this.info)
-            this._ir = cmp.compile(this.ast)
+            try {
+                // WARNING: This swallows errors
+                const cmp = new ASTCompiler(this.info)
+                this._ir = cmp.compile(this.ast)
+            } catch(e) {
+                return []
+            }
         }
         return this._ir || []
     }
 
-    private resolvePath(dir: string) {
-        const relpath = path.relative(this.crate.crateInfo.srcDir, this.path)
-        const abspath = path.resolve(dir, relpath)
+    static resolvePath(srcDir: string, targetDir: string, file: string) {
+        const relpath = path.relative(srcDir, file)
+        const abspath = path.resolve(targetDir, relpath)
         return abspath
     }
 
     get outputPath(): string {
         if (!this._outputPath) {
-            this._outputPath = this.resolvePath(this.crate.crateInfo.buildDir)
+            this._outputPath = File.resolvePath(
+                this.crate.crateInfo.srcDir,
+                this.crate.crateInfo.buildDir,
+                this.path
+            )
         }
         return this._outputPath
     }
 
     get docsPath(): string {
         if (!this._docsPath) {
-            this._docsPath = this.resolvePath(this.crate.crateInfo.docsDir)
+            this._docsPath = File.resolvePath(
+                this.crate.crateInfo.srcDir,
+                this.crate.crateInfo.docsDir,
+                this.path
+            )
         }
         return this._docsPath
     }

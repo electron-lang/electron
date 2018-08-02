@@ -26,5 +26,7 @@ export function createLspConnection(options: IServerOptions): lsp.IConnection {
 
     connection.onCompletion(server.completion.bind(server))
 
+    connection.onRequest('schematic/path', server.schematicPath.bind(server));
+
     return connection;
 }

@@ -232,7 +232,7 @@ export class ASTCompiler {
                                              c2.assigns, c1.attrs, c1.src)
                 }
             } else {
-                console.log(lhs.val, rhs.val)
+                this.logger.bug('evalAssign1')
             }
         } else if (lhs.tag === 'sigs' && rhs.tag === 'sigs') {
             if (lhs.val.length === rhs.val.length) {
@@ -240,12 +240,12 @@ export class ASTCompiler {
                     lhs.val[i] = rhs.val[i]
                 }
             } else {
-                console.log(lhs.val, rhs.val)
+                this.logger.bug('evalAssign2')
             }
         } else if (lhs.tag === 'param' && rhs.tag === 'param') {
             lhs.val = rhs.val
         } else {
-            console.log(lhs, rhs)
+            this.logger.bug('evalAssign3')
         }
     }
 
@@ -269,7 +269,7 @@ export class ASTCompiler {
     evalRef(ref: ast.IRef<ast.Decl>): WrappedValue {
         const val = this.st.lookup(Symbol(ref.ref.name, ref.ref.src))
         if (val === null) {
-            console.log(ref.ref.name + ' not found.')
+            this.logger.bug(ref.ref.name + ' not found.')
             return wrapParam(0)
         }
         return val
@@ -335,7 +335,6 @@ export class ASTCompiler {
         } else if (val.tag === 'cells') {
             return wrapCell(newSigs as ir.IRef<ir.ICell>[])
         } else {
-            console.log(val)
             return wrapSig([ ir.Sig.create() ])
         }
     }

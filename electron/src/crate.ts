@@ -114,10 +114,7 @@ export class Crate {
         }
         return null
     }
-}
 
-
-export class CrateFactory {
     static findPackageJson(dir?: string): string | null {
         dir = dir || process.cwd()
         while (dir !== '/') {
@@ -130,13 +127,14 @@ export class CrateFactory {
         return null
     }
 
-    static create(dc: IDiagnosticConsumer, dir?: string): Crate {
-        const pkgJson = CrateFactory.findPackageJson(dir)
-        if (!pkgJson) {
-            throw new Error('No package.json found')
+    static getCrateInfo(dir?: string): CrateInfo {
+        let rootDir = dir || process.cwd()
+        let json: any = { name: 'no-name', version: 'no-version' }
+        let pkgJson = Crate.findPackageJson(dir)
+        if (pkgJson) {
+            rootDir = path.dirname(pkgJson)
+            json = require(pkgJson)
         }
-        const rootDir = path.dirname(pkgJson)
-        const json = require(pkgJson)
         json.electronOptions = json.electronOptions || DefaultElectronOptions
 
         const getPath = (key: string) => {
@@ -144,15 +142,19 @@ export class CrateFactory {
                              || (DefaultElectronOptions as any)[key])
         }
 
-        const crateInfo: CrateInfo = {
+        return {
             rootDir,
-            name: json.name || '',
-            version: json.version || '',
+            name: json.name || 'no-name',
+            version: json.version || 'no-version',
             srcDir: getPath('srcDir'),
             buildDir: getPath('buildDir'),
             docsDir: getPath('docsDir'),
             include: json.electronOptions.include || DefaultElectronOptions.include,
         }
+    }
+
+    static create(dc: IDiagnosticConsumer, dir?: string): Crate {
+        const crateInfo = Crate.getCrateInfo(dir)
 
         mkdirp(crateInfo.buildDir)
         mkdirp(crateInfo.docsDir)

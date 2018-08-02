@@ -21,4 +21,5 @@ export class ElectronClientContribution extends BaseLanguageClientContribution {
     protected get globPatterns() {
         return ['**/*.lec'];
     }
+
 }

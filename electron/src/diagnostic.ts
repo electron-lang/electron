@@ -49,16 +49,9 @@ export interface IDiagnosticConsumer {
 }
 
 export class Logger {
-    private errors = false
-
     constructor(protected consumer: IDiagnosticConsumer) {}
 
-    get hasErrors(): boolean {
-        return this.errors
-    }
-
     error(message: string, src: ISrcLoc) {
-        this.errors = true
         this.consumer.consume({
             message,
             severity: 'error',
@@ -131,6 +124,7 @@ export class DiagnosticLogger implements IDiagnosticConsumer {
     consume(diag: IDiagnostic) {
         const file = chalk.magenta(diag.src.file)
         const lineNumber = diag.src.startLine.toString()
+        const context = this.getContext(diag.src)
         {
             const line = chalk.cyan(lineNumber)
             const column = chalk.cyan(diag.src.startColumn.toString())

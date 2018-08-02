@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { expect } from 'chai'
-import { CrateFactory } from '../crate'
+import { Crate } from '../crate'
 import { DiagnosticTrace } from '../diagnostic'
 import { IModule } from '../frontend/ast'
 import { printDesignIR } from '../backend/printer'
@@ -16,7 +16,7 @@ function getDocComments(mods: IModule[]): string {
 }
 
 describe('Compiler: PASS tests', () => {
-    const crate = CrateFactory.create(tr, path.join(__dirname, 'pass'))
+    const crate = Crate.create(tr, path.join(__dirname, 'pass'))
     for (let file of crate.files) {
         it('should compile ' + file.path, () => {
             if (!file.ir) {

@@ -1,5 +1,5 @@
 import * as lsp from 'vscode-languageserver';
-import { CrateFactory, Crate, DiagnosticCollector } from '@electron-lang/electron';
+import { Crate, DiagnosticCollector } from '@electron-lang/electron';
 import { getContentAssistSuggestions } from '@electron-lang/electron';
 import { Logger, PrefixingLogger } from './logger';
 import { LspClient } from './lsp-client';
@@ -15,13 +15,12 @@ export class LspServer {
 
     private openedDocumentUris: Map<string, LspDocument> = new Map<string, LspDocument>();
     private logger: Logger;
-    private crate: Crate;
+    private crate: Crate | undefined;
     private diagnosticCollector: DiagnosticCollector;
 
     constructor(private options: IServerOptions) {
         this.logger = new PrefixingLogger(options.logger, '[lspserver]')
         this.diagnosticCollector = new DiagnosticCollector()
-        this.crate = CrateFactory.create(this.diagnosticCollector)
     }
 
     public async initialize(params: lsp.InitializeParams): Promise<lsp.InitializeResult> {
@@ -95,19 +94,34 @@ export class LspServer {
     public requestDiagnostics(uri: string): void {
         // compile with electron
         const doc = this.openedDocumentUris.get(uri)
-        if (doc !== undefined) {
-            const path = uriToPath(uri)
-            this.diagnosticCollector.reset()
-            this.crate.getFile(path).compile()
-            const diagnostics: lsp.Diagnostic[] =
-                this.diagnosticCollector.getDiagnostics()
-                .filter((d) => d.src.file === path)
-                .map(convertDiagnostic)
-            this.options.lspClient.publishDiagnostics({
-                uri,
-                diagnostics,
-            })
+        if (doc === undefined) {
+            return
         }
+
+        const path = uriToPath(uri)
+
+        try {
+            if (this.crate === undefined) {
+                this.crate = Crate.create(this.diagnosticCollector, path)
+            }
+
+            const file = this.crate.getFile(path)
+            this.diagnosticCollector.reset()
+            file.setText(doc.text)
+            file.compile()
+        } catch (e) {
+            this.logger.error(e)
+        }
+
+        const diagnostics: lsp.Diagnostic[] =
+            this.diagnosticCollector.getDiagnostics()
+            .filter((d) => d.src.file === path)
+            .map(convertDiagnostic)
+
+        this.options.lspClient.publishDiagnostics({
+            uri,
+            diagnostics,
+        })
     }
 
     public async completion(params: lsp.CompletionParams)
@@ -144,5 +158,18 @@ export class LspServer {
         }
 
         return {isIncomplete: true, items: []}
+    }
+
+    public async schematicPath(params: lsp.TextDocumentIdentifier):
+    Promise<lsp.TextDocumentIdentifier> {
+        this.logger.info('schematic/path', params)
+
+        const path = uriToPath(params.uri)
+        if (this.crate === undefined) {
+            this.crate = Crate.create(this.diagnosticCollector, path)
+        }
+
+        const file = this.crate.getFile(path)
+        return { uri: file.outputPath + '.json' }
     }
 }
