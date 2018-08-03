@@ -177,6 +177,9 @@ export class ASTCompiler {
         if (mod.declaration) {
             irmod.attrs.push(ir.Attr('declare', true))
         }
+        if (mod.doc) {
+            irmod.attrs.push(ir.Attr('doc', mod.doc))
+        }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
         const stmts = mod.anonymous || mod.declaration ? mod.ports : mod.stmts

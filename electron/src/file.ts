@@ -6,8 +6,7 @@ import { IToken, ast, lexerInstance, parserInstance, Elaborator,
          ASTCompiler } from './frontend'
 import { HierarchyPass } from './passes'
 import { ir, JsonBackend, YosysBackend, KicadBackend,
-         BomBackend } from './backend'
-import { generateDocs } from './docs'
+         BomBackend, MarkdownBackend } from './backend'
 
 export interface FileInfo {
     readonly file: string
@@ -161,9 +160,10 @@ export class File {
     }
 
     emitDocs(): File {
-        if (!this.ast) return this
+        if (!this.ir) return this
+        const markdownBackend = new MarkdownBackend()
         const file = this.docsPath + '.md'
-        fs.writeFileSync(file, generateDocs(this.ast))
+        markdownBackend.emit(this.ir, file)
         return this
     }
 

@@ -1,3 +1,8 @@
+declare module $R(VALUE: Ohm) {
+  analog A
+  analog B
+}
+
 /// @declare(true)
 /// module $R {
 ///   analog A = (4)
@@ -8,11 +13,6 @@
 ///   analog A = (6)
 ///   analog B = (7)
 /// }
-declare module $R(VALUE: Ohm) {
-  analog A
-  analog B
-}
-
 /// module CellVector {
 ///   analog[2] a = (0, 1)
 ///   analog[2] b = (2, 3)

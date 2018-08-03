@@ -9,3 +9,6 @@ export { JsonBackend } from './json'
 export { YosysBackend } from './yosys'
 export { KicadBackend } from './kicad'
 export { BomBackend } from './bom'
+export { MarkdownBackend } from './markdown'
+
+export * from './printer'

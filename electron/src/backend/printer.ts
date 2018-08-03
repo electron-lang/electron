@@ -81,7 +81,7 @@ class Printer implements IPrint<ir.IR> {
 
     printValue(val: string | boolean | number | ir.Bit[] | string[]): IDoc {
         if (typeof val === 'string') {
-            return ['"', val, '"']
+            return ['"', intersperse(line, val.split('\n')), '"']
         } else if (typeof val === 'object') {
             const array: string[] = val
             return ['(', intersperse(', ', array.map((x) => {

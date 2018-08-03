@@ -2,18 +2,9 @@ import * as path from 'path'
 import { expect } from 'chai'
 import { Crate } from '../crate'
 import { DiagnosticTrace } from '../diagnostic'
-import { IModule } from '../frontend/ast'
-import { printDesignIR } from '../backend/printer'
+import { ir, printDesignIR } from '../backend'
 
 const tr = new DiagnosticTrace()
-
-function getDocComments(mods: IModule[]): string {
-    let doc = ''
-    for (let mod of mods) {
-        doc += mod.doc
-    }
-    return doc
-}
 
 describe('Compiler: PASS tests', () => {
     const crate = Crate.create(tr, path.join(__dirname, 'pass'))
@@ -22,9 +13,20 @@ describe('Compiler: PASS tests', () => {
             if (!file.ir) {
                 throw new Error('IR is undefined')
             }
-            const md = getDocComments(file.ast || [])
+            let doc = ''
+            for (let mod of file.ir) {
+                const newAttrs: ir.IAttr[] = []
+                for (let attr of mod.attrs) {
+                    if (attr.name === 'doc') {
+                        doc += attr.value
+                    } else {
+                        newAttrs.push(attr)
+                    }
+                }
+                mod.attrs = newAttrs
+            }
             try {
-                expect(printDesignIR(file.ir)).to.equal(md)
+                expect(printDesignIR(file.ir)).to.equal(doc)
             } catch(e) {
                 console.log(file.ir)
                 throw e
