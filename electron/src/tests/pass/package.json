@@ -11,7 +11,7 @@
     "docsify-cli": "^4.2.1"
   },
   "dependencies": {
-    "@lec/electron": "^0.0.1"
+    "electron_lec": "^1.0.0"
   },
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",

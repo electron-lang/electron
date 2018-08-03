@@ -82,9 +82,6 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@lec/electron@^1.0.0":
-  version "0.0.1"
-
 "@lerna/add@^3.0.0-rc.0":
   version "3.0.0-rc.0"
   resolved "https://registry.npmjs.org/@lerna/add/-/add-3.0.0-rc.0.tgz#a2963cecda704b0030601c1db2aee3a579d3af74"
@@ -10175,17 +10172,7 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sprotty@0.5.0-next.32c69d38:
-  version "0.5.0-next.32c69d38"
-  resolved "https://registry.npmjs.org/sprotty/-/sprotty-0.5.0-next.32c69d38.tgz#9737162cdfb8b71320b308ece97cacf13cd10efc"
-  dependencies:
-    file-saver "1.3.3"
-    inversify "^4.3.0"
-    snabbdom "^0.7.0"
-    snabbdom-jsx "^0.4.2"
-    snabbdom-virtualize "^0.7.0"
-
-sprotty@next:
+sprotty@0.4.0, sprotty@0.5.0-next.32c69d38, sprotty@next:
   version "0.4.0"
   resolved "https://registry.npmjs.org/sprotty/-/sprotty-0.4.0.tgz#315122d45216e4f0556c00f0d67b2965e85a7ed0"
   dependencies:

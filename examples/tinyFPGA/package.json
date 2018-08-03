@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@lec/tinyFPGA",
+  "name": "tinyFPGA_lec",
   "version": "1.0.0",
   "description": "TinyFPGA electron port",
   "repository": "https://github.com/electron-lang/electron",
@@ -11,7 +11,7 @@
     "docsify-cli": "^4.2.1"
   },
   "dependencies": {
-    "@lec/electron": "^1.0.0"
+    "electron_lec": "^1.0.0"
   },
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
