@@ -1,21 +1,99 @@
-# Tp  <span class="tag declare">declare</span>
+# dacImpl_lec$src/dacImpl.lec$Pcb  
+
+# dacImpl_lec$src/dacImpl.lec$Pcb  
+
+# dacImpl_lec$src/dacImpl.lec$Firmware  
+
+# PLL  <span class="tag declare">declare</span>
 
 Name | Type
 ---- | ----
 A | input
-# Bead  <span class="tag declare">declare</span>
+Y | output
+# $R <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in resistor
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# PushBtn  <span class="tag declare">declare</span>
+# $R <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in resistor
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# J3$mod  <span class="tag declare">declare</span>
+# $C <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | analog
+B | analog
+# $C <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | analog
+B | analog
+# electron_lec$src/cells.lec$Test <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+left | analog
+top | analog
+right | analog
+bottom | analog
+# $D <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | analog
+K | analog
+# $M <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+G | analog
+D | analog
+S | analog
+# dac_lec$src/dac_analog.lec$HalfBridge <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+in | analog
+in_inv | analog
+out | analog
+vdd | analog
+vss | analog
+# Tp <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | input
+# Bead <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | analog
+B | analog
+# PushBtn <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
+
+Name | Type
+---- | ----
+A | analog
+B | analog
+# J3$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
 
 Name | Type
 ---- | ----
@@ -24,13 +102,14 @@ D+ | analog
 D- | analog
 GND | analog
 Shield | analog
-# Bead  <span class="tag declare">declare</span>
+# Bead <span class="tag export">export</span> <span class="tag declare">declare</span>
+Built-in capacitor
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Usb  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Usb <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -40,7 +119,7 @@ Name | Type
 GND | analog
 USB_P | analog
 USB_N | analog
-# U2$mod  <span class="tag declare">declare</span>
+# U2$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -50,7 +129,7 @@ EN | analog
 NC | analog
 VOUT | analog
 GND | analog
-# U4$mod  <span class="tag declare">declare</span>
+# U4$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -59,7 +138,7 @@ VIN | analog
 EN | analog
 VOUT | analog
 GND | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Vreg  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Vreg <span class="tag export">export</span> <span class="tag declare">declare</span>
 Voltage Regulation
 
 Name | Type
@@ -68,7 +147,7 @@ Name | Type
 +3V3 | analog
 +1V2 | analog
 GND | analog
-# U3$mod  <span class="tag declare">declare</span>
+# U3$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 Voltage Regulation
 
 Name | Type
@@ -76,7 +155,7 @@ Name | Type
 OE | analog
 CLK | analog
 GND | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Clock  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Clock <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
@@ -84,7 +163,7 @@ Name | Type
 +3V3 | analog
 GND | analog
 CLK | analog
-# U5$mod  <span class="tag declare">declare</span>
+# U5$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
@@ -96,13 +175,13 @@ SDO | analog
 SDI | analog
 SS | analog
 GND | analog
-# Tp  <span class="tag declare">declare</span>
+# Tp <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
 ---- | ----
 A | input
-# tinyFPGA_lec$src/tinyFPGA.lec$Flash  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Flash <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -113,7 +192,7 @@ SCK | analog
 SDO | analog
 SDI | analog
 SS | analog
-# J1$mod  <span class="tag declare">declare</span>
+# J1$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -132,7 +211,7 @@ CLK | analog
 24B | analog
 54 | analog
 55 | analog
-# J2$mod  <span class="tag declare">declare</span>
+# J2$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -151,7 +230,7 @@ SS | analog
 SCK | analog
 SDI | analog
 SDO | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Headers  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Headers <span class="tag export">export</span> <span class="tag declare">declare</span>
 TinyFPGA Bx Pin Headers
 
 Name | Type
@@ -184,7 +263,7 @@ SS | analog
 SCK | analog
 SDI | analog
 SDO | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPower  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPower <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA core and IO power connections and decoupling capacitors
 
 Name | Type
@@ -197,7 +276,7 @@ VCCIO_0 | analog
 VCCIO_1 | analog
 VCCIO_2 | analog
 VCCIO_3 | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPLL  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPLL <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
@@ -205,20 +284,20 @@ Name | Type
 1V2 | analog
 VCCPLL0 | analog
 GNDPLL0 | analog
-# Tp  <span class="tag declare">declare</span>
+# Tp <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
 ---- | ----
 A | input
-# SW1$mod  <span class="tag declare">declare</span>
+# SW1$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaReset  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaReset <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
@@ -226,7 +305,7 @@ Name | Type
 +3.3V | analog
 GND | analog
 CRESET_B | analog
-# ICE40_LP8K_CM81  <span class="tag declare">declare</span>
+# ICE40_LP8K_CM81 <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
@@ -300,7 +379,7 @@ IOT_198_GBIN0 | analog
 IOT_197_GBIN1 | analog
 IOT_212 | analog
 IOT_214 | analog
-# J3$mod  <span class="tag declare">declare</span>
+# J3$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
@@ -310,14 +389,14 @@ D+ | analog
 D- | analog
 GND | analog
 Shield | analog
-# Bead  <span class="tag declare">declare</span>
+# Bead <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Usb  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Usb <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -327,7 +406,7 @@ Name | Type
 GND | analog
 USB_P | analog
 USB_N | analog
-# U2$mod  <span class="tag declare">declare</span>
+# U2$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -337,7 +416,7 @@ EN | analog
 NC | analog
 VOUT | analog
 GND | analog
-# U4$mod  <span class="tag declare">declare</span>
+# U4$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 USB connection and power filtering
 
 Name | Type
@@ -346,7 +425,7 @@ VIN | analog
 EN | analog
 VOUT | analog
 GND | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Vreg  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Vreg <span class="tag export">export</span> <span class="tag declare">declare</span>
 Voltage Regulation
 
 Name | Type
@@ -355,7 +434,7 @@ Name | Type
 +3V3 | analog
 +1V2 | analog
 GND | analog
-# U3$mod  <span class="tag declare">declare</span>
+# U3$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 Voltage Regulation
 
 Name | Type
@@ -363,7 +442,7 @@ Name | Type
 OE | analog
 CLK | analog
 GND | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Clock  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Clock <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
@@ -371,7 +450,7 @@ Name | Type
 +3V3 | analog
 GND | analog
 CLK | analog
-# U5$mod  <span class="tag declare">declare</span>
+# U5$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
@@ -383,13 +462,13 @@ SDO | analog
 SDI | analog
 SS | analog
 GND | analog
-# Tp  <span class="tag declare">declare</span>
+# Tp <span class="tag export">export</span> <span class="tag declare">declare</span>
 16MHz Clock
 
 Name | Type
 ---- | ----
 A | input
-# tinyFPGA_lec$src/tinyFPGA.lec$Flash  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Flash <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -400,7 +479,7 @@ SCK | analog
 SDO | analog
 SDI | analog
 SS | analog
-# J1$mod  <span class="tag declare">declare</span>
+# J1$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -419,7 +498,7 @@ CLK | analog
 24B | analog
 54 | analog
 55 | analog
-# J2$mod  <span class="tag declare">declare</span>
+# J2$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 SPI flash memory for FPGA configuration
 
 Name | Type
@@ -438,7 +517,7 @@ SS | analog
 SCK | analog
 SDI | analog
 SDO | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$Headers  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$Headers <span class="tag export">export</span> <span class="tag declare">declare</span>
 TinyFPGA Bx Pin Headers
 
 Name | Type
@@ -471,7 +550,7 @@ SS | analog
 SCK | analog
 SDI | analog
 SDO | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPower  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPower <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA core and IO power connections and decoupling capacitors
 
 Name | Type
@@ -484,7 +563,7 @@ VCCIO_0 | analog
 VCCIO_1 | analog
 VCCIO_2 | analog
 VCCIO_3 | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPLL  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaPLL <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
@@ -492,20 +571,20 @@ Name | Type
 1V2 | analog
 VCCPLL0 | analog
 GNDPLL0 | analog
-# Tp  <span class="tag declare">declare</span>
+# Tp <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
 ---- | ----
 A | input
-# SW1$mod  <span class="tag declare">declare</span>
+# SW1$mod <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA PLL decoupling capacitors
 
 Name | Type
 ---- | ----
 A | analog
 B | analog
-# tinyFPGA_lec$src/tinyFPGA.lec$FpgaReset  <span class="tag declare">declare</span>
+# tinyFPGA_lec$src/tinyFPGA.lec$FpgaReset <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
@@ -513,7 +592,7 @@ Name | Type
 +3.3V | analog
 GND | analog
 CRESET_B | analog
-# ICE40_LP8K_CM81  <span class="tag declare">declare</span>
+# ICE40_LP8K_CM81 <span class="tag export">export</span> <span class="tag declare">declare</span>
 FPGA reset button and testpoint
 
 Name | Type
@@ -591,55 +670,3 @@ IOT_214 | analog
 TinyFPGA Bx
 Rev: v1.1
 
-# $R <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in resistor
-
-Name | Type
----- | ----
-A | analog
-B | analog
-# $R <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in resistor
-
-Name | Type
----- | ----
-A | analog
-B | analog
-# $C <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in capacitor
-
-Name | Type
----- | ----
-A | analog
-B | analog
-# $C <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in capacitor
-
-Name | Type
----- | ----
-A | analog
-B | analog
-# electron_lec$src/cells.lec$Test <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in capacitor
-
-Name | Type
----- | ----
-left | analog
-top | analog
-right | analog
-bottom | analog
-# $D <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in capacitor
-
-Name | Type
----- | ----
-A | analog
-K | analog
-# $M <span class="tag export">export</span> <span class="tag declare">declare</span>
-Built-in capacitor
-
-Name | Type
----- | ----
-G | analog
-D | analog
-S | analog

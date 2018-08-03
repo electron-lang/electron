@@ -14,7 +14,7 @@
     "electron_lec": "^1.0.0"
   },
   "scripts": {
-    "prepare": "yarn build && yarn verilog && yarn docs",
+    "prepare": "yarn build && yarn docs",
     "build": "lecc build",
     "verilog": "lecc verilog",
     "docs": "lecc docs",

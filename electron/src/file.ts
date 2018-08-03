@@ -144,6 +144,8 @@ export class File {
     static resolvePath(srcDir: string, targetDir: string, file: string) {
         const relpath = path.relative(srcDir, file)
         const abspath = path.resolve(targetDir, relpath)
+        console.log(srcDir, targetDir, file)
+        console.log(relpath, abspath)
         return abspath
     }
 
