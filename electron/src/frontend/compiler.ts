@@ -170,7 +170,13 @@ export class ASTCompiler {
     compileModule(mod: ast.IModule,
                   params: ir.IParam[]): ir.IModule {
         this.st.enterScope()
-        const irmod = ir.Module(mod.name, compileAttrs(mod.attrs), mod.src)
+        const name = (() => {
+            if (mod.declaration) {
+                return mod.name
+            }
+            return mod.manglingPrefix + mod.name
+        })()
+        const irmod = ir.Module(name, compileAttrs(mod.attrs), mod.src)
         for (let param of params) {
             this.st.define(Symbol(param.name, param.src), wrapParam(param.value))
         }
@@ -180,9 +186,16 @@ export class ASTCompiler {
         if (mod.doc) {
             irmod.attrs.push(ir.Attr('doc', mod.doc))
         }
+        if (mod.exported) {
+            irmod.attrs.push(ir.Attr('export', true))
+        }
+        if (mod.imported) {
+            irmod.attrs.push(ir.Attr('import', true))
+        }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
-        const stmts = mod.anonymous || mod.declaration ? mod.ports : mod.stmts
+        const stmts = mod.anonymous || mod.declaration
+            || mod.imported ? mod.ports : mod.stmts
         for (let stmt of stmts) {
             matchASTStmt({
                 Module: (mod) => {},

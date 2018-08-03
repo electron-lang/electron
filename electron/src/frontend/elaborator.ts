@@ -97,17 +97,15 @@ function elaboratePartialInst(logger: Logger,
 
 export class Elaborator extends BaseElectronVisitor {
     protected logger: Logger
-    protected file: string
 
     private paramCounter: number = 0
     private modst: SymbolTable<ast.IModule>;
     private st: SymbolTable<ast.Decl>;
     private tc: TypeChecker;
 
-    constructor(info: FileInfo, readonly crate?: Crate) {
+    constructor(readonly info: FileInfo, readonly crate?: Crate) {
         super()
         this.validateVisitor()
-        this.file = info.file
         this.logger = info.logger
         this.modst = new SymbolTable(info)
         this.st = new SymbolTable(info)
@@ -138,11 +136,11 @@ export class Elaborator extends BaseElectronVisitor {
             return
         }
 
-        const file = this.crate.resolveImport(this.file, pkg)
+        const file = this.crate.resolveImport(this.info.file, pkg)
 
         if (!file) {
             this.logger.error(`File '${pkg}' not found.`,
-                              SrcLoc.fromToken(this.file, ctx.String[0]))
+                              SrcLoc.fromToken(this.info.file, ctx.String[0]))
             return
         }
 
@@ -166,6 +164,7 @@ export class Elaborator extends BaseElectronVisitor {
     moduleDeclaration(ctx: any): ast.IModule {
         const ident = this.visit(ctx.identifier[0])
         const mod = ast.Module(ident.id, [], ident.src)
+        mod.manglingPrefix = this.info.manglingPrefix
         this.modst.define(ident, mod)
         this.st.enterScope(ident.id)
 
@@ -219,7 +218,7 @@ export class Elaborator extends BaseElectronVisitor {
 
     identifier(ctx: any): ISymbol {
         const text = ctx.Identifier[0].image
-        const src = SrcLoc.fromToken(this.file, ctx.Identifier[0])
+        const src = SrcLoc.fromToken(this.info.file, ctx.Identifier[0])
         if (text.startsWith("'")) {
             return Symbol(text.substring(1), src)
         }
@@ -229,7 +228,7 @@ export class Elaborator extends BaseElectronVisitor {
     // Attributes
     attribute(ctx: any): ast.IAttr {
         const name = ctx.Attribute[0].image.substring(1)
-        const src = SrcLoc.fromToken(this.file, ctx.Attribute[0])
+        const src = SrcLoc.fromToken(this.info.file, ctx.Attribute[0])
         const params: ast.Expr[] = (() => {
             if (ctx.attributeParameter) {
                 return ctx.attributeParameter.map((ctx: any) => this.visit(ctx))
@@ -346,7 +345,7 @@ export class Elaborator extends BaseElectronVisitor {
 
         const rhs = this.visit(ctx.expressions[1])
         if(lhs.length != rhs.length) {
-            const src = new SrcLoc(this.file, [
+            const src = new SrcLoc(this.info.file, [
                 lhs[0].src.startLine,
                 lhs[0].src.startColumn,
                 rhs[rhs.length - 1].src.endLine,
@@ -399,7 +398,7 @@ export class Elaborator extends BaseElectronVisitor {
         if (ctx.expressions) {
             const exprs = this.visit(ctx.expressions[0])
             if (ids.length != exprs.length) {
-                const src = new SrcLoc(this.file, [
+                const src = new SrcLoc(this.info.file, [
                     ids[0].src.startLine,
                     ids[0].src.startColumn,
                     exprs[exprs.length - 1].src.endLine,
@@ -487,12 +486,12 @@ export class Elaborator extends BaseElectronVisitor {
     literal(ctx: any): ast.Literal {
         if (ctx.Integer) {
             return ast.Integer(parseInt(ctx.Integer[0].image),
-                               SrcLoc.fromToken(this.file, ctx.Integer[0]))
+                               SrcLoc.fromToken(this.info.file, ctx.Integer[0]))
         }
 
         if (ctx.BitVector) {
             const bv = ctx.BitVector[0].image.split("'")
-            const src = SrcLoc.fromToken(this.file, ctx.BitVector[0])
+            const src = SrcLoc.fromToken(this.info.file, ctx.BitVector[0])
             const size = parseInt(bv[0])
             let bits: ast.Bit[] = []
             for (let i = 0; i < bv[1].length; i++) {
@@ -507,26 +506,26 @@ export class Elaborator extends BaseElectronVisitor {
 
         if (ctx.Unit) {
             return ast.Unit(ctx.Unit[0].image,
-                            SrcLoc.fromToken(this.file, ctx.Unit[0]))
+                            SrcLoc.fromToken(this.info.file, ctx.Unit[0]))
         }
 
         if (ctx.String) {
             const val = ctx.String[0].image
-            const src = SrcLoc.fromToken(this.file, ctx.String[0])
+            const src = SrcLoc.fromToken(this.info.file, ctx.String[0])
             return ast.String(val.substring(1, val.length - 1), src)
         }
 
         if (ctx.Real) {
             return ast.Real(parseFloat(ctx.Real[0].image),
-                            SrcLoc.fromToken(this.file, ctx.Real[0]))
+                            SrcLoc.fromToken(this.info.file, ctx.Real[0]))
         }
 
         if (ctx.True) {
-            return ast.Bool(true, SrcLoc.fromToken(this.file, ctx.True[0]))
+            return ast.Bool(true, SrcLoc.fromToken(this.info.file, ctx.True[0]))
         }
 
         if (ctx.False) {
-            return ast.Bool(false, SrcLoc.fromToken(this.file, ctx.False[0]))
+            return ast.Bool(false, SrcLoc.fromToken(this.info.file, ctx.False[0]))
         }
 
         if (ctx.xml) {
@@ -562,7 +561,7 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     tupleExpression(ctx: any): ast.ITuple {
-        const src = new SrcLoc(this.file, [
+        const src = new SrcLoc(this.info.file, [
             ctx.OpenRound[0].startLine,
             ctx.OpenRound[0].startColumn,
             ctx.CloseRound[0].endLine,
@@ -580,7 +579,7 @@ export class Elaborator extends BaseElectronVisitor {
             this.tc.checkIsInteger(end)
         }
 
-        const src = new SrcLoc(this.file, [
+        const src = new SrcLoc(this.info.file, [
             ctx.OpenSquare[0].startLine,
             ctx.OpenSquare[0].endColumn,
             ctx.CloseSquare[0].endLine,
@@ -592,7 +591,7 @@ export class Elaborator extends BaseElectronVisitor {
     anonymousCell(ctx: any): ast.IInst {
         let mod = ast.Module(undefined, [])
         mod.declaration = true
-        mod.src = SrcLoc.fromToken(this.file, ctx.Cell[0])
+        mod.src = SrcLoc.fromToken(this.info.file, ctx.Cell[0])
 
         const conns = [].concat.apply([], (() => {
             if (ctx.cellStatement) {
@@ -664,7 +663,7 @@ export class Elaborator extends BaseElectronVisitor {
             const exprs = this.visit(ctx.expressions[0])
 
             if (ports.length != exprs.length) {
-                const src = new SrcLoc(this.file, [
+                const src = new SrcLoc(this.info.file, [
                     ports[0].src.startLine,
                     ports[0].src.startColumn,
                     exprs[exprs.length - 1].src.endLine,
@@ -701,7 +700,7 @@ export class Elaborator extends BaseElectronVisitor {
             params,
             star: dict.star, starSrc: dict.starSrc,
             conns: dict.conns,
-            src: SrcLoc.empty(this.file),
+            src: SrcLoc.empty(this.info.file),
         }
     }
 
@@ -734,12 +733,12 @@ export class Elaborator extends BaseElectronVisitor {
 
     dictionary(ctx: any): Dict {
         let star = false
-        let starSrc = SrcLoc.empty(this.file)
+        let starSrc = SrcLoc.empty(this.info.file)
         let conns: [ISymbol, ast.Expr][] = []
 
         if (ctx.Star) {
             star = true
-            starSrc = SrcLoc.fromToken(this.file, ctx.Star[0])
+            starSrc = SrcLoc.fromToken(this.info.file, ctx.Star[0])
         }
 
         if (ctx.dictionaryEntry) {
@@ -766,15 +765,15 @@ export class Elaborator extends BaseElectronVisitor {
 
     xml(ctx: any): ast.IXml {
         if (ctx.Tag) {
-            return ast.Xml(ctx.Tag[0].image, SrcLoc.fromToken(this.file, ctx.Tag[0]))
+            return ast.Xml(ctx.Tag[0].image, SrcLoc.fromToken(this.info.file, ctx.Tag[0]))
         }
         const bodyStr = ctx.xml ? ctx.xml.map((ctx: any) => {
             return this.visit(ctx).value
         }).join('') : ''
         const str = ctx.OpenTag[0].image + bodyStr + ctx.CloseTag[0].image
-        const openSrc = SrcLoc.fromToken(this.file, ctx.OpenTag[0])
-        const closeSrc = SrcLoc.fromToken(this.file, ctx.CloseTag[0])
-        const src = new SrcLoc(this.file, [
+        const openSrc = SrcLoc.fromToken(this.info.file, ctx.OpenTag[0])
+        const closeSrc = SrcLoc.fromToken(this.info.file, ctx.CloseTag[0])
+        const src = new SrcLoc(this.info.file, [
             openSrc.startLine,
             openSrc.startColumn,
             closeSrc.endLine,

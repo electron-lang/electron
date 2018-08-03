@@ -2,6 +2,8 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { File } from './file'
 import { Logger, IDiagnosticConsumer } from './diagnostic'
+import { Linker } from './linker'
+import { Design } from './design'
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
 export function walkSync(dir: string, filelist: string[] = []) {
@@ -63,12 +65,20 @@ export interface CrateInfo {
 export class Crate {
     readonly files: File[] = []
     protected fileIndex: {[file: string]: File} = {}
+    protected linker: Linker
 
-    constructor(readonly crateInfo: CrateInfo, readonly logger: Logger) {}
+    constructor(readonly crateInfo: CrateInfo, readonly logger: Logger) {
+        this.linker = new Linker(this)
+    }
 
     addFile(file: string): File {
+        const crateInfo = Crate.getCrateInfo(file)
+        const relPath = path.relative(crateInfo.rootDir, file)
+        const manglingPrefix = `${crateInfo.name}$${relPath}$`
+
         const f = new File({
             file: file,
+            manglingPrefix: manglingPrefix,
             logger: this.logger,
         }, this)
         this.fileIndex[file] = f
@@ -89,8 +99,8 @@ export class Crate {
         }
     }
 
-    link(): File {
-        return this.files[0]
+    link(): Design {
+        return this.linker.link()
     }
 
     resolveImport(file: string, pkg: string): File | null {

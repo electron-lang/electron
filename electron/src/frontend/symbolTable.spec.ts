@@ -7,6 +7,7 @@ describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
     const st = new SymbolTable<ast.IPort>({
         logger: new Logger(dc),
+        manglingPrefix: '',
         file: 'symbolTable.spec.ts',
     })
 

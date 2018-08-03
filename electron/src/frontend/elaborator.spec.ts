@@ -22,6 +22,7 @@ function expectAst(text: string, ast: ast.IModule[]) {
     const dc = new DiagnosticCollector()
     const el = new Elaborator({
         file: file,
+        manglingPrefix: '',
         logger: new Logger(dc),
     })
     const tokens = lexerInstance.tokenize(text)

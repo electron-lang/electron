@@ -8,7 +8,7 @@ declare module $R(VALUE: Ohm) {
   analog B
 }
 
-/// module R {
+/// module pass_lec$0_R.lec$R {
 ///   analog a = (0)
 ///   analog b = (1)
 ///   cell r1 = $R(VALUE=10000) {A=(0), B=(1)}

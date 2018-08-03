@@ -142,9 +142,11 @@ export interface IModule {
     doc: string
     attrs: IAttr[]
     exported: boolean
+    imported: boolean
     declaration: boolean
     anonymous: boolean
     name: string
+    manglingPrefix: string
     params: IParam[]
     ports: IPort[]
     stmts: Stmt[]
@@ -158,7 +160,9 @@ export function Module(name: string | undefined, stmts: Stmt[],
         doc: '',
         attrs: [],
         exported: false,
+        imported: false,
         declaration: false,
+        manglingPrefix: '',
         anonymous: name === undefined,
         name: name || '',
         src: src || SrcLoc.empty(),

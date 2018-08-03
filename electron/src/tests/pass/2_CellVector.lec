@@ -13,7 +13,7 @@ declare module $R(VALUE: Ohm) {
 ///   analog A = (6)
 ///   analog B = (7)
 /// }
-/// module CellVector {
+/// module pass_lec$2_CellVector.lec$CellVector {
 ///   analog[2] a = (0, 1)
 ///   analog[2] b = (2, 3)
 ///   cell rx$0 = $R(VALUE=10000) {A=(0), B=(2)}

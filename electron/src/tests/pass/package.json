@@ -1,8 +1,29 @@
 {
-  "name": "pass",
+  "private": true,
+  "name": "pass_lec",
   "version": "1.0.0",
+  "description": "Electron PASS test suite",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.4",
+    "docsify-cli": "^4.2.1"
+  },
+  "dependencies": {
+    "electron_lec": "^1.0.0"
+  },
+  "scripts": {
+    "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
+    "build": "lecc build",
+    "kicad": "lecc kicad",
+    "bom": "lecc bom",
+    "docs": "lecc docs",
+    "serve": "docsify serve ./docs"
+  },
   "electronOptions": {
     "srcDir": ".",
-    "buildDir": "."
+    "buildDir": ".",
+    "docsDir": "."
   }
 }

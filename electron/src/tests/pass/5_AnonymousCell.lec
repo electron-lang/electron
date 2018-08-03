@@ -28,7 +28,7 @@
 ///   @side("top")
 ///   analog vcc = (9)
 /// }
-/// module Pcb {
+/// module pass_lec$5_AnonymousCell.lec$Pcb {
 ///   net in = (0)
 ///   net out = (1)
 ///   net gnd = (2)

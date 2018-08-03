@@ -9,6 +9,7 @@
   "private": true,
   "workspaces": [
     "electron",
+    "electron/src/tests/pass",
     "celllib",
     "language-server",
     "schematic-diagram",

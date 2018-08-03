@@ -1,7 +1,7 @@
 import VoltageDivider from "./6_VoltageDivider"
 
-/// @declare(true)
-/// module VoltageDivider {
+/// @import(true)
+/// module pass_lec$6_VoltageDivider.lec$VoltageDivider {
 ///   @side("left")
 ///   analog vin = (3)
 ///   @side("right")
@@ -9,8 +9,8 @@ import VoltageDivider from "./6_VoltageDivider"
 ///   @side("bottom")
 ///   analog gnd = (5)
 /// }
-/// @declare(true)
-/// module VoltageDivider {
+/// @import(true)
+/// module pass_lec$6_VoltageDivider.lec$VoltageDivider {
 ///   @side("left")
 ///   analog vin = (6)
 ///   @side("right")
@@ -18,12 +18,12 @@ import VoltageDivider from "./6_VoltageDivider"
 ///   @side("bottom")
 ///   analog gnd = (8)
 /// }
-/// module TwoVoltageDividers {
+/// module pass_lec$7_Two_Voltage_Dividers.lec$TwoVoltageDividers {
 ///   net vin = (0)
 ///   net vout = (1)
 ///   net gnd = (2)
-///   cell vd1 = VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
-///   cell vd2 = VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
+///   cell vd1 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
+///   cell vd2 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
 /// }
 module TwoVoltageDividers {
   net vin, vout, gnd

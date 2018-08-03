@@ -11,7 +11,7 @@ declare module $and(A_WIDTH: Integer, B_WIDTH: Integer, Y_WIDTH: Integer
   output Y
 }
 
-/// module AND {
+/// module pass_lec$1_AND.lec$AND {
 ///   input[2] a = (0, 1)
 ///   input[3] b = (2, 3, 4)
 ///   output y = (5)

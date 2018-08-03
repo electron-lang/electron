@@ -71,6 +71,7 @@ const file = 'compiler.spec.ts'
 const dc = new DiagnosticCollector()
 const comp = new ASTCompiler({
     file: file,
+    manglingPrefix: '',
     logger: new Logger(dc)
 })
 

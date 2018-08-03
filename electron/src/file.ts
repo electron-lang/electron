@@ -1,21 +1,21 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { Crate } from './crate'
+import { Crate, CrateInfo } from './crate'
 import { Logger, ISrcLoc } from './diagnostic'
 import { IToken, ast, lexerInstance, parserInstance, Elaborator,
          ASTCompiler } from './frontend'
-import { HierarchyPass } from './passes'
-import { ir, JsonBackend, YosysBackend, KicadBackend,
-         BomBackend, MarkdownBackend } from './backend'
+import { ir, JsonBackend } from './backend'
 
 export interface FileInfo {
     readonly file: string
+    readonly manglingPrefix: string
     readonly logger: Logger
 }
 
 export class File {
     readonly path: string
     readonly logger: Logger
+    readonly crateInfo: CrateInfo
 
     protected _outputPath: string | undefined
     protected _docsPath: string | undefined
@@ -30,6 +30,7 @@ export class File {
     constructor(readonly info: FileInfo, readonly crate: Crate) {
         this.path = info.file
         this.logger = info.logger
+        this.crateInfo = crate.crateInfo
     }
 
     setText(text: string): void {
@@ -109,7 +110,20 @@ export class File {
 
     get declarations(): ast.IModule[] {
         if (!this._declarations) {
-            this._declarations = extractDeclarations(this.ast)
+            this._declarations = []
+            for (let mod of this.ast) {
+                if (!mod.exported) {
+                    continue
+                }
+                let dmod = ast.Module(mod.name, [], mod.src)
+                dmod.attrs = mod.attrs
+                dmod.params = mod.params
+                dmod.ports = mod.ports
+                dmod.declaration = mod.declaration
+                dmod.imported = true
+                dmod.manglingPrefix = mod.manglingPrefix
+                this._declarations.push(dmod)
+            }
         }
         return this._declarations || []
     }
@@ -136,8 +150,8 @@ export class File {
     get outputPath(): string {
         if (!this._outputPath) {
             this._outputPath = File.resolvePath(
-                this.crate.crateInfo.srcDir,
-                this.crate.crateInfo.buildDir,
+                this.crateInfo.srcDir,
+                this.crateInfo.buildDir,
                 this.path
             )
         }
@@ -147,8 +161,8 @@ export class File {
     get docsPath(): string {
         if (!this._docsPath) {
             this._docsPath = File.resolvePath(
-                this.crate.crateInfo.srcDir,
-                this.crate.crateInfo.docsDir,
+                this.crateInfo.srcDir,
+                this.crateInfo.docsDir,
                 this.path
             )
         }
@@ -159,14 +173,6 @@ export class File {
         return this.emitJSON()
     }
 
-    emitDocs(): File {
-        if (!this.ir) return this
-        const markdownBackend = new MarkdownBackend()
-        const file = this.docsPath + '.md'
-        markdownBackend.emit(this.ir, file)
-        return this
-    }
-
     emitJSON(): File {
         if (!this.ir) return this
         const jsonBackend = new JsonBackend(true, true, true)
@@ -175,49 +181,4 @@ export class File {
         return this
     }
 
-    emitVerilog(): File {
-        if (!this.ir) return this
-        const yosys = this.outputPath + '.yosys.json'
-        const verilog = this.outputPath + '.v'
-        const yosysBackend = new YosysBackend(yosys, 'verilog')
-        yosysBackend.emit(this.ir, verilog)
-        return this
-    }
-
-    emitKicad(): File {
-        if (!this.ir) return this
-        const hierarchy = new HierarchyPass()
-        const file = this.outputPath + '.net'
-        const kicadBackend = new KicadBackend(
-            this.crate.crateInfo.version,
-            this.path
-        )
-        kicadBackend.emit(hierarchy.transform(this.ir), file)
-        return this
-    }
-
-    emitBom(): File {
-        if (!this.ir) return this
-        const file = this.outputPath + '.tsv'
-        const bomBackend = new BomBackend()
-        bomBackend.emit(this.ir, file)
-        return this
-    }
-
-}
-
-function extractDeclarations(mods: ast.IModule[]): ast.IModule[] {
-    let dmods: ast.IModule[] = []
-    for (let mod of mods) {
-        if (!mod.exported) {
-            continue
-        }
-        let dmod = ast.Module(mod.name, [], mod.src)
-        dmod.attrs = mod.attrs
-        dmod.params = mod.params
-        dmod.ports = mod.ports
-        dmod.declaration = true
-        dmods.push(dmod)
-    }
-    return dmods
 }

@@ -10,7 +10,7 @@ declare module $and(A_WIDTH: Integer, B_WIDTH: Integer) {
   output Y
 }
 
-/// module AND {
+/// module pass_lec$3_ConstExpression.lec$AND {
 ///   input[2] A = (5, 6)
 ///   input[2] B = (7, 8)
 ///   output Y = (9)
@@ -28,11 +28,11 @@ module AND(WIDTH: Integer) {
   }
 }
 
-/// module Test {
+/// module pass_lec$3_ConstExpression.lec$Test {
 ///   net[2] A = (0, 1)
 ///   net[2] B = (2, 3)
 ///   net Y = (4)
-///   cell and = AND(WIDTH=1) {A=(0, 1), B=(2, 3), Y=(4)}
+///   cell and = pass_lec$3_ConstExpression.lec$AND(WIDTH=1) {A=(0, 1), B=(2, 3), Y=(4)}
 /// }
 module Test {
   const WIDTH = 1
