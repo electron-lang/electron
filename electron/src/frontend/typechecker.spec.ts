@@ -5,6 +5,7 @@ import * as ast from './ast'
 
 const dc = new DiagnosticCollector()
 const tc = new TypeChecker({
+    crate: '',
     logger: new Logger(dc),
     manglingPrefix: '',
     file: 'typechecker.spec.ts'

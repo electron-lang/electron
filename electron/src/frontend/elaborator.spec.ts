@@ -21,6 +21,7 @@ function getLoc(text: string, start: [number, number]): ISrcLoc {
 function expectAst(text: string, ast: ast.IModule[]) {
     const dc = new DiagnosticCollector()
     const el = new Elaborator({
+        crate: '',
         file: file,
         manglingPrefix: '',
         logger: new Logger(dc),

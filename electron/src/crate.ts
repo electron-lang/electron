@@ -77,6 +77,7 @@ export class Crate {
         const manglingPrefix = `${crateInfo.name}$${relPath}$`
 
         const f = new File({
+            crate: crateInfo.name,
             file: file,
             manglingPrefix: manglingPrefix,
             logger: this.logger,
@@ -95,7 +96,9 @@ export class Crate {
 
     build(): void {
         for (let file of this.files) {
-            file.compile()
+            if (file.info.crate === this.crateInfo.name) {
+                file.compile()
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import { Symbol, SymbolTable } from './symbolTable'
 describe('Symbol Table', () => {
     const dc = new DiagnosticCollector()
     const st = new SymbolTable<ast.IPort>({
+        crate: '',
         logger: new Logger(dc),
         manglingPrefix: '',
         file: 'symbolTable.spec.ts',

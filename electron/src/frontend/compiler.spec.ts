@@ -70,6 +70,7 @@ type expectIRType = {to: equalType, with: (params: ir.IParam[]) => {to: equalTyp
 const file = 'compiler.spec.ts'
 const dc = new DiagnosticCollector()
 const comp = new ASTCompiler({
+    crate: '',
     file: file,
     manglingPrefix: '',
     logger: new Logger(dc)

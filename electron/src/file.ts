@@ -1,12 +1,13 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { Crate, CrateInfo } from './crate'
+import { Crate } from './crate'
 import { Logger, ISrcLoc } from './diagnostic'
 import { IToken, ast, lexerInstance, parserInstance, Elaborator,
          ASTCompiler } from './frontend'
 import { ir, JsonBackend } from './backend'
 
 export interface FileInfo {
+    readonly crate: string
     readonly file: string
     readonly manglingPrefix: string
     readonly logger: Logger
@@ -15,7 +16,6 @@ export interface FileInfo {
 export class File {
     readonly path: string
     readonly logger: Logger
-    readonly crateInfo: CrateInfo
 
     protected _outputPath: string | undefined
     protected _docsPath: string | undefined
@@ -30,7 +30,6 @@ export class File {
     constructor(readonly info: FileInfo, readonly crate: Crate) {
         this.path = info.file
         this.logger = info.logger
-        this.crateInfo = crate.crateInfo
     }
 
     setText(text: string): void {
@@ -152,8 +151,8 @@ export class File {
     get outputPath(): string {
         if (!this._outputPath) {
             this._outputPath = File.resolvePath(
-                this.crateInfo.srcDir,
-                this.crateInfo.buildDir,
+                this.crate.crateInfo.srcDir,
+                this.crate.crateInfo.buildDir,
                 this.path
             )
         }
@@ -163,8 +162,8 @@ export class File {
     get docsPath(): string {
         if (!this._docsPath) {
             this._docsPath = File.resolvePath(
-                this.crateInfo.srcDir,
-                this.crateInfo.docsDir,
+                this.crate.crateInfo.srcDir,
+                this.crate.crateInfo.docsDir,
                 this.path
             )
         }
