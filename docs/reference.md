@@ -56,6 +56,8 @@ Externally defined modules are used for interfacing existing verilog or spice.
 Electron builtin cells are directly translated to yosys builtin cells or spice
 elements.
 
+Declared modules aren't name mangled.
+
 ## Statements
 A module contains a list of statements.
 
@@ -213,6 +215,9 @@ module Resistor {
   @right @fixed(40, 5) analog B;
 }
 ```
+
+### @value(value)
+@param value: String - Value to be displayed in the schematic or kicad.
 
 ### @footprint(name)
 @param name: String - Name of the footprint.
