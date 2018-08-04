@@ -18,7 +18,7 @@ export module DAC(WIDTH: Integer, L: Henry, C: Farad) {
         Y=dac_clk,
     }
 
-    net dac_in, dac_out
+    net[2] dac_in, dac_out
     cell ddac = DACDigital(WIDTH) {
         dac_clk,
         data,

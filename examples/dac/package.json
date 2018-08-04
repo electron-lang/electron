@@ -16,7 +16,7 @@
   "scripts": {
     "prepare": "yarn build && yarn docs",
     "build": "lecc build",
-    "verilog": "lecc verilog",
+    "verilog": "lecc verilog DACDigital",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"
   }
