@@ -16,8 +16,8 @@
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
     "build": "lecc build",
-    "kicad": "lecc kicad",
-    "bom": "lecc bom",
+    "kicad": "lecc kicad TinyFPGA",
+    "bom": "lecc bom TinyFPGA",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"
   }

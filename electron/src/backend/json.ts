@@ -1,10 +1,10 @@
 import * as fs from 'fs'
 import * as cl from '@electron-lang/celllib'
 import * as ir from './ir'
-import { IBackend } from './index'
+import { IDesignBackend } from './index'
 import { ISrcLoc } from '../diagnostic'
 
-export class JsonBackend implements IBackend {
+export class JsonBackend implements IDesignBackend {
     constructor(readonly declared: boolean,
                 readonly allowBoolean: boolean,
                 readonly emitSrcLoc: boolean) {

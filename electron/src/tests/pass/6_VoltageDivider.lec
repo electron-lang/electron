@@ -1,31 +1,6 @@
 import $R from "electron_lec/src/cells"
 
-/// @skin("<g><rect width="40" height="10"></rect></g>")
-/// @declare(true)
-/// @import(true)
-/// module $R {
-///   @side("left")
-///   @port_x(0)
-///   @port_y(5)
-///   analog A = (3)
-///   @side("right")
-///   @port_x(40)
-///   @port_y(5)
-///   analog B = (4)
-/// }
-/// @skin("<g><rect width="40" height="10"></rect></g>")
-/// @declare(true)
-/// @import(true)
-/// module $R {
-///   @side("left")
-///   @port_x(0)
-///   @port_y(5)
-///   analog A = (5)
-///   @side("right")
-///   @port_x(40)
-///   @port_y(5)
-///   analog B = (6)
-/// }
+/// @name("VoltageDivider")
 /// @export(true)
 /// module pass_lec$6_VoltageDivider.lec$VoltageDivider {
 ///   @side("left")
@@ -46,6 +21,20 @@ import $R from "electron_lec/src/cells"
 ///   @man("Yageo")
 ///   @mpn("RC0603FR-0722KL")
 ///   cell r2 = $R(RESISTANCE=22000) {A=(1), B=(2)}
+/// }
+/// @skin("<g><rect width="40" height="10"></rect></g>")
+/// @name("$R")
+/// @declare(true)
+/// @import(true)
+/// module $R {
+///   @side("left")
+///   @port_x(0)
+///   @port_y(5)
+///   analog A = (3)
+///   @side("right")
+///   @port_x(40)
+///   @port_y(5)
+///   analog B = (4)
 /// }
 export module VoltageDivider {
   @left analog vin

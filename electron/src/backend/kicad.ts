@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { IBackend } from './index'
+import { IModuleBackend } from './index'
 import * as ir from './ir'
 
 class Component {
@@ -52,7 +52,7 @@ class Net {
     }
 }
 
-export class KicadBackend implements IBackend {
+export class KicadBackend implements IModuleBackend {
     protected netlist: string = ''
     protected nets: {[n: number]: Net} = {}
 
@@ -112,7 +112,7 @@ export class KicadBackend implements IBackend {
         this.netlist = this.netlist.slice(0, -1) + ')\n'
     }
 
-    emit(mods: ir.IModule[], outputPath: string): void {
+    emit(mod: ir.IModule, outputPath: string): void {
         this.netlist  = `(export (version ${this.version})\n`
         this.netlist += `  (design\n`
         this.netlist += `    (source "${this.source}")\n`
@@ -120,9 +120,7 @@ export class KicadBackend implements IBackend {
         this.netlist += `    (tool "electron (${this.getVersion()})"))\n`
 
         this.netlist += `  (components\n`
-        for (let mod of mods) {
-            this.processModule(mod)
-        }
+        this.processModule(mod)
         this.emitClose()
 
         this.netlist += `  (nets\n`

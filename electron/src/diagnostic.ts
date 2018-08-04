@@ -1,3 +1,4 @@
+import * as path from 'path'
 import chalk from 'chalk'
 import { IToken } from 'chevrotain'
 import { Crate } from './crate'
@@ -121,8 +122,13 @@ export class DiagnosticLogger implements IDiagnosticConsumer {
         return this.crate.getFile(src.file).getLines(src)
     }
 
+    getFile(src: ISrcLoc): string {
+        if (!this.crate) return src.file
+        return path.relative(this.crate.crateInfo.rootDir, src.file)
+    }
+
     consume(diag: IDiagnostic) {
-        const file = chalk.magenta(diag.src.file)
+        const file = chalk.magenta(this.getFile(diag.src))
         const lineNumber = diag.src.startLine.toString()
         const context = this.getContext(diag.src)
         {

@@ -425,11 +425,12 @@ describe('Elaborator', () => {
                 const a = ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
                 const Y = ast.Net('Y', ast.Integer(1), getLoc('Y', Pos(3, 8)))
                 const inv = ast.Cell('inv', ast.Integer(1), getLoc('inv', Pos(3, 16)))
-                const mod = ast.Module(undefined, [
+                const mod = ast.Module('inv', [], getLoc('cell', Pos(3, 22)))
+                mod.anonymous = true
+                mod.ports = [
                     ast.Port('A', 'input', ast.Integer(1), getLoc('A', Pos(3, 35))),
                     ast.Port('Y', 'output', ast.Integer(1), getLoc('Y', Pos(3, 47))),
-                ], getLoc('cell', Pos(3, 22)))
-                mod.declaration = true
+                ]
 
                 expectAstModule('net a, Y; cell inv = cell { input A=a; output Y}', [
                     a, Y, inv,
@@ -451,11 +452,12 @@ describe('Elaborator', () => {
                 const a = ast.Net('a', ast.Integer(1), getLoc('a', Pos(3, 5)))
                 const Y = ast.Net('Y', ast.Integer(1), getLoc('Y', Pos(3, 8)))
                 const inv = ast.Cell('inv', ast.Integer(1), getLoc('inv', Pos(3, 16)))
-                const mod = ast.Module(undefined, [
+                const mod = ast.Module('inv', [], getLoc('cell', Pos(3, 22)))
+                mod.anonymous = true
+                mod.ports = [
                     ast.Port('A', 'analog', ast.Integer(1), getLoc('A', Pos(3, 36))),
                     ast.Port('Y', 'inout', ast.Integer(1), getLoc('Y', Pos(3, 54))),
-                ], getLoc('cell', Pos(3, 22)))
-                mod.declaration = true
+                ]
                 mod.ports[1].attrs.push(ast.Attr('right', [], getLoc('@right', Pos(3, 41))))
 
                 expectAstModule('net a, Y; cell inv = cell { analog A=a; @right inout Y}', [

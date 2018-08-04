@@ -69,14 +69,14 @@ type expectIRType = {to: equalType, with: (params: ir.IParam[]) => {to: equalTyp
 
 const file = 'compiler.spec.ts'
 const dc = new DiagnosticCollector()
-const comp = new ASTCompiler({
-    crate: '',
-    file: file,
-    manglingPrefix: '',
-    logger: new Logger(dc)
-})
 
 function expectIR(ast: ast.IModule): expectIRType {
+    const comp = new ASTCompiler({
+        crate: '',
+        file: file,
+        manglingPrefix: '',
+        logger: new Logger(dc)
+    })
     const equal = (params: ir.IParam[]) => {
         return {
             equal: (ir: ir.IModule) => {
@@ -106,8 +106,11 @@ function expectIR(ast: ast.IModule): expectIRType {
 
 describe('AST Compiler', () => {
     it('should compile an empty module', () => {
+        const irmod = ir.Module('MODULE', [
+            ir.Attr('name', 'MODULE')
+        ], new SrcLoc(file, [2, 4, 2, 10]))
         expectIR(ast.Module('MODULE', [], new SrcLoc(file, [2, 4, 2, 10])))
-            .to.equal(ir.Module('MODULE', [], new SrcLoc(file, [2, 4, 2, 10])))
+            .to.equal(irmod)
     })
 
     it('should compile a module with a cell', () => {
@@ -129,13 +132,17 @@ describe('AST Compiler', () => {
         const r1 = ast.Cell('r1')
         const R = ast.Module('R', [ a, b, r1, ast.Assign(ast.Ref(r1), inst) ])
 
-        const i$R = ir.Module('$R', [])
+        const i$R = ir.Module('$R', [
+            ir.Attr('name', '$R'),
+            ir.Attr('declare', true)
+        ])
         i$R.ports = [
             ir.Port('A', 'analog', [ ir.Sig.create() ], []),
             ir.Port('B', 'analog', [ ir.Sig.create() ], [])
         ]
-        i$R.attrs.push(ir.Attr('declare', true))
-        const iR = ir.Module('R', [])
+        const iR = ir.Module('R', [
+            ir.Attr('name', 'R')
+        ])
         const sa = ir.Sig.create()
         const sb = ir.Sig.create()
         const ia = ir.Port('a', 'analog', [sa], [])
@@ -177,14 +184,18 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Ref(and1), inst)
         ])
 
-        const i$and = ir.Module('$and', [])
+        const i$and = ir.Module('$and', [
+            ir.Attr('name', '$and')
+        ])
         i$and.ports = [
             ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create() ], []),
             ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
             ir.Port('Y', 'output', [ ir.Sig.create() ], []),
         ]
         i$and.attrs.push(ir.Attr('declare', true))
-        const iAND = ir.Module('AND', [])
+        const iAND = ir.Module('AND', [
+            ir.Attr('name', 'AND')
+        ])
         const sa = [ ir.Sig.create(), ir.Sig.create() ]
         const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
         const sy = [ ir.Sig.create() ]
@@ -236,14 +247,18 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Range(ast.Ref(rx), ast.Integer(1)), r2inst),
         ])
 
-        const i$R = ir.Module('$R', [])
+        const i$R = ir.Module('$R', [
+            ir.Attr('name', '$R'),
+            ir.Attr('declare', true)
+        ])
         i$R.ports = [
             ir.Port('A', 'analog', [ ir.Sig.create() ], []),
             ir.Port('B', 'analog', [ ir.Sig.create() ], [])
         ]
-        i$R.attrs.push(ir.Attr('declare', true))
 
-        const iResArray = ir.Module('ResArray', [])
+        const iResArray = ir.Module('ResArray', [
+            ir.Attr('name', 'ResArray')
+        ])
         const sa = [ ir.Sig.create(), ir.Sig.create() ]
         const sb = [ ir.Sig.create(), ir.Sig.create() ]
         const ia = ir.Port('a', 'analog', sa, [])
@@ -298,15 +313,19 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Ref(and1), inst),
         ])
 
-        const i$and = ir.Module('$and', [])
+        const i$and = ir.Module('$and', [
+            ir.Attr('name', '$and'),
+            ir.Attr('declare', true),
+        ])
         i$and.ports = [
             ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
             ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
             ir.Port('Y', 'output', [ ir.Sig.create() ], []),
         ]
-        i$and.attrs.push(ir.Attr('declare', true))
 
-        const iAND = ir.Module('AND', [])
+        const iAND = ir.Module('AND', [
+            ir.Attr('name', 'AND')
+        ])
         const sa = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
         const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
         const sy = [ ir.Sig.create() ]

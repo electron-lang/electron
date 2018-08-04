@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { IBackend } from '.'
+import { IModuleBackend } from '.'
 import * as ir from './ir'
 
 class BomItem {
@@ -43,7 +43,7 @@ class NetlistInfo {
 }
 
 
-export class BomBackend implements IBackend {
+export class BomBackend implements IModuleBackend {
 
     readonly bom: {[key: string]: BomItem} = {}
 
@@ -94,10 +94,8 @@ export class BomBackend implements IBackend {
         }
     }
 
-    emit(mods: ir.IModule[], outputPath: string): void {
-        for (let mod of mods) {
-            this.processModule(mod)
-        }
+    emit(mod: ir.IModule, outputPath: string): void {
+        this.processModule(mod)
 
         let tsv = 'References\tQty\tDescription\tManufacturer\tMPN\n'
         for (let key in this.bom) {

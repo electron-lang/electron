@@ -1,5 +1,15 @@
-/// @declare(true)
-/// module u1$mod {
+/// @name("Pcb")
+/// module pass_lec$5_AnonymousCell.lec$Pcb {
+///   net in = (0)
+///   net out = (1)
+///   net gnd = (2)
+///   @man("NXP")
+///   @mpn("7805")
+///   cell u1 = pass_lec$5_AnonymousCell.lec$u1() {in=(0), out=(1), gnd=(2), in2=(0), in3=(0), out2=(1), vcc=(2)}
+/// }
+/// @name("u1")
+/// @anonymous(true)
+/// module pass_lec$5_AnonymousCell.lec$u1 {
 ///   @group("A")
 ///   @pads(("1"))
 ///   @side("left")
@@ -27,14 +37,6 @@
 ///   @pads(("7"))
 ///   @side("top")
 ///   analog vcc = (9)
-/// }
-/// module pass_lec$5_AnonymousCell.lec$Pcb {
-///   net in = (0)
-///   net out = (1)
-///   net gnd = (2)
-///   @man("NXP")
-///   @mpn("7805")
-///   cell u1 = u1$mod() {in=(0), out=(1), gnd=(2), in2=(0), in3=(0), out2=(1), vcc=(2)}
 /// }
 module Pcb {
   net in, out, gnd

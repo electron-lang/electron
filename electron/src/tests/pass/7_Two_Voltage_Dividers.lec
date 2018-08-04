@@ -1,5 +1,14 @@
 import VoltageDivider from "./6_VoltageDivider"
 
+/// @name("TwoVoltageDividers")
+/// module pass_lec$7_Two_Voltage_Dividers.lec$TwoVoltageDividers {
+///   net vin = (0)
+///   net vout = (1)
+///   net gnd = (2)
+///   cell vd1 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
+///   cell vd2 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
+/// }
+/// @name("VoltageDivider")
 /// @import(true)
 /// module pass_lec$6_VoltageDivider.lec$VoltageDivider {
 ///   @side("left")
@@ -8,22 +17,54 @@ import VoltageDivider from "./6_VoltageDivider"
 ///   analog vout = (4)
 ///   @side("bottom")
 ///   analog gnd = (5)
+///   @rotate(90)
+///   @value("10K")
+///   @footprint("Resistors_SMD:R_0402_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0402FR-0710KL")
+///   cell r1 = $R(RESISTANCE=10000) {A=(3), B=(4)}
+///   @rotate(90)
+///   @value("22K")
+///   @footprint("Resistors_SMD:R_0603_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0603FR-0722KL")
+///   cell r2 = $R(RESISTANCE=22000) {A=(4), B=(5)}
 /// }
+/// @skin("<g><rect width="40" height="10"></rect></g>")
+/// @name("$R")
+/// @declare(true)
+/// @import(true)
+/// module $R {
+///   @side("left")
+///   @port_x(0)
+///   @port_y(5)
+///   analog A = (6)
+///   @side("right")
+///   @port_x(40)
+///   @port_y(5)
+///   analog B = (7)
+/// }
+/// @name("VoltageDivider")
 /// @import(true)
 /// module pass_lec$6_VoltageDivider.lec$VoltageDivider {
 ///   @side("left")
-///   analog vin = (6)
+///   analog vin = (8)
 ///   @side("right")
-///   analog vout = (7)
+///   analog vout = (9)
 ///   @side("bottom")
-///   analog gnd = (8)
-/// }
-/// module pass_lec$7_Two_Voltage_Dividers.lec$TwoVoltageDividers {
-///   net vin = (0)
-///   net vout = (1)
-///   net gnd = (2)
-///   cell vd1 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
-///   cell vd2 = pass_lec$6_VoltageDivider.lec$VoltageDivider() {vin=(0), vout=(1), gnd=(2)}
+///   analog gnd = (10)
+///   @rotate(90)
+///   @value("10K")
+///   @footprint("Resistors_SMD:R_0402_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0402FR-0710KL")
+///   cell r1 = $R(RESISTANCE=10000) {A=(8), B=(9)}
+///   @rotate(90)
+///   @value("22K")
+///   @footprint("Resistors_SMD:R_0603_NoSilk")
+///   @man("Yageo")
+///   @mpn("RC0603FR-0722KL")
+///   cell r2 = $R(RESISTANCE=22000) {A=(9), B=(10)}
 /// }
 module TwoVoltageDividers {
   net vin, vout, gnd

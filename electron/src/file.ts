@@ -114,14 +114,9 @@ export class File {
                 if (!mod.exported) {
                     continue
                 }
-                let dmod = ast.Module(mod.name, [], mod.src)
-                dmod.attrs = mod.attrs
-                dmod.params = mod.params
-                dmod.ports = mod.ports
-                dmod.declaration = mod.declaration
-                dmod.imported = true
-                dmod.manglingPrefix = mod.manglingPrefix
-                this._declarations.push(dmod)
+                mod.imported = true
+                mod.exported = false
+                this._declarations.push(mod)
             }
         }
         return this._declarations || []

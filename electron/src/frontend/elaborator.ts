@@ -95,6 +95,35 @@ function elaboratePartialInst(logger: Logger,
     return inst
 }
 
+function doAssign(info: FileInfo, tc: TypeChecker,
+                  lhs: ast.Expr[], rhs: ast.Expr[]): ast.IAssign[] {
+    if(lhs.length != rhs.length) {
+        const src = new SrcLoc(info.file, [
+            lhs[0].src.startLine,
+            lhs[0].src.startColumn,
+            rhs[rhs.length - 1].src.endLine,
+            rhs[rhs.length - 1].src.endColumn,
+        ])
+        info.logger.error('Unbalanced assignment', src)
+    }
+
+    let assigns: ast.IAssign[] = []
+    for (let i = 0; i < Math.min(lhs.length, rhs.length); i++) {
+        const assign = ast.Assign(lhs[i], rhs[i])
+        assigns.push(assign)
+        if (tc.checkAssign(assign)) {
+            if (rhs[i].tag === 'inst' && lhs[i].tag === 'ref') {
+                const l = lhs[i] as ast.IRef<ast.ICell>
+                const r = rhs[i] as ast.IInst
+                if (r.mod.ref.anonymous) {
+                    r.mod.ref.name = l.ref.name
+                }
+            }
+        }
+    }
+    return assigns
+}
+
 export class Elaborator extends BaseElectronVisitor {
     protected logger: Logger
 
@@ -341,26 +370,10 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     assignStatement(ctx: any): ast.IAssign[] {
-        const lhs = this.visit(ctx.expressions[0])
+        const lhs = this.visit(ctx.expressions[0]) as ast.Expr[]
+        const rhs = this.visit(ctx.expressions[1]) as ast.Expr[]
 
-        const rhs = this.visit(ctx.expressions[1])
-        if(lhs.length != rhs.length) {
-            const src = new SrcLoc(this.info.file, [
-                lhs[0].src.startLine,
-                lhs[0].src.startColumn,
-                rhs[rhs.length - 1].src.endLine,
-                rhs[rhs.length - 1].src.endColumn,
-            ])
-            this.logger.error('Unbalanced assignment', src)
-        }
-
-        let assigns: ast.IAssign[] = []
-        for (let i = 0; i < Math.min(lhs.length, rhs.length); i++) {
-            const assign = ast.Assign(lhs[i], rhs[i])
-            assigns.push(assign)
-            this.tc.checkAssign(assign)
-        }
-        return assigns
+        return doAssign(this.info, this.tc, lhs, rhs)
     }
 
     declaration(ctx: any): ast.Stmt[] {
@@ -390,29 +403,16 @@ export class Elaborator extends BaseElectronVisitor {
             }
         })()
 
+        let refs = []
         for (let decl of decls) {
             this.st.define(Symbol(decl.name, decl.src), decl)
+            refs.push(ast.Ref(decl, decl.src))
         }
 
         let assigns: ast.IAssign[] = []
         if (ctx.expressions) {
             const exprs = this.visit(ctx.expressions[0])
-            if (ids.length != exprs.length) {
-                const src = new SrcLoc(this.info.file, [
-                    ids[0].src.startLine,
-                    ids[0].src.startColumn,
-                    exprs[exprs.length - 1].src.endLine,
-                    exprs[exprs.length - 1].src.endColumn,
-                ])
-                this.logger.error('Unbalanced assignment', src)
-            }
-
-            for (let i = 0; i < Math.min(ids.length, exprs.length); i++) {
-                const assign = ast.Assign(ast.Ref(decls[i], decls[i].src),
-                                          exprs[i])
-                assigns.push(assign)
-                this.tc.checkAssign(assign)
-            }
+            assigns = doAssign(this.info, this.tc, refs, exprs)
         }
 
         return (decls as ast.Stmt[]).concat(assigns)
@@ -589,8 +589,9 @@ export class Elaborator extends BaseElectronVisitor {
     }
 
     anonymousCell(ctx: any): ast.IInst {
-        let mod = ast.Module(undefined, [])
-        mod.declaration = true
+        let mod = ast.Module('', [])
+        mod.manglingPrefix = this.info.manglingPrefix
+        mod.anonymous = true
         mod.src = SrcLoc.fromToken(this.info.file, ctx.Cell[0])
 
         const conns = [].concat.apply([], (() => {

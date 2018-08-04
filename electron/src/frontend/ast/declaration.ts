@@ -153,7 +153,7 @@ export interface IModule {
     src: ISrcLoc
 }
 
-export function Module(name: string | undefined, stmts: Stmt[],
+export function Module(name: string, stmts: Stmt[],
                        src?: ISrcLoc): IModule {
     let mod: IModule = {
         tag: 'module',
@@ -163,8 +163,8 @@ export function Module(name: string | undefined, stmts: Stmt[],
         imported: false,
         declaration: false,
         manglingPrefix: '',
-        anonymous: name === undefined,
-        name: name || '',
+        anonymous: false,
+        name: name,
         src: src || SrcLoc.empty(),
         ports: [],
         params: [],

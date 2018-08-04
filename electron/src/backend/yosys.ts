@@ -1,12 +1,12 @@
 import * as yosys from 'libyosys';
 import * as ir from './ir';
-import { IBackend } from './index'
+import { IModuleBackend } from './index'
 import { JsonBackend } from './json'
 
 export type YosysFormat = 'verilog' | 'blif' | 'spice'
 export type YosysArch = 'ice40' | 'ecp5' | 'intel' | 'xilinx'
 
-export class YosysBackend implements IBackend {
+export class YosysBackend implements IModuleBackend {
     protected jsonBackend: JsonBackend
 
     constructor(readonly jsonPath: string,
@@ -16,8 +16,8 @@ export class YosysBackend implements IBackend {
         this.jsonBackend = new JsonBackend(false, false, false)
     }
 
-    emit(mods: ir.IModule[], outputPath: string): void {
-        this.jsonBackend.emit(mods, this.jsonPath)
+    emit(mod: ir.IModule, outputPath: string): void {
+        this.jsonBackend.emit([mod], this.jsonPath)
 
         yosys.setup()
 

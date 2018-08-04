@@ -16,8 +16,8 @@
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
     "build": "lecc build",
-    "kicad": "lecc kicad",
-    "bom": "lecc bom",
+    "kicad": "lecc kicad TwoVoltageDividers",
+    "bom": "lecc bom TwoVoltageDividers",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"
   },

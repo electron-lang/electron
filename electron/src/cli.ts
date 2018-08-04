@@ -26,19 +26,19 @@ program.command('docs')
         getCrate().link().emitDocs()
     })
 
-program.command('kicad')
-    .action(() => {
-        getCrate().link().emitKicad()
+program.command('kicad <module>')
+    .action((mod: string) => {
+        getCrate().link().emitKicad(mod)
     })
 
-program.command('bom')
-    .action(() => {
-        getCrate().link().emitBom()
+program.command('bom <module>')
+    .action((mod: string) => {
+        getCrate().link().emitBom(mod)
     })
 
-program.command('verilog')
-    .action(() => {
-        getCrate().link().emitVerilog()
+program.command('verilog <module>')
+    .action((mod: string) => {
+        getCrate().link().emitVerilog(mod)
     })
 
 program.version(require('../package.json').version)

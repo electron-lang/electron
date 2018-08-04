@@ -15,22 +15,25 @@ describe('Compiler: PASS tests', () => {
             }
             let doc = ''
             for (let mod of file.ir) {
+                let imported = false
+                let modDoc = ''
                 const newAttrs: ir.IAttr[] = []
                 for (let attr of mod.attrs) {
                     if (attr.name === 'doc') {
-                        doc += attr.value
+                        modDoc = attr.value as string
                     } else {
                         newAttrs.push(attr)
                     }
+                    if (attr.name === 'import' && attr.value) {
+                        imported = true
+                    }
+                }
+                if (!imported) {
+                    doc += modDoc
                 }
                 mod.attrs = newAttrs
             }
-            try {
-                expect(printDesignIR(file.ir)).to.equal(doc)
-            } catch(e) {
-                console.log(file.ir)
-                throw e
-            }
+            expect(printDesignIR(file.ir)).to.equal(doc)
         })
     }
 })

@@ -121,6 +121,7 @@ export class ASTCompiler {
     protected logger: Logger
     private st: SymbolTable<WrappedValue>
     private mods: ir.IModule[] = []
+    protected declarations: {[name: string]: ir.IModule} = {}
 
     constructor(readonly info: FileInfo) {
         this.logger = info.logger
@@ -132,7 +133,7 @@ export class ASTCompiler {
         this.mods = []
         for (let mod of mods) {
             if (mod.params.length === 0) {
-                this.mods.push(this.compileModule(mod, []))
+                this.compileModule(mod, [])
             }
         }
         return this.mods
@@ -169,19 +170,26 @@ export class ASTCompiler {
 
     compileModule(mod: ast.IModule,
                   params: ir.IParam[]): ir.IModule {
-        this.st.enterScope()
+        if (mod.declaration && this.declarations[mod.name]) {
+            return this.declarations[mod.name]
+        }
         const name = (() => {
             if (mod.declaration) {
                 return mod.name
             }
             return mod.manglingPrefix + mod.name
         })()
+
+        this.st.enterScope()
         const irmod = ir.Module(name, compileAttrs(mod.attrs), mod.src)
+        this.mods.push(irmod)
         for (let param of params) {
             this.st.define(Symbol(param.name, param.src), wrapParam(param.value))
         }
+        irmod.attrs.push(ir.Attr('name', mod.name))
         if (mod.declaration) {
             irmod.attrs.push(ir.Attr('declare', true))
+            this.declarations[irmod.name] = irmod
         }
         if (mod.doc) {
             irmod.attrs.push(ir.Attr('doc', mod.doc))
@@ -192,10 +200,12 @@ export class ASTCompiler {
         if (mod.imported) {
             irmod.attrs.push(ir.Attr('import', true))
         }
+        if (mod.anonymous) {
+            irmod.attrs.push(ir.Attr('anonymous', true))
+        }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
-        const stmts = mod.anonymous || mod.declaration
-            || mod.imported ? mod.ports : mod.stmts
+        const stmts = mod.anonymous || mod.declaration ? mod.ports : mod.stmts
         for (let stmt of stmts) {
             matchASTStmt({
                 Module: (mod) => {},
@@ -239,11 +249,6 @@ export class ASTCompiler {
                 for (let i = 0; i < lhs.val.length; i++) {
                     const c1 = lhs.val[i].ref
                     const c2 = rhs.val[i].ref
-
-                    if (c2.module.name === '') {
-                        c2.module.name = c1.name + '$mod'
-                    }
-
                     lhs.val[i].ref = ir.Cell(c1.name, c2.module, c2.params,
                                              c2.assigns, c1.attrs, c1.src)
                 }
@@ -312,8 +317,6 @@ export class ASTCompiler {
                 }
             }
         }
-
-        this.mods.push(irmod)
 
         const ircell = ir.Cell('', irmod, params, assigns, [], inst.src)
 

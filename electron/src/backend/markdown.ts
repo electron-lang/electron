@@ -1,7 +1,7 @@
 import * as fs from 'fs'
-import { IBackend, ir } from '.'
+import { IDesignBackend, ir } from '.'
 
-export class MarkdownBackend implements IBackend {
+export class MarkdownBackend implements IDesignBackend {
 
     exportTag(exported: boolean): string {
         if (exported) {
@@ -18,20 +18,32 @@ export class MarkdownBackend implements IBackend {
     }
 
     generateDocs(mods: ir.IModule[]): string {
-        const attrs: {[name: string]: string | number | boolean | string[]} = {
-            doc: '',
-            declare: false,
-            export: false,
-        }
-
         let doc = ''
+        const declareLookup: {[name: string]: ir.IModule} = {}
         for (let mod of mods) {
+            const attrs: {[name: string]: string | number | boolean | string[]} = {
+                doc: '',
+                import: false,
+                declare: false,
+                export: false,
+                anonymous: false,
+            }
             for (let attr of mod.attrs) {
                 attrs[attr.name] = attr.value
             }
+            if (attrs.import || attrs.anonymous) {
+                continue
+            }
+            if (attrs.declare) {
+                if (declareLookup[mod.name]) {
+                    continue
+                } else {
+                    declareLookup[mod.name] = mod
+                }
+            }
             const exportTag = this.exportTag(attrs.export as boolean)
             const declareTag = this.declareTag(attrs.declare as boolean)
-            doc += `# ${mod.name} ${exportTag} ${declareTag}\n`
+            doc += `# ${attrs.name} ${exportTag} ${declareTag}\n`
             doc += `${attrs.doc}\n`
 
             if (mod.ports.length > 0) {
