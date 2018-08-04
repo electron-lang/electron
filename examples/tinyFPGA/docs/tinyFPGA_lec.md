@@ -1,9 +1,3 @@
-# PushBtn  <span class="tag declare">declare</span>
-
-Name | Type
----- | ----
-A | analog
-B | analog
 # Usb  
 USB connection and power filtering
 
@@ -112,7 +106,7 @@ Rev: v1.1
 
 Name | Type
 ---- | ----
-A | input
+A | analog
 # Bead  <span class="tag declare">declare</span>
 
 Name | Type

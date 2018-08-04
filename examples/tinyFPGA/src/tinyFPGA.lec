@@ -1,7 +1,16 @@
 import $R, $C, $L from "electron_lec/src/cells"
-declare module Tp {input A}
-declare module Bead {analog A, B}
-declare module PushBtn {analog A, B}
+
+declare module Tp {
+  @set_pad(1)
+  analog A
+}
+
+declare module Bead {
+  @set_pad(1)
+  analog A
+  @set_pad(2)
+  analog B
+}
 
 /// USB connection and power filtering
 module Usb {
@@ -360,7 +369,12 @@ module FpgaReset {
   @value("SW_Push")
   @footprint("tinyfpga:PTS_810_SMT_Switch")
   @bom("C&K Components", "PTS810 SJM 250 SMTR LFS")
-  cell SW1 = cell {analog A=GND; analog B=CRESET_B}
+  cell SW1 = cell {
+    @set_pad(1)
+    analog A=GND
+    @set_pad(2)
+    analog B=CRESET_B
+  }
 }
 
 @bom("Lattice Semiconductor", "ICE40LP8K-CM81")

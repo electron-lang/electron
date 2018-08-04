@@ -5,8 +5,10 @@
     </g>
 )
 export declare module $R(RESISTANCE: Ohm) {
+    @set_pad(1)
     @left @fixed(0, 5)
     analog A
+    @set_pad(2)
     @right @fixed(40, 5)
     analog B
 }
@@ -20,8 +22,10 @@ export declare module $R(RESISTANCE: Ohm) {
 )
 export declare module $C(CAPACITANCE: Farad) {
     @left @fixed(0, 15)
+    @set_pad(1)
     analog A
     @right @fixed(10, 15)
+    @set_pad(2)
     analog B
 }
 
@@ -40,7 +44,12 @@ module Test {
     cell c2 = $C(10nF) {}
 }
 
-export declare module $L(INDUCTANCE: Henry) { analog A, B }
+export declare module $L(INDUCTANCE: Henry) {
+  @set_pad(1)
+  analog A
+  @set_pad(2)
+  analog B
+}
 
 export declare module $D { analog A, K }
 export declare module $M { analog G, D, S }
