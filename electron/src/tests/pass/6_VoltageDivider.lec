@@ -27,10 +27,12 @@ import $R from "electron_lec/src/cells"
 /// @declare(true)
 /// @import(true)
 /// module $R {
+///   @pads(("1"))
 ///   @side("left")
 ///   @port_x(0)
 ///   @port_y(5)
 ///   analog A = (3)
+///   @pads(("2"))
 ///   @side("right")
 ///   @port_x(40)
 ///   @port_y(5)

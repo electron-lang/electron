@@ -35,10 +35,12 @@ import VoltageDivider from "./6_VoltageDivider"
 /// @declare(true)
 /// @import(true)
 /// module $R {
+///   @pads(("1"))
 ///   @side("left")
 ///   @port_x(0)
 ///   @port_y(5)
 ///   analog A = (6)
+///   @pads(("2"))
 ///   @side("right")
 ///   @port_x(40)
 ///   @port_y(5)
