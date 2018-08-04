@@ -1,6 +1,6 @@
 import * as fs from 'fs'
-import { IModuleBackend } from './index'
-import * as ir from './ir'
+import { Logger } from '../diagnostic'
+import { IModuleBackend, ir } from '.'
 
 class Component {
     value: string | undefined = undefined
@@ -35,9 +35,10 @@ class Node {
 
 class Net {
     readonly nodes: Node[] = []
+    protected name = ''
 
-    constructor(readonly name: string) {
-
+    setName(name: string) {
+        this.name = name
     }
 
     addNode(node: Node): void {
@@ -56,7 +57,8 @@ export class KicadBackend implements IModuleBackend {
     protected netlist: string = ''
     protected nets: {[n: number]: Net} = {}
 
-    constructor(readonly version: string,
+    constructor(readonly logger: Logger,
+                readonly version: string,
                 readonly source: string) {
 
     }
@@ -92,10 +94,6 @@ export class KicadBackend implements IModuleBackend {
             }
         }
 
-        if (!info.isComplete()) {
-            this.processModule(cell.module)
-        }
-
         return info
     }
 
@@ -104,6 +102,42 @@ export class KicadBackend implements IModuleBackend {
             const info = this.cellAsComponent(cell)
             if (info.isComplete()) {
                 this.netlist += info.component()
+            } else {
+                this.logger.error(`[kicad] Missing footprint for '${cell.name}'.`, cell.src)
+            }
+            for (let assign of cell.assigns) {
+                for (let i = 0; i < assign.rhs.length; i++) {
+                    const sig = assign.rhs[i]
+                    if (typeof sig.value === 'string') {
+                        this.logger.error('[kicad] Signal is a constant.', assign.src)
+                        continue
+                    }
+                    if (!(sig.value in this.nets)) {
+                        this.nets[sig.value] = new Net()
+                    }
+                    const net = this.nets[sig.value]
+                    const pads = assign.lhs.ref
+                        .attrs.find((attr) => attr.name === 'pads')
+                    if (pads) {
+                        for (let pad of pads.value) {
+                            net.addNode(new Node(cell.name, pad))
+                        }
+                    } else {
+                        this.logger.error(
+                            `[kicad] Cell '${cell.name}' is missing a ` +
+                            `pad assignment for port '${assign.lhs.ref.name}'`,
+                            assign.src)
+                    }
+                }
+            }
+        }
+        for (let net of mod.nets) {
+            for (let i = 0; i < net.value.length; i++) {
+                const sig = net.value[i]
+                if (sig.value in this.nets) {
+                    this.nets[sig.value as number]
+                        .setName(net.name + i.toString())
+                }
             }
         }
     }

@@ -43,7 +43,10 @@ export class Design {
 
     emitKicad(modName: string) {
         this.emit(modName, (mod, file) => {
+            const pass = new HierarchyPass()
+            pass.hierarchy(mod)
             const kicadBackend = new KicadBackend(
+                this.crate.logger,
                 this.crate.crateInfo.version,
                 mod.src.file,
             )
