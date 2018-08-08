@@ -1,7 +1,7 @@
 import VoltageDivider from "./6_VoltageDivider"
 
 /// @name("TwoVoltageDividers")
-/// module pass_lec$7_Two_Voltage_Dividers.lec$TwoVoltageDividers {
+/// module pass_lec$7_TwoVoltageDividers.lec$TwoVoltageDividers {
 ///   net vin = (0)
 ///   net vout = (1)
 ///   net gnd = (2)

@@ -31,6 +31,7 @@
     "chalk": "^2.4.1",
     "chevrotain": "^3.5.0",
     "commander": "^2.16.0",
+    "libkicad": "next",
     "libyosys": "^0.0.8",
     "prettier-printer": "^1.1.2"
   },

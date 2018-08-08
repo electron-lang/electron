@@ -1,0 +1,58 @@
+(export
+  (version "1.0.0")
+  (design
+    (source
+      "/home/dvc/repos/electron-workspace/electron/src/tests/pass/7_TwoVoltageDividers.lec")
+    (date "")
+    (tool "electron 0.0.4"))
+  (components
+    (comp
+      (ref "r1")
+      (value "10K")
+      (footprint "Resistors_SMD:R_0402_NoSilk"))
+    (comp
+      (ref "r2")
+      (value "22K")
+      (footprint "Resistors_SMD:R_0603_NoSilk"))
+    (comp
+      (ref "r3")
+      (value "10K")
+      (footprint "Resistors_SMD:R_0402_NoSilk"))
+    (comp
+      (ref "r4")
+      (value "22K")
+      (footprint "Resistors_SMD:R_0603_NoSilk")))
+  (nets
+    (net
+      (code "0")
+      (name "vin")
+      (node
+        (ref "r1")
+        (pin "1"))
+      (node
+        (ref "r3")
+        (pin "1")))
+    (net
+      (code "1")
+      (name "vout")
+      (node
+        (ref "r1")
+        (pin "2"))
+      (node
+        (ref "r2")
+        (pin "1"))
+      (node
+        (ref "r3")
+        (pin "2"))
+      (node
+        (ref "r4")
+        (pin "1")))
+    (net
+      (code "2")
+      (name "gnd")
+      (node
+        (ref "r2")
+        (pin "2"))
+      (node
+        (ref "r4")
+        (pin "2")))))

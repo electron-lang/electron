@@ -23,7 +23,6 @@
   },
   "electronOptions": {
     "srcDir": ".",
-    "buildDir": ".",
     "docsDir": "."
   }
 }

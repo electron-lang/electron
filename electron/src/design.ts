@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { Crate } from './crate'
-import { HierarchyPass } from './passes'
+import { HierarchyPass, RenameCellPass } from './passes'
 import { ir, YosysBackend, KicadBackend, BomBackend,
          MarkdownBackend } from './backend'
 
@@ -41,14 +41,18 @@ export class Design {
         })
     }
 
-    emitKicad(modName: string) {
+    emitKicad(modName: string, emitDate=true) {
         this.emit(modName, (mod, file) => {
-            const pass = new HierarchyPass()
-            pass.hierarchy(mod)
+            const pass1 = new HierarchyPass()
+            pass1.hierarchy(mod)
+            const pass2 = new RenameCellPass()
+            pass2.transform([mod])
+
             const kicadBackend = new KicadBackend(
                 this.crate.logger,
                 this.crate.crateInfo.version,
                 mod.src.file,
+                emitDate,
             )
             kicadBackend.emit(mod, file + '.net')
         })
