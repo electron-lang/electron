@@ -5,3 +5,4 @@ export interface IPass {
 }
 
 export { HierarchyPass } from './hierarchy'
+export { RenameCellPass } from './renamecell'
