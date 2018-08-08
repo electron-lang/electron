@@ -56,15 +56,12 @@ export type Bit = '0' | '1' | 'x' | 'z'
 export interface IRef<T> {
     tag: 'ref'
     ref: T
-    index: number
 }
 
-export function Ref<T>(ref: T, index: number): IRef<T> {
-    return {
-        tag: 'ref',
-        ref,
-        index,
-    }
+export class Ref<T> implements IRef<T> {
+    readonly tag = 'ref'
+
+    constructor(readonly ref: T) {}
 }
 
 export interface ISig {
@@ -72,19 +69,16 @@ export interface ISig {
     value: Bit | number
 }
 
-export class Sig {
+export class Sig implements ISig {
     protected static sigCounter = 0
+    readonly tag = 'sig'
+    readonly value: Bit | number
 
-    static create(value?: Bit): ISig {
-        if (typeof value === 'undefined') {
-            return {
-                tag: 'sig',
-                value: Sig.sigCounter++,
-            }
-        }
-        return {
-            tag: 'sig',
-            value,
+    constructor(value?: Bit) {
+        if (value === undefined) {
+            this.value = Sig.sigCounter++
+        } else {
+            this.value = value
         }
     }
 
@@ -103,15 +97,29 @@ export interface IModule {
     src: ISrcLoc
 }
 
-export function Module(name: string, attrs: IAttr[], src?: ISrcLoc): IModule {
-    return {
-        tag: 'module',
-        attrs,
-        name,
-        ports: [],
-        nets: [],
-        cells: [],
-        src: src || SrcLoc.empty(),
+export class Module implements IModule {
+    readonly tag = 'module'
+    readonly attrs: IAttr[] = []
+    readonly ports: IPort[] = []
+    readonly nets: INet[] = []
+    readonly cells: ICell[] = []
+
+    constructor(readonly name: string, readonly src: ISrcLoc=SrcLoc.empty()) {}
+
+    addAttr(attr: IAttr): void {
+        this.attrs.push(attr)
+    }
+
+    addPort(port: IPort): void {
+        this.ports.push(port)
+    }
+
+    addNet(net: INet): void {
+        this.nets.push(net)
+    }
+
+    addCell(cell: ICell): void {
+        this.cells.push(cell)
     }
 }
 
@@ -122,14 +130,12 @@ export interface IAttr {
     src: ISrcLoc
 }
 
-export function Attr(name: string, value: boolean | number | string | string[],
-                     src?: ISrcLoc): IAttr {
-    return {
-        tag: 'attr',
-        name,
-        value,
-        src: src || SrcLoc.empty(),
-    }
+export class Attr implements IAttr {
+    readonly tag = 'attr'
+
+    constructor(readonly name: string,
+                readonly value: boolean | number | string | string[],
+                readonly src: ISrcLoc=SrcLoc.empty()) {}
 }
 
 export interface IParam {
@@ -139,14 +145,12 @@ export interface IParam {
     src: ISrcLoc
 }
 
-export function Param(name: string, value: number | string | boolean | Bit[],
-                      src?: ISrcLoc): IParam {
-    return {
-        tag: 'param',
-        name,
-        value,
-        src: src || SrcLoc.empty(),
-    }
+export class Param implements IParam {
+    readonly tag = 'param'
+
+    constructor(readonly name: string,
+                readonly value: number | string | boolean | Bit[],
+                readonly src: ISrcLoc=SrcLoc.empty()) {}
 }
 
 export interface ICell {
@@ -159,16 +163,26 @@ export interface ICell {
     src: ISrcLoc
 }
 
-export function Cell(name: string, mod: IModule, params: IParam[],
-                     assigns: IAssign[], attrs: IAttr[], src?: ISrcLoc): ICell {
-    return {
-        tag: 'cell',
-        name,
-        module: mod,
-        attrs,
-        params,
-        assigns,
-        src: src || SrcLoc.empty(),
+export class Cell implements ICell {
+    readonly tag = 'cell'
+    readonly attrs: IAttr[] = []
+    readonly params: IParam[] = []
+    readonly assigns: IAssign[] = []
+
+    constructor(readonly name: string,
+                readonly module: IModule,
+                readonly src: ISrcLoc=SrcLoc.empty()) {}
+
+    addAttr(attr: IAttr): void {
+        this.attrs.push(attr)
+    }
+
+    addParam(param: IParam): void {
+        this.params.push(param)
+    }
+
+    addAssign(assign: IAssign): void {
+        this.assigns.push(assign)
     }
 }
 
@@ -183,15 +197,26 @@ export interface IPort {
 
 export type PortType = 'input' | 'output' | 'inout' | 'analog'
 
-export function Port(name: string, ty: PortType, value: ISig[],
-                     attrs: IAttr[], src?: ISrcLoc): IPort {
-    return {
-        tag: 'port',
-        attrs,
-        ty,
-        name,
-        value,
-        src: src || SrcLoc.empty(),
+export class Port implements IPort {
+    readonly tag = 'port'
+    readonly attrs: IAttr[] = []
+    readonly value: ISig[] = []
+
+    constructor(readonly name: string,
+                readonly ty: PortType,
+                width=1,
+                readonly src: ISrcLoc=SrcLoc.empty()) {
+        for (let i = 0; i < width; i++) {
+            this.value.push(new Sig())
+        }
+    }
+
+    addAttr(attr: IAttr): void {
+        this.attrs.push(attr)
+    }
+
+    setValue(i: number, sig: ISig) {
+        this.value[i] = sig
     }
 }
 
@@ -203,14 +228,25 @@ export interface INet {
     src: ISrcLoc,
 }
 
-export function Net(name: string, value: ISig[], attrs: IAttr[],
-                    src?: ISrcLoc): INet {
-    return {
-        tag: 'net',
-        attrs,
-        name,
-        value,
-        src: src || SrcLoc.empty(),
+export class Net implements INet {
+    readonly tag = 'net'
+    readonly attrs: IAttr[] = []
+    readonly value: ISig[] = []
+
+    constructor(readonly name: string,
+                width=1,
+                readonly src: ISrcLoc=SrcLoc.empty()) {
+        for (let i = 0; i < width; i++) {
+            this.value.push(new Sig())
+        }
+    }
+
+    addAttr(attr: IAttr): void {
+        this.attrs.push(attr)
+    }
+
+    setValue(i: number, sig: ISig) {
+        this.value[i] = sig
     }
 }
 
@@ -221,11 +257,14 @@ export interface IAssign {
     src: ISrcLoc
 }
 
-export function Assign(lhs: IRef<IPort>, rhs: ISig[], src?: ISrcLoc): IAssign {
-    return {
-        tag: 'assign',
-        lhs,
-        rhs,
-        src: src || SrcLoc.empty(),
+export class Assign implements IAssign {
+    readonly tag = 'assign'
+
+    constructor(readonly lhs: IRef<IPort>,
+                readonly rhs: ISig[],
+                readonly src: ISrcLoc=SrcLoc.empty()) {}
+
+    setValue(i: number, sig: ISig) {
+        this.rhs[i] = sig
     }
 }

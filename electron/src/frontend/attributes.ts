@@ -42,7 +42,7 @@ const SkinAttribute: IAttributeHandler = {
 
     compile(attr: ast.IAttr): ir.IAttr[] {
         const skin = attr.params[0] as ast.IXml
-        return [ ir.Attr('skin', skin.value, attr.src) ]
+        return [ new ir.Attr('skin', skin.value, attr.src) ]
     }
 }
 
@@ -72,7 +72,7 @@ const RotateAttribute: IAttributeHandler = {
     compile(attr: ast.IAttr): ir.IAttr[] {
         const angle = attr.params[0] as ast.IInteger
         return [
-            ir.Attr('rotate', angle.value, attr.src)
+            new ir.Attr('rotate', angle.value, attr.src)
         ]
     }
 }
@@ -84,7 +84,7 @@ const LeftAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('side', 'left', attr.src) ]
+        return [ new ir.Attr('side', 'left', attr.src) ]
     }
 }
 
@@ -95,7 +95,7 @@ const RightAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('side', 'right', attr.src) ]
+        return [ new ir.Attr('side', 'right', attr.src) ]
     }
 }
 
@@ -106,7 +106,7 @@ const TopAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('side', 'top', attr.src) ]
+        return [ new ir.Attr('side', 'top', attr.src) ]
     }
 }
 
@@ -117,7 +117,7 @@ const BottomAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('side', 'bottom', attr.src) ]
+        return [ new ir.Attr('side', 'bottom', attr.src) ]
     }
 }
 
@@ -131,8 +131,8 @@ const FixedAttribute: IAttributeHandler = {
         const x = attr.params[0] as ast.IInteger
         const y = attr.params[1] as ast.IInteger
         return [
-            ir.Attr('port_x', x.value, attr.params[0].src),
-            ir.Attr('port_y', y.value, attr.params[1].src),
+            new ir.Attr('port_x', x.value, attr.params[0].src),
+            new ir.Attr('port_y', y.value, attr.params[1].src),
         ]
     }
 }
@@ -145,7 +145,7 @@ const GroupAttribute: IAttributeHandler = {
 
     compile(attr: ast.IAttr): ir.IAttr[] {
         const group = attr.params[0] as ast.IString
-        return [ ir.Attr('group', group.value, attr.src) ]
+        return [ new ir.Attr('group', group.value, attr.src) ]
     }
 }
 
@@ -156,7 +156,7 @@ const PowerAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('splitnet', '$vcc', attr.src) ]
+        return [ new ir.Attr('splitnet', '$vcc', attr.src) ]
     }
 }
 
@@ -167,7 +167,7 @@ const GroundAttribute: IAttributeHandler = {
     },
 
     compile(attr: ast.IAttr): ir.IAttr[] {
-        return [ ir.Attr('splitnet', '$gnd', attr.src) ]
+        return [ new ir.Attr('splitnet', '$gnd', attr.src) ]
     }
 }
 
@@ -196,8 +196,8 @@ const BomAttribute: IAttributeHandler = {
         const man = attr.params[0] as ast.IString
         const mpn = attr.params[1] as ast.IString
         return [
-            ir.Attr('man', man.value, man.src),
-            ir.Attr('mpn', mpn.value, mpn.src)
+            new ir.Attr('man', man.value, man.src),
+            new ir.Attr('mpn', mpn.value, mpn.src)
         ]
     }
 }
@@ -224,7 +224,7 @@ const FootprintAttribute: IAttributeHandler = {
     compile(attr: ast.IAttr): ir.IAttr[] {
         const fp = attr.params[0] as ast.IString
         return [
-            ir.Attr('footprint', fp.value, attr.src)
+            new ir.Attr('footprint', fp.value, attr.src)
         ]
     }
 }
@@ -238,7 +238,7 @@ const ValueAttribute: IAttributeHandler = {
     compile(attr: ast.IAttr): ir.IAttr[] {
         const value = attr.params[0] as ast.IString
         return [
-            ir.Attr('value', value.value, attr.src)
+            new ir.Attr('value', value.value, attr.src)
         ]
     }
 }
@@ -264,7 +264,7 @@ const SetPadAttribute: IAttributeHandler = {
     compile(attr: ast.IAttr): ir.IAttr[] {
         const pads = attr.params as ast.IString[]
         return [
-            ir.Attr('pads', pads.map((p) => p.value.toString()))
+            new ir.Attr('pads', pads.map((p) => p.value.toString()))
         ]
     }
 }
@@ -287,7 +287,7 @@ const FpgaAttribute: IAttributeHandler = {
 
     compile(attr: ast.IAttr): ir.IAttr[] {
         const fpga = attr.params[0] as ast.IString
-        return [ ir.Attr('fpga', fpga.value, attr.src) ]
+        return [ new ir.Attr('fpga', fpga.value, attr.src) ]
     }
 }
 

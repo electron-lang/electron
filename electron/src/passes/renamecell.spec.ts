@@ -6,11 +6,11 @@ import * as ir from '../backend/ir'
 describe('RenameCellPass', () => {
 
     it('should rename resistors', () => {
-        const R = ir.Module('R', [])
-        const amod = ir.Module('amod', [])
-        amod.cells.push(ir.Cell('r1', R, [], [], []))
-        const bmod = ir.Module('bmod', [])
-        bmod.cells.push(ir.Cell('r1', R, [], [], []))
+        const R = new ir.Module('R')
+        const amod = new ir.Module('amod')
+        amod.addCell(new ir.Cell('r1', R))
+        const bmod = new ir.Module('bmod')
+        bmod.addCell(new ir.Cell('r1', R))
 
         const rename = new RenameCellPass()
         const cellNames: string[] = []
@@ -21,11 +21,11 @@ describe('RenameCellPass', () => {
     })
 
     it('should rename anything', () => {
-        const R = ir.Module('R', [])
-        const amod = ir.Module('amod', [])
-        amod.cells.push(ir.Cell('xyz', R, [], [], []))
-        const bmod = ir.Module('bmod', [])
-        bmod.cells.push(ir.Cell('xyz', R, [], [], []))
+        const R = new ir.Module('R')
+        const amod = new ir.Module('amod')
+        amod.addCell(new ir.Cell('xyz', R))
+        const bmod = new ir.Module('bmod')
+        bmod.addCell(new ir.Cell('xyz', R))
 
         const rename = new RenameCellPass()
         const cellNames: string[] = []

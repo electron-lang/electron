@@ -5,78 +5,78 @@ import { printIR as print } from './printer'
 
 describe('IR Printer', () => {
     it('should print nets', () => {
-        expect(print(ir.Net('a', [ ir.Sig.create() ], []))).to.equal('net a = (0)')
-        expect(print(ir.Net('a', [ ir.Sig.create(), ir.Sig.create() ], [])))
+        expect(print(new ir.Net('a'))).to.equal('net a = (0)')
+        expect(print(new ir.Net('a', 2)))
             .to.equal('net[2] a = (1, 2)')
     })
 
     it('should print ports', () => {
-        expect(print(ir.Port('a', 'input', [ ir.Sig.create() ], [])))
+        expect(print(new ir.Port('a', 'input')))
             .to.equal('input a = (3)')
-        expect(print(ir.Port('a', 'output', [ ir.Sig.create() ], [])))
+        expect(print(new ir.Port('a', 'output')))
             .to.equal('output a = (4)')
-        expect(print(ir.Port('a', 'inout', [ ir.Sig.create() ], [])))
+        expect(print(new ir.Port('a', 'inout')))
             .to.equal('inout a = (5)')
-        expect(print(ir.Port('a', 'analog', [ ir.Sig.create() ], [])))
+        expect(print(new ir.Port('a', 'analog')))
             .to.equal('analog a = (6)')
-        expect(print(ir.Port('b', 'input', [ ir.Sig.create(), ir.Sig.create() ], [])))
+        expect(print(new ir.Port('b', 'input', 2)))
             .to.equal('input[2] b = (7, 8)')
     })
 
     it('should print attrs', () => {
-        expect(print(ir.Attr('man', 'Yago')))
+        expect(print(new ir.Attr('man', 'Yago')))
             .to.equal('@man("Yago")\n')
     })
 
     it('should print cells', () => {
-        expect(print(ir.Cell('R1', ir.Module('$R', []), [], [], [])))
+        expect(print(new ir.Cell('R1', new ir.Module('$R'))))
             .to.equal('cell R1 = $R() {}')
     })
 
     it('should print modules', () => {
-        let mod = ir.Module('A', [])
+        let mod = new ir.Module('A')
         expect(print(mod)).to.equal('module A {}')
-        mod.attrs.push(ir.Attr('model', 'AModel'))
+        mod.addAttr(new ir.Attr('model', 'AModel'))
         expect(print(mod)).to.equal('@model("AModel")\nmodule A {}')
-        mod.attrs = []
     })
 
     it('should print dags', () => {
-        const $R = ir.Module('$R', [])
-        const A = ir.Port('A', 'analog', [], [])
-        const B = ir.Port('B', 'analog', [], [])
-        $R.ports = [ A, B ]
+        const $R = new ir.Module('$R')
+        const A = new ir.Port('A', 'analog')
+        const B = new ir.Port('B', 'analog')
+        $R.addPort(A)
+        $R.addPort(B)
 
-        const mod = ir.Module('top', [])
-        const sigs: ir.ISig[] = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
+        const mod = new ir.Module('top')
 
-        const a = ir.Port('a', 'analog', [ sigs[0] ], [])
+        const a = new ir.Port('a', 'analog')
+        mod.addPort(a)
 
-        const r1 = ir.Cell('r1', $R, [], [
-            ir.Assign(ir.Ref(A, 0), [ sigs[0] ]),
-            ir.Assign(ir.Ref(B, 0), [ sigs[1] ]),
-        ], [])
+        const n = new ir.Net('__1')
+        mod.addNet(n)
 
-        const r2 = ir.Cell('r2', $R, [], [
-            ir.Assign(ir.Ref(A, 0), [ sigs[1] ]),
-            ir.Assign(ir.Ref(B, 0), [ sigs[2] ]),
-        ], [])
+        const b = new ir.Port('b', 'analog')
+        mod.addPort(b)
 
-        mod.cells = [r1, r2]
 
-        const b = ir.Port('b', 'analog', [ sigs[2] ], [])
-        mod.ports = [a, b]
+        const r1 = new ir.Cell('r1', $R)
+        r1.addAssign(new ir.Assign(new ir.Ref(A), a.value))
+        r1.addAssign(new ir.Assign(new ir.Ref(B), n.value))
+        mod.addCell(r1)
 
-        const n = ir.Net('__1', [ sigs[1] ], [])
-        mod.nets = [n]
+        const r2 = new ir.Cell('r2', $R)
+        r2.addAssign(new ir.Assign(new ir.Ref(A), n.value))
+        r2.addAssign(new ir.Assign(new ir.Ref(B), b.value))
+        mod.addCell(r2)
+
 
         expect(print(mod)).to.equal([
             'module top {',
-            '  analog a = (9)',
-            '  analog b = (11)',
-            '  net __1 = (10)',
-            '  cell r1 = $R() {A=(9), B=(10)}',
-            '  cell r2 = $R() {A=(10), B=(11)}',
+            '  analog a = (11)',
+            '  analog b = (13)',
+            '  net __1 = (12)',
+            '  cell r1 = $R() {A=(11), B=(12)}',
+            '  cell r2 = $R() {A=(12), B=(13)}',
             '}'
         ].join('\n'))
     })

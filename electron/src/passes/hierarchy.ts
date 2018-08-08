@@ -1,5 +1,5 @@
 import { IPass } from '.'
-import * as ir from '../backend/ir'
+import { ir, printIR } from '../backend'
 
 export function findRoots(mods: ir.IModule[]): ir.IModule[] {
     const notRoots: ir.IModule[] = []
@@ -29,7 +29,7 @@ export class HierarchyPass implements IPass {
             for (let assign of cell.assigns) {
                 // Keep signal!!
                 for (let i = 0; i < assign.lhs.ref.value.length; i++) {
-                    assign.lhs.ref.value[i] = assign.rhs[i]
+                    assign.lhs.ref.value[i].value = assign.rhs[i].value
                 }
             }
             this.hierarchy(cell.module)
@@ -41,7 +41,11 @@ export class HierarchyPass implements IPass {
                     for (let cassign of childCell.assigns) {
                         for (let assign of cell.assigns) {
                             if (cassign.rhs === assign.lhs.ref.value) {
+                                console.log('--------------------------------')
+                                console.log(childCell.name + '.' + printIR(cassign))
+                                console.log(cell.name + '.' + printIR(assign))
                                 cassign.lhs.ref.value = assign.rhs
+                                console.log(childCell.name + '.' + printIR(cassign))
                             }
                         }
                     }

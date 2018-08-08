@@ -40,7 +40,7 @@ function wrapParam(val: number | string | boolean | ir.Bit[]): IParamWrapper | I
         const bits = val as ir.Bit[]
         return {
             tag: 'sigs',
-            val: bits.map((bit) => ir.Sig.create(bit))
+            val: bits.map((bit) => new ir.Sig(bit))
         }
     } else {
         const param = val as number | string | boolean
@@ -144,7 +144,7 @@ export class ASTCompiler {
         const sigs = (() => {
             let sigs: ir.ISig[] = []
             for (let i = 0; i < width; i++) {
-                sigs.push(ir.Sig.create())
+                sigs.push(new ir.Sig())
             }
             return sigs
         })()
@@ -158,9 +158,11 @@ export class ASTCompiler {
             let cells: ir.IRef<ir.ICell>[] = []
             for (let i = 0; i < width; i++) {
                 const name = width > 1 ? cell.name + '$' + i.toString() : cell.name
-                const ircell = ir.Cell(name, ir.Module('', []), [], [],
-                                       compileAttrs(cell.attrs), cell.src)
-                cells.push(ir.Ref(ircell, 0))
+                const ircell = new ir.Cell(name, new ir.Module(''), cell.src)
+                for (let attr of compileAttrs(cell.attrs)) {
+                    ircell.addAttr(attr)
+                }
+                cells.push(new ir.Ref(ircell))
             }
             return cells
         })()
@@ -181,27 +183,30 @@ export class ASTCompiler {
         })()
 
         this.st.enterScope()
-        const irmod = ir.Module(name, compileAttrs(mod.attrs), mod.src)
+        const irmod = new ir.Module(name, mod.src)
+        for (let attr of compileAttrs(mod.attrs)) {
+            irmod.addAttr(attr)
+        }
         this.mods.push(irmod)
         for (let param of params) {
             this.st.define(Symbol(param.name, param.src), wrapParam(param.value))
         }
-        irmod.attrs.push(ir.Attr('name', mod.name))
+        irmod.addAttr(new ir.Attr('name', mod.name))
         if (mod.declaration) {
-            irmod.attrs.push(ir.Attr('declare', true))
+            irmod.addAttr(new ir.Attr('declare', true))
             this.declarations[irmod.name] = irmod
         }
         if (mod.doc) {
-            irmod.attrs.push(ir.Attr('doc', mod.doc))
+            irmod.addAttr(new ir.Attr('doc', mod.doc))
         }
         if (mod.exported) {
-            irmod.attrs.push(ir.Attr('export', true))
+            irmod.addAttr(new ir.Attr('export', true))
         }
         if (mod.imported) {
-            irmod.attrs.push(ir.Attr('import', true))
+            irmod.addAttr(new ir.Attr('import', true))
         }
         if (mod.anonymous) {
-            irmod.attrs.push(ir.Attr('anonymous', true))
+            irmod.addAttr(new ir.Attr('anonymous', true))
         }
 
         const cellRefs: ir.IRef<ir.ICell>[] = []
@@ -215,15 +220,25 @@ export class ASTCompiler {
                 },
                 Port: (port) => {
                     const sigs = this.define(port)
-                    const irport = ir.Port(port.name, port.ty, sigs,
-                                           compileAttrs(port.attrs), port.src)
-                    irmod.ports.push(irport)
+                    const irport = new ir.Port(port.name, port.ty, 0, port.src)
+                    for (let attr of compileAttrs(port.attrs)) {
+                        irport.addAttr(attr)
+                    }
+                    for (let sig of sigs) {
+                        irport.value.push(sig)
+                    }
+                    irmod.addPort(irport)
                 },
                 Net: (net) => {
                     const sigs = this.define(net)
-                    const irnet = ir.Net(net.name, sigs, compileAttrs(net.attrs),
-                                         net.src)
-                    irmod.nets.push(irnet)
+                    const irnet = new ir.Net(net.name, 0, net.src)
+                    for (let attr of compileAttrs(net.attrs)) {
+                        irnet.addAttr(attr)
+                    }
+                    for (let sig of sigs) {
+                        irnet.value.push(sig)
+                    }
+                    irmod.addNet(irnet)
                 },
                 Cell: (cell) => {
                     const refs = this.defineCell(cell)
@@ -235,7 +250,9 @@ export class ASTCompiler {
             })(stmt)
         }
 
-        irmod.cells = cellRefs.map((ref) => ref.ref)
+        for (let ref of cellRefs) {
+            irmod.addCell(ref.ref)
+        }
 
         this.st.exitScope()
         return irmod
@@ -249,8 +266,17 @@ export class ASTCompiler {
                 for (let i = 0; i < lhs.val.length; i++) {
                     const c1 = lhs.val[i].ref
                     const c2 = rhs.val[i].ref
-                    lhs.val[i].ref = ir.Cell(c1.name, c2.module, c2.params,
-                                             c2.assigns, c1.attrs, c1.src)
+                    const newCell = new ir.Cell(c1.name, c2.module, c1.src)
+                    for (let attr of c1.attrs) {
+                        newCell.addAttr(attr)
+                    }
+                    for (let param of c2.params) {
+                        newCell.addParam(param)
+                    }
+                    for (let assign of c2.assigns) {
+                        newCell.addAssign(assign)
+                    }
+                    lhs.val[i].ref = newCell
                 }
             } else {
                 this.logger.bug('evalAssign1')
@@ -258,7 +284,7 @@ export class ASTCompiler {
         } else if (lhs.tag === 'sigs' && rhs.tag === 'sigs') {
             if (lhs.val.length === rhs.val.length) {
                 for (let i = 0; i < lhs.val.length; i++) {
-                    lhs.val[i] = rhs.val[i]
+                    lhs.val[i].value = rhs.val[i].value
                 }
             } else {
                 this.logger.bug('evalAssign2')
@@ -297,30 +323,34 @@ export class ASTCompiler {
     }
 
     evalInst(inst: ast.IInst): WrappedValue {
-        const params = []
+        let params: ir.IParam[] = []
         for (let [paramRef, expr] of inst.params) {
             const p = this.evalExpr(expr)
             const val = unwrapParam(p)
-            params.push(ir.Param(paramRef.ref.name, val, paramRef.ref.src))
+            params.push(new ir.Param(paramRef.ref.name, val, paramRef.ref.src))
         }
 
         const irmod = this.compileModule(inst.mod.ref, params)
+        const ircell = new ir.Cell('', irmod, inst.src)
+        for (let param of params) {
+            ircell.addParam(param)
+        }
 
-        const assigns: ir.IAssign[] = []
         for (let [portRef, expr] of inst.conns) {
             const sigs = this.evalExpr(expr)
             for (let p of irmod.ports) {
                 if (p.name === portRef.ref.name) {
-                    assigns.push(ir.Assign(ir.Ref(p, 0),
-                                           unwrap(sigs) as ir.ISig[],
-                                           portRef.src))
+                    const assign = new ir.Assign(
+                        new ir.Ref(p),
+                        unwrap(sigs) as ir.ISig[],
+                        portRef.src
+                    )
+                    ircell.addAssign(assign)
                 }
             }
         }
 
-        const ircell = ir.Cell('', irmod, params, assigns, [], inst.src)
-
-        return wrapCell([ir.Ref(ircell, 0)])
+        return wrapCell([new ir.Ref(ircell)])
     }
 
     evalTuple(t: ast.ITuple): WrappedValue {
@@ -354,12 +384,13 @@ export class ASTCompiler {
         } else if (val.tag === 'cells') {
             return wrapCell(newSigs as ir.IRef<ir.ICell>[])
         } else {
-            return wrapSig([ ir.Sig.create() ])
+            this.logger.bug('Netither sigs nor cells.')
+            return wrapSig([new ir.Sig()])
         }
     }
 
     evalBitVector(bv: ast.IBitVector): WrappedValue {
-        return wrapSig(bv.value.map((bit) => ir.Sig.create(bit)))
+        return wrapSig(bv.value.map((bit) => new ir.Sig(bit)))
     }
 
     evalBinOp(op: ast.IBinOp): WrappedValue {

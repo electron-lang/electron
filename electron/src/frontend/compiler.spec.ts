@@ -106,9 +106,8 @@ function expectIR(ast: ast.IModule): expectIRType {
 
 describe('AST Compiler', () => {
     it('should compile an empty module', () => {
-        const irmod = ir.Module('MODULE', [
-            ir.Attr('name', 'MODULE')
-        ], new SrcLoc(file, [2, 4, 2, 10]))
+        const irmod = new ir.Module('MODULE', new SrcLoc(file, [2, 4, 2, 10]))
+        irmod.addAttr(new ir.Attr('name', 'MODULE'))
         expectIR(ast.Module('MODULE', [], new SrcLoc(file, [2, 4, 2, 10])))
             .to.equal(irmod)
     })
@@ -132,27 +131,22 @@ describe('AST Compiler', () => {
         const r1 = ast.Cell('r1')
         const R = ast.Module('R', [ a, b, r1, ast.Assign(ast.Ref(r1), inst) ])
 
-        const i$R = ir.Module('$R', [
-            ir.Attr('name', '$R'),
-            ir.Attr('declare', true)
-        ])
-        i$R.ports = [
-            ir.Port('A', 'analog', [ ir.Sig.create() ], []),
-            ir.Port('B', 'analog', [ ir.Sig.create() ], [])
-        ]
-        const iR = ir.Module('R', [
-            ir.Attr('name', 'R')
-        ])
-        const sa = ir.Sig.create()
-        const sb = ir.Sig.create()
-        const ia = ir.Port('a', 'analog', [sa], [])
-        const ib = ir.Port('b', 'analog', [sb], [])
-        const ir1 = ir.Cell('r1', i$R, [ir.Param('RES', 10e3)], [
-            ir.Assign(ir.Ref(i$R.ports[0], 0), [sa]),
-            ir.Assign(ir.Ref(i$R.ports[1], 0), [sb]),
-        ], [])
-        iR.ports = [ia, ib]
-        iR.cells = [ir1]
+        const i$R = new ir.Module('$R')
+        i$R.addAttr(new ir.Attr('name', '$R'))
+        i$R.addAttr(new ir.Attr('declare', true))
+        i$R.addPort(new ir.Port('A', 'analog'))
+        i$R.addPort(new ir.Port('B', 'analog'))
+
+        const iR = new ir.Module('R')
+        iR.addAttr(new ir.Attr('name', 'R'))
+        iR.addPort(new ir.Port('a', 'analog'))
+        iR.addPort(new ir.Port('b', 'analog'))
+
+        const ir1 = new ir.Cell('r1', i$R)
+        ir1.addParam(new ir.Param('RES', 10e3))
+        ir1.addAssign(new ir.Assign(new ir.Ref(i$R.ports[0]), iR.ports[0].value))
+        ir1.addAssign(new ir.Assign(new ir.Ref(i$R.ports[1]), iR.ports[1].value))
+        iR.addCell(ir1)
         expectIR(R).to.equal(iR)
     })
 
@@ -184,34 +178,30 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Ref(and1), inst)
         ])
 
-        const i$and = ir.Module('$and', [
-            ir.Attr('name', '$and')
-        ])
-        i$and.ports = [
-            ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create() ], []),
-            ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
-            ir.Port('Y', 'output', [ ir.Sig.create() ], []),
-        ]
-        i$and.attrs.push(ir.Attr('declare', true))
-        const iAND = ir.Module('AND', [
-            ir.Attr('name', 'AND')
-        ])
-        const sa = [ ir.Sig.create(), ir.Sig.create() ]
-        const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
-        const sy = [ ir.Sig.create() ]
-        const ia = ir.Port('a', 'input', sa, [])
-        const ib = ir.Port('b', 'input', sb, [])
-        const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', i$and, [
-            ir.Param('A_WIDTH', 2),
-            ir.Param('B_WIDTH', 3),
-        ], [
-            ir.Assign(ir.Ref(i$and.ports[0], 0), sa),
-            ir.Assign(ir.Ref(i$and.ports[1], 0), sb),
-            ir.Assign(ir.Ref(i$and.ports[2], 0), sy),
-        ], [])
-        iAND.ports = [ia, ib, iy]
-        iAND.cells = [iand1]
+        const i$and = new ir.Module('$and')
+        i$and.addAttr(new ir.Attr('name', '$and'))
+        i$and.addAttr(new ir.Attr('declare', true))
+        i$and.addPort(new ir.Port('A', 'input', 2))
+        i$and.addPort(new ir.Port('B', 'input', 3))
+        i$and.addPort(new ir.Port('Y', 'output', 1))
+
+        const iAND = new ir.Module('AND')
+        iAND.addAttr(new ir.Attr('name', 'AND'))
+        iAND.addPort(new ir.Port('a', 'input', 2))
+        iAND.addPort(new ir.Port('b', 'input', 3))
+        iAND.addPort(new ir.Port('y', 'output', 1))
+
+        const iand1 = new ir.Cell('and1', i$and)
+        iand1.addParam(new ir.Param('A_WIDTH', 2))
+        iand1.addParam(new ir.Param('B_WIDTH', 3))
+        iand1.addAssign(new ir.Assign(new ir.Ref(i$and.ports[0]),
+                                      iAND.ports[0].value))
+        iand1.addAssign(new ir.Assign(new ir.Ref(i$and.ports[1]),
+                                      iAND.ports[1].value))
+        iand1.addAssign(new ir.Assign(new ir.Ref(i$and.ports[2]),
+                                      iAND.ports[2].value))
+        iAND.addCell(iand1)
+
         expectIR(AND).to.equal(iAND)
     })
 
@@ -247,36 +237,38 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Range(ast.Ref(rx), ast.Integer(1)), r2inst),
         ])
 
-        const i$R = ir.Module('$R', [
-            ir.Attr('name', '$R'),
-            ir.Attr('declare', true)
-        ])
-        i$R.ports = [
-            ir.Port('A', 'analog', [ ir.Sig.create() ], []),
-            ir.Port('B', 'analog', [ ir.Sig.create() ], [])
-        ]
+        const i$R = new ir.Module('$R')
+        i$R.addAttr(new ir.Attr('name', '$R'))
+        i$R.addAttr(new ir.Attr('declare', true))
+        i$R.addPort(new ir.Port('A', 'analog'))
+        i$R.addPort(new ir.Port('B', 'analog'))
 
-        const iResArray = ir.Module('ResArray', [
-            ir.Attr('name', 'ResArray')
-        ])
-        const sa = [ ir.Sig.create(), ir.Sig.create() ]
-        const sb = [ ir.Sig.create(), ir.Sig.create() ]
-        const ia = ir.Port('a', 'analog', sa, [])
-        const ib = ir.Port('b', 'analog', sb, [])
-        const ir1 = ir.Cell('rx$0', i$R, [
-            ir.Param('RES', 10e3),
-        ], [
-            ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[0] ]),
-            ir.Assign(ir.Ref(i$R.ports[1], 0), [ sb[0] ]),
-        ], [])
-        const ir2 = ir.Cell('rx$1', i$R, [
-            ir.Param('RES', 10e3),
-        ], [
-            ir.Assign(ir.Ref(i$R.ports[0], 0), [ sa[1] ]),
-            ir.Assign(ir.Ref(i$R.ports[1], 0), [ sb[1] ]),
-        ], [])
-        iResArray.ports = [ia, ib]
-        iResArray.cells = [ir1, ir2]
+        const iResArray = new ir.Module('ResArray')
+        iResArray.addAttr(new ir.Attr('name', 'ResArray'))
+        iResArray.addPort(new ir.Port('a', 'analog', 2))
+        iResArray.addPort(new ir.Port('b', 'analog', 2))
+
+        const ir1 = new ir.Cell('rx$0', i$R)
+        ir1.addParam(new ir.Param('RES', 10e3))
+
+        ir1.addAssign(new ir.Assign(new ir.Ref(i$R.ports[0]), [
+            iResArray.ports[0].value[0]
+        ]))
+        ir1.addAssign(new ir.Assign(new ir.Ref(i$R.ports[1]), [
+            iResArray.ports[1].value[0]
+        ]))
+        iResArray.addCell(ir1)
+
+        const ir2 = new ir.Cell('rx$1', i$R)
+        ir2.addParam(new ir.Param('RES', 10e3))
+        ir2.addAssign(new ir.Assign(new ir.Ref(i$R.ports[0]), [
+            iResArray.ports[0].value[1]
+        ]))
+        ir2.addAssign(new ir.Assign(new ir.Ref(i$R.ports[1]), [
+            iResArray.ports[1].value[1]
+        ]))
+        iResArray.addCell(ir2)
+
         expectIR(ResArray).to.equal(iResArray)
     })
 
@@ -313,35 +305,30 @@ describe('AST Compiler', () => {
             ast.Assign(ast.Ref(and1), inst),
         ])
 
-        const i$and = ir.Module('$and', [
-            ir.Attr('name', '$and'),
-            ir.Attr('declare', true),
-        ])
-        i$and.ports = [
-            ir.Port('A', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
-            ir.Port('B', 'input', [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ], []),
-            ir.Port('Y', 'output', [ ir.Sig.create() ], []),
-        ]
+        const i$and = new ir.Module('$and')
+        i$and.addAttr(new ir.Attr('name', '$and'))
+        i$and.addAttr(new ir.Attr('declare', true))
+        i$and.addPort(new ir.Port('A', 'input', 3))
+        i$and.addPort(new ir.Port('B', 'input', 3))
+        i$and.addPort(new ir.Port('Y', 'output', 1))
 
-        const iAND = ir.Module('AND', [
-            ir.Attr('name', 'AND')
-        ])
-        const sa = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
-        const sb = [ ir.Sig.create(), ir.Sig.create(), ir.Sig.create() ]
-        const sy = [ ir.Sig.create() ]
-        const ia = ir.Port('a', 'input', sa, [])
-        const ib = ir.Port('b', 'input', sb, [])
-        const iy = ir.Port('y', 'output', sy, [])
-        const iand1 = ir.Cell('and1', i$and, [
-            ir.Param('A_WIDTH', 3),
-            ir.Param('B_WIDTH', 3),
-        ], [
-            ir.Assign(ir.Ref(i$and.ports[0], 0), sa),
-            ir.Assign(ir.Ref(i$and.ports[1], 0), sb),
-            ir.Assign(ir.Ref(i$and.ports[2], 0), sy),
-        ], [])
-        iAND.ports = [ia, ib, iy]
-        iAND.cells = [iand1]
-        expectIR(AND).with([ir.Param('WIDTH', 2)]).to.equal(iAND)
+        const iAND = new ir.Module('AND')
+        iAND.addAttr(new ir.Attr('name', 'AND'))
+        iAND.addPort(new ir.Port('a', 'input', 3))
+        iAND.addPort(new ir.Port('b', 'input', 3))
+        iAND.addPort(new ir.Port('y', 'output', 1))
+
+        const iand1 = new ir.Cell('and1', i$and)
+        iand1.addParam(new ir.Param('A_WIDTH', 3))
+        iand1.addParam(new ir.Param('B_WIDTH', 3))
+
+        for (let pi = 0; pi < i$and.ports.length; pi++) {
+            const ref = new ir.Ref(i$and.ports[pi])
+            const sig = iAND.ports[pi].value
+            iand1.addAssign(new ir.Assign(ref, sig))
+        }
+        iAND.addCell(iand1)
+
+        expectIR(AND).with([new ir.Param('WIDTH', 2)]).to.equal(iAND)
     })
 })
