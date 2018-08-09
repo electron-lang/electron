@@ -1,8 +1,7 @@
 (export
   (version "1.0.0")
   (design
-    (source
-      "/home/dvc/repos/electron-workspace/electron/src/tests/pass/7_TwoVoltageDividers.lec")
+    (source "")
     (date "")
     (tool "electron 0.0.4"))
   (components

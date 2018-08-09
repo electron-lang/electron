@@ -98,6 +98,7 @@ export class KicadBackend implements IModuleBackend {
 
         if (!this.emitDate) {
             this.design.date = ''
+            this.design.source = ''
         }
 
         this.processModule(mod)
