@@ -1,8 +1,9 @@
 import DAC from "dac_lec/src/dac"
-import TinyFPGA from "tinyFPGA_lec/src/tinyFPGA"
+//import TinyFPGA from "tinyFPGA_lec/src/tinyFPGA"
 
 module Pcb {
-    net clk, vccio, gnd, vdd, vss, data, out
+    net clk, vccio, gnd, vdd, vss, out
+    net[8] data
     //cell tiny = TinyFPGA {
     //    clk, vccio, gnd, vdd, vss, data, out
     //}

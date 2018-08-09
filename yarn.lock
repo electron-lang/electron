@@ -3024,7 +3024,7 @@ checksum@^0.1.1:
   dependencies:
     optimist "~0.3.5"
 
-chevrotain@^3.5.0:
+chevrotain@^3.5.0, chevrotain@^3.7.4:
   version "3.7.4"
   resolved "https://registry.npmjs.org/chevrotain/-/chevrotain-3.7.4.tgz#d2fea706d74fab60cdd879ed6425cc1feb522a9b"
   dependencies:
@@ -6890,6 +6890,13 @@ less@^2.7.2:
     promise "^7.1.1"
     request "2.81.0"
     source-map "^0.5.3"
+
+libkicad@next:
+  version "0.1.0-next.c6a2eba"
+  resolved "https://registry.npmjs.org/libkicad/-/libkicad-0.1.0-next.c6a2eba.tgz#6807ae96305ef9b2a5d07d353256c0cd26b97209"
+  dependencies:
+    chevrotain "^3.7.4"
+    prettier-printer "^1.1.2"
 
 libyosys@^0.0.8:
   version "0.0.8"

@@ -15,7 +15,7 @@
     "dac_lec": "^1.0.0"
   },
   "scripts": {
-    "prepare": "yarn build && yarn docs",
+    "prepare": "yarn build",
     "build": "lecc build",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"

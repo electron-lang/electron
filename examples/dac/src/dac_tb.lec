@@ -1,7 +1,7 @@
 import $V, $C, Clock from "electron_lec/src/cells"
 import DAC from "./dac"
 
-declare module Sawtooth(WIDTH: Integer) { output data }
+declare module Sawtooth(WIDTH: Integer) { output[WIDTH] data }
 
 export module DACTestbench {
     // Add a clock
@@ -18,7 +18,7 @@ export module DACTestbench {
     cell Vss = $V(100V) { vcc=gnd, gnd=vss }
 
     // Sawtooth input generator
-    net data
+    net[8] data
     cell InputGen = Sawtooth(WIDTH=8) { data }
 
     // DAC instance
