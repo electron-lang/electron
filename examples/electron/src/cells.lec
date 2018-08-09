@@ -51,7 +51,13 @@ export declare module $L(INDUCTANCE: Henry) {
   analog B
 }
 
-export declare module $D { analog A, K }
+export declare module $D {
+  @set_pad(1)
+  analog A
+  @set_pad(2)
+  analog K
+}
+
 export declare module $M { analog G, D, S }
 export declare module $V(VOLTAGE: Volt) { analog vcc, gnd }
 

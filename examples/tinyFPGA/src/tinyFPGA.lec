@@ -1,5 +1,7 @@
-import $R, $C, $L from "electron_lec/src/cells"
+import $R, $C, $L, $D from "electron_lec/src/cells"
 
+@value("TEST")
+@footprint("Measurement_Points:Measurement_Point_Round-SMD-Pad_Small")
 declare module Tp {
   @set_pad(1)
   analog A
@@ -14,7 +16,7 @@ declare module Bead {
 
 /// USB connection and power filtering
 module Usb {
-  analog '+5V, '+3V3, GND, USB_P, USB_N
+  analog '+5V, '+3V3, GND, USB_P, USB_N, USB_PU
 
   @rotate(90)
   @value("10uF 20% X5R 6.3V")
@@ -56,12 +58,35 @@ module Usb {
   @value("1.5K 1% 1/10W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Bourns", "CR0402-FX-1501GLF")
-  cell R1 = $R(1.5k) {A='+3V3, B=dp}
+  cell R1 = $R(1.5k) {A=USB_PU, B=dp}
 
   @value("68ohm 1% 1/10W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Panasonic", "ERJ-2RKF68ROX")
-  cell R2, R3 = $R(68ohm) {A=dp, B=USB_P}, $R(68ohm) {A=dn, B=USB_N}
+  cell R2 = $R(68ohm) {A=dp, B=USB_P}
+
+  @value("68ohm 1% 1/10W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  @bom("Panasonic", "ERJ-2RKF68ROX")
+  cell R3 = $R(68ohm) {A=dn, B=USB_N}
+}
+
+/// LEDs
+module LEDs {
+  analog '+3V3, GND, LED
+  net n1, n2
+
+  @footprint("LEDs:LED_0603")
+  cell D1 = $D {A='+3V3, K=n1}
+
+  @footprint("LEDs:LED_0603")
+  cell D2 = $D {A=LED, K=n2}
+
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  cell R8 = $R(270ohm) {A=n1, B=GND}
+
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  cell R9 = $R(270ohm) {A=n2, B=GND}
 }
 
 /// Voltage Regulation
@@ -113,9 +138,9 @@ module Vreg {
   cell U4 = cell {
     @left {
       @set_pad(1)
-      analog VIN='+5V
+      analog VIN='+3V3
       @set_pad(3)
-      analog EN='+5V
+      analog EN='+3V3
     }
     @right
     @set_pad(5)
@@ -129,6 +154,8 @@ module Vreg {
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Murata", "GRM155R61A105KE15D")
   cell C3 = $C(1uF) {A='+1V2, B=GND}
+
+  cell TP3 = Tp {A='+1V2}
 }
 
 /// 16MHz Clock
@@ -164,7 +191,9 @@ module Clock {
 module Flash {
   analog '+3V3, GND
   analog SCK, SDO, SDI, SS
-  net WP
+  analog '82, '109
+  net WP = '82
+  net HOLD = '109
 
   // 4MBit SPI Flash
   // SOIC-8 3.9x4.9mm Pitch1.27mm
@@ -172,9 +201,12 @@ module Flash {
   @footprint("Housings_SOIC:SOIC-8-1EP_3.9x4.9mm_Pitch1.27mm")
   @bom("Adesto Technologies", "AT25SF041-SSHD-B")
   cell U5 = cell {
-    @left
-    @set_pad(3)
-    analog WP
+    @left {
+      @set_pad(3)
+      analog WP
+      @set_pad(7)
+      analog HOLD
+    }
     @right {
       @set_pad(8)
       analog VCC = '+3V3
@@ -192,14 +224,17 @@ module Flash {
     analog GND
   }
 
-  @value("TEST")
-  @footprint("Measurement_Points:Measurement_Point_Round-SMD-Pad_Small")
   cell TP1 = Tp {A=WP}
 
   @value("10K 1% 1/16W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Vishay", "CRCW040210K0FKED")
-  cell R7 = $R(10k) {A=WP, B=GND}
+  cell R7 = $R(10k) {A='+3V3, B=WP}
+
+  @value("10K 1% 1/16W")
+  @footprint("Resistors_SMD:R_0402_NoSilk")
+  @bom("Vishay", "CRCW040210K0FKED")
+  cell R10 = $R(10k) {A='+3V3, B=HOLD}
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
@@ -286,6 +321,63 @@ module Headers {
   }
 }
 
+module J4Header {
+  analog '+3V3, GND, '140, '24B, '110, '57, '112, '70, '109, '82
+  analog SCK, SDI, SDO, SS
+
+  @footprint("Pin_Headers:Pin_Header_Straight_2x08_Pitch2.54mm_SMD")
+  cell J4 = cell {
+    @set_pad(1)
+    analog '140
+    @set_pad(2)
+    analog '24B
+    @set_pad(3)
+    analog '+3V3
+    @set_pad(4, 15, 16)
+    analog GND
+    @set_pad(5)
+    analog '110
+    @set_pad(6)
+    analog '57
+    @set_pad(7)
+    analog '112
+    @set_pad(8)
+    analog '70
+    @set_pad(9)
+    analog '109
+    @set_pad(10)
+    analog '82
+    @set_pad(11)
+    analog SCK
+    @set_pad(12)
+    analog SDI
+    @set_pad(13)
+    analog SDO
+    @set_pad(14)
+    analog SS
+  }
+}
+
+module J5Header {
+  analog CLK, LED, USB_P, USB_N, USB_PU, '56
+
+  @footprint("Pin_Headers:Pin_Header_Straight_2x03_Pitch2.54mm_SMD")
+  cell J5 = cell {
+    @set_pad(1)
+    analog CLK
+    @set_pad(2)
+    analog '56
+    @set_pad(3)
+    analog LED
+    @set_pad(4)
+    analog USB_PU
+    @set_pad(5)
+    analog USB_P
+    @set_pad(6)
+    analog USB_N
+  }
+}
+
 /// FPGA core and IO power connections and decoupling capacitors
 module FpgaPower {
   analog '+1V2, '+3V3, GND
@@ -361,8 +453,6 @@ module FpgaReset {
   @bom("Vishay", "CRCW040210K0FKED")
   cell R6 = $R(10k) {A='+3.3V, B=CRESET_B}
 
-  @value("TEST")
-  @footprint("Measurement_Points:Measurement_Point_Round-SMD-Pad_Small")
   cell TP2 = Tp {A=CRESET_B}
 
   // Reset/Program Button
@@ -536,11 +626,12 @@ declare module ICE40_LP8K_CM81 {
 
 /// TinyFPGA Bx
 /// Rev: v1.1
-export module TinyFPGA {
-  net '+5V, vbus, '+3V3, GND, USB_P, USB_N
+export module 'TinyFPGA-BX {
+  net '+5V, vbus, '+3V3, GND, USB_P, USB_N, USB_PU, LED
   net dp, dn, gnd, '+1V2, CLK, SCK, SDO, SDI, SS
   net '+3.3V, '2B, '221, '224, '3A, '3B, '185, '177, '54, '55
   net '10A, '10B, '24B, '114, '174, '116, '119, '148, '141_GBIN2
+  net '140, '110, '112, '57, '70, '109, '82, '56
   net VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3, VCCPLL0, GNDPLL0
   net CRESET_B, '1V2
   cell usb = Usb {*}
@@ -551,6 +642,9 @@ export module TinyFPGA {
   cell fpga_power = FpgaPower {*}
   cell fpga_pll = FpgaPLL {*}
   cell fpga_reset = FpgaReset {*}
+  cell leds = LEDs {*}
+  cell j4 = J4Header {*}
+  cell j5 = J5Header {*}
 
   @value("10K 1% 1/16W")
   @footprint("Resistors_SMD:R_0402_NoSilk")

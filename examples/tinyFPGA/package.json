@@ -8,7 +8,8 @@
   "license": "ISC",
   "devDependencies": {
     "@electron-lang/electron": "^0.0.4",
-    "docsify-cli": "^4.2.1"
+    "docsify-cli": "^4.2.1",
+    "libkicad": "next"
   },
   "dependencies": {
     "electron_lec": "^1.0.0"
@@ -16,9 +17,10 @@
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",
     "build": "lecc build",
-    "kicad": "lecc kicad TinyFPGA",
-    "bom": "lecc bom TinyFPGA",
+    "kicad": "lecc kicad TinyFPGA-BX",
+    "bom": "lecc bom TinyFPGA-BX",
     "docs": "lecc docs",
-    "serve": "docsify serve ./docs"
+    "serve": "docsify serve ./docs",
+    "test": "mocha -r ts-node/register 'tests/equiv.ts'"
   }
 }

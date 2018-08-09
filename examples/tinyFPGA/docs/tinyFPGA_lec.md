@@ -8,6 +8,15 @@ Name | Type
 GND | analog
 USB_P | analog
 USB_N | analog
+USB_PU | analog
+# LEDs  
+LEDs
+
+Name | Type
+---- | ----
++3V3 | analog
+GND | analog
+LED | analog
 # Vreg  
 Voltage Regulation
 
@@ -36,6 +45,8 @@ SCK | analog
 SDO | analog
 SDI | analog
 SS | analog
+82 | analog
+109 | analog
 # Headers  
 TinyFPGA Bx Pin Headers
 
@@ -69,6 +80,34 @@ SS | analog
 SCK | analog
 SDI | analog
 SDO | analog
+# J4Header  
+
+Name | Type
+---- | ----
++3V3 | analog
+GND | analog
+140 | analog
+24B | analog
+110 | analog
+57 | analog
+112 | analog
+70 | analog
+109 | analog
+82 | analog
+SCK | analog
+SDI | analog
+SDO | analog
+SS | analog
+# J5Header  
+
+Name | Type
+---- | ----
+CLK | analog
+LED | analog
+USB_P | analog
+USB_N | analog
+USB_PU | analog
+56 | analog
 # FpgaPower  
 FPGA core and IO power connections and decoupling capacitors
 
@@ -98,7 +137,7 @@ Name | Type
 +3.3V | analog
 GND | analog
 CRESET_B | analog
-# TinyFPGA <span class="tag export">export</span> 
+# TinyFPGA-BX <span class="tag export">export</span> 
 TinyFPGA Bx
 Rev: v1.1
 
