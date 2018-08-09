@@ -1,6 +1,6 @@
 import * as yosys from 'libyosys';
-import * as ir from './ir';
-import { IModuleBackend } from './index'
+import { Logger } from '../diagnostic'
+import { IModuleBackend, ir } from '.'
 import { JsonBackend } from './json'
 
 export type YosysFormat = 'verilog' | 'blif' | 'spice'
@@ -9,7 +9,8 @@ export type YosysArch = 'ice40' | 'ecp5' | 'intel' | 'xilinx'
 export class YosysBackend implements IModuleBackend {
     protected jsonBackend: JsonBackend
 
-    constructor(readonly jsonPath: string,
+    constructor(readonly logger: Logger,
+                readonly jsonPath: string,
                 readonly format: YosysFormat,
                 readonly arch?: YosysArch) {
 

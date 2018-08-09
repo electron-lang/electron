@@ -1,7 +1,10 @@
 import * as fs from 'fs'
+import { Logger } from '../diagnostic'
 import { IDesignBackend, ir } from '.'
 
 export class MarkdownBackend implements IDesignBackend {
+
+    constructor(readonly logger: Logger) {}
 
     exportTag(exported: boolean): string {
         if (exported) {

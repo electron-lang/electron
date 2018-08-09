@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import { Logger, DiagnosticLogger } from '../diagnostic'
 import { HierarchyPass, findRoots, findLeafs } from './hierarchy'
 import * as ir from '../backend/ir'
 //import { printIR } from '../backend/printer'
@@ -7,6 +8,8 @@ import * as ir from '../backend/ir'
     const pass = new HierarchyPass()
     expect(pass.transform(input)).to.deep.equal(output)
 }*/
+
+const logger = new Logger(new DiagnosticLogger())
 
 describe('HierarchyPass', () => {
 
@@ -77,7 +80,7 @@ describe('HierarchyPass', () => {
         b1.addAssign(new ir.Assign(new ir.Ref(b_p1), a_p1.value))
         c1.addAssign(new ir.Assign(new ir.Ref(c_p1), b_p1.value))
 
-        const pass = new HierarchyPass()
+        const pass = new HierarchyPass(logger)
         const res = pass.transform(mods)
         expect(res.length === 2)
         expect(res[0].name === 'a')

@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { Logger } from '../diagnostic'
 import { IModuleBackend } from '.'
 import * as ir from './ir'
 
@@ -46,6 +47,8 @@ class NetlistInfo {
 export class BomBackend implements IModuleBackend {
 
     readonly bom: {[key: string]: BomItem} = {}
+
+    constructor(readonly logger: Logger) {}
 
     getCellNetlistInfo(cell: ir.ICell): NetlistInfo {
         const info = new NetlistInfo(cell.name)

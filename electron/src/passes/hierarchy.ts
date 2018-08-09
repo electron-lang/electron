@@ -1,4 +1,5 @@
 import { IPass } from '.'
+import { Logger } from '../diagnostic'
 import { ir, printIR } from '../backend'
 
 export function findRoots(mods: ir.IModule[]): ir.IModule[] {
@@ -23,11 +24,17 @@ export function findLeafs(mods: ir.IModule[]): ir.IModule[] {
 
 export class HierarchyPass implements IPass {
 
+    constructor(readonly logger: Logger) {}
+
     hierarchy(mod: ir.IModule): void {
         const newCells: ir.ICell[] = []
         for (const cell of mod.cells) {
             for (let assign of cell.assigns) {
                 // Keep signal!!
+                if (assign.lhs.ref.value.length !== assign.rhs.length) {
+                    this.logger.error('Signals need to have same length.', assign.src)
+                    return
+                }
                 for (let i = 0; i < assign.lhs.ref.value.length; i++) {
                     assign.lhs.ref.value[i].value = assign.rhs[i].value
                 }

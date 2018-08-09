@@ -1,7 +1,10 @@
 import { expect } from 'chai'
+import { Logger, DiagnosticLogger } from '../diagnostic'
 import { RenameCellPass } from './renamecell'
 import * as ir from '../backend/ir'
 //import { printIR } from '../backend/printer'
+
+const logger = new Logger(new DiagnosticLogger())
 
 describe('RenameCellPass', () => {
 
@@ -12,7 +15,7 @@ describe('RenameCellPass', () => {
         const bmod = new ir.Module('bmod')
         bmod.addCell(new ir.Cell('r1', R))
 
-        const rename = new RenameCellPass()
+        const rename = new RenameCellPass(logger)
         const cellNames: string[] = []
         rename.transform([amod, bmod])
             .forEach((mod) => mod.cells
@@ -27,7 +30,7 @@ describe('RenameCellPass', () => {
         const bmod = new ir.Module('bmod')
         bmod.addCell(new ir.Cell('xyz', R))
 
-        const rename = new RenameCellPass()
+        const rename = new RenameCellPass(logger)
         const cellNames: string[] = []
         rename.transform([amod, bmod])
             .forEach((mod) => mod.cells

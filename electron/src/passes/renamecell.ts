@@ -1,4 +1,5 @@
 import { IPass } from '.'
+import { Logger } from '../diagnostic'
 import * as ir from '../backend/ir'
 
 export class RenameCellPass implements IPass {
@@ -7,6 +8,8 @@ export class RenameCellPass implements IPass {
     protected defaultIndex!: number
 
     readonly cellNameRegex = /([a-zA-Z]+)([0-9]+)/;
+
+    constructor(readonly logger: Logger) {}
 
     rename(name: string): string {
         const parts = name.match(this.cellNameRegex)

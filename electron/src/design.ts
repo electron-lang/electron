@@ -21,8 +21,8 @@ export class Design {
     emitDocs() {
         const file = path.join(this.crate.crateInfo.docsDir,
                                this.crate.crateInfo.name)
-        const hierarchy = new HierarchyPass()
-        const markdownBackend = new MarkdownBackend()
+        const hierarchy = new HierarchyPass(this.crate.logger)
+        const markdownBackend = new MarkdownBackend(this.crate.logger)
         markdownBackend.emit(hierarchy.transform(this.ir), file + '.md')
     }
 
@@ -36,16 +36,17 @@ export class Design {
 
     emitVerilog(modName: string) {
         this.emit(modName, (mod, file) => {
-            const yosysBackend = new YosysBackend(file + '.yosys.json', 'verilog')
+            const yosysBackend = new YosysBackend(this.crate.logger,
+                                                  file + '.yosys.json', 'verilog')
             yosysBackend.emit(mod, file + '.v')
         })
     }
 
     emitKicad(modName: string, emitDate=true) {
         this.emit(modName, (mod, file) => {
-            const pass1 = new HierarchyPass()
+            const pass1 = new HierarchyPass(this.crate.logger)
             pass1.hierarchy(mod)
-            const pass2 = new RenameCellPass()
+            const pass2 = new RenameCellPass(this.crate.logger)
             pass2.transform([mod])
 
             const kicadBackend = new KicadBackend(
@@ -60,7 +61,7 @@ export class Design {
 
     emitBom(modName: string) {
         this.emit(modName, (mod, file) => {
-            const bomBackend = new BomBackend()
+            const bomBackend = new BomBackend(this.crate.logger)
             bomBackend.emit(mod, file + '.tsv')
         })
     }
