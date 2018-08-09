@@ -53,33 +53,32 @@ TinyFPGA Bx Pin Headers
 Name | Type
 ---- | ----
 +5V | analog
-+3.3V | analog
-+1V2 | analog
++3V3 | analog
 GND | analog
-USB_P | analog
-USB_N | analog
-CLK | analog
-2B | analog
 221 | analog
 224 | analog
 3A | analog
+2A | analog
 3B | analog
+7A | analog
 10A | analog
+13A | analog
 10B | analog
-24B | analog
+26A | analog
 54 | analog
 55 | analog
+26B | analog
 185 | analog
+183 | analog
 177 | analog
+180 | analog
 174 | analog
+170 | analog
 116 | analog
-141_GBIN2 | analog
 148 | analog
+141 | analog
 119 | analog
-SS | analog
-SCK | analog
-SDI | analog
-SDO | analog
+111 | analog
 # J4Header  
 
 Name | Type
@@ -116,17 +115,12 @@ Name | Type
 +1V2 | analog
 +3V3 | analog
 GND | analog
-VCC | analog
-VCCIO_0 | analog
-VCCIO_1 | analog
-VCCIO_2 | analog
-VCCIO_3 | analog
 # FpgaPLL  
 FPGA PLL decoupling capacitors
 
 Name | Type
 ---- | ----
-1V2 | analog
++1V2 | analog
 VCCPLL0 | analog
 GNDPLL0 | analog
 # FpgaReset  
@@ -134,7 +128,7 @@ FPGA reset button and testpoint
 
 Name | Type
 ---- | ----
-+3.3V | analog
++3V3 | analog
 GND | analog
 CRESET_B | analog
 # TinyFPGA-BX <span class="tag export">export</span> 
@@ -225,3 +219,10 @@ IOT_198_GBIN0 | analog
 IOT_197_GBIN1 | analog
 IOT_212 | analog
 IOT_214 | analog
+GNDPLL0 | analog
+VCCPLL0 | analog
+VCCIO_0 | analog
+VCCIO_1 | analog
+VCC | analog
+VCCIO_3 | analog
+VCCIO_2 | analog

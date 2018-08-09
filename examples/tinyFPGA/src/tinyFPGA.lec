@@ -24,7 +24,7 @@ module Usb {
   @bom("TDK", "C1608X5R0J106M080AB")
   cell C17 = $C(10uF) {A='+5V, B=GND}
 
-  net vbus, dp, dn, gnd
+  net vbus, dp, dn
 
   @value("USB_OTG")
   @footprint("Connectors:USB_Micro-B")
@@ -40,9 +40,9 @@ module Usb {
     }
     @bottom {
       @set_pad(5)
-      analog GND = gnd
+      analog GND
       @set_pad(6)
-      analog Shield = gnd
+      analog Shield = GND
     }
   }
 
@@ -175,6 +175,9 @@ module Clock {
   @footprint("tinyfpga:CDFN3225-4LD-PL-1")
   @bom("Microchip", "DSC6001CI2A-016.0000T")
   cell U3 = cell {
+    @top
+    @set_pad(4)
+    analog VDD='+3V3
     @right
     @set_pad(1)
     analog OE='+3V3
@@ -192,8 +195,6 @@ module Flash {
   analog '+3V3, GND
   analog SCK, SDO, SDI, SS
   analog '82, '109
-  net WP = '82
-  net HOLD = '109
 
   // 4MBit SPI Flash
   // SOIC-8 3.9x4.9mm Pitch1.27mm
@@ -203,9 +204,9 @@ module Flash {
   cell U5 = cell {
     @left {
       @set_pad(3)
-      analog WP
+      analog WP = '82
       @set_pad(7)
-      analog HOLD
+      analog HOLD = '109
     }
     @right {
       @set_pad(8)
@@ -224,17 +225,17 @@ module Flash {
     analog GND
   }
 
-  cell TP1 = Tp {A=WP}
+  cell TP1 = Tp {A='82}
 
   @value("10K 1% 1/16W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Vishay", "CRCW040210K0FKED")
-  cell R7 = $R(10k) {A='+3V3, B=WP}
+  cell R7 = $R(10k) {A='+3V3, B='82}
 
   @value("10K 1% 1/16W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("Vishay", "CRCW040210K0FKED")
-  cell R10 = $R(10k) {A='+3V3, B=HOLD}
+  cell R10 = $R(10k) {A='+3V3, B='109}
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
@@ -244,11 +245,9 @@ module Flash {
 
 /// TinyFPGA Bx Pin Headers
 module Headers {
-  analog '+5V, '+3.3V, '+1V2, GND
-  analog USB_P, USB_N, CLK, '2B, '221, '224, '3A, '3B, '10A,
-    '10B, '24B, '54, '55
-  analog '185, '177, '174, '116, '141_GBIN2, '148, '119,
-    SS, SCK, SDI, SDO
+  analog '+5V, '+3V3, GND
+  analog '221, '224, '3A, '2A, '3B, '7A, '10A, '13A, '10B, '26A, '54, '55, '26B
+  analog '185, '183, '177, '180, '174, '170, '116, '148, '141, '119, '111
 
   @value("CONN_01X14")
   @footprint("Pin_Headers:Pin_Header_Straight_1x14_Pitch2.54mm")
@@ -257,31 +256,31 @@ module Headers {
       @set_pad(1)
       analog GND
       @set_pad(2)
-      analog USB_P
-      @set_pad(3)
-      analog USB_N
-      @set_pad(4)
-      analog CLK
-      @set_pad(5)
-      analog '2B
-      @set_pad(6)
       analog '221
-      @set_pad(7)
+      @set_pad(3)
       analog '224
-      @set_pad(8)
+      @set_pad(4)
       analog '3A
-      @set_pad(9)
+      @set_pad(5)
+      analog '2A
+      @set_pad(6)
       analog '3B
-      @set_pad(10)
+      @set_pad(7)
+      analog '7A
+      @set_pad(8)
       analog '10A
-      @set_pad(11)
+      @set_pad(9)
+      analog '13A
+      @set_pad(10)
       analog '10B
+      @set_pad(11)
+      analog '26A
       @set_pad(12)
-      analog '24B
-      @set_pad(13)
       analog '54
-      @set_pad(14)
+      @set_pad(13)
       analog '55
+      @set_pad(14)
+      analog '26B
     }
   }
 
@@ -292,31 +291,31 @@ module Headers {
       @set_pad(1)
       analog '+5V
       @set_pad(2)
-      analog '+3.3V
+      analog GND
       @set_pad(3)
-      analog '+1V2
+      analog '+3V3
       @set_pad(4)
       analog '185
       @set_pad(5)
-      analog '177
+      analog '183
       @set_pad(6)
-      analog '174
+      analog '177
       @set_pad(7)
-      analog '116
+      analog '180
       @set_pad(8)
-      analog '141_GBIN2
+      analog '174
       @set_pad(9)
-      analog '148
+      analog '170
       @set_pad(10)
-      analog '119
+      analog '116
       @set_pad(11)
-      analog SS
+      analog '148
       @set_pad(12)
-      analog SCK
+      analog '141
       @set_pad(13)
-      analog SDI
+      analog '119
       @set_pad(14)
-      analog SDO
+      analog '111
     }
   }
 }
@@ -381,57 +380,68 @@ module J5Header {
 /// FPGA core and IO power connections and decoupling capacitors
 module FpgaPower {
   analog '+1V2, '+3V3, GND
-  analog VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3
+  //analog VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3
+
+  //VCC = '+1V2
+  //VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3 = '+3V3, '+3V3, '+3V3, '+3V3
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  cell C9 = $C(100nF) {A=VCCIO_0, B=GND}
+  // VCCIO_0
+  cell C9 = $C(100nF) {A='+3V3, B=GND}
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  cell C10 = $C(100nF) {A=VCCIO_1, B=GND}
+  // VCCIO_1
+  cell C10 = $C(100nF) {A='+3V3, B=GND}
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  cell C16 = $C(100nF) {A=VCCIO_2, B=GND}
+  // VCC
+  cell C11 = $C(100nF) {A='+1V2, B=GND}
 
   @value("10nF 10% X7R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  cell C15 = $C(10nF) {A=VCCIO_2, B=GND}
+  // VCC
+  cell C12 = $C(10nF) {A='+1V2, B=GND}
 
   @value("10nF 10% X7R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105050")
-  cell C14 = $C(10nF) {A=VCCIO_3, B=GND}
+  // VCC
+  cell C13 = $C(10nF) {A='+1V2, B=GND}
+
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
+  @bom("Wurth Electronics", "885012105050")
+  // VCCIO_3
+  cell C14 = $C(10nF) {A='+3V3, B=GND}
+
+  @value("10nF 10% X7R 25V")
+  @footprint("Capacitors_SMD:C_0402_NoSilk")
+  @bom("Wurth Electronics", "885012105050")
+  // VCCIO_2
+  cell C15 = $C(10nF) {A='+3V3, B=GND}
 
   @value("100nF 10% X5R 25V")
   @footprint("Capacitors_SMD:C_0402_NoSilk")
   @bom("Wurth Electronics", "885012105018")
-  cell C11 = $C(100nF) {A=VCC, B=GND}
-
-  @value("10nF 10% X7R 25V")
-  @footprint("Capacitors_SMD:C_0402_NoSilk")
-  @bom("Wurth Electronics", "885012105050")
-  cell C12 = $C(10nF) {A=VCC, B=GND}
-
-  @value("10nF 10% X7R 25V")
-  @footprint("Capacitors_SMD:C_0402_NoSilk")
-  @bom("Wurth Electronics", "885012105050")
-  cell C13 = $C(10nF) {A=VCC, B=GND}
+  // VCCIO_2
+  cell C16 = $C(100nF) {A='+3V3, B=GND}
 }
 
 /// FPGA PLL decoupling capacitors
 module FpgaPLL {
-  analog '1V2, VCCPLL0, GNDPLL0
+  analog '+1V2, VCCPLL0, GNDPLL0
 
   @value("100ohm 1% 1/10W")
   @footprint("Resistors_SMD:R_0402_NoSilk")
   @bom("KOA", "RK73H1ETTP1000F")
-  cell R4 = $R(100ohm) {A='1V2, B=VCCPLL0}
+  cell R4 = $R(100ohm) {A='+1V2, B=VCCPLL0}
 
   @value("10uF 20% X5R 6.3V")
   @footprint("Capacitors_SMD:C_0603")
@@ -446,12 +456,12 @@ module FpgaPLL {
 
 /// FPGA reset button and testpoint
 module FpgaReset {
-  analog '+3.3V, GND, CRESET_B
+  analog '+3V3, GND, CRESET_B
 
   @value("10K 1% 1/16W")
   @footprint("Resistors_SMD:R_0402")
   @bom("Vishay", "CRCW040210K0FKED")
-  cell R6 = $R(10k) {A='+3.3V, B=CRESET_B}
+  cell R6 = $R(10k) {A='+3V3, B=CRESET_B}
 
   cell TP2 = Tp {A=CRESET_B}
 
@@ -622,18 +632,39 @@ declare module ICE40_LP8K_CM81 {
     @set_pad("E5")
     analog IOT_214
   }
+  @group("G") {
+    @set_pad("J6")
+    analog GNDPLL0
+    @set_pad("J7")
+    analog VCCPLL0
+  }
+  @group("H") {
+    @set_pad("A5")
+    analog VCCIO_0
+    @set_pad("C6")
+    analog VCCIO_1
+    @set_pad("D4", "E9", "F2")
+    analog VCC
+    @set_pad("H3")
+    analog VCCIO_3
+    @set_pad("J5")
+    analog VCCIO_2
+  }
 }
 
 /// TinyFPGA Bx
 /// Rev: v1.1
 export module 'TinyFPGA-BX {
-  net '+5V, vbus, '+3V3, GND, USB_P, USB_N, USB_PU, LED
-  net dp, dn, gnd, '+1V2, CLK, SCK, SDO, SDI, SS
-  net '+3.3V, '2B, '221, '224, '3A, '3B, '185, '177, '54, '55
-  net '10A, '10B, '24B, '114, '174, '116, '119, '148, '141_GBIN2
-  net '140, '110, '112, '57, '70, '109, '82, '56
+  net '+5V, '+3V3, '+1V2, GND
+  net USB_P, USB_N, USB_PU
+  net SCK, SDO, SDI, SS
   net VCC, VCCIO_0, VCCIO_1, VCCIO_2, VCCIO_3, VCCPLL0, GNDPLL0
-  net CRESET_B, '1V2
+  net CLK, CRESET_B, LED
+  net '221, '224, '3A, '2A, '3B, '7A, '10A, '13A, '10B, '26A, '54, '55, '26B
+  net '185, '183, '177, '180, '174, '170, '116, '148, '141, '119, '111
+  net '140, '24B, '110, '57, '112, '70, '109, '82
+  net '56
+
   cell usb = Usb {*}
   cell vreg = Vreg {*}
   cell clock = Clock {*}
@@ -653,13 +684,19 @@ export module 'TinyFPGA-BX {
 
   net VPP_FAST, CDONE, '81_GBIN5
   cell U1 = ICE40_LP8K_CM81 {
+    VCCIO_0='+3V3
+    VCCIO_1='+3V3
+    VCCIO_2='+3V3
+    VCCIO_3='+3V3
+    VCC='+1V2
+    VCCPLL0
+    GNDPLL0
     VPP_FAST
     VPP_2V5='+3V3
     CDONE
-    IOB_103_CBSEL0=SDO
     IOB_105_SDO=SDO
     IOB_107_SCK=SCK
-    IOB_104_CBSEL1=CRESET_B
+    IOB_104_CBSEL1=SDO
     CRESET_B=CRESET_B
     IOB_106_SDI=SDI
     VCC_SPI='+3V3
@@ -667,53 +704,50 @@ export module 'TinyFPGA-BX {
     IOB_108_SS=SS
     IOB_81_GBIN5='81_GBIN5
     IOB_54='54
-    IOB_82_GBIN4=SDO
+    IOB_82_GBIN4='82
     IOB_55='55
-    IOB_56='+3V3
-    IOB_57=SDO
-    IOB_70=CRESET_B
+    IOB_56='56
+    IOB_57='57
+    IOB_70='70
     IOL_3A='3A
-    IOL_2B='2B
+    IOL_2B=CLK
     IOL_3B='3B
-    IOL_2A='2B
-    IOL_7B='2B
+    IOL_2A='2A
     IOL_10A='10A
-    IOL_7A='+1V2
-    IOL_13B_GBIN7='+1V2
+    IOL_7A='7A
     IOL_10B='10B
-    IOL_13A='+1V2
+    IOL_13A='13A
+    IOL_14A_GBIN6='+1V2
     IOL_14B=GND
     IOL_22A='+1V2
     IOL_24B='24B
+    IOL_26A='26A
+    IOL_26B='26B
     IOR_116='116
     IOR_120='+3V3
     IOR_148='148
-    IOR_117='141_GBIN2
-    IOR_141_GBIN2='141_GBIN2
+    IOR_141_GBIN2='141
     IOR_119='119
-    IOR_118='141_GBIN2
-    IOR_140_GBIN3='141_GBIN2
+    IOR_140_GBIN3='140
     IOR_113=SS
     IOR_114=SCK
-    IOR_112=SS
-    IOR_111=SCK
-    IOR_109=SDI
-    IOR_110='+3V3
+    IOR_112='112
+    IOR_111='111
+    IOR_109='109
+    IOR_110='110
     IOT_224='224
     IOT_221='221
-    IOT_217=USB_P
+    IOT_217=USB_PU
     IOT_208=USB_N
     IOT_185='185
     IOT_177='177
     IOT_174='174
-    IOT_218='2B
-    IOT_211=CLK
-    IOT_188=CLK
-    IOT_183='+3V3
-    IOT_180='+3V3
-    IOT_170='+3V3
-    IOT_198_GBIN0=CLK
-    IOT_197_GBIN1=CLK
+    IOT_218=LED
+    IOT_211=USB_P
+    IOT_188='+3V3
+    IOT_183='183
+    IOT_180='180
+    IOT_170='170
     IOT_214=GND
   }
 }
