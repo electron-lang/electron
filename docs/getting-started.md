@@ -21,8 +21,10 @@ example
 mkdir -p example/src
 cd example
 touch src/example.lec
-yarn init
-yarn add @electron-lang/electron --dev
+yarn init --yes
+# add the electron-lang compiler
+yarn add @electron-lang/electron@next --dev
+# add the electron components (cells) library
 yarn add @lec/electron
 git init
 echo "node_modules/\nbuild/\n" > .gitignore
@@ -34,8 +36,8 @@ lines to `package.json`.
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom",
     "build": "lecc build",
-    "kicad": "lecc kicad",
-    "bom": "lecc bom"
+    "kicad": "lecc kicad VoltageDivider",
+    "bom": "lecc bom VoltageDivider"
   }
 ```
 
@@ -63,7 +65,7 @@ export module VoltageDivider {
 }
 ```
 
-Now we're ready for building
+Now we're ready for building. (The yarn command on its own is the same as `yarn install && yarn prepare`.)
 
 ```sh
 yarn
