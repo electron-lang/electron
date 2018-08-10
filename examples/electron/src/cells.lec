@@ -29,21 +29,6 @@ export declare module $C(CAPACITANCE: Farad) {
     analog B
 }
 
-module Test {
-    @left analog left
-    @top analog top
-    @right analog right
-    @bottom analog bottom
-    @rotate(0)
-    cell r1 = $R(10k) {}
-    @rotate(90)
-    cell r2 = $R(10k) {}
-    @rotate(180)
-    cell c1 = $C(10nF) {}
-    @rotate(270)
-    cell c2 = $C(10nF) {}
-}
-
 export declare module $L(INDUCTANCE: Henry) {
   @set_pad(1)
   analog A
