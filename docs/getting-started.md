@@ -23,8 +23,8 @@ cd example
 touch src/example.lec
 yarn init --yes
 # add the electron-lang compiler
-yarn add @electron-lang/electron --dev
-# add the electron components library
+yarn add @electron-lang/electron@next --dev
+# add the electron components (cells) library
 yarn add @lec/electron
 git init
 echo "node_modules/\nbuild/\n" > .gitignore
@@ -36,8 +36,8 @@ lines to `package.json`.
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom",
     "build": "lecc build",
-    "kicad": "lecc kicad",
-    "bom": "lecc bom"
+    "kicad": "lecc kicad VoltageDivider",
+    "bom": "lecc bom VoltageDivider"
   }
 ```
 
