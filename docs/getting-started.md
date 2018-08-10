@@ -21,8 +21,10 @@ example
 mkdir -p example/src
 cd example
 touch src/example.lec
-yarn init
+yarn init --yes
+# add the electron-lang compiler
 yarn add @electron-lang/electron --dev
+# add the electron components library
 yarn add @lec/electron
 git init
 echo "node_modules/\nbuild/\n" > .gitignore
@@ -63,7 +65,7 @@ export module VoltageDivider {
 }
 ```
 
-Now we're ready for building
+Now we're ready for building. (The yarn command on its own is the same as `yarn install && yarn prepare`.)
 
 ```sh
 yarn
