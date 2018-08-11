@@ -209,6 +209,51 @@ module pass_lec$6_VoltageDivider.lec$VoltageDivider {
   cell r2 = $R(RESISTANCE=22000) {A=(9), B=(10)}
 }
 
+# VoltageDivider <span class="tag export">export</span> 
+@name("VoltageDivider")
+@export(true)
+module pass_lec$8_ElectroGrammar.lec$VoltageDivider {
+  @side("left")
+  analog vin = (0)
+  @side("right")
+  analog vout = (1)
+  @side("bottom")
+  analog gnd = (2)
+  @rotate(90)
+  @man("CPL")
+  @mpn("CPL-RES-0402-10K-0.063W")
+  @value("10K")
+  @footprint("Resistor_SMD:R_0402_1005Metric")
+  cell r1 = $R(RESISTANCE=10000) {A=(0), B=(1)}
+  @rotate(90)
+  @man("CPL")
+  @mpn("CPL-RES-0603-22K-0.1W")
+  @value("22K")
+  @footprint("Resistor_SMD:R_0603_1608Metric")
+  cell r2 = $R(RESISTANCE=22000) {A=(1), B=(2)}
+}
+@skin("<g><rect width="40" height="10"></rect></g>")
+@name("$R")
+@declare(true)
+@import(true)
+module $R {
+  @pads(("1"))
+  @side("left")
+  @port_x(0)
+  @port_y(5)
+  analog A = (3)
+  @pads(("2"))
+  @side("right")
+  @port_x(40)
+  @port_y(5)
+  analog B = (4)
+}
+
+Name | Type
+---- | ----
+vin | analog
+vout | analog
+gnd | analog
 # $R  <span class="tag declare">declare</span>
 @name("$R")
 @declare(true)

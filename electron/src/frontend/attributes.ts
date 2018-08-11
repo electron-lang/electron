@@ -1,5 +1,7 @@
+import { parse, matchCPL } from 'electro-grammar'
 import * as ast from './ast'
 import { Logger } from '../diagnostic'
+import { CPL } from '../cpl'
 import * as ir from '../backend/ir'
 
 export interface IAttributeHandler {
@@ -185,6 +187,38 @@ const ClockAttribute: IAttributeHandler = {
 }
 
 /* Attributes for BOM generation */
+const CPLAttribute: IAttributeHandler = {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes a parameter of type String.`
+        if (!validateParams(logger, attr, message, ['string'])) {
+            return false
+        }
+        const eg = attr.params[0] as ast.IString
+        const matches = matchCPL(parse(eg.value))
+        if (matches.length < 1) {
+            logger.error(`No CPL matches found for '${eg}'.`, attr.params[0].src)
+            return false
+        }
+        if (matches.length > 1) {
+            //logger.warn(`Multiple CPL matches found for '${eg}'.`, attr.params[0].src)
+        }
+        attr.params.push(ast.String(matches[0], attr.params[0].src))
+        return true
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const cplParam = attr.params[1] as ast.IString
+        const cpl = new CPL(cplParam.value)
+
+        return [
+            new ir.Attr('man', 'CPL', cplParam.src),
+            new ir.Attr('mpn', cplParam.value, cplParam.src),
+            new ir.Attr('value', cpl.value || ''),
+            new ir.Attr('footprint', cpl.getFootprint() || ''),
+        ]
+    }
+}
+
 const BomAttribute: IAttributeHandler = {
     validate(logger: Logger, attr: ast.IAttr): boolean {
         const message = `@${attr.name} takes two params of type String.`
@@ -317,6 +351,7 @@ export const allAttributes: {[name: string]: IAttributeHandler} = {
     // RTL
     clock: ClockAttribute,
     // BOM
+    cpl: CPLAttribute,
     bom: BomAttribute,
     // Simulation
     model: ModelAttribute,

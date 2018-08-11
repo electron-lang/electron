@@ -255,6 +255,22 @@ module '7805 {
 @param mpn: String - Manufacturer Part Number
 Used for generating a BOM.
 
+### @cpl(descr)
+@param descr: String - Description
+Uses electro-grammar for natural language processing the description. It
+detects resistors, capacitors and LEDs. Then it will match the specs agains
+the CPL (Common Part Library) and generate the appropriate @value, @footprint,
+and @bom attributes. See the electro-grammar documentation for additional
+information.
+
+```
+net a, b
+@cpl("10k")
+cell R1 = $R {A=a, B=b}
+```
+
+- [0] (https://github.com/monostable/electro-grammar)
+
 ### @fpga(triple)
 @param triple: String - FPGA target triple `ARCH-FAMILY-PACKAGE`.
 
