@@ -1,9 +1,9 @@
 (export
-  (version "1.0.0")
+  (version "0.0.5")
   (design
     (source "")
     (date "")
-    (tool "electron 0.0.4"))
+    (tool "electron 0.0.5"))
   (components
     (comp
       (ref "r1")
