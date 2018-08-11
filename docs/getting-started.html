@@ -14,8 +14,10 @@
 <pre><code class="hljs css languages- sh">mkdir -p example/src
 <span class="hljs-built_in">cd</span> example
 touch src/example.lec
-yarn init
-yarn add @electron-lang/electron --dev
+yarn init --yes
+<span class="hljs-comment"># add the electron-lang compiler</span>
+yarn add @electron-lang/electron@next --dev
+<span class="hljs-comment"># add the electron components (cells) library</span>
 yarn add @lec/electron
 git init
 <span class="hljs-built_in">echo</span> <span class="hljs-string">"node_modules/\nbuild/\n"</span> &gt; .gitignore
@@ -25,8 +27,8 @@ lines to <code>package.json</code>.</p>
 <pre><code class="hljs css languages- json">  "scripts": {
     "prepare": "yarn build &amp;&amp; yarn kicad &amp;&amp; yarn bom",
     "build": "lecc build",
-    "kicad": "lecc kicad",
-    "bom": "lecc bom"
+    "kicad": "lecc kicad VoltageDivider",
+    "bom": "lecc bom VoltageDivider"
   }
 </code></pre>
 <p>Let's implement a voltage divider in <code>example.lec</code>:</p>
@@ -50,7 +52,7 @@ export module VoltageDivider {
   cell r2 = $R(<span class="hljs-number">22</span>k) {A=vout, B=gnd}
 }
 </code></pre>
-<p>Now we're ready for building</p>
+<p>Now we're ready for building. (The yarn command on its own is the same as <code>yarn install &amp;&amp; yarn prepare</code>.)</p>
 <pre><code class="hljs css languages- sh">yarn
 </code></pre>
 </span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#installing-electron">Installing electron</a></li><li><a href="#create-a-new-electron-package">Create a new electron package</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/electron.svg" alt="Electron Lang" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/en/getting-started.html">Getting Started</a><a href="/docs/en/electron-reference.html">Electron Reference</a></div><div><h5>Community</h5><a href="https://gitter.im/electron-lang/electron">Gitter</a><a href="https://twitter.com/dvc94ch" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/electron-lang/electron">GitHub</a><a class="github-button" href="https://github.com/electron-lang/electron" data-icon="octicon-star" data-count-href="/electron-lang/electron/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://opensource.org/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/img/osi_symbol.svg" alt="OSI Symbol" width="64" height="64"/></a><section class="copyright">Copyright © 2018 electron-lang.org</section></footer></div></body></html>
