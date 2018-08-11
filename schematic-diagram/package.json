@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/schematic-diagram",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Netlist viewer for Theia using sprotty and elkjs.",
   "repository": "https://github.com/electron-lang/electron",
   "author": "David Craven <david@craven.ch>",
@@ -11,7 +11,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@electron-lang/celllib": "^0.0.3",
+    "@electron-lang/celllib": "^0.0.5",
     "@theia/core": "next",
     "@theia/filesystem": "next",
     "elkjs": "latest",

@@ -1,10 +1,10 @@
 {
   "private": true,
   "name": "browser-app",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Theia Electron IDE for browser",
   "dependencies": {
-    "@electron-lang/theia-electron": "^0.0.4",
+    "@electron-lang/theia-electron": "^0.0.5",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
     "@theia/editor": "next",

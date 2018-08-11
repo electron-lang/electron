@@ -1,10 +1,10 @@
 {
   "private": true,
   "name": "desktop-app",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Theia Electron IDE for desktop",
   "dependencies": {
-    "@electron-lang/theia-electron": "^0.0.4",
+    "@electron-lang/theia-electron": "^0.0.5",
     "@theia/bunyan": "next",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",

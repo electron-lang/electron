@@ -1,17 +1,17 @@
 {
   "private": true,
   "name": "pass_lec",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "Electron PASS test suite",
   "repository": "https://github.com/electron-lang/electron",
   "author": "David Craven <david@craven.ch>",
   "license": "ISC",
   "devDependencies": {
-    "@electron-lang/electron": "^0.0.4",
+    "@electron-lang/electron": "^0.0.5",
     "docsify-cli": "^4.2.1"
   },
   "dependencies": {
-    "electron_lec": "^0.0.1"
+    "electron_lec": "^0.0.5"
   },
   "scripts": {
     "prepare": "yarn build && yarn kicad && yarn bom && yarn docs",

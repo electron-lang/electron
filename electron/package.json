@@ -1,6 +1,6 @@
 {
   "name": "@electron-lang/electron",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Electron compiler",
   "main": "./lib/index.js",
   "repository": "https://github.com/electron-lang/electron",
@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@electron-lang/celllib": "^0.0.3",
+    "@electron-lang/celllib": "^0.0.5",
     "chalk": "^2.4.1",
     "chevrotain": "^3.5.0",
     "commander": "^2.16.0",
