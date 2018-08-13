@@ -1,0 +1,50 @@
+import Blinky from "./blinky"
+
+@fpga("ice40-hx8k-ct256")
+export module 'ICE40-HX8K-CT256 {
+  @set_pad("B5")
+  analog PIO0_39
+  @set_pad("B4")
+  analog PIO0_41
+  @set_pad("A2")
+  analog PIO0_42
+  @set_pad("A1")
+  analog PIO0_44
+  @set_pad("C5")
+  analog PIO0_45
+  @set_pad("C4")
+  analog PIO0_46
+  @set_pad("B3")
+  analog PIO0_47
+  @set_pad("C3")
+  analog PIO0_51
+  @set_pad("J3")
+  analog GBIN6_PIO3_26
+}
+
+export module 'ICE40HX8KBreakoutBoard {
+  net LED1, LED2, LED3, LED4, LED5, LED6, LED7, LED8
+  net iCE_CLK
+
+  @bitstream(Blinky)
+  cell fpga = 'ICE40-HX8K-CT256 {
+    //@set_io(hwclk)
+    GBIN6_PIO3_26=iCE_CLK
+    //@set_io(led1)
+    PIO0_39=LED1
+    //@set_io(led2)
+    PIO0_41=LED2
+    //@set_io(led3)
+    PIO0_42=LED3
+    //@set_io(led4)
+    PIO0_44=LED4
+    //@set_io(led5)
+    PIO0_45=LED5
+    //@set_io(led6)
+    PIO0_46=LED6
+    //@set_io(led7)
+    PIO0_47=LED7
+    //@set_io(led8)
+    PIO0_51=LED8
+  }
+}

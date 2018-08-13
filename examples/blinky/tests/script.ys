@@ -1,0 +1,6 @@
+read_verilog /home/dvc/repos/electron-workspace/examples/blinky/tests/blinky.gold.v
+read_verilog /home/dvc/repos/electron-workspace/examples/blinky/build/Blinky.v
+prep
+memory_map
+miter -equiv -ignore_gold_x -flatten -make_outputs Blinky blinky_lec$src/blinky.lec$Blinky miter
+sat -verify -prove trigger 0 -show-ports -set-init-undef -set-def-inputs -seq 20 miter

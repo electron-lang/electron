@@ -19,6 +19,7 @@
     "website",
     "examples/electron",
     "examples/tinyFPGA",
+    "examples/blinky",
     "examples/dac",
     "examples/dacImpl"
   ],

@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "name": "blinky_lec",
+  "version": "0.0.5",
+  "description": "Blinky implemented in electron",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.5",
+    "docsify-cli": "^4.2.1",
+    "electron-fpga": "^1.0.0",
+    "libyosys": "^0.0.8"
+  },
+  "dependencies": {
+    "electron_lec": "^0.0.5"
+  },
+  "scripts": {
+    "prepare": "yarn build && yarn docs",
+    "build": "lecc build",
+    "verilog:synth": "lecc verilog Blinky",
+    "verilog:sim": "lecc verilog BlinkyTB",
+    "synth": "yarn verilog:synth && node synth.js",
+    "sim": "yarn verilog:synth && yarn verilog:sim && node sim.js",
+    "test": "node tests/equiv.js",
+    "gtkwave": "gtkwave blinky.gtkw &>/dev/null &",
+    "prog": "iceprog build/ice40-hx8k-ct256/Blinky.bin",
+    "docs": "lecc docs",
+    "serve": "docsify serve ./docs"
+  }
+}

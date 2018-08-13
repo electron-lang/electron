@@ -1,0 +1,42 @@
+import $dff, $add, Clock from "electron_lec/src/cells"
+
+export module Blinky {
+  @clock
+  input hwclk
+  output led1
+  output led2
+  output led3
+  output led4
+  output led5
+  output led6
+  output led7
+  output led8
+
+  net[32] d
+  @init(0)
+  net[32] q
+
+  cell counter = $dff(WIDTH=32, CLK_POLARITY=1) {CLK=hwclk, D=d, Q=q}
+
+  cell add = $add(A_SIGNED=false, A_WIDTH=32, B_SIGNED=false, B_WIDTH=32, Y_WIDTH=32) {
+    A=q, B=32'1, Y=d
+  }
+  //d = q + 1'1
+
+  led1 = q[18]
+  led2 = q[19]
+  led3 = q[20]
+  led4 = q[21]
+  led5 = q[22]
+  led6 = q[23]
+  led7 = q[24]
+  led8 = q[25]
+}
+
+module BlinkyTB {
+  net hwclk
+
+  cell dut = Blinky {hwclk}
+
+  cell clk = Clock(PERIOD=1, TIME=10000000, VCD="./build/BlinkyTB.vcd") {clk=hwclk}
+}

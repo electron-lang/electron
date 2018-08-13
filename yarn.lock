@@ -4473,6 +4473,10 @@ electron-download@^3.0.1:
     semver "^5.3.0"
     sumchecker "^1.2.0"
 
+electron-fpga@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/electron-fpga/-/electron-fpga-1.0.0.tgz#401c4e689b86f02f2cc94bafea12112bf48c2939"
+
 electron-rebuild@^1.5.11:
   version "1.8.2"
   resolved "https://registry.npmjs.org/electron-rebuild/-/electron-rebuild-1.8.2.tgz#bfffba64da78e1b403cb79d5150cfa3336645140"

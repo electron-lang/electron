@@ -1,0 +1,10 @@
+# example.pcf
+set_io led1 B5
+set_io led2 B4
+set_io led3 A2
+set_io led4 A1
+set_io led5 C5
+set_io led6 C4
+set_io led7 B3
+set_io led8 C3
+set_io hwclk J3

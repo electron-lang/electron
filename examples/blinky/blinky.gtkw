@@ -1,0 +1,35 @@
+[*]
+[*] GTKWave Analyzer v3.3.92 (w)1999-2018 BSI
+[*] Mon Aug 13 12:19:02 2018
+[*]
+[dumpfile] "/home/dvc/repos/electron-workspace/examples/blinky/build/BlinkyTB.vcd"
+[dumpfile_mtime] "Mon Aug 13 12:12:06 2018"
+[dumpfile_size] 3261
+[savefile] "/home/dvc/repos/electron-workspace/examples/blinky/blinky.gtkw"
+[timestart] 0
+[size] 3200 1671
+[pos] -127 -127
+*-10.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] blinky_lec$src/blinky.
+[treeopen] blinky_lec$src/blinky.lec$BlinkyTB.
+[sst_width] 388
+[signals_width] 238
+[sst_expanded] 1
+[sst_vpaned_height] 488
+@22
+blinky_lec$src/blinky.lec$BlinkyTB.dut.counter[31:0]
+blinky_lec$src/blinky.lec$BlinkyTB.dut.d[31:0]
+@28
+blinky_lec$src/blinky.lec$BlinkyTB.dut.hwclk
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led1
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led2
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led3
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led4
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led5
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led6
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led7
+blinky_lec$src/blinky.lec$BlinkyTB.dut.led8
+@22
+blinky_lec$src/blinky.lec$BlinkyTB.dut.q[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
