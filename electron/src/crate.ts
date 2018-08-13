@@ -102,6 +102,19 @@ export class Crate {
         }
     }
 
+    getIncludes(): string[] {
+        const includes: string[] = []
+        for (let include of this.crateInfo.include) {
+            includes.push(include)
+        }
+        for (let file of this.files) {
+            for (let include of file.includes) {
+                includes.push(include)
+            }
+        }
+        return includes
+    }
+
     link(): Design {
         return this.linker.link()
     }

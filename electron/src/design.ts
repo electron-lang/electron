@@ -35,8 +35,11 @@ export class Design {
 
     emitVerilog(modName: string) {
         this.emit(modName, (mod, file) => {
-            const yosysBackend = new YosysBackend(this.crate.logger,
-                                                  file + '.yosys.json', 'verilog')
+            const yosysBackend = new YosysBackend({
+                logger: this.crate.logger,
+                jsonPath: file + '.yosys.json',
+                include: this.crate.getIncludes()
+            })
             yosysBackend.emit(mod, file + '.v')
         })
     }

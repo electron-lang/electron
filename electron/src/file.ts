@@ -26,6 +26,7 @@ export class File {
     protected _ast: ast.IModule[] | undefined
     protected _ir: ir.Module[] | undefined
     protected _declarations: ast.IModule[] | undefined
+    protected _includes: string[] | undefined
 
     constructor(readonly info: FileInfo, readonly crate: Crate) {
         this.path = info.file
@@ -162,6 +163,21 @@ export class File {
             )
         }
         return this._docsPath
+    }
+
+    get includes(): string[] {
+        if (!this._includes) {
+            this._includes = []
+            const parts = this.path.split('.')
+            if (parts[parts.length - 1] === 'lec') {
+                parts.pop()
+            }
+            const basepath = parts.join('.')
+            if (fs.existsSync(basepath + '.v')) {
+                this._includes.push(basepath + '.v')
+            }
+        }
+        return this._includes
     }
 
     compile(): File {
