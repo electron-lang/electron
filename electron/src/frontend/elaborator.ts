@@ -494,12 +494,17 @@ export class Elaborator extends BaseElectronVisitor {
             const src = SrcLoc.fromToken(this.info.file, ctx.BitVector[0])
             const size = parseInt(bv[0])
             let bits: ast.Bit[] = []
-            for (let i = 0; i < bv[1].length; i++) {
-                bits.push(bv[1][i])
-            }
-            if (bits.length !== size) {
-                this.logger.error(`Bitvector value ${bv[1]} doesn't have ` +
+            if (bits.length > size) {
+                this.logger.error(`Bitvector value ${bv[1]} is larger than ` +
                                   `size ${size}.`, src)
+            } else {
+                for (let i = 0; i < size; i++) {
+                    if (bv[1][i]) {
+                        bits.push(bv[1][i])
+                    } else {
+                        bits.push('0')
+                    }
+                }
             }
             return ast.BitVector(bits, src)
         }
