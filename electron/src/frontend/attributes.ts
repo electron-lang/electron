@@ -186,6 +186,19 @@ const ClockAttribute: IAttributeHandler = {
     }
 }
 
+const InitAttribute: IAttributeHandler = {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes one parameter of type Integer.`
+        return validateParams(logger, attr, message, ['integer'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const value = attr.params[0] as ast.IInteger
+
+        return [ new ir.Attr('init', value.value, attr.src) ]
+    }
+}
+
 /* Attributes for BOM generation */
 const CPLAttribute: IAttributeHandler = {
     validate(logger: Logger, attr: ast.IAttr): boolean {
@@ -350,6 +363,7 @@ export const allAttributes: {[name: string]: IAttributeHandler} = {
     ground: GroundAttribute,
     // RTL
     clock: ClockAttribute,
+    init: InitAttribute,
     // BOM
     cpl: CPLAttribute,
     bom: BomAttribute,
