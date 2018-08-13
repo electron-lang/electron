@@ -36,7 +36,7 @@ interface IParamWrapper {
 }
 
 function wrapParam(val: number | string | boolean | ir.Bit[]): IParamWrapper | ISigWrapper {
-    if ((val as ir.Bit[]).length) {
+    if (typeof val === 'object') {
         const bits = val as ir.Bit[]
         return {
             tag: 'sigs',
@@ -120,7 +120,7 @@ function compileAttrs(attrs: ast.IAttr[]): ir.IAttr[] {
 export class ASTCompiler {
     protected logger: Logger
     private st: SymbolTable<WrappedValue>
-    private mods: ir.IModule[] = []
+    private mods: ir.Module[] = []
     protected declarations: {[name: string]: ir.IModule} = {}
 
     constructor(readonly info: FileInfo) {
@@ -129,7 +129,7 @@ export class ASTCompiler {
         ir.Sig.resetCounter()
     }
 
-    compile(mods: ast.IModule[]): ir.IModule[] {
+    compile(mods: ast.IModule[]): ir.Module[] {
         this.mods = []
         for (let mod of mods) {
             if (mod.params.length === 0) {

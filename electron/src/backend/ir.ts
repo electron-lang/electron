@@ -99,27 +99,77 @@ export interface IModule {
 
 export class Module implements IModule {
     readonly tag = 'module'
-    readonly attrs: IAttr[] = []
-    readonly ports: IPort[] = []
-    readonly nets: INet[] = []
-    readonly cells: ICell[] = []
+    protected _attrs: IAttr[] = []
+    protected _ports: IPort[] = []
+    protected _nets: INet[] = []
+    protected _cells: ICell[] = []
+    protected attrsIndex: {[name: string]: IAttr} = {}
 
     constructor(readonly name: string, readonly src: ISrcLoc=SrcLoc.empty()) {}
 
     addAttr(attr: IAttr): void {
         this.attrs.push(attr)
+        this.attrsIndex[attr.name] = attr
+    }
+
+    getAttr(name: string): IAttr | undefined {
+        return this.attrsIndex[name]
+    }
+
+    get attrs(): IAttr[] {
+        return this._attrs
+    }
+
+    set attrs(attrs: IAttr[]) {
+        this._attrs = attrs
+        this.attrsIndex = {}
+        for (let attr of attrs) {
+            this.attrsIndex[attr.name] = attr
+        }
+    }
+
+    isImported(): boolean {
+        const importAttr = this.getAttr('import')
+        if (importAttr && importAttr.value) {
+            return true
+        }
+        return false
     }
 
     addPort(port: IPort): void {
         this.ports.push(port)
     }
 
+    get ports(): IPort[] {
+        return this._ports
+    }
+
+    set ports(ports: IPort[]) {
+        this._ports = ports
+    }
+
     addNet(net: INet): void {
         this.nets.push(net)
     }
 
+    get nets(): INet[] {
+        return this._nets
+    }
+
+    set nets(nets: INet[]) {
+        this._nets = nets
+    }
+
     addCell(cell: ICell): void {
         this.cells.push(cell)
+    }
+
+    get cells(): ICell[] {
+        return this._cells
+    }
+
+    set cells(cells: ICell[]) {
+        this._cells = cells
     }
 }
 

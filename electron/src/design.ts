@@ -5,14 +5,13 @@ import { ir, YosysBackend, KicadBackend, BomBackend,
          MarkdownBackend } from './backend'
 
 export class Design {
-    constructor(readonly crate: Crate, readonly ir: ir.IModule[]) {}
+    constructor(readonly crate: Crate, readonly ir: ir.Module[]) {}
 
-    getModule(modName: string): ir.IModule {
+    getModule(modName: string): ir.Module {
         for (let mod of this.ir) {
-            for (let attr of mod.attrs) {
-                if (attr.name === 'name' && attr.value == modName) {
-                    return mod
-                }
+            const nameAttr = mod.getAttr('name')
+            if (nameAttr && nameAttr.value === modName) {
+                return mod
             }
         }
         throw new Error(`Module ${modName} not found.`)

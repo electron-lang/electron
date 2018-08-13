@@ -24,7 +24,7 @@ export class File {
     protected _tokens: IToken[] | undefined
     protected _cst: any | undefined
     protected _ast: ast.IModule[] | undefined
-    protected _ir: ir.IModule[] | undefined
+    protected _ir: ir.Module[] | undefined
     protected _declarations: ast.IModule[] | undefined
 
     constructor(readonly info: FileInfo, readonly crate: Crate) {
@@ -122,13 +122,14 @@ export class File {
         return this._declarations || []
     }
 
-    get ir(): ir.IModule[] {
+    get ir(): ir.Module[] {
         if (!this._ir) {
             try {
                 // WARNING: This swallows errors
                 const cmp = new ASTCompiler(this.info)
                 this._ir = cmp.compile(this.ast)
             } catch(e) {
+                console.log(e)
                 return []
             }
         }
