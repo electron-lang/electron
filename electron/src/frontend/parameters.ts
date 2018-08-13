@@ -83,6 +83,11 @@ const HerzHandler: ITypeHandler = {
     }
 }
 
+const SecondsHandler: ITypeHandler = {
+    isValid(value: ast.Expr): boolean {
+        return value.tag === 'unit' && value.unit === 's'
+    }
+}
 
 export const allTypeHandlers: {[ty: string]: ITypeHandler} = {
     Integer: IntegerHandler,
@@ -97,4 +102,5 @@ export const allTypeHandlers: {[ty: string]: ITypeHandler} = {
     Ampere: AmpereHandler,
     Watt: WattHandler,
     Herz: HerzHandler,
+    Seconds: SecondsHandler,
 }
