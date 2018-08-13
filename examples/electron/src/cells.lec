@@ -58,7 +58,7 @@ export declare module $adc(WIDTH: Integer) {
     output[WIDTH] Y
 }
 
-export declare module Clock(FREQ: Herz) { output clk }
+export declare module Clock(PERIOD: Integer, TIME: Integer, VCD: String) { output clk }
 
 export declare module $dff(WIDTH: Integer, CLK_POLARITY: Integer) {
     @clock
@@ -77,10 +77,11 @@ export declare module $add(
     A_WIDTH: Integer,
     B_SIGNED: Boolean,
     B_WIDTH: Integer,
+    Y_WIDTH: Integer,
 ) {
     input[A_WIDTH] A
     input[B_WIDTH] B
-    output Y
+    output[Y_WIDTH] Y
 }
 
 export declare module $mux(WIDTH: Integer) {

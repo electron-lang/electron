@@ -6,7 +6,7 @@ declare module Sawtooth(WIDTH: Integer) { output[WIDTH] data }
 export module DACTestbench {
     // Add a clock
     net clk
-    cell clk_gen = Clock(FREQ=16MHz) { clk }
+    cell clk_gen = Clock(PERIOD=1, TIME=100, VCD="./build/DACTestbench.vcd") {clk}
 
     // IO power
     net vccio, gnd

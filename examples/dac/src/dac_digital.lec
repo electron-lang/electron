@@ -3,7 +3,7 @@ import $add, $dff, $mux, $not from "electron_lec/src/cells"
 module Add(WIDTH: Integer) {
     input[WIDTH] A, B
     output[WIDTH] Y
-    cell add = $add(A_WIDTH=WIDTH, B_WIDTH=WIDTH) {*}
+    cell add = $add(A_WIDTH=WIDTH, B_WIDTH=WIDTH, Y_WIDTH=WIDTH) {*}
 }
 
 module Integrator(WIDTH: Integer) {
@@ -45,8 +45,8 @@ export module DACDigital(WIDTH: Integer) {
     net mux_out
     cell mux = $mux(WIDTH=INTEGRATOR_WIDTH) {
         S=out,
-        //A=1 << WIDTH,
-        //B=0,
+        A=1'1, // << WIDTH,
+        B=1'0,
         Y=mux_out,
     }
     cell adder = Add(WIDTH=INTEGRATOR_WIDTH) {
