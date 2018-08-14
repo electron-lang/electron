@@ -338,6 +338,18 @@ const FpgaAttribute: IAttributeHandler = {
     }
 }
 
+const BoardAttribute: IAttributeHandler = {
+    validate(logger: Logger, attr: ast.IAttr): boolean {
+        const message = `@${attr.name} takes a parameter of type String.`
+        return validateParams(logger, attr, message, ['string'])
+    },
+
+    compile(attr: ast.IAttr): ir.IAttr[] {
+        const board = attr.params[0] as ast.IString
+        return [ new ir.Attr('board', board.value, attr.src) ]
+    }
+}
+
 const BitstreamAttribute: IAttributeHandler = {
     validate(logger: Logger, attr: ast.IAttr): boolean {
         // TODO
@@ -375,5 +387,6 @@ export const allAttributes: {[name: string]: IAttributeHandler} = {
     set_pad: SetPadAttribute,
     // Bitstream
     fpga: FpgaAttribute,
+    board: BoardAttribute,
     bitstream: BitstreamAttribute,
 }
