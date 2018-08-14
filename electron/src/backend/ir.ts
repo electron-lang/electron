@@ -1,15 +1,15 @@
 import { ISrcLoc, SrcLoc } from '../diagnostic'
 
-export type IR = IModule | IAttr | IParam | ICell | IPort | INet | IAssign
+export type IR = Module | Attr | Param | Cell | Port | Net | Assign
 
 export interface IRPattern<T> {
-    Module: (mod: IModule) => T
-    Attr: (attr: IAttr) => T
-    Param: (param: IParam) => T
-    Cell: (cell: ICell) => T
-    Port: (port: IPort) => T
-    Net: (net: INet) => T
-    Assign: (assign: IAssign) => T
+    Module: (mod: Module) => T
+    Attr: (attr: Attr) => T
+    Param: (param: Param) => T
+    Cell: (cell: Cell) => T
+    Port: (port: Port) => T
+    Net: (net: Net) => T
+    Assign: (assign: Assign) => T
 }
 
 export function matchIR<T>(p: IRPattern<T>): (ir: IR) => T {
@@ -61,7 +61,7 @@ export interface IRef<T> {
 export class Ref<T> implements IRef<T> {
     readonly tag = 'ref'
 
-    constructor(readonly ref: T) {}
+    constructor(public ref: T) {}
 }
 
 export interface ISig {
@@ -89,38 +89,38 @@ export class Sig implements ISig {
 
 export interface IModule {
     tag: 'module',
-    attrs: IAttr[]
+    attrs: Attr[]
     name: string
-    ports: IPort[]
-    nets: INet[]
-    cells: ICell[]
+    ports: Port[]
+    nets: Net[]
+    cells: Cell[]
     src: ISrcLoc
 }
 
 export class Module implements IModule {
     readonly tag = 'module'
-    protected _attrs: IAttr[] = []
-    protected _ports: IPort[] = []
-    protected _nets: INet[] = []
-    protected _cells: ICell[] = []
-    protected attrsIndex: {[name: string]: IAttr} = {}
+    protected _attrs: Attr[] = []
+    protected _ports: Port[] = []
+    protected _nets: Net[] = []
+    protected _cells: Cell[] = []
+    protected attrsIndex: {[name: string]: Attr} = {}
 
     constructor(readonly name: string, readonly src: ISrcLoc=SrcLoc.empty()) {}
 
-    addAttr(attr: IAttr): void {
+    addAttr(attr: Attr): void {
         this.attrs.push(attr)
         this.attrsIndex[attr.name] = attr
     }
 
-    getAttr(name: string): IAttr | undefined {
+    getAttr(name: string): Attr | undefined {
         return this.attrsIndex[name]
     }
 
-    get attrs(): IAttr[] {
+    get attrs(): Attr[] {
         return this._attrs
     }
 
-    set attrs(attrs: IAttr[]) {
+    set attrs(attrs: Attr[]) {
         this._attrs = attrs
         this.attrsIndex = {}
         for (let attr of attrs) {
@@ -136,39 +136,39 @@ export class Module implements IModule {
         return false
     }
 
-    addPort(port: IPort): void {
+    addPort(port: Port): void {
         this.ports.push(port)
     }
 
-    get ports(): IPort[] {
+    get ports(): Port[] {
         return this._ports
     }
 
-    set ports(ports: IPort[]) {
+    set ports(ports: Port[]) {
         this._ports = ports
     }
 
-    addNet(net: INet): void {
+    addNet(net: Net): void {
         this.nets.push(net)
     }
 
-    get nets(): INet[] {
+    get nets(): Net[] {
         return this._nets
     }
 
-    set nets(nets: INet[]) {
+    set nets(nets: Net[]) {
         this._nets = nets
     }
 
-    addCell(cell: ICell): void {
+    addCell(cell: Cell): void {
         this.cells.push(cell)
     }
 
-    get cells(): ICell[] {
+    get cells(): Cell[] {
         return this._cells
     }
 
-    set cells(cells: ICell[]) {
+    set cells(cells: Cell[]) {
         this._cells = cells
     }
 }
@@ -206,39 +206,39 @@ export class Param implements IParam {
 export interface ICell {
     tag: 'cell'
     name: string
-    module: IModule
-    attrs: IAttr[]
-    params: IParam[]
-    assigns: IAssign[]
+    module: Module
+    attrs: Attr[]
+    params: Param[]
+    assigns: Assign[]
     src: ISrcLoc
 }
 
 export class Cell implements ICell {
     readonly tag = 'cell'
-    readonly attrs: IAttr[] = []
-    readonly params: IParam[] = []
-    readonly assigns: IAssign[] = []
+    readonly attrs: Attr[] = []
+    readonly params: Param[] = []
+    readonly assigns: Assign[] = []
 
-    constructor(readonly name: string,
-                readonly module: IModule,
+    constructor(public name: string,
+                readonly module: Module,
                 readonly src: ISrcLoc=SrcLoc.empty()) {}
 
-    addAttr(attr: IAttr): void {
+    addAttr(attr: Attr): void {
         this.attrs.push(attr)
     }
 
-    addParam(param: IParam): void {
+    addParam(param: Param): void {
         this.params.push(param)
     }
 
-    addAssign(assign: IAssign): void {
+    addAssign(assign: Assign): void {
         this.assigns.push(assign)
     }
 }
 
 export interface IPort {
     tag: 'port'
-    attrs: IAttr[],
+    attrs: Attr[],
     ty: PortType
     name: string
     value: ISig[]
@@ -249,8 +249,9 @@ export type PortType = 'input' | 'output' | 'inout' | 'analog'
 
 export class Port implements IPort {
     readonly tag = 'port'
-    readonly attrs: IAttr[] = []
-    readonly value: ISig[] = []
+    readonly attrs: Attr[] = []
+    public value: ISig[] = []
+    protected attrsIndex: {[name: string]: Attr} = {}
 
     constructor(readonly name: string,
                 readonly ty: PortType,
@@ -261,8 +262,13 @@ export class Port implements IPort {
         }
     }
 
-    addAttr(attr: IAttr): void {
+    addAttr(attr: Attr): void {
         this.attrs.push(attr)
+        this.attrsIndex[attr.name] = attr
+    }
+
+    getAttr(name: string): Attr | undefined {
+        return this.attrsIndex[name]
     }
 
     setValue(i: number, sig: ISig) {
@@ -272,7 +278,7 @@ export class Port implements IPort {
 
 export interface INet {
     tag: 'net'
-    attrs: IAttr[],
+    attrs: Attr[],
     name: string
     value: ISig[]
     src: ISrcLoc,
@@ -280,7 +286,7 @@ export interface INet {
 
 export class Net implements INet {
     readonly tag = 'net'
-    readonly attrs: IAttr[] = []
+    readonly attrs: Attr[] = []
     readonly value: ISig[] = []
 
     constructor(readonly name: string,
@@ -291,7 +297,7 @@ export class Net implements INet {
         }
     }
 
-    addAttr(attr: IAttr): void {
+    addAttr(attr: Attr): void {
         this.attrs.push(attr)
     }
 
@@ -302,7 +308,7 @@ export class Net implements INet {
 
 export interface IAssign {
     tag: 'assign'
-    lhs: IRef<IPort>
+    lhs: Ref<Port>
     rhs: ISig[]
     src: ISrcLoc
 }
@@ -310,7 +316,7 @@ export interface IAssign {
 export class Assign implements IAssign {
     readonly tag = 'assign'
 
-    constructor(readonly lhs: IRef<IPort>,
+    constructor(readonly lhs: Ref<Port>,
                 readonly rhs: ISig[],
                 readonly src: ISrcLoc=SrcLoc.empty()) {}
 

@@ -10,7 +10,7 @@ export function printIR(ir: ir.IR): string {
     return render(80, printerInstance.print(ir))
 }
 
-export function printDesignIR(ir: ir.IModule[]): string {
+export function printDesignIR(ir: ir.Module[]): string {
     return ir.map((mod) => printIR(mod)).join('\n') + '\n'
 }
 
@@ -120,7 +120,7 @@ class Printer implements IPrint<ir.IR> {
         return enclose(parens, intersperse(', ', this.printList(lst)))
     }
 
-    printConnectList(lst: ir.IAssign[]): IDoc {
+    printConnectList(lst: ir.Assign[]): IDoc {
         return enclose(braces, intersperse(', ', this.printList(lst)))
     }
 }

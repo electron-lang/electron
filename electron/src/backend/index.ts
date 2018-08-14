@@ -2,11 +2,11 @@ import * as ir from './ir'
 export { ir }
 
 export interface IModuleBackend {
-    emit(mods: ir.IModule, outputPath: string): void;
+    emit(mods: ir.Module, outputPath: string): void;
 }
 
 export interface IDesignBackend {
-    emit(mods: ir.IModule[], outputPath: string): void;
+    emit(mods: ir.Module[], outputPath: string): void;
 }
 
 export { JsonBackend } from './json'

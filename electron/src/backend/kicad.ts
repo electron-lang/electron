@@ -90,7 +90,7 @@ export class KicadBackend implements IModuleBackend {
         }
     }
 
-    emit(mod: ir.IModule, outputPath: string): void {
+    emit(mod: ir.Module, outputPath: string): void {
         this.design = Design.create(this.version, this.source)
         this.design.tool = `electron ${require('../../package.json').version}`
         this.nets = {}

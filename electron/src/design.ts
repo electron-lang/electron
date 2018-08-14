@@ -25,7 +25,7 @@ export class Design {
         markdownBackend.emit(hierarchy.transform(this.ir), file + '.md')
     }
 
-    emit(modName: string, fn: (mod: ir.IModule, file: string) => void): void {
+    emit(modName: string, fn: (mod: ir.Module, file: string) => void): void {
         const mod = this.getModule(modName)
         if (mod) {
             const file = path.join(this.crate.crateInfo.buildDir, modName)

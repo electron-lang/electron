@@ -20,10 +20,10 @@ function wrapSig(val: ir.ISig[]): ISigWrapper {
 
 interface ICellWrapper {
     tag: 'cells'
-    val: ir.IRef<ir.ICell>[]
+    val: ir.Ref<ir.Cell>[]
 }
 
-function wrapCell(val: ir.IRef<ir.ICell>[]): ICellWrapper {
+function wrapCell(val: ir.Ref<ir.Cell>[]): ICellWrapper {
     return {
         tag: 'cells',
         val,
@@ -52,7 +52,7 @@ function wrapParam(val: number | string | boolean | ir.Bit[]): IParamWrapper | I
 }
 
 type WrappedValue = IParamWrapper | ISigWrapper | ICellWrapper
-type Value = number | string | boolean | ir.ISig[] | ir.IRef<ir.ICell>[]
+type Value = number | string | boolean | ir.ISig[] | ir.Ref<ir.Cell>[]
 
 function unwrap(val: WrappedValue): Value {
     return val.val
@@ -63,7 +63,7 @@ interface ValuePattern<T> {
     String: (str: string) => T
     Bool: (bool: boolean) => T
     Sig: (sigs: ir.ISig[]) => T
-    Cell: (cells: ir.IRef<ir.ICell>[]) => T
+    Cell: (cells: ir.Ref<ir.Cell>[]) => T
 }
 
 function matchValue<T>(p: ValuePattern<T>): (val: WrappedValue) => T {
@@ -107,7 +107,7 @@ function unwrapParam(val: WrappedValue): number | string | boolean | ir.Bit[] {
     })(val)
 }
 
-function compileAttrs(attrs: ast.IAttr[]): ir.IAttr[] {
+function compileAttrs(attrs: ast.IAttr[]): ir.Attr[] {
     const irattrs = []
     for (let attr of attrs) {
         for (let irattr of allAttributes[attr.name].compile(attr)) {
@@ -121,7 +121,7 @@ export class ASTCompiler {
     protected logger: Logger
     private st: SymbolTable<WrappedValue>
     private mods: ir.Module[] = []
-    protected declarations: {[name: string]: ir.IModule} = {}
+    protected declarations: {[name: string]: ir.Module} = {}
 
     constructor(readonly info: FileInfo) {
         this.logger = info.logger
@@ -152,10 +152,10 @@ export class ASTCompiler {
         return sigs
     }
 
-    defineCell(cell: ast.ICell): ir.IRef<ir.ICell>[] {
+    defineCell(cell: ast.ICell): ir.Ref<ir.Cell>[] {
         const width = unwrap(this.evalExpr(cell.width)) as number
         const cells = (() => {
-            let cells: ir.IRef<ir.ICell>[] = []
+            let cells: ir.Ref<ir.Cell>[] = []
             for (let i = 0; i < width; i++) {
                 const name = width > 1 ? cell.name + '$' + i.toString() : cell.name
                 const ircell = new ir.Cell(name, new ir.Module(''), cell.src)
@@ -171,7 +171,7 @@ export class ASTCompiler {
     }
 
     compileModule(mod: ast.IModule,
-                  params: ir.IParam[]): ir.IModule {
+                  params: ir.Param[]): ir.Module {
         if (mod.declaration && this.declarations[mod.name]) {
             return this.declarations[mod.name]
         }
@@ -209,7 +209,7 @@ export class ASTCompiler {
             irmod.addAttr(new ir.Attr('anonymous', true))
         }
 
-        const cellRefs: ir.IRef<ir.ICell>[] = []
+        const cellRefs: ir.Ref<ir.Cell>[] = []
         const stmts = mod.anonymous || mod.declaration ? mod.ports : mod.stmts
         for (let stmt of stmts) {
             matchASTStmt({
@@ -323,7 +323,7 @@ export class ASTCompiler {
     }
 
     evalInst(inst: ast.IInst): WrappedValue {
-        let params: ir.IParam[] = []
+        let params: ir.Param[] = []
         for (let [paramRef, expr] of inst.params) {
             const p = this.evalExpr(expr)
             const val = unwrapParam(p)
@@ -361,7 +361,7 @@ export class ASTCompiler {
 
     evalRange(range: ast.IRange): WrappedValue {
         const val = this.evalExpr(range.expr)
-        const sigs = unwrap(val) as (ir.ISig | ir.IRef<ir.ICell>)[]
+        const sigs = unwrap(val) as (ir.ISig | ir.Ref<ir.Cell>)[]
         const start = unwrap(this.evalExpr(range.start)) as number
         const end = unwrap(this.evalExpr(range.end)) as number
         if (start > end) {
@@ -375,14 +375,14 @@ export class ASTCompiler {
             this.logger.error(`End index '${end}' out of bounds.`, range.src)
         }
 
-        const newSigs: (ir.ISig | ir.IRef<ir.ICell>)[] = []
+        const newSigs: (ir.ISig | ir.Ref<ir.Cell>)[] = []
         for (let i = start; i < end + 1; i++) {
             newSigs.push(sigs[i])
         }
         if (val.tag === 'sigs') {
             return wrapSig(newSigs as ir.ISig[])
         } else if (val.tag === 'cells') {
-            return wrapCell(newSigs as ir.IRef<ir.ICell>[])
+            return wrapCell(newSigs as ir.Ref<ir.Cell>[])
         } else {
             this.logger.bug('Netither sigs nor cells.')
             return wrapSig([new ir.Sig()])

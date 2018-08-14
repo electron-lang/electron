@@ -2,14 +2,14 @@ import { IPass } from '.'
 import { Logger } from '../diagnostic'
 import { ir, printIR } from '../backend'
 
-export function findRoots(mods: ir.IModule[]): ir.IModule[] {
+export function findRoots(mods: ir.Module[]): ir.Module[] {
     const notRoots: ir.IModule[] = []
     for (let mod of mods) {
         for (let cell of mod.cells) {
             notRoots.push(cell.module)
         }
     }
-    const roots: ir.IModule[] = []
+    const roots: ir.Module[] = []
     for (let mod of mods) {
         if (!notRoots.find((nr) => mod === nr)) {
             roots.push(mod)
@@ -18,7 +18,7 @@ export function findRoots(mods: ir.IModule[]): ir.IModule[] {
     return roots
 }
 
-export function findLeafs(mods: ir.IModule[]): ir.IModule[] {
+export function findLeafs(mods: ir.Module[]): ir.Module[] {
     return mods.filter((mod) => mod.cells.length === 0)
 }
 
@@ -26,8 +26,8 @@ export class HierarchyPass implements IPass {
 
     constructor(readonly logger: Logger) {}
 
-    hierarchy(mod: ir.IModule): void {
-        const newCells: ir.ICell[] = []
+    hierarchy(mod: ir.Module): void {
+        const newCells: ir.Cell[] = []
         for (const cell of mod.cells) {
             for (let assign of cell.assigns) {
                 // Keep signal!!
@@ -62,7 +62,7 @@ export class HierarchyPass implements IPass {
         mod.cells = newCells
     }
 
-    transform(mods: ir.IModule[]): ir.IModule[] {
+    transform(mods: ir.Module[]): ir.Module[] {
         const roots = findRoots(mods)
         const leafs = findLeafs(mods)
         for (let mod of roots) {
