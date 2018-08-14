@@ -1,4 +1,4 @@
-`timescale 1ns/100ps
+`timescale 1ns/1ps
 
 `ifndef SYNTHESIS
 module Clock(output reg clk);
