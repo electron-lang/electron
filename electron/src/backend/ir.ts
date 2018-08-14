@@ -171,6 +171,21 @@ export class Module implements IModule {
     set cells(cells: Cell[]) {
         this._cells = cells
     }
+
+    getSubmodules(): Module[] {
+        const submods: {[name: string]: Module} = {}
+        for (let cell of this._cells) {
+            submods[cell.module.name] = cell.module
+            for (let mod of cell.module.getSubmodules()) {
+                submods[mod.name] = mod
+            }
+        }
+        const res: Module[] = []
+        for (let name in submods) {
+            res.push(submods[name])
+        }
+        return res
+    }
 }
 
 export interface IAttr {

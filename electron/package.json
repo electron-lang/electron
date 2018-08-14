@@ -32,6 +32,8 @@
     "chevrotain": "^3.5.0",
     "commander": "^2.16.0",
     "electro-grammar": "git+https://github.com/monostable/electro-grammar",
+    "electron-fpga": "^1.0.0",
+    "lerna": "^3.0.0-rc.0",
     "libkicad": "next",
     "libyosys": "^0.0.8",
     "prettier-printer": "^1.1.2"

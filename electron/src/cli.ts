@@ -41,6 +41,21 @@ program.command('verilog <module>')
         getCrate().link().emitVerilog(mod)
     })
 
+program.command('synth <module>')
+    .action((mod: string) => {
+        getCrate().link().synth(mod)
+    })
+
+program.command('sim <module>')
+    .action((mod: string) => {
+        getCrate().link().sim(mod)
+    })
+
+program.command('prog <module>')
+    .action((mod: string) => {
+        getCrate().link().prog(mod)
+    })
+
 program.version(require('../package.json').version)
 
 program.parse(process.argv)

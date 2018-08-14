@@ -1,8 +1,10 @@
+import * as fs from 'fs'
 import * as path from 'path'
 import { Crate } from './crate'
 import { HierarchyPass, RenameCellPass } from './passes'
 import { ir, YosysBackend, KicadBackend, BomBackend,
          MarkdownBackend } from './backend'
+import { Triple, Flow, Pcf, Sim } from 'electron-fpga'
 
 export class Design {
     constructor(readonly crate: Crate, readonly ir: ir.Module[]) {}
@@ -33,15 +35,17 @@ export class Design {
         }
     }
 
-    emitVerilog(modName: string) {
-        this.emit(modName, (mod, file) => {
-            const yosysBackend = new YosysBackend({
-                logger: this.crate.logger,
-                jsonPath: file + '.yosys.json',
-                include: this.crate.getIncludes()
-            })
-            yosysBackend.emit(mod, file + '.v')
+    protected _emitVerilog(mod: ir.Module, file: string): void {
+        const yosysBackend = new YosysBackend({
+            logger: this.crate.logger,
+            jsonPath: file + '.yosys.json',
+            include: this.crate.getIncludes()
         })
+        yosysBackend.emit(mod, file + '.v')
+    }
+
+    emitVerilog(modName: string) {
+        this.emit(modName, (mod, file) => this._emitVerilog(mod, file))
     }
 
     emitKicad(modName: string, emitDate=true) {
@@ -68,4 +72,94 @@ export class Design {
         })
     }
 
+    synth(modName: string) {
+        this.emit(modName, (mod, file) => {
+            const fpgaAttr = mod.getAttr('fpga')
+            if (!fpgaAttr) {
+                this.crate.logger.error(
+                    `Missing @fpga attribute on module '${mod.name}'.`, mod.src)
+                return
+            }
+            const boardAttr = mod.getAttr('board')
+            if (!boardAttr) {
+                this.crate.logger.error(
+                    `Missing @board attribute on module '${mod.name}'.`, mod.src)
+                return
+            }
+
+            const pcf = new Pcf()
+            for (let port of mod.ports) {
+                const padsAttr = port.getAttr('pads')
+                if (!padsAttr) {
+                    this.crate.logger.error(
+                        `Missing @set_pad attribute on port '${port.name}.'`,
+                        port.src)
+                } else {
+                    const pads = padsAttr.value as string[]
+                    if (pads.length !== port.value.length) {
+                        this.crate.logger.error(
+                            `Number of pads doesn't match width of port '${port.name}'.`,
+                            padsAttr.src)
+                    } else {
+                        if (pads.length === 1) {
+                            pcf.setIo(port.name, pads[0])
+                        } else {
+                            for (let i = 0; i < pads.length; i++) {
+                                pcf.setIo(`${port.name}[${i}]`, pads[i])
+                            }
+                        }
+                    }
+                }
+            }
+
+            const board = boardAttr.value as string
+            const builddir = this.crate.crateInfo.buildDir
+            const boarddir = path.join(builddir, board)
+            if (!fs.existsSync(boarddir)) {
+                fs.mkdirSync(boarddir)
+            }
+
+            const basepath = path.join(boarddir, modName)
+            const triple = fpgaAttr.value as string
+            const flow = new Flow(new Triple(triple))
+            this._emitVerilog(mod, basepath)
+            flow.flow(basepath + '.v', basepath + '.bin', mod.name, pcf)
+        })
+    }
+
+    sim(modName: string) {
+        this.emitVerilog(modName)
+        this.emit(modName, (mod, file) => {
+            this._emitVerilog(mod, file)
+            const includes = this.crate.getIncludes()
+            includes.push(file + '.v')
+            // FIXME
+            const sim = new Sim(['/opt/nextpnr/lib/ivl'])
+            sim.sim(includes.join(' '), file + '.vvp')
+        })
+    }
+
+    prog(modName: string) {
+        this.emit(modName, (mod, file) => {
+            const fpgaAttr = mod.getAttr('fpga')
+            if (!fpgaAttr) {
+                this.crate.logger.error(
+                    `Missing @fpga attribute on module '${mod.name}'.`, mod.src)
+                return
+            }
+            const boardAttr = mod.getAttr('board')
+            if (!boardAttr) {
+                this.crate.logger.error(
+                    `Missing @board attribute on module '${mod.name}'.`, mod.src)
+                return
+            }
+            const board = boardAttr.value as string
+            const triple = fpgaAttr.value as string
+            const builddir = this.crate.crateInfo.buildDir
+            const boarddir = path.join(builddir, board)
+            const basepath = path.join(boarddir, modName)
+            const flow = new Flow(new Triple(triple))
+            flow.prog(basepath + '.bin')
+        })
+    }
 }
