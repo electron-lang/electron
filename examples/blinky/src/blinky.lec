@@ -1,15 +1,26 @@
 import $dff, $add, Clock from "electron_lec/src/cells"
 
+@board("hx8k-breakout-board")
+@fpga("ice40-hx8k-ct256")
 export module Blinky {
   @clock
+  @set_pad("J3")
   input hwclk
+  @set_pad("B5")
   output led1
+  @set_pad("B4")
   output led2
+  @set_pad("A2")
   output led3
+  @set_pad("A1")
   output led4
+  @set_pad("C5")
   output led5
+  @set_pad("C4")
   output led6
+  @set_pad("B3")
   output led7
+  @set_pad("C3")
   output led8
 
   net[32] d

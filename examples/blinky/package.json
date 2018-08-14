@@ -9,7 +9,6 @@
   "devDependencies": {
     "@electron-lang/electron": "^0.0.5",
     "docsify-cli": "^4.2.1",
-    "electron-fpga": "^1.0.0",
     "libyosys": "^0.0.8"
   },
   "dependencies": {
@@ -18,13 +17,11 @@
   "scripts": {
     "prepare": "yarn build && yarn docs",
     "build": "lecc build",
-    "verilog:synth": "lecc verilog Blinky",
-    "verilog:sim": "lecc verilog BlinkyTB",
-    "synth": "yarn verilog:synth && node synth.js",
-    "sim": "yarn verilog:synth && yarn verilog:sim && node sim.js",
-    "test": "node tests/equiv.js",
+    "synth": "lecc synth Blinky",
+    "sim": "lecc sim BlinkyTB",
+    "prog": "lecc prog Blinky",
     "gtkwave": "gtkwave blinky.gtkw &>/dev/null &",
-    "prog": "iceprog build/ice40-hx8k-ct256/Blinky.bin",
+    "test": "node tests/equiv.js",
     "docs": "lecc docs",
     "serve": "docsify serve ./docs"
   }
