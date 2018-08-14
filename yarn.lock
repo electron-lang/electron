@@ -10732,6 +10732,24 @@ textextensions@2:
   version "2.2.0"
   resolved "https://registry.npmjs.org/textextensions/-/textextensions-2.2.0.tgz#38ac676151285b658654581987a0ce1a4490d286"
 
+theia-rust@0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/theia-rust/-/theia-rust-0.3.11.tgz#78ca0a1394089bb42822c3ca81db7a92b74fe906"
+  dependencies:
+    "@theia/core" next
+    "@theia/editor" next
+    "@theia/languages" next
+    "@theia/monaco" next
+
+theia-scad@0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/theia-scad/-/theia-scad-0.3.11.tgz#1a69f27a5c1ac195d4260826b2bffc64cf726731"
+  dependencies:
+    "@theia/core" next
+    "@theia/editor" next
+    "@theia/languages" next
+    "@theia/monaco" next
+
 theia-sprotty@next:
   version "0.2.0-next.32c69d38"
   resolved "https://registry.npmjs.org/theia-sprotty/-/theia-sprotty-0.2.0-next.32c69d38.tgz#d60fb8bc2bcf1a712ab6fa47a70228d6e9a2816b"
@@ -10742,6 +10760,15 @@ theia-sprotty@next:
     "@theia/languages" next
     "@theia/monaco" next
     sprotty "0.5.0-next.32c69d38"
+
+theia-verilog@0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/theia-verilog/-/theia-verilog-0.3.11.tgz#e693857ec05005b1c0c52e76fa38966855ed2c8f"
+  dependencies:
+    "@theia/core" next
+    "@theia/editor" next
+    "@theia/languages" next
+    "@theia/monaco" next
 
 then-request@^2.0.1:
   version "2.2.0"

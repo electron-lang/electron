@@ -5,6 +5,9 @@
   "description": "Theia Electron IDE for browser",
   "dependencies": {
     "@electron-lang/theia-electron": "^0.0.5",
+    "theia-rust": "0.3.11",
+    "theia-scad": "0.3.11",
+    "theia-verilog": "0.3.11",
     "@theia/callhierarchy": "next",
     "@theia/core": "next",
     "@theia/editor": "next",
