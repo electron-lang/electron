@@ -20,6 +20,7 @@
     "examples/electron",
     "examples/tinyFPGA",
     "examples/blinky",
+    "examples/picorv32",
     "examples/dac",
     "examples/dacImpl"
   ],

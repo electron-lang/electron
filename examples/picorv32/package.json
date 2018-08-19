@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "picorv32_lec",
+  "version": "0.0.5",
+  "description": "PicoRV32 for electron.",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.5",
+    "docsify-cli": "^4.2.1",
+    "electron-fpga": "^1.0.0",
+    "libyosys": "^0.0.8"
+  },
+  "dependencies": {
+    "electron_lec": "^0.0.5"
+  },
+  "scripts": {
+    "prepare": "yarn build && yarn docs",
+    "build": "lecc build",
+    "docs": "lecc docs",
+    "serve": "docsify serve ./docs"
+  }
+}

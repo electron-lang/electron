@@ -1,0 +1,65 @@
+export declare module picorv32(
+  ENABLE_COUNTERS: Boolean // = 1
+  ENABLE_COUNTERS64: Boolean // = 1
+  ENABLE_REGS_16_31: Boolean // = 1
+  ENABLE_REGS_DUALPORT: Boolean // = 1
+  LATCHED_MEM_RDATA: Boolean // = 0
+  TWO_STAGE_SHIFT: Boolean // = 1
+  BARREL_SHIFTER: Boolean // = 0
+  TWO_CYCLE_COMPARE: Boolean // = 0
+  TWO_CYCLE_ALU: Boolean // = 0
+  COMPRESSED_ISA: Boolean // = 0
+  CATCH_MISALIGN: Boolean // = 1
+  CATCH_ILLINSN: Boolean // = 1
+  ENABLE_PCPI: Boolean // = 0
+  ENABLE_MUL: Boolean // = 0
+  ENABLE_FAST_MUL: Boolean // = 0
+  ENABLE_DIV: Boolean // = 0
+  ENABLE_IRQ: Boolean // = 1
+  ENABLE_IRQ_QREGS: Boolean // = 1
+  ENABLE_IRQ_TIMERS: Boolean // = 1
+  ENABLE_TRACE: Boolean // = 0
+  REGS_INIT_ZERO: Boolean // = 0
+  MASKED_IRQ: BitVector // = 32'0
+  LATCHED_IRQ: BitVector // = 32'11111111111111111111111111111111
+  PROGADDR_RESET: BitVector // = 32'0
+  PROGADDR_IRQ: BitVector // = 32'10000
+  STACKADDR: BitVector // = 32'11111111111111111111111111111111
+) {
+  input clk, resetn
+  output trap
+
+  output mem_valid
+  output mem_instr
+  input mem_ready
+
+  output[32] mem_addr
+  output[32] mem_wdata
+  output[4] mem_wstrb
+  input[32] mem_rdata
+
+  // Look-Ahead Interface
+  output mem_la_read
+  output mem_la_write
+  output[32] mem_la_addr
+  output[32] mem_la_wdata
+  output[4] mem_la_wstrb
+
+  // Pico Co-Processor Interface (PCPI)
+  output pcpi_valid
+  output[32] pcpi_insn
+  output[32] pcpi_rs1
+  output[32] pcpi_rs2
+  input pcpi_wr
+  input[32] pcpi_rd
+  input pcpi_wait
+  input pcpi_ready
+
+  // IRQ Interface
+  input[32] irq
+  output[32] eoi
+
+  // Trace Interface
+  output trace_valid
+  output[36] trace_data
+}
