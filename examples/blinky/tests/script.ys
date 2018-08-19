@@ -1,5 +1,5 @@
 read_verilog /home/dvc/repos/electron-workspace/examples/blinky/tests/blinky.gold.v
-read_verilog /home/dvc/repos/electron-workspace/examples/blinky/build/Blinky.v
+read_verilog /home/dvc/repos/electron-workspace/examples/blinky/build/hx8k-breakout-board/Blinky.v
 prep
 memory_map
 miter -equiv -ignore_gold_x -flatten -make_outputs Blinky blinky_lec$src/blinky.lec$Blinky miter

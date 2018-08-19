@@ -15,7 +15,7 @@
     "electron_lec": "^0.0.5"
   },
   "scripts": {
-    "prepare": "yarn build && yarn docs",
+    "prepare": "yarn build && yarn docs && yarn synth && yarn sim",
     "build": "lecc build",
     "synth": "lecc synth Blinky",
     "sim": "lecc sim BlinkyTB",

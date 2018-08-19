@@ -49,7 +49,7 @@ function runYosys(script) {
 const script = testSatEquivScript({
   files: [
     path.resolve(__dirname, 'blinky.gold.v'),
-    path.resolve(__dirname, '..', 'build', 'Blinky.v'),
+    path.resolve(__dirname, '..', 'build', 'hx8k-breakout-board', 'Blinky.v'),
   ],
   gold: 'Blinky',
   dut: 'blinky_lec$src/blinky.lec$Blinky',
