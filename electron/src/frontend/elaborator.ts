@@ -197,11 +197,11 @@ export class Elaborator extends BaseElectronVisitor {
         this.modst.define(ident, mod)
         this.st.enterScope(ident.id)
 
-        if (mod.name[0].toUpperCase() !== mod.name[0]) {
+        /*if (mod.name[0].toUpperCase() !== mod.name[0]) {
             this.logger.warn(
                 `Module '${mod.name}' starts with a lowercase letter.`,
                 mod.src)
-        }
+        }*/
 
         mod.doc = ctx.ModuleComment
             ? ctx.ModuleComment.map((doc: any) => {

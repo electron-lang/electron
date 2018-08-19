@@ -23,8 +23,12 @@ export class YosysBackend implements IModuleBackend {
     }
 
     emit(mod: ir.Module, outputPath: string): void {
-        const mods = mod.getSubmodules()
-        mods.push(mod)
+        const declareAttr = mod.getAttr('declare')
+        let mods: ir.Module[] = []
+        if (!(declareAttr && declareAttr.value)) {
+            mods = mod.getSubmodules()
+            mods.push(mod)
+        }
 
         this.jsonBackend.emit(mods, this.options.jsonPath)
 
