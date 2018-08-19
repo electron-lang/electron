@@ -1,0 +1,3 @@
+@board("hx8k-breakout-board")
+@fpga("ice40-hx8k-ct256")
+declare module testbench {}

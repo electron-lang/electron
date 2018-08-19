@@ -21,6 +21,7 @@
     "examples/tinyFPGA",
     "examples/blinky",
     "examples/picorv32",
+    "examples/picosoc",
     "examples/dac",
     "examples/dacImpl"
   ],

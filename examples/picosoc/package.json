@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "name": "picosoc_lec",
+  "version": "0.0.5",
+  "description": "PicoSoC for electron.",
+  "repository": "https://github.com/electron-lang/electron",
+  "author": "David Craven <david@craven.ch>",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-lang/electron": "^0.0.5",
+    "docsify-cli": "^4.2.1"
+  },
+  "dependencies": {
+    "electron_lec": "^0.0.5"
+  },
+  "scripts": {
+    "prepare": "yarn build && yarn docs",
+    "build": "lecc build",
+    "synth": "lecc synth hx8kdemo",
+    "sim": "lecc sim testbench",
+    "prog": "lecc prog hx8kdemo && iceprog -o 1M firmware.bin",
+    "gtkwave": "gtkwave picosoc.gtkw &>/dev/null &",
+    "docs": "lecc docs",
+    "serve": "docsify serve ./docs"
+  },
+  "electronOptions": {
+    "include": [
+      "src/picosoc.v",
+      "src/simpleuart.v",
+      "src/spiflash.v",
+      "src/spimemio.v"
+    ]
+  }
+}

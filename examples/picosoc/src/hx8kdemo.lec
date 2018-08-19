@@ -1,0 +1,51 @@
+import picorv32 from "picorv32_lec/src/picorv32"
+
+@board("hx8k-breakout-board")
+@fpga("ice40-hx8k-ct256")
+export declare module hx8kdemo {
+  @set_pad("J3")
+  input clk
+
+  @set_pad("B12")
+  output ser_tx
+  @set_pad("B10")
+  input ser_rx
+
+  @set_pad("T1")
+  output debug_ser_tx
+  @set_pad("R3")
+  output debug_ser_rx
+
+  @set_pad("R12")
+  output flash_csb
+  @set_pad("R11")
+  output flash_clk
+  @set_pad("P12")
+  inout flash_io0
+  @set_pad("P11")
+  inout flash_io1
+
+  // for QSPI mode the flash chip on the iCE40-HX8K Breakout Board
+  // must be replaced with one that supports QSPI and the IO2 and IO3
+  // pins must be soldered to T9 and P8
+  @set_pad("T9")
+  inout flash_io2
+  @set_pad("P8")
+  inout flash_io3
+
+  @set_pad("T15")
+  output debug_flash_csb
+  @set_pad("R16")
+  output debug_flash_clk
+  @set_pad("N12")
+  output debug_flash_io0
+  @set_pad("P13")
+  output debug_flash_io1
+  @set_pad("T13")
+  output debug_flash_io2
+  @set_pad("T14")
+  output debug_flash_io3
+
+  @set_pad("C3", "B3", "C4", "C5", "A1", "A2", "B4", "B5")
+  output[8] leds
+}

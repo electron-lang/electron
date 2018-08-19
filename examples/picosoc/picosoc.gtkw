@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.92 (w)1999-2018 BSI
+[*] Sun Aug 19 20:11:13 2018
+[*]
+[dumpfile] "/home/dvc/repos/electron-workspace/examples/picosoc/testbench.vcd"
+[dumpfile_mtime] "Sun Aug 19 20:08:52 2018"
+[dumpfile_size] 81890643
+[savefile] "/home/dvc/repos/electron-workspace/examples/picosoc/picosoc.gtkw"
+[timestart] 0
+[size] 3200 1671
+[pos] -91 -91
+*-29.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 388
+[signals_width] 174
+[sst_expanded] 1
+[sst_vpaned_height] 488
+@28
+testbench.clk
+testbench.flash_clk
+testbench.flash_csb
+testbench.flash_io0
+testbench.flash_io1
+testbench.flash_io2
+testbench.flash_io3
+@22
+testbench.leds[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
