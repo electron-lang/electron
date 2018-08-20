@@ -7051,7 +7051,7 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-lerna@^3.0.0-rc.0:
+lerna@^3.0.0-rc.0, lerna@^3.0.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/lerna/-/lerna-3.1.1.tgz#ede60f54fb984d19f1551e323fe7e272bba723ce"
   dependencies:
