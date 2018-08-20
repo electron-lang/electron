@@ -33,7 +33,6 @@
     "docs": "node magic-readme.js",
     "test": "lerna run test",
     "cov": "lerna run cov",
-    "publish": "yarn && yarn test && yarn publish:latest",
     "publish:latest": "lerna publish patch --registry=https://registry.npmjs.org/ --npm-tag=latest --yes --no-git-tag-version --force-publish=*",
     "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --canary --npm-tag=next --yes --no-git-tag-version --force-publish=*"
   },
