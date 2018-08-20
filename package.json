@@ -33,11 +33,11 @@
     "docs": "node magic-readme.js",
     "test": "lerna run test",
     "cov": "lerna run cov",
-    "publish:latest": "lerna publish patch --registry=https://registry.npmjs.org/ --npm-tag=latest --yes --no-git-tag-version --force-publish=*",
-    "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --canary --npm-tag=next --yes --no-git-tag-version --force-publish=*"
+    "publish:latest": "lerna publish patch --registry=https://registry.npmjs.org/ --npm-tag=latest --yes --skip-git --force-publish",
+    "publish:next": "lerna publish --registry=https://registry.npmjs.org/ --canary --npm-tag=next --yes --skip-git --force-publish"
   },
   "devDependencies": {
-    "lerna": "^3.0.1",
+    "lerna": "^2.11.0",
     "markdown-magic": "^0.1.25",
     "markdown-magic-subpackage-list": "^1.1.1"
   }
