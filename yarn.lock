@@ -711,11 +711,11 @@
   version "0.7.0"
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
-"@theia/application-manager@0.4.0-next.842196b5":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/application-manager/-/application-manager-0.4.0-next.842196b5.tgz#838f5f6d9f05b8185a0c21e8939b0b006b2b4b8e"
+"@theia/application-manager@0.4.0-next.5c67bdfe":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/application-manager/-/application-manager-0.4.0-next.5c67bdfe.tgz#1ad3ba323fac69f9e3903d2686fe7786dbfa8c1c"
   dependencies:
-    "@theia/application-package" "0.4.0-next.842196b5"
+    "@theia/application-package" "0.4.0-next.5c67bdfe"
     bunyan "^1.8.10"
     circular-dependency-plugin "^5.0.0"
     copy-webpack-plugin "^4.5.0"
@@ -734,9 +734,9 @@
     webpack-cli "2.0.12"
     worker-loader "^1.1.1"
 
-"@theia/application-package@0.4.0-next.842196b5":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/application-package/-/application-package-0.4.0-next.842196b5.tgz#b5a01968cc8849fe119208302825afb95891a7f9"
+"@theia/application-package@0.4.0-next.5c67bdfe":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/application-package/-/application-package-0.4.0-next.5c67bdfe.tgz#75a7ba65f3277a9be35cdc9360a81038e987a233"
   dependencies:
     "@types/fs-extra" "^4.0.2"
     "@types/request" "^2.0.3"
@@ -749,35 +749,35 @@
     write-json-file "^2.2.0"
 
 "@theia/bunyan@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/bunyan/-/bunyan-0.4.0-next.842196b5.tgz#c03e3813ea949f4e13fbb05e5e4945c50818e692"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/bunyan/-/bunyan-0.4.0-next.5c67bdfe.tgz#b74a6d736b4996aeacd83e558fc81dd400fc544b"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
     "@types/bunyan" "^1.8.0"
     bunyan "^1.8.10"
 
 "@theia/callhierarchy@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/callhierarchy/-/callhierarchy-0.4.0-next.842196b5.tgz#777e7faf5b716dd22bc6d4a2f4ae99983513138f"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/callhierarchy/-/callhierarchy-0.4.0-next.5c67bdfe.tgz#87bef17f235186047e68fd4ed8466ab2b4c6735b"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
-    "@theia/monaco" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
+    "@theia/monaco" "0.4.0-next.5c67bdfe"
     ts-md5 "^1.2.2"
 
 "@theia/cli@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/cli/-/cli-0.4.0-next.842196b5.tgz#4bddf0bda27e818143391cbddff61c1c4c922938"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/cli/-/cli-0.4.0-next.5c67bdfe.tgz#9c0f898cd3114b59d0b98ef16e534165ec82ac4b"
   dependencies:
-    "@theia/application-manager" "0.4.0-next.842196b5"
+    "@theia/application-manager" "0.4.0-next.5c67bdfe"
 
-"@theia/core@0.4.0-next.842196b5", "@theia/core@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/core/-/core-0.4.0-next.842196b5.tgz#77655d2f8bdbb95e6e54c374a98ca69b824e41cd"
+"@theia/core@0.4.0-next.5c67bdfe", "@theia/core@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/core/-/core-0.4.0-next.5c67bdfe.tgz#7afcb0ccfc16b59b761862298a0e46b99f36b813"
   dependencies:
     "@phosphor/widgets" "^1.5.0"
-    "@theia/application-package" "0.4.0-next.842196b5"
+    "@theia/application-package" "0.4.0-next.5c67bdfe"
     "@types/body-parser" "^1.16.4"
     "@types/bunyan" "^1.8.0"
     "@types/express" "^4.16.0"
@@ -813,32 +813,32 @@
     ws "^3.0.0"
     yargs "^9.0.1"
 
-"@theia/editor@0.4.0-next.842196b5", "@theia/editor@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/editor/-/editor-0.4.0-next.842196b5.tgz#fea94eee4c9eb4cf55264e7c0cb5989ffd10b5c3"
+"@theia/editor@0.4.0-next.5c67bdfe", "@theia/editor@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/editor/-/editor-0.4.0-next.5c67bdfe.tgz#b282ef0e19bae29c0fbe12ba0cb0ffae38d0a88d"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
-    "@theia/variable-resolver" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
+    "@theia/variable-resolver" "0.4.0-next.5c67bdfe"
     "@types/base64-arraybuffer" "0.1.0"
     base64-arraybuffer "^0.1.5"
 
 "@theia/editorconfig@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/editorconfig/-/editorconfig-0.4.0-next.842196b5.tgz#b311880d0a6d1f9688bd13172366f5aec302fb91"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/editorconfig/-/editorconfig-0.4.0-next.5c67bdfe.tgz#549e2c4af1bfe9da66c99ac02a92fb4346c6367a"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/monaco" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/monaco" "0.4.0-next.5c67bdfe"
     editorconfig "^0.15.0"
 
 "@theia/extension-manager@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/extension-manager/-/extension-manager-0.4.0-next.842196b5.tgz#26561d0f72c2eff6dfd42d01cd7793340a5e17ec"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/extension-manager/-/extension-manager-0.4.0-next.5c67bdfe.tgz#f3cd8b6c3303ab9b8fc36d15f39b6e39aa65811a"
   dependencies:
-    "@theia/application-manager" "0.4.0-next.842196b5"
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
+    "@theia/application-manager" "0.4.0-next.5c67bdfe"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
     "@types/fs-extra" "^4.0.2"
     "@types/sanitize-html" "^1.13.31"
     "@types/showdown" "^1.7.1"
@@ -847,21 +847,21 @@
     showdown "^1.7.4"
 
 "@theia/file-search@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/file-search/-/file-search-0.4.0-next.842196b5.tgz#698bd1bbb21d5f504f1a3082c3fdc9e6ee84899d"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/file-search/-/file-search-0.4.0-next.5c67bdfe.tgz#809a2aaef7e5d0656ab4947d114e142a2246e5db"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     fuzzy "^0.1.3"
     vscode-ripgrep "^1.0.1"
 
-"@theia/filesystem@0.4.0-next.842196b5", "@theia/filesystem@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/filesystem/-/filesystem-0.4.0-next.842196b5.tgz#ac5307621a0ef3319470e7b30e6827c94a984fa8"
+"@theia/filesystem@0.4.0-next.5c67bdfe", "@theia/filesystem@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/filesystem/-/filesystem-0.4.0-next.5c67bdfe.tgz#4efc8f79e27a8059c5deb2ed9a6048440e70de77"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
     "@types/base64-js" "^1.2.5"
     "@types/body-parser" "^1.17.0"
     "@types/fs-extra" "^4.0.2"
@@ -884,15 +884,15 @@
     zip-dir "^1.0.2"
 
 "@theia/git@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/git/-/git-0.4.0-next.842196b5.tgz#8f114156cdb536a6479f738256c1b8250de134a0"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/git/-/git-0.4.0-next.5c67bdfe.tgz#03359fcd5ec7b2819ac0ff6ac4bab35494786940"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
-    "@theia/navigator" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
+    "@theia/navigator" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     "@types/diff" "^3.2.2"
     "@types/fs-extra" "^4.0.2"
     diff "^3.4.0"
@@ -904,126 +904,126 @@
     ts-md5 "^1.2.2"
 
 "@theia/keymaps@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/keymaps/-/keymaps-0.4.0-next.842196b5.tgz#04998dda3b13ea751c11e28abcc53ff036c7c721"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/keymaps/-/keymaps-0.4.0-next.5c67bdfe.tgz#96a759979e6643b111adaaa1c2b2b86d2bc414b2"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/userstorage" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/userstorage" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     ajv "^5.2.2"
     jsonc-parser "^1.0.1"
 
-"@theia/languages@0.4.0-next.842196b5", "@theia/languages@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/languages/-/languages-0.4.0-next.842196b5.tgz#9213daecf356e70ad6f3f9b1544d0ec8012d6d5a"
+"@theia/languages@0.4.0-next.5c67bdfe", "@theia/languages@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/languages/-/languages-0.4.0-next.5c67bdfe.tgz#7291216a62e7d3f534aaf950bb63ad45e098cca5"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/output" "0.4.0-next.842196b5"
-    "@theia/process" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/output" "0.4.0-next.5c67bdfe"
+    "@theia/process" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     "@types/uuid" "^3.4.3"
     monaco-languageclient next
     uuid "^3.2.1"
 
-"@theia/markers@0.4.0-next.842196b5", "@theia/markers@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/markers/-/markers-0.4.0-next.842196b5.tgz#cab830433721334b70c288954ae3015a3ef23a4f"
+"@theia/markers@0.4.0-next.5c67bdfe", "@theia/markers@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/markers/-/markers-0.4.0-next.5c67bdfe.tgz#32a8f866ae46d1b99528b9dde2a54005b304ef79"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/navigator" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/navigator" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
 
 "@theia/merge-conflicts@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/merge-conflicts/-/merge-conflicts-0.4.0-next.842196b5.tgz#d7fa61c9c14f3bf8635c19f2eabc14da96cc703a"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/merge-conflicts/-/merge-conflicts-0.4.0-next.5c67bdfe.tgz#9304021ab40e75ac62e11972fcec1ca6523880ef"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
 
 "@theia/messages@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/messages/-/messages-0.4.0-next.842196b5.tgz#ab05f1796a1799ac68c17060599c2eb4f9d72fc9"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/messages/-/messages-0.4.0-next.5c67bdfe.tgz#d86b3b9df6904cf00289794acb888dd0c0ff0879"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
 
 "@theia/metrics@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/metrics/-/metrics-0.4.0-next.842196b5.tgz#d899a8be524ace26fb695d5a5716a3fc8ee162bf"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/metrics/-/metrics-0.4.0-next.5c67bdfe.tgz#f9ba9a87d180a808b3382cd20b20af4404125cea"
   dependencies:
-    "@theia/application-manager" "0.4.0-next.842196b5"
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/application-manager" "0.4.0-next.5c67bdfe"
+    "@theia/core" "0.4.0-next.5c67bdfe"
     prom-client "^10.2.0"
 
-"@theia/mini-browser@0.4.0-next.842196b5", "@theia/mini-browser@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/mini-browser/-/mini-browser-0.4.0-next.842196b5.tgz#212a6807112d2021749a4ca52de7d8818e7d416d"
+"@theia/mini-browser@0.4.0-next.5c67bdfe", "@theia/mini-browser@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/mini-browser/-/mini-browser-0.4.0-next.5c67bdfe.tgz#f12c25ed7f7f9dd2526c8bc94fc4197640bb1c11"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
     "@types/mime-types" "^2.1.0"
     mime-types "^2.1.18"
     pdfobject "^2.0.201604172"
 
-"@theia/monaco@0.4.0-next.842196b5", "@theia/monaco@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/monaco/-/monaco-0.4.0-next.842196b5.tgz#ce5be588e5e50c5bccfe1c3ed110963db5976e5c"
+"@theia/monaco@0.4.0-next.5c67bdfe", "@theia/monaco@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/monaco/-/monaco-0.4.0-next.5c67bdfe.tgz#35269f5cfebac04ab580d3088b9fb1a31f0e7cf8"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
-    "@theia/markers" "0.4.0-next.842196b5"
-    "@theia/outline-view" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
+    "@theia/markers" "0.4.0-next.5c67bdfe"
+    "@theia/outline-view" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     monaco-css "^2.0.1"
     monaco-html "^2.0.2"
     monaco-textmate "^3.0.0"
     onigasm "^2.1.0"
 
-"@theia/navigator@0.4.0-next.842196b5", "@theia/navigator@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/navigator/-/navigator-0.4.0-next.842196b5.tgz#90ffbd7f2d62722591568207addbd12f97a693ce"
+"@theia/navigator@0.4.0-next.5c67bdfe", "@theia/navigator@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/navigator/-/navigator-0.4.0-next.5c67bdfe.tgz#c1854ec5fdc818162ea9e8ca1ee96193b614c1df"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     fuzzy "^0.1.3"
 
-"@theia/outline-view@0.4.0-next.842196b5", "@theia/outline-view@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/outline-view/-/outline-view-0.4.0-next.842196b5.tgz#222b56ce0c7e439dac5bfc95e44e4e8e9356cb58"
+"@theia/outline-view@0.4.0-next.5c67bdfe", "@theia/outline-view@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/outline-view/-/outline-view-0.4.0-next.5c67bdfe.tgz#c7245a44d77ecbe75544c2f57ec4e281b79f5a78"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
 
-"@theia/output@0.4.0-next.842196b5", "@theia/output@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/output/-/output-0.4.0-next.842196b5.tgz#b142031daaad8a5ab2a556a9765888bed20a3e43"
+"@theia/output@0.4.0-next.5c67bdfe", "@theia/output@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/output/-/output-0.4.0-next.5c67bdfe.tgz#bc880e4b40ae0fa0ecd6ecbbc8cf104918c64d48"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
 
 "@theia/preferences@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/preferences/-/preferences-0.4.0-next.842196b5.tgz#748288caef891248a2100ccf86d525e7ddabee2a"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/preferences/-/preferences-0.4.0-next.5c67bdfe.tgz#cce0a63cce900f4fdfe8a1c26470587719d33179"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/userstorage" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/userstorage" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     "@types/fs-extra" "^4.0.2"
     fs-extra "^4.0.2"
     jsonc-parser "^1.0.1"
 
 "@theia/preview@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/preview/-/preview-0.4.0-next.842196b5.tgz#e0a62e093307b2a4095ebdc83dd1005ee6323ba0"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/preview/-/preview-0.4.0-next.5c67bdfe.tgz#310c82b3f80faf6b1fe8ed484b474200ae437a36"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
-    "@theia/languages" "0.4.0-next.842196b5"
-    "@theia/mini-browser" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
+    "@theia/languages" "0.4.0-next.5c67bdfe"
+    "@theia/mini-browser" "0.4.0-next.5c67bdfe"
     "@types/highlight.js" "^9.12.2"
     "@types/markdown-it" "^0.0.4"
     "@types/markdown-it-anchor" "^4.0.1"
@@ -1031,70 +1031,70 @@
     markdown-it "^8.4.0"
     markdown-it-anchor "^5.0.0"
 
-"@theia/process@0.4.0-next.842196b5", "@theia/process@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/process/-/process-0.4.0-next.842196b5.tgz#43a708386a346e66c78022b8ec8edcbfcdc4e0f9"
+"@theia/process@0.4.0-next.5c67bdfe", "@theia/process@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/process/-/process-0.4.0-next.5c67bdfe.tgz#73545a29203ec2401b34f42ca5c9b49f388d8530"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
     node-pty "0.7.6"
     string-argv "0.0.2"
 
 "@theia/search-in-workspace@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/search-in-workspace/-/search-in-workspace-0.4.0-next.842196b5.tgz#fa91f855aca171a8faca76c3803c272096f61a09"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/search-in-workspace/-/search-in-workspace-0.4.0-next.5c67bdfe.tgz#875131506edfd98c2753d4622a158c18784d66f6"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/editor" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/editor" "0.4.0-next.5c67bdfe"
     vscode-ripgrep "^1.0.1"
 
 "@theia/task@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/task/-/task-0.4.0-next.842196b5.tgz#d26cd15130404113dc33a4782472c7d225257a46"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/task/-/task-0.4.0-next.5c67bdfe.tgz#2849c4a2e43051669ce417307442e886e69d876e"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/markers" "0.4.0-next.842196b5"
-    "@theia/process" "0.4.0-next.842196b5"
-    "@theia/terminal" "0.4.0-next.842196b5"
-    "@theia/variable-resolver" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/markers" "0.4.0-next.5c67bdfe"
+    "@theia/process" "0.4.0-next.5c67bdfe"
+    "@theia/terminal" "0.4.0-next.5c67bdfe"
+    "@theia/variable-resolver" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     jsonc-parser "^1.0.1"
 
-"@theia/terminal@0.4.0-next.842196b5", "@theia/terminal@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/terminal/-/terminal-0.4.0-next.842196b5.tgz#a7456d2f1b611761f2b87854c3cd7aeb023cc257"
+"@theia/terminal@0.4.0-next.5c67bdfe", "@theia/terminal@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/terminal/-/terminal-0.4.0-next.5c67bdfe.tgz#0d06938f77fb8069b1f4053a341b4cc978c14840"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/process" "0.4.0-next.842196b5"
-    "@theia/workspace" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/process" "0.4.0-next.5c67bdfe"
+    "@theia/workspace" "0.4.0-next.5c67bdfe"
     xterm "~3.5.0"
 
 "@theia/textmate-grammars@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/textmate-grammars/-/textmate-grammars-0.4.0-next.842196b5.tgz#9a078f0e2fa79a7caf323f601a5c9ae7a1ef0b72"
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/textmate-grammars/-/textmate-grammars-0.4.0-next.5c67bdfe.tgz#4df2e5ae4fb1cbf7bc37d1511831fb5c193fb9f1"
   dependencies:
-    "@theia/monaco" "0.4.0-next.842196b5"
+    "@theia/monaco" "0.4.0-next.5c67bdfe"
 
-"@theia/userstorage@0.4.0-next.842196b5", "@theia/userstorage@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/userstorage/-/userstorage-0.4.0-next.842196b5.tgz#d316029a1a270ff25ec731c9bbe7dd10816df2b1"
+"@theia/userstorage@0.4.0-next.5c67bdfe", "@theia/userstorage@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/userstorage/-/userstorage-0.4.0-next.5c67bdfe.tgz#715f453be9deef82bd6041c35c0830210c3ed594"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
 
-"@theia/variable-resolver@0.4.0-next.842196b5", "@theia/variable-resolver@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/variable-resolver/-/variable-resolver-0.4.0-next.842196b5.tgz#c3350c3142a3e41c0dac2a86b474b47a3d41e123"
+"@theia/variable-resolver@0.4.0-next.5c67bdfe", "@theia/variable-resolver@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/variable-resolver/-/variable-resolver-0.4.0-next.5c67bdfe.tgz#8f69d185ea19591315f520afeddba721df7748a2"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
 
-"@theia/workspace@0.4.0-next.842196b5", "@theia/workspace@next":
-  version "0.4.0-next.842196b5"
-  resolved "https://registry.npmjs.org/@theia/workspace/-/workspace-0.4.0-next.842196b5.tgz#b7a6f46f8c62f6ff230d441a854b3188a17b96af"
+"@theia/workspace@0.4.0-next.5c67bdfe", "@theia/workspace@next":
+  version "0.4.0-next.5c67bdfe"
+  resolved "https://registry.npmjs.org/@theia/workspace/-/workspace-0.4.0-next.5c67bdfe.tgz#7c0e9c0b7fc80d54fc1f919167b319715491e084"
   dependencies:
-    "@theia/core" "0.4.0-next.842196b5"
-    "@theia/filesystem" "0.4.0-next.842196b5"
-    "@theia/variable-resolver" "0.4.0-next.842196b5"
+    "@theia/core" "0.4.0-next.5c67bdfe"
+    "@theia/filesystem" "0.4.0-next.5c67bdfe"
+    "@theia/variable-resolver" "0.4.0-next.5c67bdfe"
     "@types/fs-extra" "^4.0.2"
     fs-extra "^4.0.2"
     moment "^2.21.0"
@@ -3204,8 +3204,8 @@ chrome-trace-event@^1.0.0:
     tslib "^1.9.0"
 
 ci-info@^1.3.0:
-  version "1.3.1"
-  resolved "https://registry.npmjs.org/ci-info/-/ci-info-1.3.1.tgz#da21bc65a5f0d0d250c19a169065532b42fa048c"
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/ci-info/-/ci-info-1.4.0.tgz#4841d53cad49f11b827b648ebde27a6e189b412f"
 
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   version "1.0.4"
@@ -10456,8 +10456,8 @@ source-map-support@^0.4.15, source-map-support@^0.4.18:
     source-map "^0.5.6"
 
 source-map-support@^0.5.6:
-  version "0.5.8"
-  resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.8.tgz#04f5581713a8a65612d0175fbf3a01f80a162613"
+  version "0.5.9"
+  resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.9.tgz#41bc953b2534267ea2d605bccfa7bfa3111ced5f"
   dependencies:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
@@ -10818,7 +10818,7 @@ sumchecker@^1.2.0:
     debug "^2.2.0"
     es6-promise "^4.0.5"
 
-supports-color@5.4.0, supports-color@^5.3.0, supports-color@^5.4.0:
+supports-color@5.4.0:
   version "5.4.0"
   resolved "https://registry.npmjs.org/supports-color/-/supports-color-5.4.0.tgz#1c6b337402c2137605efe19f10fec390f6faab54"
   dependencies:
@@ -10833,6 +10833,12 @@ supports-color@^3.1.2, supports-color@^3.2.3:
   resolved "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz#65ac0504b3954171d8a64946b2ae3cbb8a5f54f6"
   dependencies:
     has-flag "^1.0.0"
+
+supports-color@^5.3.0, supports-color@^5.4.0:
+  version "5.5.0"
+  resolved "https://registry.npmjs.org/supports-color/-/supports-color-5.5.0.tgz#e2e69a44ac8772f78a1ec0b35b689df6530efc8f"
+  dependencies:
+    has-flag "^3.0.0"
 
 svgo@^0.7.0:
   version "0.7.2"
